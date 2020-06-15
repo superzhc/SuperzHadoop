@@ -9,13 +9,15 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>SuperzCommon</artifactId>
+    <artifactId>SuperzThread</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.60</version>
+            <groupId>com.github.superzhc</groupId>
+            <artifactId>SuperzCommon</artifactId>
+            <version>0.0.1</version>
         </dependency>
     </dependencies>
+
+
 </project>
