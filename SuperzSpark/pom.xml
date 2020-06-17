@@ -24,5 +24,11 @@
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-sql_2.11</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>com.github.superzhc</groupId>
+            <artifactId>SparkLivyExecuteor</artifactId>
+            <version>0.0.1</version>
+        </dependency>
     </dependencies>
 </project>

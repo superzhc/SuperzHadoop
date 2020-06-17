@@ -16,6 +16,10 @@
         <module>SuperzKafka</module>
         <module>SuperzHBase</module>
         <module>SuperzSpark</module>
+        <module>SuperzThread</module>
+        <module>SuperzToolBox</module>
+        <module>SuperzDemo</module>
+        <module>SuperzES</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -26,6 +30,7 @@
         <hbase.version>1.1.2</hbase.version>
         <spark.version>2.3.0</spark.version>
         <kafka.version>2.3.0</kafka.version>
+        <elasticsearch.version>7.1.1</elasticsearch.version>
     </properties>
 
     <dependencyManagement>
@@ -95,6 +100,18 @@
                 <artifactId>spark-sql_2.11</artifactId>
                 <version>${spark.version}</version>
             </dependency>
+
+            <!-- ElasticSearch官网提供的API -->
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>elasticsearch-rest-high-level-client</artifactId>
+                <version>${elasticsearch.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>elasticsearch-rest-client</artifactId>
+                <version>${elasticsearch.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -115,6 +132,13 @@
             <artifactId>log4j</artifactId>
             <version>1.2.17</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
