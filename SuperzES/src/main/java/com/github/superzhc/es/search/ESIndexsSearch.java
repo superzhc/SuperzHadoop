@@ -12,24 +12,28 @@ import com.github.superzhc.es.ESClient;
  * /*1,*2/_search：按照通配符去匹配多个索引
  * 2020年04月22日 superz add
  */
-public class ESSearch extends AbstractESSearch
+public class ESIndexsSearch extends com.github.superzhc.es.ESSearch
 {
     private String[] indices;
 
-    public ESSearch(ESClient client, String... indices) {
+    public ESIndexsSearch(ESClient client, String... indices) {
         super(client);
         this.indices = indices;
     }
 
-    public ESSearch(HttpHost[] httpHosts, String... indices) {
-        super(httpHosts);
-        this.indices = indices;
-    }
+//    public ESIndexsSearch(HttpHost[] httpHosts, String... indices) {
+//        super(httpHosts);
+//        this.indices = indices;
+//    }
 
     @Override
     protected String index() {
         if (null == indices || indices.length == 0)
             return "";
         return String.join(",", indices);
+    }
+
+    @Override protected String params(String url) {
+        return url;
     }
 }

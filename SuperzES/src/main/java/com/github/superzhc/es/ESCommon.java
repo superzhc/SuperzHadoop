@@ -18,6 +18,7 @@ public abstract class ESCommon
         this.client = client;
     }
 
+    @Deprecated
     public ESCommon(HttpHost... httpHosts) {
         this.client = new ESClient(httpHosts);
     }
@@ -33,7 +34,7 @@ public abstract class ESCommon
         if (url.contains("?"))
             url += "&format=json";
         else
-            url += "&format=json";
+            url += "?format=json";
         return url;
     }
 }

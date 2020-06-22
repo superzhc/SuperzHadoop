@@ -3,6 +3,8 @@ package com.github.superzhc.es;
 import com.github.superzhc.es.util.ResponseUtils;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.Response;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 /**
  * 2020年06月17日 superz add
@@ -16,10 +18,10 @@ public class ESIndex extends ESCommon
         this.index = index;
     }
 
-    public ESIndex(HttpHost httpHost, String index) {
-        super(httpHost);
-        this.index = index;
-    }
+//    public ESIndex(HttpHost httpHost, String index) {
+//        super(httpHost);
+//        this.index = index;
+//    }
 
     public String stats() {
         String url = String.format("/%s/_stats", index);
@@ -65,5 +67,25 @@ public class ESIndex extends ESCommon
         String url = String.format("/%s", index);
         Response response = client.delete(url);
         return ResponseUtils.getEntity(response);
+    }
+
+    /**
+     * 根据查询清除索引的数据
+     * @param query
+     * @return
+     */
+    public String deleteByQuery(String query) {
+        String url = String.format("/%s/_delete_by_query", index);
+        Response response = client.post(url, query);
+        return ResponseUtils.getEntity(response);
+    }
+
+    /**
+     * 清空索引的数据
+     * @return
+     */
+    public String clear() {
+        String query = new SearchSourceBuilder().query(QueryBuilders.matchAllQuery()).toString();
+        return deleteByQuery(query);
     }
 }

@@ -14,9 +14,9 @@ public class ESCat extends ESCommon
         super(client);
     }
 
-    public ESCat(HttpHost httpHost) {
-        super(httpHost);
-    }
+//    public ESCat(HttpHost httpHost) {
+//        super(httpHost);
+//    }
 
     public String allocation() {
         Response response = client.get(formatJson("/_cat/allocation"));

@@ -5,12 +5,15 @@ import java.io.IOException;
 
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 2020年04月21日 superz add
  */
 public class ESClient implements Closeable
 {
+    private static final Logger logger = LoggerFactory.getLogger(ESClient.class);
     private static final String DEFAULT_PROTOCOL = "http";
 
     private HttpHost[] httpHosts;
@@ -66,7 +69,11 @@ public class ESClient implements Closeable
     }
 
     public Response delete(String url) {
-        return execute("DELETE", url, null);
+        return delete(url, null);
+    }
+
+    public Response delete(String url, String json) {
+        return execute("DELETE", url, json);
     }
 
     public Response execute(String method, String url, String json) {
@@ -84,9 +91,13 @@ public class ESClient implements Closeable
             Request request = new Request(method, url);
             if (null != json)
                 request.setJsonEntity(json);
+            if (logger.isDebugEnabled()) {
+                logger.debug(request.toString() + (null == json ? "" : ",请求体内容：" + json));
+            }
             return client.performRequest(request);
         }
         catch (Exception e) {
+            logger.error("执行Elasticsearch的请求异常！", e);
             throw new RuntimeException(e);
         }
     }

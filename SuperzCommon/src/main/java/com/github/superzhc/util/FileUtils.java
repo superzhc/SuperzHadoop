@@ -7,6 +7,18 @@ import java.io.File;
  */
 public class FileUtils
 {
+    public static String name(String path) {
+        String file = path;
+
+        if (path.lastIndexOf(File.separator) > -1)
+            path = path.substring(path.lastIndexOf(File.separator));
+
+        if (file.lastIndexOf(".") > -1) {
+            file = file.substring(1, file.lastIndexOf("."));
+        }
+        return file;
+    }
+
     public static boolean deepDelete(File file) {
         if (file.isFile()) {
             // 先删除一次

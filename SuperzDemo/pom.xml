@@ -11,5 +11,17 @@
 
     <artifactId>SuperzDemo</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.github.superzhc</groupId>
+            <artifactId>SuperzCommon</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
+        <dependency>
+            <groupId>com.github.superzhc</groupId>
+            <artifactId>SuperzES</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

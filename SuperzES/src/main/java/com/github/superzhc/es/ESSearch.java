@@ -1,4 +1,4 @@
-package com.github.superzhc.es.search;
+package com.github.superzhc.es;
 
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.Response;
@@ -7,24 +7,22 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.superzhc.es.ESClient;
-import com.github.superzhc.es.ESCommon;
 import com.github.superzhc.es.util.ResponseUtils;
 
 /**
  * 2020年06月17日 superz add
  */
-public abstract class AbstractESSearch extends ESCommon
+public abstract class ESSearch extends ESCommon
 {
-    private static final Logger logger = LoggerFactory.getLogger(AbstractESSearch.class);
+    private static final Logger logger = LoggerFactory.getLogger(ESSearch.class);
 
-    public AbstractESSearch(ESClient client) {
+    public ESSearch(ESClient client) {
         super(client);
     }
 
-    public AbstractESSearch(HttpHost... httpHosts) {
-        super(httpHosts);
-    }
+//    public ESSearch(HttpHost... httpHosts) {
+//        super(httpHosts);
+//    }
 
     /**
      * 无索引则是全文索引，反之则是查询特定索引
@@ -39,7 +37,7 @@ public abstract class AbstractESSearch extends ESCommon
      */
     @Deprecated
     public String queryString(String query) {
-        String url = String.format("%s/_search?q=%s", index(), query);
+        String url = String.format(params("%s/_search?q=%s"), index(), query);
         logger.debug("查询信息：{}", url);
         Response response = client.get(url);
         logger.debug("响应信息：{}", response.toString());
@@ -47,8 +45,8 @@ public abstract class AbstractESSearch extends ESCommon
     }
 
     public String queryDSL(String query) {
-        String url = String.format("%s/_search", index());
-        logger.debug("查询的Url:{}\n查询的条件：{}", url, query);
+        String url = String.format(params("%s/_search"), index());
+        logger.debug("查询的Url:{};查询的条件：{}", url, query);
         Response response = client.get(url, query);
         logger.debug("响应信息：{}", response.toString());
         return ResponseUtils.getEntity(response);
@@ -61,4 +59,6 @@ public abstract class AbstractESSearch extends ESCommon
         String query = builder.toString();
         return queryDSL(query);
     }
+
+    protected abstract String params(String url);
 }

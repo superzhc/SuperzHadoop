@@ -9,23 +9,42 @@ import org.elasticsearch.client.Response;
  */
 public class ESDocument extends ESCommon
 {
-    public ESDocument(ESClient client) {
+    /* 文档所在的索引 */
+    private String index;
+    /* 文档的唯一标识 */
+    private String id;
+
+    public ESDocument(ESClient client, String index, String id) {
         super(client);
+        this.index = index;
+        this.id = id;
     }
 
-    public ESDocument(HttpHost... httpHosts) {
-        super(httpHosts);
+//    public ESDocument(HttpHost[] httpHosts, String index, String id) {
+//        super(httpHosts);
+//        this.index = index;
+//        this.id = id;
+//    }
+
+    private String document() {
+        return String.format("/%s%s/%s", index, type(), id);
     }
 
     /**
      * 获取文档
-     * @param index
-     * @param id
      * @return
      */
-    public String get(String index, String id) {
-        String url = String.format("/%s%s/%s", index, type(), id);
-        Response response = client.get(url);
+    public String get() {
+        Response response = client.get(document());
+        return ResponseUtils.getEntity(response);
+    }
+
+    /**
+     * 删除文档
+     * @return
+     */
+    public String delete() {
+        Response response = client.delete(document());
         return ResponseUtils.getEntity(response);
     }
 }
