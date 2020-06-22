@@ -4,9 +4,7 @@ import java.io.Closeable;
 import java.io.IOException;
 
 import org.apache.http.HttpHost;
-import org.elasticsearch.client.Request;
-import org.elasticsearch.client.Response;
-import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.*;
 
 /**
  * 2020年04月21日 superz add
@@ -17,25 +15,30 @@ public class ESClient implements Closeable
 
     private HttpHost[] httpHosts;
     private RestClient client;
+    /* Elasticsearch高级别客户端 */
+    private RestHighLevelClient highLevelClient;
 
-    public ESClient(String protocol, String host, Integer port) {
-        httpHosts = new HttpHost[] {new HttpHost(host, port, protocol) };
-        this.client = RestClient.builder(httpHosts).build();
+    public static ESClient create(String protocol, String host, Integer port) {
+        return new ESClient(new HttpHost[] {new HttpHost(host, port, protocol) });
     }
 
-    public ESClient(String host, Integer port) {
-        this(DEFAULT_PROTOCOL, host, port);
+    public static ESClient create(String host, Integer port) {
+        return create(DEFAULT_PROTOCOL, host, port);
     }
 
     public ESClient(HttpHost... httpHost) {
         this.httpHosts = httpHost;
-        this.client = RestClient.builder(httpHost).build();
+        RestClientBuilder builder = RestClient.builder(httpHost);
+        this.highLevelClient = new RestHighLevelClient(builder);
+        this.client = highLevelClient.getLowLevelClient();
     }
 
     @Override
     public void close() throws IOException {
         if (null != client)
             client.close();
+        if (null != highLevelClient)
+            highLevelClient.close();
     }
 
     public void ping() {
@@ -90,5 +93,9 @@ public class ESClient implements Closeable
 
     public RestClient getRestClient() {
         return client;
+    }
+
+    public RestHighLevelClient getHighLevelClient() {
+        return highLevelClient;
     }
 }
