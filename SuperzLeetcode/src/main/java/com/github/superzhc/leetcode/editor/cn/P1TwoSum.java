@@ -13,9 +13,7 @@
 //
 // Related Topics 数组 哈希表
 
-package leetcode.editor.cn;
-
-import java.util.Arrays;
+package com.github.superzhc.leetcode.editor.cn;
 
 // Java：两数之和
 public class P1TwoSum

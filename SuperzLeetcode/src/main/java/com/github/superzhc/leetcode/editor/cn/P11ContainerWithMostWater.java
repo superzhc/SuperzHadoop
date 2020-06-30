@@ -17,7 +17,7 @@
 // 输出：49
 // Related Topics 数组 双指针
 
-package leetcode.editor.cn;
+package com.github.superzhc.leetcode.editor.cn;
 
 // Java：盛最多水的容器
 public class P11ContainerWithMostWater

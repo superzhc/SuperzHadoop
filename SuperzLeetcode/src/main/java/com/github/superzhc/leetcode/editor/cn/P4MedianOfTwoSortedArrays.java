@@ -23,7 +23,7 @@
 //
 // Related Topics 数组 二分查找 分治算法
 
-package leetcode.editor.cn;
+package com.github.superzhc.leetcode.editor.cn;
 
 // Java：寻找两个正序数组的中位数
 public class P4MedianOfTwoSortedArrays

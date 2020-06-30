@@ -17,7 +17,7 @@
 //
 // Related Topics 数组 双指针
 
-package leetcode.editor.cn;
+package com.github.superzhc.leetcode.editor.cn;
 
 import java.util.*;
 
@@ -39,31 +39,34 @@ public class P15ThreeSum
             List<List<Integer>> result = new LinkedList<>();
 
             int len = nums.length;
-            // 先对数据做排序
+            // 对数据做排序
             Arrays.sort(nums);
 
-            for (int i = 0; i < len; i++) {
-                int a = nums[i];
+            Map<Integer, Integer> map = new HashMap<>(len, 1);
+            for (int x = 0; x < len; x++) {
+                map.put(nums[x], x);
+            }
 
-                if (i > 0 && nums[i] == nums[i - 1])
+            for (int i = 0; i < len; i++) {
+                // 若当前数值跟上一次数值一样，则直接跳过就好了
+                if (i > 0 && nums[i] == nums[i - 1]) {
                     continue;
+                }
+
+                int a = nums[i];
+                int target = 0 - a;
 
                 for (int j = (i + 1); j < len; j++) {
-                    int b = nums[j];
-
-                    if (j > (i + 1) && nums[j] == nums[j - 1])
+                    // 若当前数值跟上一次数值一样，也没必要进行遍历了
+                    if (j > (i + 1) && nums[j] == nums[j - 1]) {
                         continue;
+                    }
 
-                    for (int m = (j + 1); m < len; m++) {
-                        int c = nums[m];
+                    int b = nums[j];
+                    int target2 = target - b;
 
-                        if (m > (j + 1) && nums[m] == nums[m - 1])
-                            continue;
-
-                        if ((a + b + c) == 0) {
-                            Integer[] zero = {a, b, c };
-                            result.add(Arrays.asList(zero));
-                        }
+                    if (map.containsKey(target2)&&map.get(target2)>j) {
+                        result.add(Arrays.asList(a, b, target2));
                     }
                 }
             }
