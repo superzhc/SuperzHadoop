@@ -26,6 +26,10 @@ public class MyHdfs
         }
     }
 
+    public FileSystem getFileSystem(){
+        return fileSystem;
+    }
+
     /**
      * 创建目录
      * @param path
