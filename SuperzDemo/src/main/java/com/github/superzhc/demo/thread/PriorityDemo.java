@@ -1,18 +1,18 @@
-package com.github.superzhc.thread;
+package com.github.superzhc.demo.thread;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * 2020年06月12日 superz add
+ * 2020年07月20日 superz add
  */
-public class Priority
+public class PriorityDemo
 {
     private static volatile boolean notStart = true;
     private static volatile boolean notEnd = true;
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws InterruptedException {
         List<Job> jobs = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             int priority = i < 5 ? Thread.MIN_PRIORITY : Thread.MAX_PRIORITY;
@@ -22,12 +22,12 @@ public class Priority
             thread.setPriority(priority);
             thread.start();
         }
+
         notStart = false;
         TimeUnit.SECONDS.sleep(10);
         notEnd = false;
-        for (Job job : jobs) {
-            System.out.println("Job Priority : " + job.priority + ",Count :" + job.jobCount);
-        }
+        for (Job job : jobs)
+            System.out.println("Job Priority:" + job.priority + ",Count:" + job.jobCount);
     }
 
     static class Job implements Runnable
