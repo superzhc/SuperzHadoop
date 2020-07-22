@@ -18,7 +18,28 @@
         </dependency>
         <dependency>
             <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-client</artifactId>
+        </dependency>
+        <!--YARN内部涉及的4个主要RPC协议的Java声明和Protocol Buffers定义-->
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-yarn-api</artifactId>
+        </dependency>
+        <!--包含了YARN底层库实现，包括事件库、服务库、状态机库、Web界面库等-->
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-yarn-common</artifactId>
+        </dependency>
+        <!--该部分封装了几个与YARN RPC协议交互相关的库，方便用户开发应用程序-->
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-yarn-client</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-yarn-applications</artifactId>
+            <version>${hadoop.version}</version>
         </dependency>
     </dependencies>
 </project>
