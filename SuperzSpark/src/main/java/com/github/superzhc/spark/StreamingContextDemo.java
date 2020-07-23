@@ -1,7 +1,7 @@
 package com.github.superzhc.spark;
 
 import org.apache.spark.SparkConf;
-import org.apache.spark.streaming.Seconds;
+import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
 
 /**
@@ -15,7 +15,8 @@ public class StreamingContextDemo
 {
     public static void main(String[] args) throws InterruptedException {
         SparkConf conf = new SparkConf();
-        JavaStreamingContext jssc = new JavaStreamingContext(conf, Seconds.apply(1));// 指定1s的批处理大小
+        conf.setMaster("local[2]");// 至少需要两个线程，存在一个receiver
+        JavaStreamingContext jssc = new JavaStreamingContext(conf, Durations.seconds(1));// 指定1s的批处理大小
 
         /* 设定好要进行的计算，系统收到数据时计算就会开始 */
         // doing something

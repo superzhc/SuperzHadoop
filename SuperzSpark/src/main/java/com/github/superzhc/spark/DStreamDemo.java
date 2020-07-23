@@ -14,6 +14,6 @@ public class DStreamDemo
         SparkConf conf = new SparkConf();
         JavaStreamingContext jssc = new JavaStreamingContext(conf, Durations.seconds(1));
 
-        JavaDStream<String> lines = jssc.socketTextStream("localhost", 8090);
+        JavaDStream<String> jds = jssc.socketTextStream("localhost", 8090);
     }
 }
