@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ElasticSearch</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../lib/layui-v2.5.5/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../css/public.css" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form" action="" lay-filter="es">
+            <div class="layui-form-item">
+                <label class="layui-form-label">集群地址</label>
+                <div class="layui-input-inline" style="width: 75%;">
+                    <input type="text" name="url" class="layui-input">
+                </div>
+                <div class="layui-input-inline" style="width: 10%;">
+                    <button type="button" class="layui-btn" id="btnInitIndics">初始化索引</button>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">索引</label>
+                    <div class="layui-input-inline">
+                        <div id="index" name="index"></div>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <label class="layui-form-label">Type</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="type" class="layui-input" value="_doc" disabled>
+                    </div>
+                </div>
+                <!--<div class="layui-inline">
+                    <button type="button" class="layui-btn" id="btnMapping">查看映射</button>
+                </div>-->
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">查询语句</label>
+                <div class="layui-input-block">
+                    <div class="layui-input-inline" style="width: 82%;">
+                        <textarea name="dsl" placeholder="请输入DSL" class="layui-textarea"></textarea>
+                    </div>
+                    <div class="layui-input-inline" style="width: 10%;">
+                        <button type="button" class="layui-btn" id="btnSearch">查询</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="../../lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script src="../../js/lay-config.js?v=2.0.0" charset="utf-8"></script>
+<script>
+    layui.use(["jquery", "form", "xmSelect", "layer"], function () {
+        var $ = layui.jquery
+            , form = layui.form
+            , xmSelect = layui.xmSelect
+            , layer = layui.layer;
+
+        var indices = xmSelect.render({
+            el: "#index",
+            radio: true,
+            clickClose: true,
+            filterable: true,
+            create: function (val, arr) {
+                if (arr.length === 0) {
+                    return {
+                        name: val,
+                        value: val
+                    }
+                }
+            },
+            model: {
+                icon: 'hidden',
+                label: {
+                    type: "text"
+                }
+            },
+            data: []
+        });
+
+        $("#btnInitIndics").on("click", function () {
+            // 获取整个表单对象
+            var es = form.val("es");
+            if (!(es.url && es.url != " ")) {
+                layer.alert("请输入Elasticsearch的集群地址");
+                return;
+            }
+
+            $.ajax({
+                type: "GET",
+                url: "/elasticsearch/indices?url=" + es.url,
+                dataType: "json",
+                success: function (ret) {
+                    indices.update({
+                        data: ret
+                    });
+                },
+                error: function (xhr) {
+                    layer.alert("错误提示： " + xhr.status + " " + xhr.statusText);
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>
