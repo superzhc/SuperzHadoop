@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>标签列表</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../lib/layui-v2.5.5/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../css/public.css" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">标签名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="title" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary" lay-submit
+                                    lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <script type="text/html" id="toolbar">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加</button>
+                <!--<button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 删除</button>-->
+                <button type="button" class="layui-btn layui-btn-sm" id="onetabupload">
+                    <i class="layui-icon">&#xe67c;</i>上传标签文件
+                </button>
+            </div>
+        </script>
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="currentTableBar">
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-xs data-count-edit" lay-event="update">更新</a>
+            <!--<a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>-->
+        </script>
+
+    </div>
+</div>
+<script src="../../lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script src="../../js/lay-config.js" charset="UTF-8"></script>
+<script>
+    layui.use(['jquery', 'form', 'table', 'upload', 'element'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table,
+            upload = layui.upload,
+            element = layui.element;
+
+        table.render({
+            elem: '#currentTableId',
+            url: '/onetab/list',
+            toolbar: '#toolbar',
+            cols: [[
+                {type: "checkbox", width: 50},
+                {field: 'id', width: 50, title: 'Id', hide: "true"},
+                {field: 'title', width: 400, title: '标签名称'},
+                {
+                    field: 'url',
+                    title: '标签地址',
+                    templet: "<div><a href='{{d.url}}' target='_blank' class='layui-table-link'>{{d.url}}</a></div>"
+                },
+                {
+                    field: 'readed', width: 90, title: '是否已读', align: "center", templet: function (d) {
+                        var obj = {"0": "否", "1": "是"};
+                        return obj[d.readed];
+                    }
+                },
+                {
+                    field: 'level', width: 90, title: '级别', align: "center", templet: function (d) {
+                        var obj = {"1": "高", "2": "中", "3": "低"};
+                        return obj[d.level];
+                    }
+                },
+                {title: '操作', width: 120, toolbar: '#currentTableBar', align: "center"}
+            ]],
+            // limits: [10, 15, 20, 25, 50, 100],
+            // limit: 15,
+            page: true
+        });
+
+        var uploadInst = upload.render({
+            elem: '#onetabupload' //绑定元素
+            , accept: "file"
+            , exts: "txt"
+            , url: '/onetab/upload' //上传接口
+            , progress: function (n) {
+                var percent = n + '%' //获取进度百分比
+                element.progress('测试', percent); //可配合 layui 进度条元素使用
+            }
+            , done: function (res) {
+                if (res.code == 0) {
+                    table.reload("currentTableId", {
+                        page: {
+                            curr: 1
+                        }
+                    });
+                    uploadInst.reload({});
+                }
+                layer.alert(res.msg);
+            }
+            , error: function () {
+                layer.alert("上传异常");
+            }
+        });
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            var result = JSON.stringify(data.field);
+
+            table.reload('currentTableId', {
+                page: {
+                    curr: 1
+                }
+                , where: {
+                    searchParams: result
+                }
+            });
+
+            return false;
+        });
+
+        /**
+         * toolbar监听事件
+         */
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            console.log(obj);
+            if (obj.event === 'add') {  // 监听添加操作
+                var index = layer.open({
+                    title: '添加标签',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin: true,
+                    shadeClose: true,
+                    area: ['100%', '100%'],
+                    content: 'add.html',
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+            } else if (obj.event === 'delete') {  // 监听删除操作
+                var checkStatus = table.checkStatus('currentTableId')
+                    , data = checkStatus.data;
+                layer.alert(JSON.stringify(data));
+            }
+        });
+
+        table.on('tool(currentTableFilter)', function (obj) {
+            if (obj.event === 'edit') {
+                var index = layer.open({
+                    title: '编辑标签',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin: true,
+                    shadeClose: true,
+                    area: ['100%', '100%'],
+                    content: 'edit.html?id=' + obj.data.id,
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+                return false;
+            } else if (obj.event === 'update') {
+                $.post("/onetab/autoupdate/" + obj.data.id, null, function (data) {
+                    if (data.code == 0) {
+                        obj.update({
+                            title: data.msg
+                        });
+                    } else {
+                        obj.del();
+                        layer.alert(data.msg);
+                    }
+                });
+            } else if (obj.event === 'delete') {
+                layer.confirm('真的删除行么', function (index) {
+                    layer.alert(JSON.stringify(obj.data));
+                    //layer.close(index);
+                });
+            }
+        });
+
+    });
+</script>
+
+</body>
+</html>

@@ -17,7 +17,7 @@
         location属性指明加载jar/zip包的全路径
    <classPathEntry location="/Program Files/IBM/SQLLIB/java/db2java.zip" />
      -->
-    <classPathEntry location="D:\.m2\repository\org\xerial\sqlite-jdbc\3.21.0.1\sqlite-jdbc-3.21.0.1.jar" />
+    <classPathEntry location="${db.package}" />
 
     <!--
         context:生成一组对象的环境
@@ -51,7 +51,7 @@
         <!-- 必须要有的，使用这个配置链接数据库
             @TODO:是否可以扩展
          -->
-        <jdbcConnection driverClass="org.sqlite.JDBC" connectionURL="jdbc:sqlite:D:\\superz\\FileParsing\\SuperzFund\\src\\main\\db\\fund.db" userId="" password="">
+        <jdbcConnection driverClass="${db.driver}" connectionURL="${db.url}" userId="${db.username}" password="${db.password}">
             <!-- 这里面可以设置property属性，每一个property属性都设置到配置的Driver上 -->
         </jdbcConnection>
 
@@ -77,7 +77,7 @@
             targetPackage：生成的类要放的包，真实的包受enableSubPackages属性控制；
             targetProject：目标项目，指定一个存在的目录下，生成的内容会放到指定目录中，如果目录不存在，MBG不会自动建目录
          -->
-        <javaModelGenerator targetPackage="com.github.superzhc.SuperzFund.model" targetProject="src/main/java">
+        <javaModelGenerator targetPackage="com.github.superzhc.web.model" targetProject="src/main/java">
             <!--  for MyBatis3/MyBatis3Simple
                 自动为每一个生成的类创建一个构造方法，构造方法包含了所有的field；而不是使用setter；
              -->
@@ -109,7 +109,7 @@
                 或者只使用Mapper接口+Annotation，所以，如果 javaClientGenerator配置中配置了需要生成XML的话，这个元素就必须配置
             targetPackage/targetProject:同javaModelGenerator
          -->
-        <sqlMapGenerator targetPackage="com.github.superzhc.SuperzFund.mapper" targetProject="src/main/resources">
+        <sqlMapGenerator targetPackage="com.github.superzhc.web.mapper" targetProject="src/main/resources">
             <!-- 在targetPackage的基础上，根据数据库的schema再生成一层package，最终生成的类放在这个package下，默认为false -->
             <!--<property name="enableSubPackages" value="true"/>-->
         </sqlMapGenerator>
@@ -123,7 +123,7 @@
                 3，XMLMAPPER：会生成Mapper接口，接口完全依赖XML；
             注意，如果context是MyBatis3Simple：只支持ANNOTATEDMAPPER和XMLMAPPER
         -->
-        <javaClientGenerator targetPackage="com.github.superzhc.SuperzFund.mapper" type="ANNOTATEDMAPPER" targetProject="src/main/java">
+        <javaClientGenerator targetPackage="com.github.superzhc.web.mapper" type="ANNOTATEDMAPPER" targetProject="src/main/java">
             <!-- 在targetPackage的基础上，根据数据库的schema再生成一层package，最终生成的类放在这个package下，默认为false -->
             <!--<property name="enableSubPackages" value="true"/>-->
 
