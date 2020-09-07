@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>查看</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<link rel="stylesheet" href="../../lib/element-ui@2.13.2/index.css">
+</head>
+<body>
+
+<div id="app">
+{{info}}
+</div>
+
+<script src="../../lib/vue-v2.6.11/vue.js" charset="utf-8"></script>
+<script src="../../lib/element-ui@2.13.2/index.js" charset="UTF-8"></script>
+<script src="../../lib/axios@0.20.0/axios.min.js" charset="UTF-8"></script>
+<script>
+new Vue({
+  el: '#app',
+  data () {
+    return {
+      info: null
+    }
+  },
+  mounted () {
+    axios
+      .get('https://api.coindesk.com/v1/bpi/currentprice.json')
+      .then(response => (this.info = response))
+  }
+})
+</script>
+</body>
+</html>

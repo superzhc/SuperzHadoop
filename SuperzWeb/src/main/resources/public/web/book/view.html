@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>详情</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../lib/layui-v2.5.5/css/layui.css" media="all">
+    <link rel="stylesheet" href="../../css/public.css" media="all">
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+<div class="layui-form layui-form-pane" lay-filter="book">
+    <div class="layui-hide layui-form-item">
+        <label class="layui-form-label">BookId</label>
+        <div class="layui-input-block">
+            <input type="text" name="bookid" class="layui-input" disabled>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">书籍名称</label>
+        <div class="layui-input-block">
+            <input type="text" name="fullname" class="layui-input" disabled>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">分类</label>
+            <div class="layui-input-block">
+                <input type="text" name="categoryname" class="layui-input" disabled>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">大小</label>
+            <div class="layui-input-block">
+                <input type="text" name="size" class="layui-input" disabled>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline">
+            <label class="layui-form-label">更新时间</label>
+            <div class="layui-input-block">
+                <input type="text" name="updatedate" class="layui-input" disabled>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item" pane>
+        <label class="layui-form-label">下载地址</label>
+        <div class="layui-input-block" id="download">
+            <script id="downloadTemp" type="text/html">
+                {{# layui.each(d,function(index,item){ }}
+                <a class="layui-btn" href="{{item.url}}" target="_blank">
+                    {{item.name || '百度网盘下载'}}
+                    {{# if(item.checkCode){ }}
+                    ({{item.checkCode}})
+                    {{# } }}
+                </a>
+                {{# });}}
+                {{#  if(d.length === 0){ }}
+                无下载链接
+                {{#  } }}
+            </script>
+        </div>
+    </div>
+</div>
+<script src="../../lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script src="../../js/lay-config.js" charset="UTF-8"></script>
+<script>
+    layui.use(['form', 'laytpl', 'szutils'], function () {
+        var form = layui.form,
+            laytpl = layui.laytpl,
+            layer = layui.layer,
+            $ = layui.$,
+            utils = layui.szutils;
+
+        $.getJSON("/book/view/" + utils.getUrlParam("bookId"), function (data) {
+            var formdata = data.data;
+            form.val("book", formdata);
+
+            var address = formdata.address;
+            if (address.indexOf("[") !== 0) {
+                address = "[" + address + "]";
+            }
+
+            laytpl(downloadTemp.innerHTML).render(JSON.parse(address), function (html) {
+                $("#download").html(html);
+            });
+        });
+
+    });
+</script>
+</body>
+</html>

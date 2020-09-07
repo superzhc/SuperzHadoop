@@ -10,6 +10,25 @@
   },
   "menuInfo": [
     {
+      "title": "工具",
+      "href": "",
+      "target": "_self",
+      "child": [
+        {
+          "title": "OneTab",
+          "icon": "fa fa-home",
+          "href": "web/onetab/list.html",
+          "target": "_self"
+        },
+        {
+          "title": "书籍列表",
+          "icon": "fa fa-home",
+          "href": "web/book/list.html",
+          "target": "_self"
+        }
+      ]
+    },
+    {
       "title": "大数据",
       "href": "",
       "target": "_self",
