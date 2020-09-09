@@ -1,21 +1,15 @@
 package com.github.superzhc.web.controller;
 
-import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.lang.Console;
-import cn.hutool.core.text.csv.*;
-import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.github.superzhc.web.mapper.BookMapper;
 import com.github.superzhc.web.model.Book;
-import com.github.superzhc.web.model.Onetab;
 import com.github.superzhc.web.utils.LayuiUtils;
 import com.github.superzhc.web.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +39,7 @@ public class BookController
         PageHelper.startPage(page, limit);
         List<Book> books = bookMapper.selectByCondition(params);
         PageInfo<Book> pageInfo = new PageInfo<Book>(books);
-        return LayuiUtils.list_ok(pageInfo);
+        return LayuiUtils.table_ok(pageInfo);
     }
 
     @GetMapping("/view/{bookId}")

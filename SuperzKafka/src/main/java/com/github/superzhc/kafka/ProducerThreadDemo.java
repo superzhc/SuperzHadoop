@@ -10,7 +10,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 /**
  * 2020年07月23日 superz add
  */
-public class ProducerThread implements Runnable
+public class ProducerThreadDemo implements Runnable
 {
     private static final String DEFAULT_TOPIC = "superzhc";
 
@@ -20,11 +20,11 @@ public class ProducerThread implements Runnable
     private KafkaProducer<String, String> producer;
     private String topic;
 
-    public ProducerThread(KafkaProducer<String, String> producer) {
+    public ProducerThreadDemo(KafkaProducer<String, String> producer) {
         this(producer, DEFAULT_TOPIC);
     }
 
-    public ProducerThread(KafkaProducer<String, String> producer, String topic) {
+    public ProducerThreadDemo(KafkaProducer<String, String> producer, String topic) {
         this.producer = producer;
         this.topic = topic;
     }

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>ElasticSearch</title>
+    <title>Kafka</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -12,16 +12,128 @@
 <body>
 <div class="layuimini-container">
     <div class="layuimini-main">
-        Kafka工具主页
+        <div class="layui-form layuimini-form" lay-filter="kafka">
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn layui-btn-sm" id="obtainCluster">获取集群</button>
+                    <button class="layui-btn layui-btn-sm" id="addtopic">新增主题</button>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">集群</label>
+                <div class="layui-input-block" id="cluster">
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 <script src="../../lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
 <script src="../../js/lay-config.js?v=2.0.0" charset="utf-8"></script>
 <script>
-    layui.use(["jquery", "layer"], function () {
+    layui.use(["jquery", "layer", "form", "xmSelect"], function () {
         var $ = layui.jquery
-            , layer = layui.layer;
+            , layer = layui.layer
+            , form = layui.form
+            , xmSelect = layui.xmSelect;
+
+        var cluster = xmSelect.render({
+            el: "#cluster",
+            radio: true,
+            toolbar: {
+                show: true,
+                list: [{
+                    name: "新增",
+                    icon: "el-icon-edit",
+                    method(data) {
+                        layer.prompt({
+                            formType: 0,
+                            title: '新增集群地址(例如：127.0.0.1:6667)'
+                        }, function (value, index, elem) {
+                            $.post("/kafka/cluster/add", {url: value}, function (data) {
+                                if (data.code === 0) {
+                                    cluster.update({data: data.data});//更新数据
+                                    layer.close(index);
+                                } else {
+                                    layer.alert(data.msg);
+                                }
+                            });
+                        });
+                    }
+                }, {
+                    name: "删除",
+                    icon: "el-icon-minus",
+                    method(data) {
+                        $.ajax({
+                            url: "/kafka/cluster/delete/" + cluster.getValue()[0].id,
+                            type: "DELETE",
+                            dataType: "json",
+                            success: function (result) {
+                                cluster.update({data: result.data});//更新数据
+                            }
+                        });
+                    }
+                }]
+            },
+            prop: {
+                name: "url",
+                value: "id"
+            },
+            model: {
+                icon: 'hidden',
+                label: {
+                    type: 'text'
+                }
+            },
+            on: function (data) {//监听选中事件
+                //arr:  当前多选已选中的数据
+                var arr = data.arr;
+                //change, 此次选择变化的数据,数组
+                var change = data.change;
+                //isAdd, 此次操作是新增还是删除
+                var isAdd = data.isAdd;
+
+                // alert('已有: ' + arr.length + ' 变化: ' + change.length + ', 状态: ' + isAdd)
+            },
+            data: []
+        });
+
+        $.get("/kafka/cluster/list", function (data) {
+            if (data.code === 0) {
+                cluster.update({data: data.data});
+            }
+        });
+
+        $("#obtainCluster").on("click", function (data) {
+            var selectValue = cluster.getValue();
+            layer.alert(JSON.stringify(selectValue));
+        });
+
+        // 新增主题
+        $("#addtopic").on("click", function () {
+            var selectValue = cluster.getValue();
+            if (!selectValue || selectValue.length === 0) {
+                layer.alert("请选择集群");
+                return;
+            }
+
+            var index = layer.open({
+                title: '新增主题',
+                type: 2,
+                shade: 0.2,
+                maxmin: true,
+                shadeClose: true,
+                area: ['100%', '100%'],
+                content: 'topic.html?brokers=' + selectValue[0].url,
+            });
+
+            $(window).on("resize", function () {
+                layer.full(index);
+            });
+        });
+
+
     });
 </script>
 </body>

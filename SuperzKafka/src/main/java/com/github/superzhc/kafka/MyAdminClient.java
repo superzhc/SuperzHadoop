@@ -2,13 +2,17 @@ package com.github.superzhc.kafka;
 
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.admin.*;
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.TopicPartitionInfo;
+import org.apache.kafka.common.errors.InterruptException;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 /**
@@ -24,18 +28,33 @@ public class MyAdminClient extends KafkaBrokers implements Closeable
     }
 
     public MyAdminClient(String brokers, Map<String, String> properties) {
+        this(brokers, null, properties);
+    }
+
+    public MyAdminClient(String brokers, KerberosSASL kerberosSASL, Map<String, String> properties) {
         super(brokers);
 
         Properties props = new Properties();
-        props.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, brokers);
+        props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, brokers);
         if (null != properties) {
             for (Map.Entry<String, String> property : properties.entrySet()) {
                 props.put(property.getKey(), property.getValue());
             }
         }
+
+        if (null != kerberosSASL)
+            kerberosSASL.config(props);
+
         adminClient = AdminClient.create(props);
     }
 
+    /**
+     * 创建主题
+     * @param topicName
+     * @param partitions
+     * @param replication
+     * @param configs
+     */
     public void create(String topicName, int partitions, short replication, Map<String, String> configs) {
         try {
             NewTopic topic = new NewTopic(topicName, partitions, replication);
@@ -178,8 +197,30 @@ public class MyAdminClient extends KafkaBrokers implements Closeable
         }
     }
 
+    /**
+     * 查询消费者位移
+     * @param groupId
+     * @return
+     */
+    public Map<TopicPartition, OffsetAndMetadata> consumerOffsets(String groupId) {
+        try {
+            ListConsumerGroupOffsetsResult result = adminClient.listConsumerGroupOffsets(groupId);
+            Map<TopicPartition, OffsetAndMetadata> offsets = result.partitionsToOffsetAndMetadata().get(timeout,
+                    TimeUnit.SECONDS);
+            return offsets;
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // public void test(){
+    // adminClient.describeLogDirs(Collections.singleton(1));
+    // }
+
     @Override
-    public void close() throws IOException {
+    public void close() {
         if (null != adminClient)
             adminClient.close();
     }

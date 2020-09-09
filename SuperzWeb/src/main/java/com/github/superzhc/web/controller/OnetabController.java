@@ -50,7 +50,7 @@ public class OnetabController
         PageHelper.startPage(page, limit);
         List<Onetab> fundInfos = onetabMapper.selectByCondition(params);
         PageInfo<Onetab> pageInfo = new PageInfo<Onetab>(fundInfos);
-        return LayuiUtils.list_ok(pageInfo);
+        return LayuiUtils.table_ok(pageInfo);
     }
 
     @GetMapping("/detail/{id}")

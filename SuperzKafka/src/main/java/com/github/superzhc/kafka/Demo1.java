@@ -38,7 +38,7 @@ public class Demo1
 
     private void produce(KafkaProducer<String, String> producer) {
         for (int i = 0; i < 10; i++) {
-            producerExecutors.execute(new ProducerThread(producer));
+            producerExecutors.execute(new ProducerThreadDemo(producer));
         }
     }
 

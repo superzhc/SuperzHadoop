@@ -23,10 +23,14 @@ public class MyProducer extends KafkaBrokers implements Closeable
     }
 
     public MyProducer(String brokers, Map<String, String> properties) {
+        this(brokers, null, properties);
+    }
+
+    public MyProducer(String brokers, KerberosSASL kerberosSASL, Map<String, String> properties) {
         super(brokers);
 
         Properties props = new Properties();
-        props.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, brokers);
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers);
 
         if (null == properties) {
             props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
@@ -42,6 +46,9 @@ public class MyProducer extends KafkaBrokers implements Closeable
                 props.put(property.getKey(), property.getValue());
             }
         }
+
+        if (null != kerberosSASL)
+            kerberosSASL.config(props);
 
         producer = new KafkaProducer<String, String>(props);
     }

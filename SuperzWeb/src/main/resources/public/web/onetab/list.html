@@ -47,6 +47,7 @@
         <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
 
         <script type="text/html" id="currentTableBar">
+            <a class="layui-btn layui-btn-primary layui-btn-xs data-count-edit" lay-event="open">访问</a>
             <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
             <a class="layui-btn layui-btn-xs data-count-edit" lay-event="update">更新</a>
             <!--<a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>-->
@@ -57,26 +58,28 @@
 <script src="../../lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
 <script src="../../js/lay-config.js" charset="UTF-8"></script>
 <script>
-    layui.use(['jquery', 'form', 'table', 'upload', 'element'], function () {
+    layui.use(['jquery', 'form', 'table', 'opTable', 'upload', 'element'], function () {
         var $ = layui.jquery,
             form = layui.form,
             table = layui.table,
+            opTable = layui.opTable,
             upload = layui.upload,
             element = layui.element;
 
-        table.render({
+        opTable.render({
             elem: '#currentTableId',
             url: '/onetab/list',
             toolbar: '#toolbar',
             cols: [[
                 {type: "checkbox", width: 50},
                 {field: 'id', width: 50, title: 'Id', hide: "true"},
-                {field: 'title', width: 400, title: '标签名称'},
-                {
-                    field: 'url',
-                    title: '标签地址',
-                    templet: "<div><a href='{{d.url}}' target='_blank' class='layui-table-link'>{{d.url}}</a></div>"
-                },
+                {field: 'title', title: '标签名称'},
+                {field: 'url', title: '标签地址', width: 400, hide: 'true'},
+                // {
+                //     field: 'url',
+                //     title: '标签地址',
+                //     templet: "<div><a href='{{d.url}}' target='_blank' class='layui-table-link'>{{d.url}}</a></div>"
+                // },
                 {
                     field: 'readed', width: 90, title: '是否已读', align: "center", templet: function (d) {
                         var obj = {"0": "否", "1": "是"};
@@ -89,8 +92,18 @@
                         return obj[d.level];
                     }
                 },
-                {title: '操作', width: 120, toolbar: '#currentTableBar', align: "center"}
+                {title: '操作', width: 180, toolbar: '#currentTableBar', align: "center"}
             ]],
+            openCols: [
+                {field: 'id', width: 50, title: 'Id'},
+                {field: 'title', width: 400, title: '标签名称'},
+                {
+                    field: 'url',
+                    title: '标签地址',
+                    templet: "<div><a href='{{d.url}}' target='_blank' class='layui-table-link'>{{d.url}}</a></div>"
+                }
+            ],
+            //opOrientation:'h',
             // limits: [10, 15, 20, 25, 50, 100],
             // limit: 15,
             page: true
@@ -102,11 +115,11 @@
             , exts: "txt"
             , url: '/onetab/upload' //上传接口
             , progress: function (n) {
-                var percent = n + '%' //获取进度百分比
+                var percent = n + '%';//获取进度百分比
                 element.progress('测试', percent); //可配合 layui 进度条元素使用
             }
             , done: function (res) {
-                if (res.code == 0) {
+                if (res.code === 0) {
                     table.reload("currentTableId", {
                         page: {
                             curr: 1
@@ -125,7 +138,7 @@
         form.on('submit(data-search-btn)', function (data) {
             var result = JSON.stringify(data.field);
 
-            table.reload('currentTableId', {
+            opTable.reload('currentTableId', {
                 page: {
                     curr: 1
                 }
@@ -141,7 +154,6 @@
          * toolbar监听事件
          */
         table.on('toolbar(currentTableFilter)', function (obj) {
-            console.log(obj);
             if (obj.event === 'add') {  // 监听添加操作
                 var index = layer.open({
                     title: '添加标签',
@@ -163,7 +175,20 @@
         });
 
         table.on('tool(currentTableFilter)', function (obj) {
-            if (obj.event === 'edit') {
+            if (obj.event === "open") {
+                window.open(obj.data.url, "_blank");
+                // 更新阅读状态
+                if (obj.data.readed !== 1) {
+                    obj.data.readed = 1;
+                    $.post("/onetab/update", obj.data, function (data) {
+                        if (data.code === 0) {
+                            obj.update({
+                                readed: 1
+                            });
+                        }
+                    });
+                }
+            } else if (obj.event === 'edit') {
                 var index = layer.open({
                     title: '编辑标签',
                     type: 2,
@@ -172,6 +197,13 @@
                     shadeClose: true,
                     area: ['100%', '100%'],
                     content: 'edit.html?id=' + obj.data.id,
+                    end: function () {
+                        $.get("/onetab/detail/" + obj.data.id, function (data) {
+                            if (data.code === 0) {
+                                obj.update(data.data);
+                            }
+                        });
+                    }
                 });
                 $(window).on("resize", function () {
                     layer.full(index);
@@ -179,7 +211,7 @@
                 return false;
             } else if (obj.event === 'update') {
                 $.post("/onetab/autoupdate/" + obj.data.id, null, function (data) {
-                    if (data.code == 0) {
+                    if (data.code === 0) {
                         obj.update({
                             title: data.msg
                         });

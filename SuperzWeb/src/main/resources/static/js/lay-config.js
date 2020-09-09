@@ -29,4 +29,6 @@ layui.config({
     layarea: 'layarea/layarea', //  省市县区三级联动下拉选择器
     xmSelect:'xm-select/xm-select', // 下拉框多选
     szutils:'superz/szutils',//自定义工具类
+    opTable:'opTable/opTable',//OPTable插件
+    selectPlus:'selectPlus/selectPlus',//selectPlus插件
 });

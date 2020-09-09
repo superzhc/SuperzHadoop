@@ -24,6 +24,10 @@ public class MyConsumer extends KafkaBrokers implements Closeable
     }
 
     public MyConsumer(String brokers, String groupId, Map<String, String> properties) {
+        this(brokers, groupId, null, properties);
+    }
+
+    public MyConsumer(String brokers, String groupId, KerberosSASL kerberosSASL, Map<String, String> properties) {
         super(brokers);
 
         Properties props = new Properties();
@@ -43,6 +47,10 @@ public class MyConsumer extends KafkaBrokers implements Closeable
                 props.put(property.getKey(), property.getValue());
             }
         }
+
+        if (null != kerberosSASL)
+            kerberosSASL.config(props);
+
         consumer = new KafkaConsumer<String, String>(props);
     }
 
