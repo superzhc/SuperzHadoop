@@ -25,6 +25,12 @@
                             </div>
                         </div>
                         <div class="layui-inline">
+                            <label class="layui-form-label">标签地址</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="url" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
                             <button type="submit" class="layui-btn layui-btn-primary" lay-submit
                                     lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索
                             </button>
@@ -37,7 +43,7 @@
         <script type="text/html" id="toolbar">
             <div class="layui-btn-container">
                 <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加</button>
-                <!--<button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 删除</button>-->
+                <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 删除</button>
                 <button type="button" class="layui-btn layui-btn-sm" id="onetabupload">
                     <i class="layui-icon">&#xe67c;</i>上传标签文件
                 </button>
@@ -50,7 +56,7 @@
             <a class="layui-btn layui-btn-primary layui-btn-xs data-count-edit" lay-event="open">访问</a>
             <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
             <a class="layui-btn layui-btn-xs data-count-edit" lay-event="update">更新</a>
-            <!--<a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>-->
+            <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
         </script>
 
     </div>
@@ -92,7 +98,7 @@
                         return obj[d.level];
                     }
                 },
-                {title: '操作', width: 180, toolbar: '#currentTableBar', align: "center"}
+                {title: '操作', width: 210, toolbar: '#currentTableBar', align: "center"}
             ]],
             openCols: [
                 {field: 'id', width: 50, title: 'Id'},
@@ -114,6 +120,9 @@
             , accept: "file"
             , exts: "txt"
             , url: '/onetab/upload' //上传接口
+            , before: function (obj) { //obj参数包含的信息，跟 choose回调完全一致，可参见上文。
+                layer.load(); //上传loading
+            }
             , progress: function (n) {
                 var percent = n + '%';//获取进度百分比
                 element.progress('测试', percent); //可配合 layui 进度条元素使用
@@ -127,9 +136,11 @@
                     });
                     uploadInst.reload({});
                 }
+                layer.closeAll('loading'); //关闭loading
                 layer.alert(res.msg);
             }
             , error: function () {
+                layer.closeAll('loading'); //关闭loading
                 layer.alert("上传异常");
             }
         });
@@ -138,7 +149,7 @@
         form.on('submit(data-search-btn)', function (data) {
             var result = JSON.stringify(data.field);
 
-            opTable.reload('currentTableId', {
+            table.reload('currentTableId', {
                 page: {
                     curr: 1
                 }
@@ -170,7 +181,30 @@
             } else if (obj.event === 'delete') {  // 监听删除操作
                 var checkStatus = table.checkStatus('currentTableId')
                     , data = checkStatus.data;
-                layer.alert(JSON.stringify(data));
+
+                var ids = [];
+                for (var i = 0; i < data.length; i++) {
+                    ids.push(data[i].id)
+                }
+                layer.confirm('真的删除行么', function (index) {
+                    $.ajax({
+                        url: "/onetab/deletebatch",
+                        type: 'DELETE',
+                        dataType: 'json',
+                        contentType: "application/json",
+                        data: JSON.stringify(ids),
+                        success: function (ret) {
+                            if (ret.code === 0) {
+                                table.reload("currentTableId", {
+                                    page: {
+                                        curr: 1
+                                    }
+                                });
+                            }
+                            layer.alert(ret.msg);
+                        }
+                    });
+                });
             }
         });
 
@@ -210,11 +244,14 @@
                 });
                 return false;
             } else if (obj.event === 'update') {
+                layer.load(); //上传loading
                 $.post("/onetab/autoupdate/" + obj.data.id, null, function (data) {
+                    layer.closeAll('loading'); //关闭loading
                     if (data.code === 0) {
                         obj.update({
-                            title: data.msg
+                            title: data.data
                         });
+                        layer.alert("获取标题成功!");
                     } else {
                         obj.del();
                         layer.alert(data.msg);
@@ -222,8 +259,16 @@
                 });
             } else if (obj.event === 'delete') {
                 layer.confirm('真的删除行么', function (index) {
-                    layer.alert(JSON.stringify(obj.data));
-                    //layer.close(index);
+                    $.ajax({
+                        url: '/onetab/delete/' + obj.data.id,
+                        type: 'DELETE',
+                        success: function (ret) {
+                            if (ret.code === 0) {
+                                obj.del();
+                            }
+                            layer.alert(ret.msg);
+                        }
+                    });
                 });
             }
         });

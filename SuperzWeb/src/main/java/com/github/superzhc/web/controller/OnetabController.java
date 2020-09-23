@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.alibaba.fastjson.JSON;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +16,12 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
-import com.github.superzhc.web.mapper.OnetabMapper;
+import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.superzhc.web.model.Onetab;
+import com.github.superzhc.web.service.OnetabService;
 import com.github.superzhc.web.utils.EmojiUtils;
 import com.github.superzhc.web.utils.LayuiUtils;
 import com.github.superzhc.web.utils.Result;
@@ -33,7 +34,8 @@ import com.github.superzhc.web.utils.Result;
 public class OnetabController
 {
     @Autowired
-    private OnetabMapper onetabMapper;
+    // private OnetabMapper onetabMapper;
+    private OnetabService service;
 
     @GetMapping("/list")
     public Result list(@RequestParam(value = "page", defaultValue = "1") Integer page,
@@ -46,56 +48,74 @@ public class OnetabController
         else
             params = JSON.parseObject(searchParams).getInnerMap();
 
+        QueryWrapper query = new QueryWrapper();
+        // query.allEq(params);// 模糊查询实现不了
+        for (Map.Entry<String, Object> entry : params.entrySet()) {
+            if ("title".equalsIgnoreCase(entry.getKey()) || "url".equalsIgnoreCase(entry.getKey()))
+                query.like(entry.getKey(), entry.getValue());
+            else
+                query.eq(entry.getKey(), entry.getValue());
+        }
+
+        Page<Onetab> pageplus = new Page<>(page, limit);
+        IPage<Onetab> pageinfo = service.page(pageplus, query);
+        return LayuiUtils.table_ok(pageinfo);
         // 分页查询
-        PageHelper.startPage(page, limit);
-        List<Onetab> fundInfos = onetabMapper.selectByCondition(params);
-        PageInfo<Onetab> pageInfo = new PageInfo<Onetab>(fundInfos);
-        return LayuiUtils.table_ok(pageInfo);
+        // PageHelper.startPage(page, limit);
+        // List<Onetab> fundInfos = onetabMapper.selectByCondition(params);
+        // PageInfo<Onetab> pageInfo = new PageInfo<Onetab>(fundInfos);
+        // return LayuiUtils.table_ok(pageInfo);
     }
 
     @GetMapping("/detail/{id}")
     public Result get(@PathVariable(name = "id") Integer id) {
-        Onetab onetab = onetabMapper.selectByPrimaryKey(id);
-        return LayuiUtils.model_ok(onetab);
+        Onetab onetab = service.getById(id);
+        return LayuiUtils.data(onetab);
     }
 
     @PostMapping("/add")
     public Result add(Onetab onetab) {
-        int i = onetabMapper.insert(onetab);
-        if (i > 0)
-            return LayuiUtils.form_ok("新增成功!");
-        else
-            return LayuiUtils.form_error("新增失败!");
+        boolean b = service.save(onetab);
+        return b ? LayuiUtils.msg_ok("新增成功!") : LayuiUtils.msg_error("新增失败!");
     }
 
     @PostMapping("/update")
     public Result update(Onetab onetab) {
-        int i = onetabMapper.updateByPrimaryKey(onetab);
-        if (i > 0)
-            return LayuiUtils.form_ok("修改成功!");
-        else
-            return LayuiUtils.form_error("修改失败!");
+        boolean b = service.updateById(onetab);
+        return b ? LayuiUtils.msg_ok("修改成功!") : LayuiUtils.msg_error("修改失败!");
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public Result delete(@PathVariable(name = "id") Integer id) {
+        boolean b = service.removeById(id);
+        return b ? LayuiUtils.msg_ok("删除成功!") : LayuiUtils.msg_error("删除失败");
+    }
+
+    @DeleteMapping("/deletebatch")
+    public Result deleteBatch(@RequestBody List<Integer> ids) {
+        boolean b = service.removeByIds(ids);
+        return b ? LayuiUtils.msg_ok("删除成功!") : LayuiUtils.msg_error("删除失败");
     }
 
     @PostMapping("/autoupdate/{id}")
     public Result autoUpdate(@PathVariable(name = "id") Integer id) {
-        Onetab onetab = onetabMapper.selectByPrimaryKey(id);
+        Onetab onetab = service.getById(id);
         try {
             Document document = Jsoup.connect(onetab.getUrl()).get();
             onetab.setTitle(document.title());
-            onetabMapper.updateByPrimaryKey(onetab);
-            return LayuiUtils.form_ok(onetab.getTitle());
+            service.updateById(onetab);
+            return LayuiUtils.data(onetab.getTitle());
         }
         catch (Exception ex) {
             ex.printStackTrace();
-            return LayuiUtils.form_error("更新异常：" + ex.getMessage());
+            return LayuiUtils.msg_error("更新异常：" + ex.getMessage());
         }
     }
 
     @PostMapping("/upload")
     public Result upload(@RequestParam("file") MultipartFile file) {
         if (file.isEmpty()) {
-            return LayuiUtils.form_error("上传失败，请选择文件");
+            return LayuiUtils.msg_error("上传失败，请选择文件");
         }
 
         Reader reader = null;
@@ -107,7 +127,9 @@ public class OnetabController
                 if (!StringUtils.isEmpty(line)) {
                     String[] ss = line.split(" \\| ");
 
-                    Onetab model = onetabMapper.selectByUrl(ss[0]);
+                    QueryWrapper query = new QueryWrapper();
+                    query.eq("url", ss[0]);
+                    Onetab model = service.getOne(query);
                     boolean exist = false;
                     if (null == model) {
                         model = new Onetab();
@@ -128,16 +150,16 @@ public class OnetabController
                     }
 
                     if (!exist)
-                        onetabMapper.insert(model);
+                        service.save(model);
                     else
-                        onetabMapper.updateByPrimaryKey(model);
+                        service.updateById(model);
                 }
             }
         }
         catch (Exception ex) {
             System.out.println("异常数据行：" + line);
             ex.printStackTrace();
-            return LayuiUtils.form_error("上传失败，失败原因：" + ex.getMessage());
+            return LayuiUtils.msg_error("上传失败，失败原因：" + ex.getMessage());
         }
         finally {
             if (null != reader) {
@@ -150,6 +172,6 @@ public class OnetabController
             }
         }
 
-        return LayuiUtils.form_ok("上传成功");
+        return LayuiUtils.msg_ok("上传成功");
     }
 }

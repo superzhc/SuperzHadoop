@@ -1,8 +1,8 @@
 package com.github.superzhc.web.utils;
 
-import com.github.pagehelper.PageInfo;
-
 import java.util.List;
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
 
 /**
  * Layui组件返回值的工具类
@@ -53,10 +53,10 @@ public class LayuiUtils
         return result;
     }
 
-    public static <T> Result table_ok(PageInfo<T> pageInfo) {
+    public static <T> Result table_ok(IPage<T> pageInfo) {
         TableResult result = new TableResult();
         result.setCount(pageInfo.getTotal());
-        result.setData(pageInfo.getList());
+        result.setData(pageInfo.getRecords());
         return result;
     }
 

@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+/src/main/resources/rebel.xml
+/src/main/resources/kafka_server_jaas.conf
+/src/main/resources/krb5.conf
+/src/main/resources/user.keytab
