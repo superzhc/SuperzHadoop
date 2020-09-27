@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>table模块快速使用</title>
+    <link rel="stylesheet" href="static/layui-v2.5.6/layui/css/layui.css" media="all">
+</head>
+
+<body>
+
+    <div class="layui-tab layui-tab-card" lay-filter="menu"">
+        <ul class=" layui-tab-title">
+        <li class="layui-this">测试1</li>
+        <li>测试2</li>
+        </ul>
+        <div class="layui-tab-content"></div>
+    </div>
+
+    <script src="static/layui-v2.5.6/layui/layui.js"></script>
+    <script>
+        layui.use(['jquery', 'element', 'layer'], function () {
+            var $ = layui.jquery,
+                element = layui.element,
+                layer = layui.layer;
+
+            //一些事件监听
+            element.on('tab(menu)', function (data) {
+                console.log(data)
+            });
+
+        });
+    </script>
+</body>
+
+</html>
