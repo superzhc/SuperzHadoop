@@ -9,27 +9,70 @@
 
 <body>
 
-    <div class="layui-tab layui-tab-card" lay-filter="menu"">
+    <div class="layui-tab layui-tab-card" lay-filter="menu">
         <ul class=" layui-tab-title">
-        <li class="layui-this">测试1</li>
-        <li>测试2</li>
+            <li class="layui-this">测试1</li>
+            <li>测试2</li>
         </ul>
-        <div class="layui-tab-content"></div>
+        <div class="layui-tab-content">
+            <div class="layui-tab-item layui-show">
+                <button id="btn" type="button" class="layui-btn">打开页面</button>
+            </div>
+            <div class="layui-tab-item">2</div>
+        </div>
     </div>
 
     <script src="static/layui-v2.5.6/layui/layui.js"></script>
     <script>
+        const path = require("path");
+        const BrowerWindow = require('electron').remote.BrowserWindow;
+
         layui.use(['jquery', 'element', 'layer'], function () {
             var $ = layui.jquery,
                 element = layui.element,
                 layer = layui.layer;
 
+            var btn = $('#btn');
+            btn.on("click", function () {
+                win = new BrowerWindow({
+                    width: 600,
+                    height: 400,
+                    frame: true, // false隐藏关闭按钮、菜单选项 true显示
+                    fullscreen: false, // 全屏展示
+                    transparent: true
+                })
+
+                win.loadURL(path.join('file:', __dirname, 'demo.html'));
+
+                win.on('close', () => { win = null });
+            });
+
             //一些事件监听
             element.on('tab(menu)', function (data) {
-                console.log(data)
+                // console.log(data)
+                layer.alert(data.index);
             });
 
         });
+    </script>
+    <script>
+        // var btn = document.querySelector('#btn');
+        // var path = require("path");
+        // var BrowerWindow = require('electron').remote.BrowserWindow;
+
+        // btn.onclick = () => {
+        //     win = new BrowerWindow({
+        //         width: 600,
+        //         height: 400,
+        //         frame: true, // false隐藏关闭按钮、菜单选项 true显示
+        //         fullscreen: false, // 全屏展示
+        //         transparent: true
+        //     })
+
+        //     win.loadURL(path.join('file:', __dirname, 'demo.html'));
+
+        //     win.on('close', () => { win = null });
+        // }
     </script>
 </body>
 
