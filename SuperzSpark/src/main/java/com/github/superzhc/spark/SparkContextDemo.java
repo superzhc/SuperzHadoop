@@ -16,16 +16,16 @@ public class SparkContextDemo
         /**
          * 设置Spark的模式
          */
-        conf.setMaster("local");
+        conf.setMaster("local[*]");
 
         /**
          * 性能调优的一些参数
          */
-        conf.set("spark.driver.memory", "2g");
-        conf.set("spark.executor.memory", "4g");// 配10万条数据进行测试
-        conf.set("spark.executor.cores", "2");
-        conf.set("spark.executor.instances", "20");// 默认值是2个executor
-        conf.set("spark.default.parallelism", "80");// 核数*executor实例数*(2~3)倍数
+//        conf.set("spark.driver.memory", "2g");
+//        conf.set("spark.executor.memory", "4g");// 配10万条数据进行测试
+//        conf.set("spark.executor.cores", "2");
+//        conf.set("spark.executor.instances", "20");// 默认值是2个executor
+//        conf.set("spark.default.parallelism", "80");// 核数*executor实例数*(2~3)倍数
 
         JavaSparkContext jsc = new JavaSparkContext(conf);
     }

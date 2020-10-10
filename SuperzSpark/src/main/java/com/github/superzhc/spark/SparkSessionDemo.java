@@ -11,7 +11,7 @@ public class SparkSessionDemo
     public static void main(String[] args) {
         SparkConf conf = new SparkConf();
 
-        SparkSession sparkSession = SparkSession.builder().appName("SparkSessionDemo").master("local").config(conf)
+        SparkSession sparkSession = SparkSession.builder().appName("SparkSessionDemo").master("local[*]").config(conf)
                 .getOrCreate();
     }
 }
