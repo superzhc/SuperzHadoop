@@ -12,10 +12,23 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class TxtTestDataTest1
 {
-    @Test
+//    @Test
     public void generate001() {
         System.out.println("测试数据生成开始");
         GenerateTestData testData = new TxtTestData("D:\\data\\xiamen\\peopleinfo");
+        AtomicInteger serialNumber = new AtomicInteger(0);
+        Faker faker = new Faker(Locale.CHINA);
+        testData.generate(() -> {
+            String sex = faker.options().option("F", "M");
+            int height = faker.number().numberBetween(150, 200);
+            return String.format("%d  %s  %s\r\n", serialNumber.addAndGet(1), sex, height);
+        }, 100000);
+        System.out.println("测试数据生成结束");
+    }
+
+    public void generate002(){
+        System.out.println("测试数据生成开始");
+        GenerateTestData testData = new TxtTestData("D:\\data\\practice\\");
         AtomicInteger serialNumber = new AtomicInteger(0);
         Faker faker = new Faker(Locale.CHINA);
         testData.generate(() -> {

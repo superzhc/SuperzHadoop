@@ -29,6 +29,13 @@
             <version>1.11.3</version>
         </dependency>
 
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.27</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!--生成随机数据-->
         <dependency>
             <groupId>com.github.javafaker</groupId>
