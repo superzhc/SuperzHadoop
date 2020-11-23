@@ -1,5 +1,6 @@
 package com.github.superzhc.db;
 
+import com.github.superzhc.util.MapUtils;
 import com.github.superzhc.util.StringUtils;
 
 import java.sql.ResultSet;
@@ -29,6 +30,31 @@ public class ResultSetUtils
                     map.put(cols_name, cols_value);
                 }
                 list.add(map);
+            }
+        }
+        catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return list;
+    }
+
+    public static <T> List<T> Result2ListBean(ResultSet rs, Class<T> beanClass) {
+        List<T> list = new ArrayList<>();
+        try {
+            ResultSetMetaData metaData = rs.getMetaData();
+            int cols_len = metaData.getColumnCount();
+            while (rs.next()) {
+                Map<String, Object> map = new HashMap<>();
+                for (int i = 0; i < cols_len; i++) {
+                    String cols_name = metaData.getColumnName(i + 1);
+                    Object cols_value = rs.getObject(cols_name);
+                    // null值不做处理
+                    // if (null == cols_value) {
+                    // cols_value = "";
+                    // }
+                    map.put(cols_name, cols_value);
+                }
+                list.add(MapUtils.mapToBean(map, beanClass));
             }
         }
         catch (Exception ex) {
@@ -70,7 +96,8 @@ public class ResultSetUtils
                 // 获取一列
                 columnStr[i] = rs.getString(i + 1);
                 // 计算当前列的最大长度
-                columnMaxLengths[i] = Math.max(columnMaxLengths[i], (columnStr[i] == null) ? 0 : StringUtils.length(columnStr[i]));
+                columnMaxLengths[i] = Math.max(columnMaxLengths[i],
+                        (columnStr[i] == null) ? 0 : StringUtils.length(columnStr[i]));
             }
             // 缓存这一行.
             results.add(columnStr);

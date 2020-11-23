@@ -220,6 +220,28 @@ public class JdbcHelper implements Closeable
         }
     }
 
+    public <T> List<T> queryBeans(String sql, Class<T> beanClass, Object... params) {
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        try {
+            pstmt = getConnection().prepareStatement(sql);
+            if (null != params && params.length != 0) {
+                for (int i = 0, len = params.length; i < len; i++) {
+                    pstmt.setObject(i + 1, params[i]);
+                }
+            }
+            rs = pstmt.executeQuery();
+            return ResultSetUtils.Result2ListBean(rs, beanClass);
+        }
+        catch (SQLException ex) {
+            ex.printStackTrace();
+            return null;
+        }
+        finally {
+            free(null, pstmt, rs);
+        }
+    }
+
     public void show(String sql, Object... params) {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
