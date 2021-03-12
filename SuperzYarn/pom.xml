@@ -36,10 +36,10 @@
             <artifactId>hadoop-yarn-client</artifactId>
         </dependency>
 
-        <dependency>
+        <!--<dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-yarn-applications</artifactId>
             <version>${hadoop.version}</version>
-        </dependency>
+        </dependency>-->
     </dependencies>
 </project>

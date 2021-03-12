@@ -16,19 +16,22 @@
         <module>SuperzKafka</module>
         <module>SuperzHBase</module>
         <module>SuperzSpark</module>
-        <module>SuperzToolBox</module>
+        <module>SuperzFlink</module>
         <module>SuperzDemo</module>
         <module>SuperzES</module>
         <module>SuperzLeetcode</module>
+        <module>SuperzWeb</module>
     </modules>
     <packaging>pom</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <hadoop.version>2.7.3</hadoop.version>
+        <scala.binary.version>2.11</scala.binary.version>
+        <hadoop.version>3.0.0</hadoop.version>
         <hive.version>1.2.1</hive.version>
         <hbase.version>1.1.2</hbase.version>
         <spark.version>2.3.0</spark.version>
+        <flink.version>1.12.2</flink.version>
         <kafka.version>2.3.0</kafka.version>
         <elasticsearch.version>7.1.1</elasticsearch.version>
     </properties>
@@ -57,7 +60,7 @@
             <!--MapReduce-->
             <dependency>
                 <groupId>org.apache.hadoop</groupId>
-                <artifactId>hadoop-mapreduce-client</artifactId>
+                <artifactId>hadoop-mapreduce-client-core</artifactId>
                 <version>${hadoop.version}</version>
             </dependency>
 
@@ -102,23 +105,55 @@
             <!--Spark模块-->
             <dependency>
                 <groupId>org.apache.spark</groupId>
-                <artifactId>spark-core_2.11</artifactId>
+                <artifactId>spark-core_${scala.binary.version}</artifactId>
                 <version>${spark.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.spark</groupId>
-                <artifactId>spark-hive_2.11</artifactId>
+                <artifactId>spark-hive_${scala.binary.version}</artifactId>
                 <version>${spark.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.spark</groupId>
-                <artifactId>spark-sql_2.11</artifactId>
+                <artifactId>spark-sql_${scala.binary.version}</artifactId>
                 <version>${spark.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.spark</groupId>
-                <artifactId>spark-streaming_2.11</artifactId>
+                <artifactId>spark-streaming_${scala.binary.version}</artifactId>
                 <version>${spark.version}</version>
+            </dependency>
+
+            <!--Flink 模块-->
+            <dependency>
+                <groupId>org.apache.flink</groupId>
+                <artifactId>flink-core</artifactId>
+                <version>${flink.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.flink</groupId>
+                <artifactId>flink-clients_${scala.binary.version}</artifactId>
+                <version>${flink.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.flink</groupId>
+                <artifactId>flink-streaming-java_${scala.binary.version}</artifactId>
+                <version>${flink.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.flink</groupId>
+                <artifactId>flink-streaming-scala_${scala.binary.version}</artifactId>
+                <version>${flink.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.flink</groupId>
+                <artifactId>flink-java</artifactId>
+                <version>${flink.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.flink</groupId>
+                <artifactId>flink-scala_${scala.binary.version}</artifactId>
+                <version>${flink.version}</version>
             </dependency>
 
             <!-- ElasticSearch官网提供的API -->
@@ -136,6 +171,7 @@
     </dependencyManagement>
 
     <dependencies>
+        <!--日志模块-->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -163,6 +199,26 @@
     </dependencies>
 
     <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <!-- 这是个编译scala代码的 -->
+                    <groupId>net.alchim31.maven</groupId>
+                    <artifactId>scala-maven-plugin</artifactId>
+                    <version>3.2.1</version>
+                    <executions>
+                        <execution>
+                            <id>scala-compile-first</id>
+                            <phase>process-resources</phase>
+                            <goals>
+                                <goal>add-source</goal>
+                                <goal>compile</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
         <plugins>
             <!--指定编译版本 -->
             <plugin>

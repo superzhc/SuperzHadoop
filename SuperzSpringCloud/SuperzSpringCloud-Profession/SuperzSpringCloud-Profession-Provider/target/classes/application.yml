@@ -1,0 +1,16 @@
+server:
+  port: 8081
+
+# 用户微服务的应用名/服务ID
+spring:
+  application:
+    name: ssc-provider
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8260/eureka
+  instance:
+    prefer-ip-address: true
+# eureka 相关配置

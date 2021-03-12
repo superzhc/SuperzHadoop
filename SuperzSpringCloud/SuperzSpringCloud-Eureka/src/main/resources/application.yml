@@ -1,0 +1,11 @@
+# 服务器运行的端口
+server:
+  port: 8260
+
+# Eureka 相关的配置
+eureka:
+  server:
+    wait-time-in-ms-when-sync-empty: 5
+  client:
+    register-with-eureka: false # 该属性是用来控制当SpringBoot启动服务完成后是否将该服务注册到服务治理服务器上。这里因为服务本身就是服务治理服务器，而且尚未构建任何服务治理集群，因此将其设置为false，表示不注册。
+    fetch-registry: false # 该属性表示应用启动后不需要从服务治理服务器中同步已注册的服务注册列表数据到本地。
