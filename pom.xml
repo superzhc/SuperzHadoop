@@ -28,7 +28,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <scala.binary.version>2.11</scala.binary.version>
         <hadoop.version>3.0.0</hadoop.version>
-        <hive.version>1.2.1</hive.version>
+        <hive.version>2.3.4</hive.version>
         <hbase.version>1.1.2</hbase.version>
         <spark.version>2.3.0</spark.version>
         <flink.version>1.12.2</flink.version>
