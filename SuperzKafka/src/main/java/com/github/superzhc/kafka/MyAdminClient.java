@@ -6,6 +6,8 @@ import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.TopicPartitionInfo;
 import org.apache.kafka.common.errors.InterruptException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -18,8 +20,9 @@ import java.util.stream.Collectors;
 /**
  * 2020年04月26日 superz add
  */
-public class MyAdminClient extends KafkaBrokers implements Closeable
-{
+public class MyAdminClient extends KafkaBrokers implements Closeable {
+    private static final Logger log = LoggerFactory.getLogger(MyAdminClient.class);
+
     private long timeout = 30;
     private AdminClient adminClient;
 
@@ -31,7 +34,9 @@ public class MyAdminClient extends KafkaBrokers implements Closeable
         this(brokers, null, properties);
     }
 
-    public MyAdminClient(String brokers, KerberosSASL kerberosSASL, Map<String, String> properties) {
+    public MyAdminClient(String brokers,
+                         Object kerberosSASL,//KerberosSASL kerberosSASL,
+                         Map<String, String> properties) {
         super(brokers);
 
         Properties props = new Properties();
@@ -42,14 +47,15 @@ public class MyAdminClient extends KafkaBrokers implements Closeable
             }
         }
 
-        if (null != kerberosSASL)
-            kerberosSASL.config(props);
+//        if (null != kerberosSASL)
+//            kerberosSASL.config(props);
 
         adminClient = AdminClient.create(props);
     }
 
     /**
      * 创建主题
+     *
      * @param topicName
      * @param partitions
      * @param replication
@@ -63,8 +69,8 @@ public class MyAdminClient extends KafkaBrokers implements Closeable
             }
             CreateTopicsResult result = adminClient.createTopics(Collections.singleton(topic));
             result.all().get(timeout, TimeUnit.SECONDS);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
+            log.error("创建主题[{}]发生异常，异常信息：\n", topicName, e);
         }
     }
 
@@ -78,6 +84,7 @@ public class MyAdminClient extends KafkaBrokers implements Closeable
 
     /**
      * 获取所有的主题
+     *
      * @return
      */
     public Set<String> list() {
@@ -85,14 +92,14 @@ public class MyAdminClient extends KafkaBrokers implements Closeable
             ListTopicsResult result = adminClient.listTopics();
             Set<String> topics = result.names().get(1, TimeUnit.SECONDS);
             return topics;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return null;
         }
     }
 
     /**
      * 判断主题是否存在
+     *
      * @param topic 主题名
      * @return
      * @throws Exception
@@ -104,6 +111,7 @@ public class MyAdminClient extends KafkaBrokers implements Closeable
 
     /**
      * 获取主题的描述信息
+     *
      * @param topic 主题名
      * @return
      * @throws Exception
@@ -113,14 +121,14 @@ public class MyAdminClient extends KafkaBrokers implements Closeable
             TopicDescription description = adminClient.describeTopics(Arrays.asList(topic)).all()
                     .get(timeout, TimeUnit.SECONDS).get(topic);
             return description;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return null;
         }
     }
 
     /**
      * 主题下的所有分区
+     *
      * @param topic
      * @return
      * @throws Exception
@@ -136,7 +144,8 @@ public class MyAdminClient extends KafkaBrokers implements Closeable
 
     /**
      * 添加分区数
-     * @param topic 主题名
+     *
+     * @param topic         主题名
      * @param numPartitions 原有的分区数+新增分区数量
      */
     public void addPartitions(String topic, Integer numPartitions) throws Exception {
@@ -148,6 +157,7 @@ public class MyAdminClient extends KafkaBrokers implements Closeable
 
     /**
      * 获取Kafka集群中的所有消费者组
+     *
      * @return
      * @throws Exception
      */
@@ -161,14 +171,14 @@ public class MyAdminClient extends KafkaBrokers implements Closeable
                     .collect(Collectors.toList());
 
             return allGroups;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return null;
         }
     }
 
     /**
      * 获取主题下的所有消费者组
+     *
      * @param topic
      * @return
      * @throws Exception
@@ -187,18 +197,19 @@ public class MyAdminClient extends KafkaBrokers implements Closeable
                         .map(MemberAssignment::topicPartitions)
                         .map(topics -> topics.stream().map(TopicPartition::topic).collect(Collectors.toSet()))
                         .anyMatch(topics -> topics.contains(topic));
-                if (topicSubscribed)
+                if (topicSubscribed) {
                     filteredGroups.add(groupId);
+                }
             });
             return filteredGroups;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return null;
         }
     }
 
     /**
      * 查询消费者位移
+     *
      * @param groupId
      * @return
      */
@@ -208,8 +219,7 @@ public class MyAdminClient extends KafkaBrokers implements Closeable
             Map<TopicPartition, OffsetAndMetadata> offsets = result.partitionsToOffsetAndMetadata().get(timeout,
                     TimeUnit.SECONDS);
             return offsets;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
@@ -221,8 +231,9 @@ public class MyAdminClient extends KafkaBrokers implements Closeable
 
     @Override
     public void close() {
-        if (null != adminClient)
+        if (null != adminClient) {
             adminClient.close();
+        }
     }
 
     public long getTimeout() {

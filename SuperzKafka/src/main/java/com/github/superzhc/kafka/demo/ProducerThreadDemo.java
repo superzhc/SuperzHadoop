@@ -1,4 +1,4 @@
-package com.github.superzhc.kafka;
+package com.github.superzhc.kafka.demo;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -64,8 +64,9 @@ public class ProducerThreadDemo implements Runnable
                 {
                     @Override
                     public void onCompletion(RecordMetadata metadata, Exception exception) {
-                        if (null != exception)
+                        if (null != exception) {
                             exception.printStackTrace();
+                        }
                     }
                 });
                 Thread.sleep(1000);

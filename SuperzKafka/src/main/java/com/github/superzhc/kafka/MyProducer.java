@@ -1,15 +1,14 @@
 package com.github.superzhc.kafka;
 
+import org.apache.kafka.clients.producer.*;
+import org.apache.kafka.common.serialization.StringSerializer;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
-import org.apache.kafka.clients.CommonClientConfigs;
-import org.apache.kafka.clients.producer.*;
-import org.apache.kafka.common.serialization.StringSerializer;
 
 /**
  * 2020年04月26日 superz add
@@ -26,7 +25,9 @@ public class MyProducer extends KafkaBrokers implements Closeable
         this(brokers, null, properties);
     }
 
-    public MyProducer(String brokers, KerberosSASL kerberosSASL, Map<String, String> properties) {
+    public MyProducer(String brokers,
+                      Object kerberosSASL,// KerberosSASL kerberosSASL, //2021年3月17日 该类没有了，去掉
+                      Map<String, String> properties) {
         super(brokers);
 
         Properties props = new Properties();
@@ -47,8 +48,9 @@ public class MyProducer extends KafkaBrokers implements Closeable
             }
         }
 
-        if (null != kerberosSASL)
-            kerberosSASL.config(props);
+//        if (null != kerberosSASL) {
+//            kerberosSASL.config(props);
+//        }
 
         producer = new KafkaProducer<String, String>(props);
     }
@@ -77,7 +79,8 @@ public class MyProducer extends KafkaBrokers implements Closeable
 
     @Override
     public void close() throws IOException {
-        if (null != producer)
+        if (null != producer) {
             producer.close();
+        }
     }
 }

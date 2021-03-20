@@ -1,4 +1,4 @@
-package com.github.superzhc.kafka;
+package com.github.superzhc.kafka.demo;
 
 import org.apache.kafka.clients.producer.Partitioner;
 import org.apache.kafka.common.Cluster;

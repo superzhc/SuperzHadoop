@@ -1,4 +1,4 @@
-package com.github.superzhc.kafka;
+package com.github.superzhc.kafka.demo;
 
 import java.time.Duration;
 import java.util.Collections;

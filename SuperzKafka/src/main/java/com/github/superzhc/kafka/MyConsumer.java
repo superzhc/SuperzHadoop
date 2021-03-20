@@ -13,6 +13,7 @@ import java.util.*;
 /**
  * 2020年04月26日 superz add
  */
+@Deprecated
 public class MyConsumer extends KafkaBrokers implements Closeable
 {
     private Consumer<String, String> consumer;
@@ -27,7 +28,9 @@ public class MyConsumer extends KafkaBrokers implements Closeable
         this(brokers, groupId, null, properties);
     }
 
-    public MyConsumer(String brokers, String groupId, KerberosSASL kerberosSASL, Map<String, String> properties) {
+    public MyConsumer(String brokers, String groupId,
+                      Object kerberosSASL, //KerberosSASL kerberosSASL, //2021年3月17日 该类没有了，去掉
+                      Map<String, String> properties) {
         super(brokers);
 
         Properties props = new Properties();
@@ -48,8 +51,9 @@ public class MyConsumer extends KafkaBrokers implements Closeable
             }
         }
 
-        if (null != kerberosSASL)
-            kerberosSASL.config(props);
+//        if (null != kerberosSASL) {
+//            kerberosSASL.config(props);
+//        }
 
         consumer = new KafkaConsumer<String, String>(props);
     }
@@ -89,8 +93,9 @@ public class MyConsumer extends KafkaBrokers implements Closeable
                         i++;
                     }
 
-                    if (i > frequency)
+                    if (i > frequency) {
                         break;
+                    }
                 }
 
                 synchronized (consumer) {// 先释放资源再关闭consumer
