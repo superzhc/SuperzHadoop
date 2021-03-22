@@ -1,5 +1,6 @@
 package com.github.superzhc.kafka.tool;
 
+import com.github.superzhc.data.jsdz.generateor.ObjectPTCEventDetailData;
 import com.github.superzhc.kafka.MyAdminClient;
 import com.github.superzhc.kafka.MyProducer;
 import org.slf4j.Logger;
@@ -26,10 +27,11 @@ public class MyProducerTool {
         }
 
         try (MyProducer producer = new MyProducer(MyKafkaConfigs.JSDZ_BROKER)) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            // SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             while (true) {
-                int random = (int) (Math.random() * 100) % 3;
-                String message = String.format("Producer-%d send the message at %s", random, sdf.format(new Date()));
+                // int random = (int) (Math.random() * 100) % 3;
+                // String message = String.format("Producer-%d send the message at %s", random, sdf.format(new Date()));
+                String message=new ObjectPTCEventDetailData().convert2String();
                 producer.send(topic, null, message);
                 log.info("消息：【{}】发送成功", message);
 

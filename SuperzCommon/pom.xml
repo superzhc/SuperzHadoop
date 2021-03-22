@@ -37,10 +37,10 @@
         </dependency>
 
         <!--生成随机数据-->
-        <dependency>
+        <!--<dependency>
             <groupId>com.github.javafaker</groupId>
             <artifactId>javafaker</artifactId>
             <version>1.0.2</version>
-        </dependency>
+        </dependency>-->
     </dependencies>
 </project>

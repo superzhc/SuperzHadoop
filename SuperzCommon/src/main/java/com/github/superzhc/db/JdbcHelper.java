@@ -1,6 +1,8 @@
 package com.github.superzhc.db;
 
 import com.github.superzhc.util.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.sql.*;
@@ -9,10 +11,10 @@ import java.util.*;
 /**
  * 2020年11月04日 superz add
  */
-public class JdbcHelper implements Closeable
-{
-    public static class DBConfig
-    {
+public class JdbcHelper implements Closeable {
+    private static final Logger log = LoggerFactory.getLogger(JdbcHelper.class);
+
+    public static class DBConfig {
         private String driver;
         private String url;
         private String username;
@@ -89,8 +91,7 @@ public class JdbcHelper implements Closeable
                 }
 
                 conn = DriverManager.getConnection(dbConfig.url, info);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -99,39 +100,39 @@ public class JdbcHelper implements Closeable
 
     /**
      * 释放连接
+     *
      * @param conn
      */
     private void freeConnection(Connection conn) {
         try {
             conn.close();
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     /**
      * 释放statement
+     *
      * @param statement
      */
     private void freeStatement(Statement statement) {
         try {
             statement.close();
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
     /**
      * 释放resultset
+     *
      * @param rs
      */
     private void freeResultSet(ResultSet rs) {
         try {
             rs.close();
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -162,6 +163,7 @@ public class JdbcHelper implements Closeable
 
     /**
      * 更新/删除数据
+     *
      * @param sql
      * @param params
      * @return
@@ -170,9 +172,11 @@ public class JdbcHelper implements Closeable
     public int update(String sql, Object... params) {
         PreparedStatement pstmt = null;
         try {
+            log.debug("查询语句：{}", sql);
             pstmt = getConnection().prepareStatement(sql);
             // 填充sql语句中的占位符
             if (null != params && params.length != 0) {
+                log.debug("查询参数：{}", params);
                 for (int i = 0, len = params.length; i < len; i++) {
                     pstmt.setObject(i + 1, params[i]);
                 }
@@ -181,18 +185,17 @@ public class JdbcHelper implements Closeable
             // 影响行数
             int result = pstmt.executeUpdate();
             return result;
-        }
-        catch (SQLException ex) {
-            ex.printStackTrace();
+        } catch (SQLException ex) {
+            log.error("查询异常", ex);
             return -1;
-        }
-        finally {
+        } finally {
             free(null, pstmt, null);
         }
     }
 
     /**
      * 查询多条记录
+     *
      * @param sql
      * @param params
      * @return
@@ -202,20 +205,20 @@ public class JdbcHelper implements Closeable
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
+            log.debug("查询语句：{}", sql);
             pstmt = getConnection().prepareStatement(sql);
             if (null != params && params.length != 0) {
+                log.debug("查询参数：{}", params);
                 for (int i = 0, len = params.length; i < len; i++) {
                     pstmt.setObject(i + 1, params[i]);
                 }
             }
             rs = pstmt.executeQuery();
             return ResultSetUtils.Result2ListMap(rs);
-        }
-        catch (SQLException ex) {
-            ex.printStackTrace();
+        } catch (SQLException ex) {
+            log.error("查询异常", ex);
             return null;
-        }
-        finally {
+        } finally {
             free(null, pstmt, rs);
         }
     }
@@ -232,12 +235,10 @@ public class JdbcHelper implements Closeable
             }
             rs = pstmt.executeQuery();
             return ResultSetUtils.Result2ListBean(rs, beanClass);
-        }
-        catch (SQLException ex) {
-            ex.printStackTrace();
+        } catch (SQLException ex) {
+            log.error("查询异常", ex);
             return null;
-        }
-        finally {
+        } finally {
             free(null, pstmt, rs);
         }
     }
@@ -254,11 +255,9 @@ public class JdbcHelper implements Closeable
             }
             rs = pstmt.executeQuery();
             ResultSetUtils.print(rs);
-        }
-        catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        finally {
+        } catch (SQLException ex) {
+            log.error("查询异常", ex);
+        } finally {
             free(null, pstmt, rs);
         }
     }
@@ -279,11 +278,9 @@ public class JdbcHelper implements Closeable
                 result = rs.getObject(1);
                 break;// 获取到第一行数据就不再获取其他行
             }
-        }
-        catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        finally {
+        } catch (SQLException ex) {
+            log.error("查询异常", ex);
+        } finally {
             free(null, pstmt, rs);
         }
         return (T) result;
@@ -291,6 +288,7 @@ public class JdbcHelper implements Closeable
 
     /**
      * 调用存储过程执行查询
+     *
      * @param sql
      * @param paramters
      * @return
@@ -309,12 +307,10 @@ public class JdbcHelper implements Closeable
             }
             rs = cstmt.executeQuery();
             return ResultSetUtils.Result2ListMap(rs);
-        }
-        catch (SQLException ex) {
-            ex.printStackTrace();
+        } catch (SQLException ex) {
+            log.error("查询异常", ex);
             return null;
-        }
-        finally {
+        } finally {
             free(null, cstmt, rs);
         }
     }
@@ -332,11 +328,9 @@ public class JdbcHelper implements Closeable
             }
             rs = cstmt.executeQuery();
             ResultSetUtils.print(rs);
-        }
-        catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-        finally {
+        } catch (SQLException ex) {
+            log.error("查询异常", ex);
+        } finally {
             free(null, cstmt, rs);
         }
     }
@@ -359,12 +353,10 @@ public class JdbcHelper implements Closeable
                 break;
             }
             return (T) result;
-        }
-        catch (SQLException ex) {
-            ex.printStackTrace();
+        } catch (SQLException ex) {
+            log.error("查询异常", ex);
             return null;
-        }
-        finally {
+        } finally {
             free(null, cstmt, rs);
         }
     }
@@ -372,8 +364,7 @@ public class JdbcHelper implements Closeable
     /**
      * 调用存储过程，执行增删改
      *
-     * @param sql
-     *            存储过程
+     * @param sql        存储过程
      * @param parameters
      * @return 影响行数
      * @throws SQLException
@@ -388,12 +379,10 @@ public class JdbcHelper implements Closeable
                 }
             }
             return cstmt.executeUpdate();
-        }
-        catch (SQLException ex) {
-            ex.printStackTrace();
+        } catch (SQLException ex) {
+            log.error("查询异常", ex);
             return -1;
-        }
-        finally {
+        } finally {
             free(null, cstmt, null);
         }
     }
@@ -401,12 +390,11 @@ public class JdbcHelper implements Closeable
     /**
      * 批量更新数据
      *
-     * @param sqlList
-     *            一组sql
+     * @param sqlList 一组sql
      * @return
      */
     public int[] batchUpdate(List<String> sqlList) {
-        int[] result = new int[] {};
+        int[] result = new int[]{};
         Statement statenent = null;
         try {
             getConnection().setAutoCommit(false);
@@ -416,17 +404,14 @@ public class JdbcHelper implements Closeable
             }
             result = statenent.executeBatch();
             getConnection().commit();
-        }
-        catch (SQLException e) {
+        } catch (SQLException e) {
             try {
                 getConnection().rollback();
-            }
-            catch (SQLException e1) {
+            } catch (SQLException e1) {
                 throw new ExceptionInInitializerError(e1);
             }
             throw new ExceptionInInitializerError(e);
-        }
-        finally {
+        } finally {
             free(null, statenent, null);
         }
         return result;
