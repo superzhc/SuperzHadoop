@@ -23,8 +23,8 @@ public class ObjectPTCEventDetailData extends DataGenerator<EventDto<List<Object
             objectPTCEventDetailDTO.setLongAccele((float) faker.number().randomDouble(2, 1, 120));
             objectPTCEventDetailDTO.setLatAccele((float) faker.number().randomDouble(2, 1, 120));
             objectPTCEventDetailDTO.setVertAccele((float) faker.number().randomDouble(2, 1, 120));
-            objectPTCEventDetailDTO.setLength(faker.number().randomDouble(2, 1500, 2500));
-            objectPTCEventDetailDTO.setWidth(faker.number().randomDouble(2, 300, 420));
+            objectPTCEventDetailDTO.setLength(faker.number().randomDouble(2, 1500, 2499));
+            objectPTCEventDetailDTO.setWidth(faker.number().randomDouble(2, 300, 419));
             objectPTCEventDetailDTO.setTimestamp(faker.number().numberBetween(new Date(1970, 1, 1).getTime(), System.currentTimeMillis()));
             objectPTCEventDetailDTO.setLongitude(Double.valueOf(faker.address().longitude()));
             objectPTCEventDetailDTO.setLatitude(Double.valueOf(faker.address().latitude()));
