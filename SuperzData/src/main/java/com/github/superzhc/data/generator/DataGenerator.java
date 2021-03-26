@@ -1,22 +1,25 @@
-package com.github.superzhc.data.jsdz.generateor;
+package com.github.superzhc.data.generator;
 
-import com.github.javafaker.Faker;
+import com.github.superzhc.data.faker.FakerExt;
 
 import java.util.Locale;
 
+/**
+ * @author superz
+ */
 public abstract class DataGenerator<T> {
-    protected Faker faker;
+    protected FakerExt faker;
 
     public DataGenerator() {
-        this.faker = new Faker();
+        this.faker = new FakerExt();
     }
 
     public DataGenerator(String locale) {
-        this.faker = new Faker(new Locale(locale));
+        this.faker = new FakerExt(new Locale(locale));
     }
 
     public DataGenerator(Locale locale) {
-        this.faker = new Faker(locale);
+        this.faker = new FakerExt(locale);
     }
 
     public abstract T generate();

@@ -1,17 +1,18 @@
-package com.github.superzhc.data.jsdz.generateor;
+package com.github.superzhc.data.jsdz.generator;
 
-import com.alibaba.fastjson.JSON;
-import com.github.superzhc.data.jsdz.dto.EventDto;
 import com.github.superzhc.data.jsdz.dto.radarevent.ObjectPTCEventDetailDTO;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class ObjectPTCEventDetailData extends DataGenerator<EventDto<List<ObjectPTCEventDetailDTO>>> {
+/**
+ * @author superz
+ */
+public class ObjectPTCEventDetailData extends EventDataGenerator<List<ObjectPTCEventDetailDTO>> {
 
     @Override
-    public EventDto<List<ObjectPTCEventDetailDTO>> generate() {
+    protected List<ObjectPTCEventDetailDTO> eventDetail() {
         List<ObjectPTCEventDetailDTO> objectPTCEventDetailDTOS = new ArrayList<>();
         for (int i = 0, nums = faker.random().nextInt(1, 5); i < nums; i++) {
             ObjectPTCEventDetailDTO objectPTCEventDetailDTO = new ObjectPTCEventDetailDTO();
@@ -31,24 +32,7 @@ public class ObjectPTCEventDetailData extends DataGenerator<EventDto<List<Object
             objectPTCEventDetailDTOS.add(objectPTCEventDetailDTO);
         }
 
-        EventDto<List<ObjectPTCEventDetailDTO>> eventDto = new EventDto<>();
-        eventDto.setEventId(faker.idNumber().invalid());
-        eventDto.setDeviceId(faker.idNumber().ssnValid());
-        eventDto.setDeviceType(String.valueOf(faker.number().numberBetween(0, 5)));
-        eventDto.setSceneId(faker.idNumber().validSvSeSsn());
-        eventDto.setSceneType(String.valueOf(faker.number().numberBetween(0, 5)));
-        eventDto.setRegionId(faker.number().numberBetween(1, 100));
-        eventDto.setTimestamp(faker.number().numberBetween(new Date(1997, 1, 1).getTime(), System.currentTimeMillis()));
-        eventDto.setLongitude(Double.valueOf(faker.address().longitude()));
-        eventDto.setLatitude(Double.valueOf(faker.address().latitude()));
-        eventDto.setAttachCount(0);
-        eventDto.setEventDetail(objectPTCEventDetailDTOS);
-        return eventDto;
-    }
-
-    @Override
-    public String convert2String() {
-        return JSON.toJSONString(generate());
+        return objectPTCEventDetailDTOS;
     }
 
     public static void main(String[] args) {

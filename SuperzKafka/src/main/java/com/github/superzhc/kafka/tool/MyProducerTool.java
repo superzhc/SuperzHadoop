@@ -1,8 +1,8 @@
 package com.github.superzhc.kafka.tool;
 
-import com.github.superzhc.data.jsdz.generateor.ObjectPTCEventDetailData;
 import com.github.superzhc.kafka.MyAdminClient;
 import com.github.superzhc.kafka.MyProducer;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,33 +12,42 @@ import java.util.concurrent.ExecutionException;
 /**
  * @author superz
  */
-public class MyProducerTool {
+public abstract class MyProducerTool {
     private static final Logger log = LoggerFactory.getLogger(MyProducerTool.class);
 
-    public static void main(String[] args) {
-        String topic = "superz-test";
-
-        try (MyAdminClient adminClient = new MyAdminClient(MyKafkaConfigs.JSDZ_BROKER)) {
-            if (!adminClient.exist(topic)) {
-                adminClient.create(topic, 1, (short) 0, null);
+    public void run(String[] args) {
+        log.info("{}\nKafka相关信息：\n\tbrokers:{}\n\ttopic:{}", this.getClass().getName(), brokers(), topic());
+        try (MyAdminClient adminClient = new MyAdminClient(brokers())) {
+            if (!adminClient.exist(topic())) {
+                log.info("主题【{}】不存在，开始创建...");
+                adminClient.create(topic(), 1, (short) 0, null);
+                log.info("主题【{}】创建成功！");
             }
         }
 
-        try (MyProducer producer = new MyProducer(MyKafkaConfigs.JSDZ_BROKER)) {
-            // SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        try (MyProducer producer = new MyProducer(brokers())) {
             while (true) {
-                // int random = (int) (Math.random() * 100) % 3;
-                // String message = String.format("Producer-%d send the message at %s", random, sdf.format(new Date()));
-                String message=new ObjectPTCEventDetailData().convert2String();
-                producer.send(topic, null, message);
-                log.info("消息：【{}】发送成功", message);
+                producer.send(topic(), key(), message());
+                if (StringUtils.isBlank(key())) {
+                    log.info("消息：【{}】发送成功", message());
+                } else {
+                    log.info("消息发送成功：\n\tkey:【{}】\n\tmessage:【{}】", key(), message());
+                }
 
                 Thread.sleep(1000);
             }
         } catch (IOException | InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+            log.info("生产者异常", e);
         }
     }
 
+    protected abstract String topic();
 
+    protected abstract String brokers();
+
+    protected String key() {
+        return null;
+    }
+
+    protected abstract String message();
 }
