@@ -2,9 +2,6 @@ package com.github.superzhc.data.faker;
 
 import com.github.javafaker.Faker;
 
-import javax.print.attribute.standard.OrientationRequested;
-import java.util.regex.Pattern;
-
 /**
  * @author superz
  * @create 2021/3/26 16:23
@@ -63,10 +60,10 @@ public class Car {
         return this.faker.options().option(LICENSE_PLATE_COLOR_PATTERN);
     }
 
-    public static void main(String[] args) throws InterruptedException {
+    /*public static void main(String[] args) throws InterruptedException {
         for (; ; ) {
             System.out.println(new FakerExt().car().licensePlate());
             Thread.sleep(1000);
         }
-    }
+    }*/
 }
