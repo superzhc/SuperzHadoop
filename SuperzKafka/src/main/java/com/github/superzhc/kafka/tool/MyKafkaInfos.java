@@ -10,22 +10,23 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-public class MyKafkaInfos {
+/**
+ *
+ * @author superz
+ */
+public abstract class MyKafkaInfos extends MyBasicTool {
     private static final Logger log = LoggerFactory.getLogger(MyKafkaInfos.class);
 
-    private static final String pattern = "^(V2_Up_)([A-Za-z0-9]+)(_Event_ObjectPTC)$";//指定主题信息打印
-
-    public static void main(String[] args) {
-        final String brokers = MyKafkaConfigs.JSDZ_BROKER;
+    public void run(String[] args) {
+        final String brokers = brokers();
 
         try (MyAdminClient myAdminClient = new MyAdminClient(brokers)) {
             // 获取所有主题
             Set<String> topics = myAdminClient.list();
-//            log.info("主题信息：\n\t主题数：{}\n\t主题列表：\n\t\t{}", topics.size(), topics.stream().collect(Collectors.joining("\n\t\t")));
             StringBuilder topicDetails = new StringBuilder();
             int count = 0;
             for (String topic : topics) {
-                if ((null != pattern && pattern.length() > 0) && !Pattern.matches(pattern, topic)) {
+                if ((null != patternTopic() && patternTopic().length() > 0) && !Pattern.matches(patternTopic(), topic)) {
                     continue;
                 }
 
@@ -45,5 +46,7 @@ public class MyKafkaInfos {
         }
     }
 
-
+    protected String patternTopic() {
+        return null;
+    }
 }

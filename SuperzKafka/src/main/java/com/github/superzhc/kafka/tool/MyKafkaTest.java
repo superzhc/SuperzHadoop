@@ -22,26 +22,13 @@ import java.util.concurrent.ExecutionException;
 /**
  * 测试 Kafka 是否可用
  */
-public class MyKafkaTest {
+public abstract class MyKafkaTest extends MyBasicTool {
     private static final Logger log = LoggerFactory.getLogger(MyKafkaTest.class);
 
-    private final String brokers;
-    private String topic;
-
-    public MyKafkaTest(String brokers) {
-        this.brokers = brokers;
-        this.topic = String.format("MyKafkaTest-%s", UUID.randomUUID().toString());
-    }
-
-    public MyKafkaTest(String brokers, String topic) {
-        this.brokers = brokers;
-        this.topic = topic;
-    }
-
     public void test() {
-        try (MyAdminClient adminClient = new MyAdminClient(brokers)) {
-            if (!adminClient.exist(topic)) {
-                adminClient.create(topic, 1, (short) 0, null);
+        try (MyAdminClient adminClient = new MyAdminClient(brokers())) {
+            if (!adminClient.exist(topic())) {
+                adminClient.create(topic(), 1, (short) 0, null);
             }
         }
 
@@ -49,12 +36,11 @@ public class MyKafkaTest {
         Thread producerThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                try (MyProducer producer = new MyProducer(brokers)) {
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                try (MyProducer producer = new MyProducer(brokers())) {
+
                     while (true) {
-                        String message = String.format("%s send the message at %s", "Producer",
-                                sdf.format(new Date()));
-                        producer.send(topic, null, message);
+                        String key = key(), message = message();
+                        producer.send(topic(), key, message);
                         log.info("消息：【{}】发送成功", message);
 
                         Thread.sleep(1000);
@@ -74,8 +60,8 @@ public class MyKafkaTest {
             @Override
             public void run() {
                 Properties props = new Properties();
-                props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers);
-                props.put(ConsumerConfig.GROUP_ID_CONFIG, "consumer-user:superz");
+                props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, brokers());
+                props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId());
                 props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
                 props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
                 props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
@@ -83,7 +69,7 @@ public class MyKafkaTest {
 
                 KafkaConsumer<String, String> consumer = new KafkaConsumer<String, String>(props);
                 /*订阅主题*/
-                consumer.subscribe(Collections.singletonList(topic));
+                consumer.subscribe(Collections.singletonList(topic()));
 
                 while (true) {
                     ConsumerRecords<String, String> consumerRecords = consumer.poll(Duration.ofSeconds(1));
@@ -94,5 +80,24 @@ public class MyKafkaTest {
 
         producerThread.start();
         consumerThread.start();
+    }
+
+    protected String topic() {
+        return String.format("MyKafkaTest-%s", UUID.randomUUID().toString());
+    }
+
+    protected String key() {
+        return null;
+    }
+
+    protected String message() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String message = String.format("%s send the message at %s", "Producer",
+                sdf.format(new Date()));
+        return message;
+    }
+
+    protected String groupId() {
+        return "consumer-user:superz";
     }
 }

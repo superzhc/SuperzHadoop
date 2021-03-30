@@ -1,6 +1,7 @@
 package com.github.superzhc.data.faker;
 
 import com.github.javafaker.Faker;
+import com.github.javafaker.Number;
 import com.github.javafaker.service.FakeValuesService;
 import com.github.javafaker.service.RandomService;
 
@@ -16,6 +17,7 @@ import java.util.Random;
 public class FakerExt extends Faker {
     private final Car car;
     private final Globe globe;
+    private final NumberExt numberExt;
 
     public FakerExt() {
         this(Locale.ENGLISH);
@@ -42,6 +44,7 @@ public class FakerExt extends Faker {
 
         this.car = new Car(this);
         this.globe = new Globe(this);
+        this.numberExt = new NumberExt(this);
     }
 
     public Car car() {
@@ -50,5 +53,14 @@ public class FakerExt extends Faker {
 
     public Globe globe() {
         return this.globe;
+    }
+
+    /**
+     * 扩展Number
+     *
+     * @return
+     */
+    public NumberExt numberExt() {
+        return this.numberExt;
     }
 }

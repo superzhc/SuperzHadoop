@@ -12,7 +12,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * @author superz
  */
-public abstract class MyProducerTool {
+public abstract class MyProducerTool extends MyBasicTool {
     private static final Logger log = LoggerFactory.getLogger(MyProducerTool.class);
 
     public void run(String[] args) {
@@ -42,8 +42,6 @@ public abstract class MyProducerTool {
     }
 
     protected abstract String topic();
-
-    protected abstract String brokers();
 
     protected String key() {
         return null;
