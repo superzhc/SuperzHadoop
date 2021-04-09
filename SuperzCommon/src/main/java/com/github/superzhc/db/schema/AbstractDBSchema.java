@@ -1,7 +1,7 @@
 package com.github.superzhc.db.schema;
 
 import com.github.superzhc.db.JdbcHelper;
-import com.github.superzhc.util.MapUtils;
+import com.github.superzhc.collection.MapUtils;
 
 import java.util.ArrayList;
 import java.util.List;

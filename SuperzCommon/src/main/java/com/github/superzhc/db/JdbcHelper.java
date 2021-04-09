@@ -395,14 +395,14 @@ public class JdbcHelper implements Closeable {
      */
     public int[] batchUpdate(List<String> sqlList) {
         int[] result = new int[]{};
-        Statement statenent = null;
+        Statement statement = null;
         try {
             getConnection().setAutoCommit(false);
-            statenent = getConnection().createStatement();
+            statement = getConnection().createStatement();
             for (String sql : sqlList) {
-                statenent.addBatch(sql);
+                statement.addBatch(sql);
             }
-            result = statenent.executeBatch();
+            result = statement.executeBatch();
             getConnection().commit();
         } catch (SQLException e) {
             try {
@@ -412,7 +412,34 @@ public class JdbcHelper implements Closeable {
             }
             throw new ExceptionInInitializerError(e);
         } finally {
-            free(null, statenent, null);
+            free(null, statement, null);
+        }
+        return result;
+    }
+
+    public int[] batchUpdate(String sql, List<Map<Integer, Object>> params) {
+        int[] result = new int[]{};
+        PreparedStatement preparedStatement = null;
+        try {
+            getConnection().setAutoCommit(false);
+            preparedStatement = getConnection().prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+            for (Map<Integer, Object> param : params) {
+                for (Map.Entry<Integer, Object> entry : param.entrySet()) {
+                    preparedStatement.setObject(entry.getKey(), entry.getValue());
+                }
+                preparedStatement.addBatch();
+            }
+            result = preparedStatement.executeBatch();
+            getConnection().commit();
+        } catch (SQLException e) {
+            try {
+                getConnection().rollback();
+            } catch (SQLException e1) {
+                throw new ExceptionInInitializerError(e1);
+            }
+            throw new ExceptionInInitializerError(e);
+        }finally {
+            free(null, preparedStatement, null);
         }
         return result;
     }

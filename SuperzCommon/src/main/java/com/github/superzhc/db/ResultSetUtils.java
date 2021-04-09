@@ -1,6 +1,6 @@
 package com.github.superzhc.db;
 
-import com.github.superzhc.util.MapUtils;
+import com.github.superzhc.collection.MapUtils;
 import com.github.superzhc.util.StringUtils;
 
 import java.sql.ResultSet;

@@ -39,9 +39,25 @@ public class DateUtils {
      */
     public static Date getHourTime(int n) {
         Calendar ca = Calendar.getInstance();
-        ca.set(Calendar.MINUTE, 0);
         ca.set(Calendar.SECOND, 0);
+        ca.set(Calendar.MINUTE, 0);
         ca.set(Calendar.HOUR_OF_DAY, ca.get(Calendar.HOUR_OF_DAY) + n);
+        Date date = ca.getTime();
+        return date;
+    }
+
+    /**
+     * 获取相对当前时间的n个5分钟后的时间
+     *
+     * @param n
+     * @return
+     */
+    public static Date get5MinuteTime(int n) {
+        Calendar ca = Calendar.getInstance();
+        ca.set(Calendar.SECOND, 0);
+        ca.set(Calendar.MINUTE, 5 * (ca.get(Calendar.MINUTE) / 5
+                + n //ca.get(Calendar.MINUTE) % 5 == 0 ? 0 : 1
+        ));
         Date date = ca.getTime();
         return date;
     }

@@ -1,4 +1,4 @@
-package com.github.superzhc.util;
+package com.github.superzhc.collection;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
