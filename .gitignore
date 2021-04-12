@@ -99,3 +99,10 @@ hs_err_pid*
 /SuperzFlink/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
 /target/
 /SuperzFlink/target/classes/log4j.properties
+/SuperzFlinkManage/target/classes/application.properties
+/SuperzFlinkManage/target/classes/custom.properties
+/SuperzFlinkManage/target/classes/mapper/JobConfigMapper.xml
+/SuperzFlinkManage/target/classes/mapper/JobInfoMapper.xml
+/SuperzFlinkManage/target/classes/mapper/JobJarPackagesManageMapper.xml
+/SuperzFlinkManage/target/classes/log4j2-spring.xml
+/SuperzFlinkManage/target/classes/META-INF/spring-configuration-metadata.json

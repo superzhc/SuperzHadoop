@@ -40,6 +40,8 @@ public abstract class FlinkCLIOptions {
                 }
                 map.put(("".equals(cliOption.name()) ? field.getName() : cliOption.name()), field);
             }
+
+            clazzOptions.put(this.getClass(), map);
         }
     }
 

@@ -13,6 +13,7 @@ import com.github.superzhc.flink.manage.parse.FlinkRunCLIParse;
 import com.github.superzhc.flink.manage.service.IJobConfigService;
 import com.github.superzhc.flink.manage.service.IJobJarPackagesManageService;
 import com.github.superzhc.flink.manage.util.Result;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -71,16 +72,16 @@ public class JobConfigController {
         return b ? Result.success("删除成功") : Result.fail("删除失败");
     }
 
-    @PostMapping("/run")
-    public Result run(int id) {
+    @PostMapping("/command")
+    public Result command(int id) {
         JobConfig jobConfig = jobConfigService.getById(id);
         if (null == jobConfig) {
-            return Result.fail("任务Id为[{0}]不存在", id);
+            return Result.fail("任务配置Id为[{0}]不存在", id);
         }
 
         JobJarPackagesManage jobJarPackagesManage = jobJarPackagesManageService.getById(jobConfig.getJobJarPackage());
         if (null == jobJarPackagesManage) {
-            return Result.fail("任务Id为[{0}]对应的Jar包Id为[{1}]不存在", id, jobConfig.getJobJarPackage());
+            return Result.fail("任务配置Id为[{0}]对应的Jar包Id为[{1}]不存在", id, jobConfig.getJobJarPackage());
         }
 
         FlinkRunCLI flinkRunCLI = new FlinkRunCLI();
@@ -113,6 +114,6 @@ public class JobConfigController {
         flinkRunCLI.setOptions(options);
 
         List<String> command = new FlinkRunCLIParse(flinkRunCLI).parse();
-        return Result.success(command);
+        return Result.success(StringUtils.join(command.toArray(), " "));
     }
 }

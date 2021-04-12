@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 任务Jar包管理
- * 
+ *
  * @author superz
  * @create 2021/4/9 15:25
  */
@@ -48,16 +48,16 @@ public class JobJarPackagesManageController {
     public Result add(JobJarPackagesManage jobJarPackagesManage) {
         // 判断包是否已经存在
         if (jobJarPackagesManageService.exist(jobJarPackagesManage.getPackageName(),
-            jobJarPackagesManage.getVersion())) {
+                jobJarPackagesManage.getVersion())) {
             return Result.fail("版本为{0}的{1}包已经存在", jobJarPackagesManage.getVersion(),
-                jobJarPackagesManage.getPackageName());
+                    jobJarPackagesManage.getPackageName());
         }
 
         try {
             // 将上传的包从临时目录转移到正式目录下
             File tmpFile = new File(jobJarPackagesManage.getPackagePath());
-            String targetPath = jarPackagesConfig.getRoot() + "custom/" + jobJarPackagesManage.getPackageName() + "/"
-                + jobJarPackagesManage.getVersion() + "/" + tmpFile.getName();
+            String targetPath = jarPackagesConfig.getPath() + jobJarPackagesManage.getPackageName() + "/"
+                    + jobJarPackagesManage.getVersion() + "/" + tmpFile.getName();
             File targetFile = new File(targetPath);
             if (!targetFile.getParentFile().exists()) {
                 targetFile.getParentFile().mkdirs();
@@ -78,14 +78,14 @@ public class JobJarPackagesManageController {
     public Result edit(JobJarPackagesManage jobJarPackagesManage) {
         try {
             JobJarPackagesManage jobJarPackagesManageDB =
-                jobJarPackagesManageService.getById(jobJarPackagesManage.getId());
+                    jobJarPackagesManageService.getById(jobJarPackagesManage.getId());
             if (null == jobJarPackagesManageDB) {
                 return Result.fail("Jar包不存在");
             }
             // 将包转移到修改后的指定路径下
             File tmpFile = new File(jobJarPackagesManageDB.getPackagePath());
-            String targetPath = jarPackagesConfig.getRoot() + "custom/" + jobJarPackagesManage.getPackageName() + "/"
-                + jobJarPackagesManage.getVersion() + "/" + tmpFile.getName();
+            String targetPath = jarPackagesConfig.getPath() + jobJarPackagesManage.getPackageName() + "/"
+                    + jobJarPackagesManage.getVersion() + "/" + tmpFile.getName();
             File targetFile = new File(targetPath);
             if (!targetFile.getParentFile().exists()) {
                 targetFile.getParentFile().mkdirs();
@@ -115,7 +115,7 @@ public class JobJarPackagesManageController {
 
         String fileName = file.getOriginalFilename();
         try {
-            String destPath = jarPackagesConfig.getRoot() + "tmp/" + UUID.randomUUID().toString() + "/" + fileName;
+            String destPath = jarPackagesConfig.getTmpPath() + UUID.randomUUID().toString() + "/" + fileName;
             File dest = new File(destPath);
             if (!dest.getParentFile().exists()) {
                 dest.getParentFile().mkdirs();

@@ -63,7 +63,7 @@ public class MyBatisPlusCodeGenerator {
         // 包配置
         PackageConfig pc = new PackageConfig();
         pc.setModuleName("manage");//scanner("模块名"));// 输入manage
-        pc.setParent("com.jsdz.cloud4control.bigdata");
+        pc.setParent("com.github.superzhc.flink");
         mpg.setPackageInfo(pc);
 
         // 自定义配置

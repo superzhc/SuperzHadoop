@@ -15,5 +15,8 @@ import lombok.Data;
 @ConfigurationProperties("jar.packages")
 @PropertySource("classpath:custom.properties")
 public class JarPackagesConfig {
-    private String root;
+    private String mode;
+    private String path;
+    private String tmpMode;
+    private String tmpPath;
 }
