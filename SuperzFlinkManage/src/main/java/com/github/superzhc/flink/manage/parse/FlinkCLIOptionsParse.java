@@ -1,5 +1,6 @@
 package com.github.superzhc.flink.manage.parse;
 
+import com.alibaba.fastjson.JSON;
 import com.github.superzhc.flink.manage.util.ReflectionUtil;
 import com.github.superzhc.flink.manage.annotation.CLIOption;
 import com.github.superzhc.flink.manage.model.FlinkCLIOptions;
@@ -23,14 +24,15 @@ public class FlinkCLIOptionsParse {
     public List<String> parse() {
         List<String> result = new ArrayList<>();
         // 获取所有属性
-        Field[] fields = ReflectionUtil.getDeclaredFields(flinkCLIOptions.getClass());
+//        Field[] fields = ReflectionUtil.getDeclaredFields(flinkCLIOptions.getClass());
+        Field[] fields = flinkCLIOptions.options().toArray(new Field[0]);
         if (null != fields && fields.length > 0) {
             try {
                 for (Field field : fields) {
-                    // 判断类是否存在CLIOption注解，若为该注解，代表非命令行的参数
-                    if (!field.isAnnotationPresent(CLIOption.class)) {
-                        continue;
-                    }
+//                    // 判断类是否存在CLIOption注解，若为该注解，代表非命令行的参数
+//                    if (!field.isAnnotationPresent(CLIOption.class)) {
+//                        continue;
+//                    }
 
                     CLIOption cliOption = field.getAnnotation(CLIOption.class);
 
@@ -53,15 +55,16 @@ public class FlinkCLIOptionsParse {
 
                     // 判断是否是属性参数
                     if (cliOption.isProperty()) {
-                        Map<String, Object> properties = (Map<String, Object>)value;
+                        // 属性参数已改为保存为json字符串，这里添加一步解析
+                        Map<String, Object> properties = JSON.parseObject((String) value).getInnerMap();
                         for (Map.Entry<String, Object> property : properties.entrySet()) {
                             result.add(String.format("%s%s=%s", param, property.getKey(), property.getValue()));
                         }
                     }
                     // 判断值是否是布尔类型，如果是布尔类型，则只要有参数就ok
                     else if (Boolean.class == value.getClass()
-                        || (value.getClass().isPrimitive() && Boolean.TYPE == value.getClass())) {
-                        Boolean b = (Boolean)value;
+                            || (value.getClass().isPrimitive() && Boolean.TYPE == value.getClass())) {
+                        Boolean b = (Boolean) value;
                         if (b) {
                             result.add(param);
                         }

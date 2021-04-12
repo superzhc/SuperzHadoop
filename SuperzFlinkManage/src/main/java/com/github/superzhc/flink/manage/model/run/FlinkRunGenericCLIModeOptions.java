@@ -6,19 +6,21 @@ import lombok.Data;
 import java.util.Map;
 
 /**
+ * 通用的命令行模式
  * @author superz
  * @create 2021/4/10 14:28
  */
 @Data
 public class FlinkRunGenericCLIModeOptions extends FlinkRunCLIOptions {
     /**
+     * 2021年4月12日 modify 属性保存为json字符串
      *-D <property=value>   Allows specifying multiple generic configuration
      *                            options. The available options can be found at
      *                            https://ci.apache.org/projects/flink/flink-docs-stabl
      *                            e/ops/config.html
      */
     @CLIOption(shortening = "D", isProperty = true)
-    private Map<String, Object> properties;
+    private /*Map<String, Object>*/ String properties;
     /**
      *-e,--executor <arg>   DEPRECATED: Please use the -t option instead which is
      *                            also available with the "Application Mode".

@@ -43,6 +43,11 @@ public class JobConfig implements Serializable {
     private Integer jobJarPackage;
 
     /**
+     * 任务的相关属性，采用json格式来保存，因为不同模式的参数是不一样的，采用json更好操作点
+     */
+    private String jobOptions;
+
+    /**
      * 任务的用户自定义参数
      */
     private String jobArguments;

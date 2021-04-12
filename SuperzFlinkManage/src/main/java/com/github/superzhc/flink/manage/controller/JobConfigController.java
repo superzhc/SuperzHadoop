@@ -1,20 +1,24 @@
 package com.github.superzhc.flink.manage.controller;
 
-import java.util.List;
-
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.github.superzhc.flink.manage.config.FlinkConfig;
 import com.github.superzhc.flink.manage.entity.JobConfig;
 import com.github.superzhc.flink.manage.entity.JobJarPackagesManage;
+import com.github.superzhc.flink.manage.model.run.FlinkRunCLI;
+import com.github.superzhc.flink.manage.model.run.FlinkRunCLIOptions;
 import com.github.superzhc.flink.manage.model.run.FlinkRunDefaultModeOptions;
 import com.github.superzhc.flink.manage.model.run.FlinkRunYarnClusterModeOptions;
 import com.github.superzhc.flink.manage.parse.FlinkRunCLIParse;
 import com.github.superzhc.flink.manage.service.IJobConfigService;
+import com.github.superzhc.flink.manage.service.IJobJarPackagesManageService;
 import com.github.superzhc.flink.manage.util.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import com.github.superzhc.flink.manage.model.run.FlinkRunCLI;
-import com.github.superzhc.flink.manage.service.IJobJarPackagesManageService;
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -79,26 +83,36 @@ public class JobConfigController {
             return Result.fail("任务Id为[{0}]对应的Jar包Id为[{1}]不存在", id, jobConfig.getJobJarPackage());
         }
 
-        // TODO:运行逻辑
         FlinkRunCLI flinkRunCLI = new FlinkRunCLI();
         flinkRunCLI.setFlink(flinkConfig.flinkShell());
         // 目前是本地模式，考虑做一步下载jar包的操作
         flinkRunCLI.setJarFile(jobJarPackagesManage.getPackagePath());
         flinkRunCLI.setArguments(jobConfig.getJobArguments());
-        // Yarn-Cluster 模式
+        // 参数处理
+        FlinkRunCLIOptions options;
         if ("yarn-cluster".equals(jobConfig.getJobMode())) {
-            FlinkRunYarnClusterModeOptions options=new FlinkRunYarnClusterModeOptions();
-            options.setClassname(jobConfig.getJobMainClass());
-
-            flinkRunCLI.setOptions(options);
+            options = new FlinkRunYarnClusterModeOptions();
         } else {
-            // flink run <jar-file>
-            FlinkRunDefaultModeOptions options=new FlinkRunDefaultModeOptions();
-            options.setClassname(jobConfig.getJobMainClass());
-
-            flinkRunCLI.setOptions(options);
+            options = new FlinkRunDefaultModeOptions();
         }
-        List<String> command=new FlinkRunCLIParse(flinkRunCLI).parse();
+        options.setClassname(jobConfig.getJobMainClass());
+        JSONObject optionsObj = JSON.parseObject(jobConfig.getJobOptions());
+        try {
+            for (Map.Entry<String, Object> entry : optionsObj.entrySet()) {
+                if (!options.containOption(entry.getKey())) {
+                    continue;
+                }
+
+                Field field = options.option(entry.getKey());
+                field.setAccessible(true);
+                field.set(options, entry.getValue());
+            }
+        } catch (Exception e) {
+            return Result.fail("任务参数配置出错，请检查任务参数");
+        }
+        flinkRunCLI.setOptions(options);
+
+        List<String> command = new FlinkRunCLIParse(flinkRunCLI).parse();
         return Result.success(command);
     }
 }

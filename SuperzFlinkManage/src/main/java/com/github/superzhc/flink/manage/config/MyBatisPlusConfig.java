@@ -11,7 +11,7 @@ import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
  * @create 2021/4/10 13:59
  */
 @Configuration
-@MapperScan("com.jsdz.cloud4control.bigdata.manage.mapper")
+@MapperScan("com.github.superzhc.flink.manage.mapper")
 public class MyBatisPlusConfig {
     @Bean
     public PaginationInterceptor paginationInterceptor() {
