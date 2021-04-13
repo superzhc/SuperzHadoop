@@ -1,7 +1,7 @@
-package com.github.superzhc.flink.manage.parse;
+package com.github.superzhc.flink.manage.job.cli.parse;
 
-import com.github.superzhc.flink.manage.model.run.FlinkRunCLI;
-import com.github.superzhc.flink.manage.model.run.FlinkRunCLIOptions;
+import com.github.superzhc.flink.manage.job.cli.action.run.FlinkRunCLI;
+import com.github.superzhc.flink.manage.job.cli.action.run.FlinkRunCLIOptions;
 
 /**
  * @author superz

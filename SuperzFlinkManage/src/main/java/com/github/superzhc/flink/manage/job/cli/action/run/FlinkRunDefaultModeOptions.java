@@ -1,6 +1,6 @@
-package com.github.superzhc.flink.manage.model.run;
+package com.github.superzhc.flink.manage.job.cli.action.run;
 
-import com.github.superzhc.flink.manage.annotation.CLIOption;
+import com.github.superzhc.flink.manage.job.cli.annotation.CLIOption;
 import lombok.Data;
 
 /**

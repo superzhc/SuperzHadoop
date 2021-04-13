@@ -11,9 +11,12 @@ import java.util.function.Consumer;
 import lombok.extern.slf4j.Slf4j;
 
 /**
+ * 已经引入hutool-core工具，推荐使用RuntimeUtil
+ *
  * @author superz
  * @create 2021/4/10 14:17
  */
+@Deprecated
 @Slf4j
 public class ProcessUtil {
 
@@ -66,8 +69,9 @@ public class ProcessUtil {
         // 将错误流重定向到输出流中，两个流进行合并
         processBuilder.redirectErrorStream(true);
 
+        Process process = null;
         try {
-            Process process = processBuilder.start();
+            process = processBuilder.start();
 
             if (null != consumer) {
                 consumer.accept(process.getInputStream());
@@ -78,6 +82,10 @@ public class ProcessUtil {
             return exitCode;
         } catch (Exception e) {
             return -1;
+        } finally {
+            if (null != process) {
+                process.destroy();
+            }
         }
     }
 }

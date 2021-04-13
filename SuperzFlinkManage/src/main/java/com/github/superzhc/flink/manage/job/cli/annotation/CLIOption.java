@@ -1,4 +1,4 @@
-package com.github.superzhc.flink.manage.annotation;
+package com.github.superzhc.flink.manage.job.cli.annotation;
 
 import java.lang.annotation.*;
 

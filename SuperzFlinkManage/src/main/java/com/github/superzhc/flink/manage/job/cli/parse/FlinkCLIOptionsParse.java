@@ -1,9 +1,8 @@
-package com.github.superzhc.flink.manage.parse;
+package com.github.superzhc.flink.manage.job.cli.parse;
 
 import com.alibaba.fastjson.JSON;
-import com.github.superzhc.flink.manage.util.ReflectionUtil;
-import com.github.superzhc.flink.manage.annotation.CLIOption;
-import com.github.superzhc.flink.manage.model.FlinkCLIOptions;
+import com.github.superzhc.flink.manage.job.cli.annotation.CLIOption;
+import com.github.superzhc.flink.manage.job.cli.FlinkCLIOptions;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -24,15 +23,10 @@ public class FlinkCLIOptionsParse {
     public List<String> parse() {
         List<String> result = new ArrayList<>();
         // 获取所有属性
-//        Field[] fields = ReflectionUtil.getDeclaredFields(flinkCLIOptions.getClass());
         Field[] fields = flinkCLIOptions.options().toArray(new Field[0]);
         if (null != fields && fields.length > 0) {
             try {
                 for (Field field : fields) {
-//                    // 判断类是否存在CLIOption注解，若为该注解，代表非命令行的参数
-//                    if (!field.isAnnotationPresent(CLIOption.class)) {
-//                        continue;
-//                    }
 
                     CLIOption cliOption = field.getAnnotation(CLIOption.class);
 

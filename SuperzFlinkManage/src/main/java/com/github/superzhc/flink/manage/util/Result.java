@@ -1,5 +1,6 @@
 package com.github.superzhc.flink.manage.util;
 
+import cn.hutool.core.util.StrUtil;
 import lombok.*;
 import lombok.experimental.Accessors;
 
@@ -43,28 +44,39 @@ public class Result<T> implements Serializable {
         return r;
     }
 
+    /**
+     * 消息支持Slf4j的模板写法
+     * @param msg
+     * @param args
+     * @return
+     */
     public static Result<Object> success(String msg, Object... args) {
         Result r = new Result();
-        if (null == args || args.length == 0) {
-            r.setMsg(msg);
-        } else {
-            r.setMsg(MessageFormat.format(msg, args));
-        }
+        r.setMsg(StrUtil.format(msg, args));
         return r;
     }
 
+    /**
+     * 消息支持Slf4j的模板写法
+     * @param msg
+     * @param args
+     * @return
+     */
     public static Result fail(String msg, Object... args) {
         return fail(FAIL, msg, args);
     }
 
+    /**
+     * 消息支持Slf4j的模板写法
+     * @param errorCode
+     * @param msg
+     * @param args
+     * @return
+     */
     public static Result fail(Integer errorCode, String msg, Object... args) {
         Result r = new Result();
         r.setCode(errorCode);
-        if (null == args || args.length == 0) {
-            r.setMsg(msg);
-        } else {
-            r.setMsg(MessageFormat.format(msg, args));
-        }
+        r.setMsg(StrUtil.format(msg, args));
         return r;
     }
 }

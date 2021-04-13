@@ -1,7 +1,7 @@
-package com.github.superzhc.flink.manage.parse;
+package com.github.superzhc.flink.manage.job.cli.parse;
 
-import com.github.superzhc.flink.manage.model.FlinkCLI;
-import com.github.superzhc.flink.manage.model.FlinkCLIOptions;
+import com.github.superzhc.flink.manage.job.cli.FlinkCLI;
+import com.github.superzhc.flink.manage.job.cli.FlinkCLIOptions;
 
 import java.util.ArrayList;
 import java.util.List;

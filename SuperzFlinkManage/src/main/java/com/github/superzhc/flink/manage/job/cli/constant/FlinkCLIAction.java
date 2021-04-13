@@ -1,4 +1,4 @@
-package com.github.superzhc.flink.manage.constant;
+package com.github.superzhc.flink.manage.job.cli.constant;
 
 /**
  * Flink脚本可用的action

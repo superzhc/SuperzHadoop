@@ -1,6 +1,6 @@
-package com.github.superzhc.flink.manage.model;
+package com.github.superzhc.flink.manage.job.cli;
 
-import com.github.superzhc.flink.manage.constant.FlinkCLIAction;
+import com.github.superzhc.flink.manage.job.cli.constant.FlinkCLIAction;
 import lombok.Data;
 
 /**

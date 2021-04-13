@@ -1,10 +1,13 @@
-package com.github.superzhc.flink.manage.model;
+package com.github.superzhc.flink.manage.job.cli;
 
-import com.github.superzhc.flink.manage.annotation.CLIOption;
-import com.github.superzhc.flink.manage.util.ReflectionUtil;
+import cn.hutool.core.util.ReflectUtil;
+import com.github.superzhc.flink.manage.job.cli.annotation.CLIOption;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * flink脚本参数的统一父类
@@ -27,7 +30,7 @@ public abstract class FlinkCLIOptions {
             map = clazzOptions.get(this.getClass());
         } else {
             map = new HashMap<>();
-            Field[] fields = ReflectionUtil.getDeclaredFields(this.getClass());
+            Field[] fields = ReflectUtil.getFields(this.getClass());
             for (Field field : fields) {
                 if (!field.isAnnotationPresent(CLIOption.class)) {
                     continue;
