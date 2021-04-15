@@ -79,4 +79,8 @@ public class Result<T> implements Serializable {
         r.setMsg(StrUtil.format(msg, args));
         return r;
     }
+
+    public static Result fail(Throwable e){
+        return new Result(e);
+    }
 }

@@ -2,6 +2,8 @@ package com.github.superzhc.flink.manage.controller;
 
 
 import com.github.superzhc.flink.manage.entity.JobInfo;
+import com.github.superzhc.flink.manage.job.monitor.JobMonitor;
+import com.github.superzhc.flink.manage.job.monitor.JobMonitorFactory;
 import com.github.superzhc.flink.manage.service.IJobInfoService;
 import com.github.superzhc.flink.manage.util.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,9 @@ import java.util.List;
 public class JobInfoController {
     @Autowired
     private IJobInfoService jobInfoService;
+
+    @Autowired
+    JobMonitorFactory jobMonitorFactory;
 
     @GetMapping
     public Result<List<JobInfo>> get() {
@@ -51,6 +56,17 @@ public class JobInfoController {
     public Result delete(@PathVariable int id) {
         boolean b = jobInfoService.removeById(id);
         return b ? Result.success("删除成功") : Result.fail("删除失败");
+    }
+
+    @GetMapping("/status")
+    public Result status(int id) {
+        JobInfo jobInfo = jobInfoService.getById(id);
+        if (null == jobInfo) {
+            return Result.fail("未查到任务：[id={}]", id);
+        }
+
+        JobMonitor jobMonitor = jobMonitorFactory.getJobMonitor(jobInfo.getJobType());
+        return Result.success("状态获取成功，状态为{}", jobMonitor.status(jobInfo.getJobApplicationId()));
     }
 }
 

@@ -1,20 +1,16 @@
 package com.github.superzhc.flink.manage.controller;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.util.List;
-import java.util.UUID;
-
-import com.github.superzhc.flink.manage.config.JarPackagesConfig;
+import cn.hutool.core.io.FileUtil;
 import com.github.superzhc.flink.manage.entity.JobJarPackagesManage;
+import com.github.superzhc.flink.manage.job.packages.JobPackages;
+import com.github.superzhc.flink.manage.service.IJobJarPackagesManageService;
 import com.github.superzhc.flink.manage.util.Result;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.github.superzhc.flink.manage.service.IJobJarPackagesManageService;
-
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
 
 /**
  * 任务Jar包管理
@@ -27,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/job-jar-packages-manage")
 public class JobJarPackagesManageController {
     @Autowired
-    private JarPackagesConfig jarPackagesConfig;
+    private JobPackages jobPackages;
 
     @Autowired
     private IJobJarPackagesManageService jobJarPackagesManageService;
@@ -49,22 +45,13 @@ public class JobJarPackagesManageController {
         // 判断包是否已经存在
         if (jobJarPackagesManageService.exist(jobJarPackagesManage.getPackageName(),
                 jobJarPackagesManage.getVersion())) {
-            return Result.fail("版本为{0}的{1}包已经存在", jobJarPackagesManage.getVersion(),
+            return Result.fail("版本为{}的{}包已经存在", jobJarPackagesManage.getVersion(),
                     jobJarPackagesManage.getPackageName());
         }
 
         try {
             // 将上传的包从临时目录转移到正式目录下
-            File tmpFile = new File(jobJarPackagesManage.getPackagePath());
-            String targetPath = jarPackagesConfig.getPath() + jobJarPackagesManage.getPackageName() + "/"
-                    + jobJarPackagesManage.getVersion() + "/" + tmpFile.getName();
-            File targetFile = new File(targetPath);
-            if (!targetFile.getParentFile().exists()) {
-                targetFile.getParentFile().mkdirs();
-            } else if (targetFile.exists()) {
-                targetFile.delete();
-            }
-            Files.copy(tmpFile.toPath(), targetFile.toPath());
+            String targetPath = jobPackages.transferTo(jobJarPackagesManage.getPackagePath(), jobJarPackagesManage.getPackageName(), jobJarPackagesManage.getVersion(), FileUtil.getName(jobJarPackagesManage.getPackagePath()));
             jobJarPackagesManage.setPackagePath(targetPath);
         } catch (Exception e) {
             return new Result(e);
@@ -80,19 +67,11 @@ public class JobJarPackagesManageController {
             JobJarPackagesManage jobJarPackagesManageDB =
                     jobJarPackagesManageService.getById(jobJarPackagesManage.getId());
             if (null == jobJarPackagesManageDB) {
-                return Result.fail("Jar包不存在");
+                return Result.fail("算子包不存在");
             }
+
             // 将包转移到修改后的指定路径下
-            File tmpFile = new File(jobJarPackagesManageDB.getPackagePath());
-            String targetPath = jarPackagesConfig.getPath() + jobJarPackagesManage.getPackageName() + "/"
-                    + jobJarPackagesManage.getVersion() + "/" + tmpFile.getName();
-            File targetFile = new File(targetPath);
-            if (!targetFile.getParentFile().exists()) {
-                targetFile.getParentFile().mkdirs();
-            } else if (targetFile.exists()) {
-                targetFile.delete();
-            }
-            Files.copy(tmpFile.toPath(), targetFile.toPath());
+            String targetPath = jobPackages.transferTo(jobJarPackagesManageDB.getPackagePath(), jobJarPackagesManage.getPackageName(), jobJarPackagesManage.getVersion(), FileUtil.getName(jobJarPackagesManageDB.getPackagePath()));
             jobJarPackagesManage.setPackagePath(targetPath);
         } catch (Exception e) {
             return new Result(e);
@@ -103,8 +82,15 @@ public class JobJarPackagesManageController {
 
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable("id") int id) {
+        JobJarPackagesManage jobJarPackagesManage = jobJarPackagesManageService.getById(id);
+        String packagePath = jobJarPackagesManage.getPackagePath();
         boolean b = jobJarPackagesManageService.removeById(id);
-        return b ? Result.success("删除成功") : Result.fail("删除失败");
+        if (b) {
+            //同时删除文件
+            boolean b1 = jobPackages.delete(packagePath);
+            return b1 ? Result.success("删除成功") : Result.fail("删除失败");
+        }
+        return Result.fail("删除失败");
     }
 
     @PostMapping("/upload")
@@ -113,17 +99,11 @@ public class JobJarPackagesManageController {
             return Result.fail("上传文件不能为空");
         }
 
-        String fileName = file.getOriginalFilename();
         try {
-            String destPath = jarPackagesConfig.getTmpPath() + UUID.randomUUID().toString() + "/" + fileName;
-            File dest = new File(destPath);
-            if (!dest.getParentFile().exists()) {
-                dest.getParentFile().mkdirs();
-            }
-            file.transferTo(dest);
-            return Result.success(destPath);
+            String path = jobPackages.saveTemp(file.getOriginalFilename(), file.getInputStream());
+            return Result.<String>success(path);
         } catch (Exception e) {
-            return new Result(e);
+            return Result.fail(e);
         }
     }
 }
