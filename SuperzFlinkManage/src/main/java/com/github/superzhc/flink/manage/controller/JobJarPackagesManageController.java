@@ -1,16 +1,18 @@
 package com.github.superzhc.flink.manage.controller;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.github.superzhc.flink.manage.entity.JobJarPackagesManage;
 import com.github.superzhc.flink.manage.job.packages.JobPackages;
 import com.github.superzhc.flink.manage.service.IJobJarPackagesManageService;
+import com.github.superzhc.flink.manage.util.FrontListParams;
 import com.github.superzhc.flink.manage.util.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 /**
  * 任务Jar包管理
@@ -29,9 +31,16 @@ public class JobJarPackagesManageController {
     private IJobJarPackagesManageService jobJarPackagesManageService;
 
     @GetMapping
-    public Result<List<JobJarPackagesManage>> list() {
-        List<JobJarPackagesManage> lst = jobJarPackagesManageService.list();
-        return Result.success(lst);
+    public Result<IPage<JobJarPackagesManage>> list(FrontListParams params) {
+        // 搜索条件
+        QueryWrapper<JobJarPackagesManage> queryWrapper = new QueryWrapper<>();
+        String packageName = params.searchObject().getString("packageName");
+        if (StrUtil.isNotBlank(packageName)) {
+            queryWrapper.like("package_name", packageName);
+        }
+
+        IPage<JobJarPackagesManage> data = jobJarPackagesManageService.page(params.page(), params.orderBy(queryWrapper));
+        return Result.success(data);
     }
 
     @GetMapping("/{id}")

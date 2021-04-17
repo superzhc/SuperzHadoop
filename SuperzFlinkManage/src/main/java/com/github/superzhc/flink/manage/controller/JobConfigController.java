@@ -1,11 +1,13 @@
 package com.github.superzhc.flink.manage.controller;
 
 import cn.hutool.core.collection.CollUtil;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.github.superzhc.flink.manage.entity.JobConfig;
 import com.github.superzhc.flink.manage.entity.vo.JobConfigVO;
 import com.github.superzhc.flink.manage.job.builder.JobBuilder;
 import com.github.superzhc.flink.manage.job.executor.JobExecutor;
 import com.github.superzhc.flink.manage.service.IJobConfigService;
+import com.github.superzhc.flink.manage.util.FrontListParams;
 import com.github.superzhc.flink.manage.util.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -34,8 +36,8 @@ public class JobConfigController {
     private JobExecutor jobExecutor;
 
     @GetMapping
-    public Result<List<JobConfig>> get() {
-        List<JobConfig> jobConfigs = jobConfigService.list();
+    public Result<IPage<JobConfig>> list(FrontListParams params) {
+        IPage<JobConfig> jobConfigs = jobConfigService.page(params.page(), params.orderBy());
         return Result.success(jobConfigs);
     }
 

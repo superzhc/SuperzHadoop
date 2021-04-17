@@ -1,10 +1,12 @@
 package com.github.superzhc.flink.manage.controller;
 
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.github.superzhc.flink.manage.entity.JobInfo;
 import com.github.superzhc.flink.manage.job.monitor.JobMonitor;
 import com.github.superzhc.flink.manage.job.monitor.JobMonitorFactory;
 import com.github.superzhc.flink.manage.service.IJobInfoService;
+import com.github.superzhc.flink.manage.util.FrontListParams;
 import com.github.superzhc.flink.manage.util.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -29,8 +31,8 @@ public class JobInfoController {
     JobMonitorFactory jobMonitorFactory;
 
     @GetMapping
-    public Result<List<JobInfo>> get() {
-        List<JobInfo> lst = jobInfoService.list();
+    public Result<IPage<JobInfo>> list(FrontListParams params) {
+        IPage<JobInfo> lst = jobInfoService.page(params.page(), params.orderBy());
         return Result.success(lst);
     }
 
