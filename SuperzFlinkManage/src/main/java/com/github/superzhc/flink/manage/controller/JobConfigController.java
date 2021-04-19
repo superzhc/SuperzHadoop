@@ -65,6 +65,17 @@ public class JobConfigController {
         return b ? Result.success("删除成功") : Result.fail("删除失败");
     }
 
+    @PostMapping("/batch-delete")
+    public Result batchDelete(@RequestParam(value = "ids[]") Integer[] ids) {
+        for (Integer id : ids) {
+            boolean b = jobConfigService.removeById(id);
+            if (!b) {
+                return Result.fail("删除失败");
+            }
+        }
+        return Result.success("删除成功");
+    }
+
     @PostMapping("/command")
     public Result command(int id) {
         JobConfigVO jobConfigVO = jobConfigService.getJobConfig(id);

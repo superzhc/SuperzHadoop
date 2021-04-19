@@ -102,6 +102,30 @@ public class JobJarPackagesManageController {
         return Result.fail("删除失败");
     }
 
+    /**
+     * 批量删除
+     * @param ids
+     * @return
+     */
+    @PostMapping("/batch-delete")
+    public Result batchDelete(@RequestParam(value = "ids[]") Integer[] ids) {
+        for (Integer id : ids) {
+            JobJarPackagesManage jobJarPackagesManage = jobJarPackagesManageService.getById(id);
+            String packagePath = jobJarPackagesManage.getPackagePath();
+            boolean b = jobJarPackagesManageService.removeById(id);
+            if (b) {
+                //同时删除文件
+                boolean b1 = jobPackages.delete(packagePath);
+                if (!b1) {
+                    return Result.fail("删除失败");
+                }
+            } else {
+                return Result.fail("删除失败");
+            }
+        }
+        return Result.success("删除成功");
+    }
+
     @PostMapping("/upload")
     public Result upload(@RequestParam MultipartFile file) {
         if (file.isEmpty()) {

@@ -40,7 +40,7 @@ public class FrontListParams implements Serializable {
         if (null == limit || 0 == limit) {
             l = 10;
         }
-        return offset / l;
+        return (offset / l) + 1;
     }
 
     public <T> IPage<T> page() {
