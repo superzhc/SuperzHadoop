@@ -1,6 +1,8 @@
 package com.github.superzhc.flink.manage.controller;
 
 
+import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.github.superzhc.flink.manage.entity.JobInfo;
 import com.github.superzhc.flink.manage.job.monitor.JobMonitor;
@@ -32,7 +34,16 @@ public class JobInfoController {
 
     @GetMapping
     public Result<IPage<JobInfo>> list(FrontListParams params) {
-        IPage<JobInfo> lst = jobInfoService.page(params.page(), params.orderBy());
+        QueryWrapper<JobInfo> queryWrapper = new QueryWrapper<>();
+        String jobName = params.getParam("jobName");
+        if (StrUtil.isNotBlank(jobName)) {
+            queryWrapper.like("job_name", jobName);
+        }
+        String jobStatus = params.getParam("jobStatus");
+        if (StrUtil.isNotBlank(jobStatus)) {
+            queryWrapper.eq("job_status", jobStatus);
+        }
+        IPage<JobInfo> lst = jobInfoService.page(params.page(), params.orderBy(queryWrapper));
         return Result.success(lst);
     }
 

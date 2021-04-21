@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>算子包上传</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../lib/layui-v2.6.3/css/layui.css" media="all">
+    <link rel="stylesheet" href="../css/public.css" media="all">
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+<div class="layuimini-form">
+    <div class="layui-form" lay-filter="record">
+        <div class="layui-form-item">
+            <label class="layui-form-label required">包名</label>
+            <div class="layui-input-block">
+                <input type="text" name="packageName" lay-verify="required" lay-reqtext="包名不能为空" placeholder="请输入包名"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label required">版本</label>
+            <div class="layui-input-block">
+                <input type="text" name="version" lay-verify="required" lay-reqtext="包名不能为空" placeholder="请输入包名"
+                       class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label required">算子包</label>
+            <div class="layui-input-block">
+                <button type="button" class="layui-btn" id="uploadfile">
+                    <i class="layui-icon">&#xe67c;</i>上传文件
+                </button>
+                <blockquote class="layui-elem-quote layui-quote-nm" style="margin-top: 10px;" id="note">
+                </blockquote>
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">描述</label>
+            <div class="layui-input-block">
+                <textarea name="description" class="layui-textarea" placeholder="请输入描述信息"></textarea>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn layui-btn-normal" lay-submit lay-filter="saveBtn">确认保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../../lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
+<script>
+    layui.use(['form', 'layer', 'upload'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            upload = layui.upload,
+            $ = layui.$;
+
+        var uploadInst = upload.render({
+            elem: '#uploadfile' //绑定元素
+            , url: '/job-jar-packages-manage/upload' //上传接口
+            , method: "POST"
+            , accept: "file"
+            , exts: "jar|py"
+            , done: function (res) {
+                if (res.code === 0) {
+                    $("#note").html('<input type="text" name="packagePath" disabled value="' + res.data + '"  class="layui-input">');
+                } else {
+                    layer.alert(res.msg, {icon: 2});
+                }
+            }
+        });
+
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            $.ajax({
+                url: "/job-jar-packages-manage",
+                type: "POST",
+                data: data.field,
+                success: function (result) {
+                    if (0 === result.code) {
+                        layer.alert("保存成功", {icon: 1}, function () {
+                            // 关闭弹出层
+                            layer.close(index);
+
+                            var iframeIndex = parent.layer.getFrameIndex(window.name);
+                            parent.layer.close(iframeIndex);
+                        });
+                    } else {
+                        layer.alert(result.msg, {icon: 2});
+                    }
+                }
+            });
+
+            return false;
+        });
+
+    });
+</script>
+</body>
+</html>

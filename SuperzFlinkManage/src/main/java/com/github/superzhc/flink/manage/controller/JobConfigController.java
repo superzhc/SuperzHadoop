@@ -1,18 +1,24 @@
 package com.github.superzhc.flink.manage.controller;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.github.superzhc.flink.manage.entity.JobConfig;
+import com.github.superzhc.flink.manage.entity.JobJarPackagesManage;
 import com.github.superzhc.flink.manage.entity.vo.JobConfigVO;
 import com.github.superzhc.flink.manage.job.builder.JobBuilder;
 import com.github.superzhc.flink.manage.job.executor.JobExecutor;
 import com.github.superzhc.flink.manage.service.IJobConfigService;
+import com.github.superzhc.flink.manage.service.IJobJarPackagesManageService;
 import com.github.superzhc.flink.manage.util.FrontListParams;
 import com.github.superzhc.flink.manage.util.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -30,6 +36,9 @@ public class JobConfigController {
     private IJobConfigService jobConfigService;
 
     @Autowired
+    private IJobJarPackagesManageService jobJarPackagesManageService;
+
+    @Autowired
     private JobBuilder jobBuilder;
 
     @Autowired
@@ -37,14 +46,24 @@ public class JobConfigController {
 
     @GetMapping
     public Result<IPage<JobConfig>> list(FrontListParams params) {
-        IPage<JobConfig> jobConfigs = jobConfigService.page(params.page(), params.orderBy());
+        QueryWrapper queryWrapper = new QueryWrapper();
+        String jobName = params.getParam("jobName");
+        if (StrUtil.isNotBlank(jobName)) {
+            queryWrapper.like("job_name", jobName);
+        }
+        IPage<JobConfig> jobConfigs = jobConfigService.page(params.page(), params.orderBy(queryWrapper));
         return Result.success(jobConfigs);
     }
 
     @GetMapping("/{id}")
     public Result<JobConfig> get(@PathVariable("id") int id) {
         JobConfig jobConfig = jobConfigService.getById(id);
-        return Result.success(jobConfig);
+        //包相关信息
+        JobJarPackagesManage jobJarPackagesManage = jobJarPackagesManageService.getById(jobConfig.getJobJarPackage());
+        Map<String, Object> packageInfo = new HashMap<>();
+        packageInfo.put("packageName", jobJarPackagesManage.getPackageName());
+        packageInfo.put("version", jobJarPackagesManage.getVersion());
+        return Result.success(jobConfig, packageInfo);
     }
 
     @PostMapping

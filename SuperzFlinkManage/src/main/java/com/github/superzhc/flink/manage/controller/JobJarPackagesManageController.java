@@ -34,7 +34,7 @@ public class JobJarPackagesManageController {
     public Result<IPage<JobJarPackagesManage>> list(FrontListParams params) {
         // 搜索条件
         QueryWrapper<JobJarPackagesManage> queryWrapper = new QueryWrapper<>();
-        String packageName = params.searchObject().getString("packageName");
+        String packageName = params.getParam("packageName");
         if (StrUtil.isNotBlank(packageName)) {
             queryWrapper.like("package_name", packageName);
         }
@@ -79,8 +79,16 @@ public class JobJarPackagesManageController {
                 return Result.fail("算子包不存在");
             }
 
+            // 2021年4月20日 需要判断是否修改了上传包，如果只是修改名称和版本，直接将原地址的包转移到新目录下，如果修改了上传包，需要使用新的上传地址
+            String packagePath;
+            if (jobJarPackagesManageDB.getPackagePath().equals(jobJarPackagesManage.getPackagePath())) {
+                packagePath = jobJarPackagesManageDB.getPackagePath();
+            } else {
+                packagePath = jobJarPackagesManage.getPackagePath();
+            }
+
             // 将包转移到修改后的指定路径下
-            String targetPath = jobPackages.transferTo(jobJarPackagesManageDB.getPackagePath(), jobJarPackagesManage.getPackageName(), jobJarPackagesManage.getVersion(), FileUtil.getName(jobJarPackagesManageDB.getPackagePath()));
+            String targetPath = jobPackages.transferTo(packagePath, jobJarPackagesManage.getPackageName(), jobJarPackagesManage.getVersion(), FileUtil.getName(jobJarPackagesManageDB.getPackagePath()));
             jobJarPackagesManage.setPackagePath(targetPath);
         } catch (Exception e) {
             return new Result(e);
@@ -104,6 +112,7 @@ public class JobJarPackagesManageController {
 
     /**
      * 批量删除
+     *
      * @param ids
      * @return
      */

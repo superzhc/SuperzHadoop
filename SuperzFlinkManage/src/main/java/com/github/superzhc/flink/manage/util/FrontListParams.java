@@ -6,8 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 
 import java.io.Serializable;
 
@@ -20,31 +19,29 @@ import java.io.Serializable;
 @Data
 @ToString
 public class FrontListParams implements Serializable {
-    private Integer offset;
+    private Integer page;
     private Integer limit;
     private String search;
     private String sort;
     private String order;
 
-    public JSONObject searchObject() {
-        return JSON.parseObject(search);
-    }
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private JSONObject searchObj;
 
-    /**
-     * 计算所在页码
-     *
-     * @return
-     */
-    public int index() {
-        Integer l = limit;
-        if (null == limit || 0 == limit) {
-            l = 10;
+    public <T> T getParam(String param) {
+        if (null == searchObj) {
+            searchObj = JSON.parseObject(search);
+            if (null == searchObj) {
+                searchObj = new JSONObject(1);
+            }
         }
-        return (offset / l) + 1;
+
+        return (T) searchObj.get(param);
     }
 
     public <T> IPage<T> page() {
-        return new Page<>(index(), limit);
+        return new Page<>(page, limit);
     }
 
     public <T> QueryWrapper<T> orderBy() {
@@ -60,10 +57,12 @@ public class FrontListParams implements Serializable {
             queryWrapper = new QueryWrapper<>();
         }
 
+        // 需要将驼峰命名转换一下
+        String dbSort = StrUtil.toUnderlineCase(sort);
         if ("desc".equals(order)) {
-            queryWrapper.orderByDesc(sort);
+            queryWrapper.orderByDesc(dbSort);
         } else {
-            queryWrapper.orderByAsc(sort);
+            queryWrapper.orderByAsc(dbSort);
         }
 
         return queryWrapper;
