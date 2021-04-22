@@ -66,11 +66,7 @@
                 order: "desc"
             },
             toolbar: '#toolbar',
-            defaultToolbar: ['filter', 'exports', 'print', {
-                title: '提示',
-                layEvent: 'LAYTABLE_TIPS',
-                icon: 'layui-icon-tips'
-            }],
+            defaultToolbar: ['filter', 'exports', 'print'],
             cols: [[
                 {type: "checkbox", width: 50},
                 {field: 'id', width: 80, title: 'ID', hide: true},
@@ -80,8 +76,8 @@
                 {field: 'description', title: '描述', minWidth: 150},
                 {title: '操作', minWidth: 150, toolbar: '#tableBar', align: "center"}
             ]],
-            limits: [10, 15, 20, 25, 50, 100],
-            limit: 10,
+            limits: [7, 14, 50, 100],
+            limit: 7,
             page: true,
             autoSort: false,
             skin: 'line',

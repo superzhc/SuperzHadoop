@@ -35,6 +35,11 @@ public class JobInfo implements Serializable {
     private String jobName;
 
     /**
+     * 任务模式
+     */
+    private String jobMode;
+
+    /**
      * 任务类型
      */
     private String jobType;
@@ -48,6 +53,11 @@ public class JobInfo implements Serializable {
      * 任务状态
      */
     private String jobStatus;
+
+    /**
+     * 任务的访问地址
+     */
+    private String webui;
 
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;

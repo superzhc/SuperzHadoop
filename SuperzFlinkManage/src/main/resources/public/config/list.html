@@ -44,6 +44,7 @@
         <table class="layui-hide" id="datagrid" lay-filter="tableFilter"></table>
 
         <script type="text/html" id="tableBar">
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="commnad">获取执行命令</a>
             <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
             <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
         </script>
@@ -72,15 +73,15 @@
             cols: [[
                 {type: "checkbox", width: 50},
                 {field: 'id', width: 80, title: 'ID', hide: true},
-                {field: 'jobName', width: 240, title: '任务名称', align: "center", sort: true},
-                {field: 'jobMainClass', width: 480, title: '主类', align: "center"},
-                {field: 'jobMode', width: 150, title: '任务模式'},
-                {field: 'jobOptions', title: '任务选项', minWidth: 150},
-                {field: 'jobArguments', title: '任务参数', minWidth: 150},
+                {field: 'jobName', width: 240, title: '任务名称', sort: true},
+                {field: 'jobMainClass', width: 520, title: '主类'},
+                {field: 'jobMode', width: 150, title: '任务模式', align: "center"},
+                /*{field: 'jobOptions', title: '任务选项', minWidth: 150},
+                {field: 'jobArguments', title: '任务参数', minWidth: 150},*/
                 {title: '操作', minWidth: 150, toolbar: '#tableBar', align: "center"}
             ]],
-            limits: [10, 15, 20, 25, 50, 100],
-            limit: 10,
+            limits: [7, 14, 50, 100],
+            limit: 7,
             page: true,
             autoSort: false,
             skin: 'line',
@@ -154,7 +155,20 @@
 
         table.on('tool(tableFilter)', function (obj) {
             var data = obj.data;
-            if (obj.event === 'edit') {
+            if (obj.event === "commnad") {
+                $.ajax({
+                    url: "/job-config/command",
+                    type: "POST",
+                    data: {id: data.id},
+                    success: function (res) {
+                        if (res.code === 0) {
+                            layer.alert(res.data);
+                        } else {
+                            layer.alert(res.msg);
+                        }
+                    }
+                });
+            } else if (obj.event === 'edit') {
                 var index = layer.open({
                     title: '编辑任务配置',
                     type: 2,

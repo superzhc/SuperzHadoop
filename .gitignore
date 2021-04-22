@@ -106,3 +106,5 @@ hs_err_pid*
 /SuperzFlinkManage/target/classes/mapper/JobJarPackagesManageMapper.xml
 /SuperzFlinkManage/target/classes/log4j2-spring.xml
 /SuperzFlinkManage/target/classes/META-INF/spring-configuration-metadata.json
+/SuperzFlinkManage/target/classes/mapper/JobInfoJobConfigMapper.xml
+/SuperzFlinkManage/target/classes/bigdata.properties

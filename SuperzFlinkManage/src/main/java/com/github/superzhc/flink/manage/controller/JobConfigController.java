@@ -60,10 +60,14 @@ public class JobConfigController {
         JobConfig jobConfig = jobConfigService.getById(id);
         //包相关信息
         JobJarPackagesManage jobJarPackagesManage = jobJarPackagesManageService.getById(jobConfig.getJobJarPackage());
-        Map<String, Object> packageInfo = new HashMap<>();
-        packageInfo.put("packageName", jobJarPackagesManage.getPackageName());
-        packageInfo.put("version", jobJarPackagesManage.getVersion());
-        return Result.success(jobConfig, packageInfo);
+        if (null != jobJarPackagesManage) {
+            Map<String, Object> packageInfo = new HashMap<>();
+            packageInfo.put("packageName", jobJarPackagesManage.getPackageName());
+            packageInfo.put("version", jobJarPackagesManage.getVersion());
+            return Result.success(jobConfig, packageInfo);
+        } else {
+            return Result.success(jobConfig);
+        }
     }
 
     @PostMapping

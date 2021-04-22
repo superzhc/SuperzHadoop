@@ -33,9 +33,18 @@
         <div class="layui-form-item">
             <label class="layui-form-label required">任务模式</label>
             <div class="layui-input-block">
+                <select name="jobMode" lay-verify="required">
+                    <option value=""></option>
+                    <option value="yarn">Yarn</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label required">任务类型</label>
+            <div class="layui-input-block">
                 <select name="jobType" lay-verify="required">
                     <option value=""></option>
-                    <option value="yarn">yarn</option>
+                    <option value="flink">Apache Flink</option>
                 </select>
             </div>
         </div>

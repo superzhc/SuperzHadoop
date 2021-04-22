@@ -30,7 +30,8 @@
                                 <select name="jobStatus">
                                     <option value=""></option>
                                     <option value="RUNNING">运行中</option>
-                                    <option value="FINISH">已结束</option>
+                                    <option value="SUCCEEDED">已结束</option>
+                                    <option value="FAILED">失败</option>
                                 </select>
                             </div>
                         </div>
@@ -48,12 +49,21 @@
             <div class="layui-btn-container">
                 <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 添加</button>
                 <button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 删除</button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="fetch-yarn"> 获取Yarn任务
+                </button>
             </div>
         </script>
 
         <table class="layui-hide" id="datagrid" lay-filter="tableFilter"></table>
 
+        <script type="text/html" id="webui">
+            {{#  if(d.webui){ }}
+            <div><a href='{{d.webui}}' target="_blank" class='layui-table-link'>{{d.webui}}</a></div>
+            {{#  } }}
+        </script>
+
         <script type="text/html" id="tableBar">
+            <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="update">更新</a>
             <a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>
             <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
         </script>
@@ -63,11 +73,18 @@
 <script src="../lib/layui-v2.6.3/layui.js" charset="utf-8"></script>
 <script src="../js/lay-config.js?v=2.0.0" charset="utf-8"></script>
 <script>
-    layui.use(['form', 'table', 'tableutil'], function () {
+    layui.use(['form', 'table', "commonutil", 'tableutil'], function () {
         var $ = layui.jquery,
             form = layui.form,
             table = layui.table,
+            util = layui.commonutil,
             tableutil = layui.tableutil;
+
+        var status = {
+            "RUNNING": "运行中",
+            "SUCCEEDED": "已成功",
+            "FAILED": "失败"
+        };
 
         table.render(tableutil.options({
             elem: '#datagrid',
@@ -75,11 +92,13 @@
             cols: [[
                 {type: "checkbox", width: 50},
                 {field: 'id', width: 80, title: 'ID', hide: true},
-                {field: "jobName", title: "任务名称", width: 240, align: "center", sort: true},
-                {field: "jobType", title: "任务模式", width: 120, align: "center"},
-                {field: "jobApplicationId", title: "ApplicationId", width: 480, align: "center"},
-                {field: "jobStatus", title: "任务状态", width: 120, align: "center"},
-                {title: '操作', minWidth: 150, toolbar: '#tableBar', align: "center"}
+                {field: "jobName", title: "任务名称", width: 200, align: "center", sort: true},
+                {field: "jobType", title: "任务类型", width: 100, align: "center"},
+                {field: "jobMode", title: "任务模式", width: 100, align: "center"},
+                {field: "jobApplicationId", title: "ApplicationId", width: 300, align: "center"},
+                {title: "任务状态", width: 120, align: "center",templet: function (d) {return status[d.jobStatus]}},
+                {title: "任务地址", minWidth: 200, align: "center", templet: "#webui"},
+                {title: '操作', minWidth: 200, toolbar: '#tableBar', align: "center"}
             ]]
         }));
 
@@ -102,6 +121,27 @@
             } else if (obj.event === 'delete') {  // 监听删除操作
                 var ids = tableutil.checkValues('datagrid', 'id')
                 tableutil.batchDel("datagrid", "id", "/job-info/batch-delete");
+            } else if (obj.event === "fetch-yarn") {
+                layer.prompt({title: "请输入 ApplicationId"}, function (value, index, elem) {
+                    $.ajax({
+                        url: "/job-info/fetch/yarn/" + value,
+                        type: "POST",
+                        success: function (res) {
+                            if (res.code === 0) {
+                                layer.close(index);
+                                layer.alert("获取成功", {icon: 1}, function (index2) {
+                                    tableutil.refresh('datagrid');
+                                    layer.close(index2);
+                                });
+                            } else {
+                                layer.alert(res.msg, {icon: 2});
+                            }
+                        },
+                        error: function () {
+                            layer.alert("获取异常", {icon: 2});
+                        }
+                    });
+                });
             }
         });
 
@@ -117,7 +157,26 @@
 
         table.on('tool(tableFilter)', function (obj) {
             var data = obj.data;
-            if (obj.event === 'edit') {
+            if (obj.event === "update") {
+                $.ajax({
+                    url: "/job-info/update",
+                    type: "POST",
+                    data: {id: data.id},
+                    success: function (res) {
+                        if (res.code === 0) {
+                            layer.alert("更新成功", {icon: 1}, function (index) {
+                                tableutil.refresh('datagrid');
+                                layer.close(index);
+                            });
+                        } else {
+                            layer.alert(res.msg, {icon: 2});
+                        }
+                    },
+                    error: function () {
+                        layer.alert("获取异常", {icon: 2});
+                    }
+                });
+            } else if (obj.event === 'edit') {
                 tableutil.open("datagrid", 'edit.html?id=' + data.id, "编辑任务");
             } else if (obj.event === 'delete') {
                 tableutil.del("datagrid", "/job-info/" + data.id);

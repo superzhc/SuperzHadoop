@@ -131,7 +131,7 @@
             success: function (res) {
                 if (res.code === 0) {
                     var jobOptions = res.data.jobOptions;
-                    jobJarPackageValue = res.extra.packageName + "[" + res.extra.version + "]";
+                    jobJarPackageValue = res["extra"] ? (res.extra.packageName + "[" + res.extra.version + "]") : "";
                     if (res.data.jobMode === "yarn-cluster") {
                         $("#yarn-options").show();
                     } else {
@@ -140,7 +140,7 @@
                     var formData = $.extend({}, res.data, JSON.parse(jobOptions));
                     form.val("record", formData);
                 } else {
-                    layer.alert(res.msg, {icon: 2}, function () {
+                    layer.alert(res.msg, {icon: 2}, function (index) {
                         // 关闭弹出层
                         layer.close(index);
 
@@ -228,7 +228,7 @@
                 data: formData,
                 success: function (result) {
                     if (0 === result.code) {
-                        layer.alert("保存成功", {icon: 1}, function () {
+                        layer.alert("保存成功", {icon: 1}, function (index) {
                             // 关闭弹出层
                             layer.close(index);
 

@@ -6,14 +6,17 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.github.superzhc.flink.manage.entity.JobInfo;
 import com.github.superzhc.flink.manage.job.monitor.JobMonitor;
+import com.github.superzhc.flink.manage.job.monitor.JobMonitorConstant;
 import com.github.superzhc.flink.manage.job.monitor.JobMonitorFactory;
+import com.github.superzhc.flink.manage.job.monitor.entity.JobMonitorInfo;
+import com.github.superzhc.flink.manage.job.monitor.entity.YarnJobMonitorInfo;
 import com.github.superzhc.flink.manage.service.IJobInfoService;
 import com.github.superzhc.flink.manage.util.FrontListParams;
 import com.github.superzhc.flink.manage.util.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -82,15 +85,55 @@ public class JobInfoController {
         return Result.success("删除成功");
     }
 
-    @GetMapping("/status")
-    public Result status(int id) {
+    @GetMapping("/statistics")
+    public Result jobStatistics() {
+        Map<String, Integer> map = jobInfoService.numByStatus();
+        return Result.success(map);
+    }
+
+    @PostMapping("/fetch/yarn/{applicationId}")
+    public Result fetchYarnApplication(@PathVariable String applicationId) {
+        boolean exist = jobInfoService.exist(applicationId);
+        if (exist) {
+            return Result.fail("{}已存在，无需获取", applicationId);
+        }
+
+        JobMonitorInfo jobMonitorInfo = jobMonitorFactory.getYarnJobMonitor().info(applicationId);
+        if (null == jobMonitorInfo) {
+            return Result.fail("获取失败，接口返回数据为空");
+        }
+
+        JobInfo jobInfo = new JobInfo();
+        jobInfo.setJobApplicationId(jobMonitorInfo.getId());
+        jobInfo.setJobName(jobMonitorInfo.getName());
+        jobInfo.setJobMode(jobMonitorInfo.getMode());
+        jobInfo.setJobStatus(jobMonitorInfo.getState());
+        jobInfo.setJobType(jobMonitorInfo.getType());
+        jobInfo.setWebui(jobMonitorInfo.getWebui());
+        boolean b = jobInfoService.save(jobInfo);
+        return b ? Result.success("获取成功") : Result.fail("获取失败");
+    }
+
+    @PostMapping("/update")
+    public Result update(int id) {
         JobInfo jobInfo = jobInfoService.getById(id);
         if (null == jobInfo) {
             return Result.fail("未查到任务：[id={}]", id);
+        } else if (StrUtil.isBlank(jobInfo.getJobApplicationId())) {
+            return Result.fail("尚未设置任务的ApplicationId");
         }
 
-        JobMonitor jobMonitor = jobMonitorFactory.getJobMonitor(jobInfo.getJobType());
-        return Result.success("状态获取成功，状态为{}", jobMonitor.status(jobInfo.getJobApplicationId()));
+        JobMonitor jobMonitor = jobMonitorFactory.getJobMonitor(jobInfo.getJobMode());
+        JobMonitorInfo jobMonitorInfo = jobMonitor.info(jobInfo.getJobApplicationId());
+        if (null == jobMonitorInfo) {
+            return Result.fail("更新失败，接口返回数据为空");
+        }
+
+        jobInfo.setJobName(jobMonitorInfo.getName());
+        jobInfo.setJobStatus(jobMonitorInfo.getState());
+        jobInfo.setWebui(jobMonitorInfo.getWebui());
+        boolean b = jobInfoService.updateById(jobInfo);
+        return b ? Result.success("更新成功") : Result.fail("更新失败");
     }
 }
 

@@ -17,15 +17,15 @@ public class JobMonitorFactory {
     @Autowired
     Map<String, JobMonitor> map = new ConcurrentHashMap<>();
 
-    public JobMonitor getJobMonitor(String jobType) {
-        JobMonitor jobMonitor = map.get(jobType);
+    public JobMonitor getJobMonitor(String jobMode) {
+        JobMonitor jobMonitor = map.get(jobMode);
         if (null == jobMonitor) {
-            throw new RuntimeException(StrUtil.format("任务类型为[{}]尚未定义监控类，请实现 JobMonitor 接口！", jobType));
+            throw new RuntimeException(StrUtil.format("任务类型为[{}]尚未定义监控类，请实现 JobMonitor 接口！", jobMode));
         }
         return jobMonitor;
     }
 
-    public JobMonitor getYarnJobMonitor(){
-        return getJobMonitor("yarn");
+    public JobMonitor getYarnJobMonitor() {
+        return getJobMonitor(JobMonitorConstant.MODE_YARN);
     }
 }

@@ -44,9 +44,9 @@
                 <div class="layui-card-body">
                     <div class="layui-row layui-col-space5">
                         <div class="layui-col-xs3 layui-col-md3 top-panel-tips">
-                            <i class="fa fa-desktop"></i>
+                            <i class="fa fa-tasks"></i>
                         </div>
-                        <div class="layui-col-xs9 layui-col-md9 top-panel-number">
+                        <div class="layui-col-xs9 layui-col-md9 top-panel-number" id="total">
                             9,054,056
                         </div>
                     </div>
@@ -59,9 +59,9 @@
                 <div class="layui-card-body">
                     <div class="layui-row layui-col-space5">
                         <div class="layui-col-xs3 layui-col-md3 top-panel-tips">
-                            <i class="fa fa-desktop"></i>
+                            <i class="fa fa-cogs"></i>
                         </div>
-                        <div class="layui-col-xs9 layui-col-md9 top-panel-number">
+                        <div class="layui-col-xs9 layui-col-md9 top-panel-number" id="running">
                             9,054,056
                         </div>
                     </div>
@@ -76,7 +76,7 @@
                         <div class="layui-col-xs3 layui-col-md3 top-panel-tips">
                             <i class="fa fa-desktop"></i>
                         </div>
-                        <div class="layui-col-xs9 layui-col-md9 top-panel-number">
+                        <div class="layui-col-xs9 layui-col-md9 top-panel-number" id="succeeded">
                             9,054,056
                         </div>
                     </div>
@@ -89,9 +89,9 @@
                 <div class="layui-card-body">
                     <div class="layui-row layui-col-space5">
                         <div class="layui-col-xs3 layui-col-md3 top-panel-tips">
-                            <i class="fa fa-desktop"></i>
+                            <i class="fa fa-bug"></i>
                         </div>
-                        <div class="layui-col-xs9 layui-col-md9 top-panel-number">
+                        <div class="layui-col-xs9 layui-col-md9 top-panel-number" id="failed">
                             9,054,056
                         </div>
                     </div>
@@ -102,7 +102,17 @@
 
     <div class="layui-row layui-col-space15">
         <div class="layui-col-xs12 layui-col-md12">
-            <table id="datagrid"></table>
+            <div class="layui-card">
+                <div class="layui-card-header">最近 10 个任务</div>
+                <div class="layui-card-body layui-text">
+                    <table id="datagrid"></table>
+                    <script type="text/html" id="webui">
+                        {{#  if(d.webui){ }}
+                        <div><a href='{{d.webui}}' target="_blank" class='layui-table-link'>{{d.webui}}</a></div>
+                        {{#  } }}
+                    </script>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -112,6 +122,21 @@
     layui.use(['table'], function () {
         var $ = layui.jquery,
             table = layui.table;
+
+        $.get("/job-info/statistics", function (res) {
+            if (res.code === 0) {
+                $("#total").text(res.data.TOTAL);
+                $("#running").text(res.data.RUNNING);
+                $("#succeeded").text(res.data.SUCCEEDED);
+                $("#failed").text(res.data.FAILED);
+            }
+        });
+
+        var status = {
+            "RUNNING": "运行中",
+            "SUCCEEDED": "已成功",
+            "FAILED": "失败"
+        };
 
         table.render({
             elem: '#datagrid',
@@ -124,15 +149,20 @@
                 order: "desc"
             },
             cols: [[
-                {field: 'id', width: 80, title: 'ID', hide: true},
-                {field: "jobName", title: "任务名称", align: "center", sort: true},
-                {field: "jobType", title: "任务模式", width: 120, align: "center"},
-                {field: "jobApplicationId", title: "ApplicationId", width: 480, align: "center"},
-                {field: "jobStatus", title: "任务状态", width: 120, align: "center"}
+                {field: "jobName", title: "任务名称", width: 200, align: "center", sort: true},
+                {field: "jobType", title: "任务类型", width: 100, align: "center"},
+                {field: "jobMode", title: "任务模式", width: 100, align: "center"},
+                {field: "jobApplicationId", title: "ApplicationId", width: 300, align: "center"},
+                {
+                    title: "任务状态", width: 120, align: "center", templet: function (d) {
+                        return status[d.jobStatus]
+                    }
+                },
+                {title: "任务地址", minWidth: 200, align: "center", templet: "#webui"}
             ]],
             page: false,
             autoSort: false,
-            //skin: 'line',
+            skin: 'line',
             parseData: function (result) {
                 return {
                     "code": result.code,
