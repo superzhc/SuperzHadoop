@@ -1,48 +1,37 @@
 {
+  "userInfo": "admin",
   "homeInfo": {
     "title": "首页",
-    "href": "page/welcome-1.html?t=1"
+    "href": "welcome.html?t=1"
   },
   "logoInfo": {
-    "title": "SUPERZ'S WEB",
+    "title": "Flink Manage",
     "image": "images/logo.png",
     "href": ""
   },
   "menuInfo": [
     {
-      "title": "工具",
+      "title": "任务管理",
+      "icon": "fa fa-address-book",
       "href": "",
       "target": "_self",
       "child": [
         {
-          "title": "OneTab",
-          "icon": "fa fa-home",
-          "href": "web/onetab/list.html",
+          "title": "算子包管理",
+          "href": "jar-packages-manage/list.html",
+          "icon": "fa fa-tachometer",
           "target": "_self"
         },
         {
-          "title": "书籍列表",
-          "icon": "fa fa-home",
-          "href": "web/book/list.html",
-          "target": "_self"
-        }
-      ]
-    },
-    {
-      "title": "大数据",
-      "href": "",
-      "target": "_self",
-      "child": [
-        {
-          "title": "Elasticsearch",
-          "icon": "fa fa-home",
-          "href": "web/es/main.html",
+          "title": "任务配置",
+          "href": "config/list.html",
+          "icon": "fa fa-tachometer",
           "target": "_self"
         },
         {
-          "title": "Kafka",
-          "icon": "fa fa-home",
-          "href": "web/kafka/main.html",
+          "title": "任务信息",
+          "href": "job/list.html",
+          "icon": "fa fa-tachometer",
           "target": "_self"
         }
       ]
@@ -133,6 +122,12 @@
               "title": "登录-2",
               "href": "page/login-2.html",
               "icon": "fa fa-viacoin",
+              "target": "_blank"
+            },
+            {
+              "title": "登录-3",
+              "href": "page/login-3.html",
+              "icon": "fa fa-tags",
               "target": "_blank"
             }
           ]

@@ -63,6 +63,7 @@ layui.define('form', function (exports) {
     type: 'checkbox',
     valueSeparator: '/',
     labelSeparator: '  ---  ',
+    placeholder: '请选择',
 
     data: [],
     valueName: 'title',
@@ -93,11 +94,11 @@ layui.define('form', function (exports) {
     typeof (options.el) === 'string' ? options.el = $(options.el): options.el;
     options.reElem = $('<div class="layui-unselect layui-form-select">' +
       '<div class="layui-select-title">' +
-      '<input type="text" placeholder="请选择" value="" readonly="" class="layui-input layui-unselect">' +
+      '<input type="text" placeholder="' + options.placeholder + '" value="" readonly="" class="layui-input layui-unselect">' +
       '<i class="layui-edge"></i>' +
       '</div>' +
       '<dl class="layui-anim layui-anim-upbit">' +
-      '<dd lay-value="" class="layui-select-tips layui-hide">请选择</dd>' +
+      '<dd lay-value="" class="layui-select-tips layui-hide">' + options.placeholder + '</dd>' +
       '</dl>' +
       '</div>');
 
@@ -117,7 +118,7 @@ layui.define('form', function (exports) {
     // 查找 表单的 filter
     options.filter = options.el.parents('.layui-form').attr('lay-filter');
 
-    options.el.append(options.reElem);
+    options.el.html(options.reElem);
 
 
     if (options.url) { // 获取后端数据
@@ -287,7 +288,7 @@ layui.define('form', function (exports) {
 
 
           // 显示选中数据
-          layui.event.call($all, MOD_NAME, 'checkbox' + '(' + MOD_NAME + ')', {
+          layui.event.call($all, MOD_NAME, 'checkbox' + '(' + MOD_NAME + ')' + that.index, {
             type: "checkbox",
             ele: $all,
             eleChecked: checked,
@@ -295,7 +296,7 @@ layui.define('form', function (exports) {
           });
 
         })
-        allEle.nextAll().on('click', function (e) {
+        allEle.nextAll().on('click', function (event) {
           var $dd = $(this),
             checked = event.target.nodeName === 'DD' ? $dd.find('.' + CLASSNAME).toggleClass(CHECKED).hasClass(CHECKED) : $dd.find('input').prop('checked');
 
@@ -322,7 +323,7 @@ layui.define('form', function (exports) {
           }
 
           // 显示选中数据
-          layui.event.call($all, MOD_NAME, 'checkbox' + '(' + MOD_NAME + ')', {
+          layui.event.call($all, MOD_NAME, 'checkbox' + '(' + MOD_NAME + ')' + that.index, {
             type: "checkbox",
             ele: $dd,
             eleChecked: checked,
@@ -401,7 +402,7 @@ layui.define('form', function (exports) {
           $dd.siblings().find('.' + CLASSNAME).removeClass(CHECKED).find('i').removeClass(CHECKED_ICON).html(ICON[1]);
           $dd.siblings().find('input').prop('checked', false);
           // 显示选中数据
-          layui.event.call($dd, MOD_NAME, 'radio' + '(' + MOD_NAME + ')', {
+          layui.event.call($dd, MOD_NAME, 'radio' + '(' + MOD_NAME + ')' + that.index, {
             type: "radio",
             ele: $dd,
             eleChecked: true,
@@ -414,7 +415,7 @@ layui.define('form', function (exports) {
     };
 
     // 选择时触发的事件
-    layui.onevent.call(that, MOD_NAME, type + '(' + MOD_NAME + ')', that.checked.bind(that));
+    layui.onevent.call(that, MOD_NAME, type + '(' + MOD_NAME + ')' + that.index, that.checked.bind(that));
 
     items[type] ? items[type](options, data, id) : hint.error('不支持的' + type + '表单渲染');
 
