@@ -1,1 +1,0 @@
-electron . --debug=5858

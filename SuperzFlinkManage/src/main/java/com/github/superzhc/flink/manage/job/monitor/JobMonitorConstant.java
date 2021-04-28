@@ -9,7 +9,7 @@ public interface JobMonitorConstant {
      * 任务类型
      */
     String TYPE_MR="mapreduce";
-    String TYPE_FLINK="fink";
+    String TYPE_FLINK="flink";
     String TYPE_SPARK="spark";
     /**
      * 任务模式

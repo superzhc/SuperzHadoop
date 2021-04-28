@@ -7,6 +7,8 @@ import org.slf4j.LoggerFactory;
 import java.io.Closeable;
 import java.sql.*;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 2020年11月04日 superz add
@@ -162,21 +164,21 @@ public class JdbcHelper implements Closeable {
     }
 
     /**
-     * 更新/删除数据
+     * 新增/更新/删除数据
      *
      * @param sql
      * @param params
      * @return
      * @throws SQLException
      */
-    public int update(String sql, Object... params) {
+    public int dmlExecute(String sql, Object... params) {
         PreparedStatement pstmt = null;
         try {
-            log.debug("查询语句：{}", sql);
+            log.debug("DML 语句：{}", sql);
             pstmt = getConnection().prepareStatement(sql);
             // 填充sql语句中的占位符
             if (null != params && params.length != 0) {
-                log.debug("查询参数：{}", params);
+                log.debug("DML 参数个数：{}", params.length);
                 for (int i = 0, len = params.length; i < len; i++) {
                     pstmt.setObject(i + 1, params[i]);
                 }
@@ -186,7 +188,7 @@ public class JdbcHelper implements Closeable {
             int result = pstmt.executeUpdate();
             return result;
         } catch (SQLException ex) {
-            log.error("查询异常", ex);
+            log.error("DML异常", ex);
             return -1;
         } finally {
             free(null, pstmt, null);
@@ -438,7 +440,7 @@ public class JdbcHelper implements Closeable {
                 throw new ExceptionInInitializerError(e1);
             }
             throw new ExceptionInInitializerError(e);
-        }finally {
+        } finally {
             free(null, preparedStatement, null);
         }
         return result;

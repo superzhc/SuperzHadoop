@@ -55,11 +55,12 @@ public class Result<T> implements Serializable {
         this.code = FAIL;
     }
 
-    public void extra(String key, Object value) {
+    public Result<T> extra(String key, Object value) {
         if (null == extra) {
             extra = new HashMap<>();
         }
         extra.put(key, value);
+        return this;
     }
 
     public static <T> Result<T> success(T data) {

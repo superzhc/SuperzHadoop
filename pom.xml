@@ -24,24 +24,29 @@
         <module>SuperzData</module>
         <module>SuperzDB</module>
         <module>SuperzFlinkManage</module>
+        <module>SuperzGIS</module>
     </modules>
     <packaging>pom</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <scala.binary.version>2.11</scala.binary.version>
+        <scala.version>2.11.8</scala.version>
         <lombok.version>1.18.6</lombok.version>
         <log4j.version>2.9.1</log4j.version>
+        <spring-boot.version>2.1.3.RELEASE</spring-boot.version>
+        <mybatis-plus.version>3.0.6</mybatis-plus.version>
+        <mysql.connector.version>8.0.13</mysql.connector.version>
         <hadoop.version>3.0.0</hadoop.version>
+        <zookeeper.version>3.4.10</zookeeper.version>
         <hive.version>1.2.1</hive.version>
-        <hbase.version>1.1.2</hbase.version>
+        <hbase.version>2.2.3</hbase.version>
         <spark.version>2.3.0</spark.version>
         <flink.version>1.12.2</flink.version>
         <kafka.version>2.3.0</kafka.version>
         <elasticsearch.version>7.1.1</elasticsearch.version>
-        <spring-boot.version>2.1.3.RELEASE</spring-boot.version>
-        <mybatis-plus.version>3.0.6</mybatis-plus.version>
-        <mysql.connector.version>8.0.13</mysql.connector.version>
+        <geomesa.version>2.3.0</geomesa.version>
+        <geotools.version>23.3</geotools.version>
     </properties>
 
     <dependencyManagement>
@@ -83,6 +88,11 @@
                 <artifactId>hadoop-hdfs</artifactId>
                 <version>${hadoop.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.hadoop</groupId>
+                <artifactId>hadoop-hdfs-client</artifactId>
+                <version>${hadoop.version}</version>
+            </dependency>
 
             <!--MapReduce-->
             <dependency>
@@ -108,6 +118,13 @@
                 <version>${hadoop.version}</version>
             </dependency>
 
+            <!--Zookeeper-->
+            <dependency>
+                <groupId>org.apache.zookeeper</groupId>
+                <artifactId>zookeeper</artifactId>
+                <version>${zookeeper.version}</version>
+            </dependency>
+
             <!--Hive-->
             <dependency>
                 <groupId>org.apache.hive</groupId>
@@ -119,6 +136,26 @@
             <dependency>
                 <groupId>org.apache.hbase</groupId>
                 <artifactId>hbase-client</artifactId>
+                <version>${hbase.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.hbase</groupId>
+                <artifactId>hbase-common</artifactId>
+                <version>${hbase.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.hbase</groupId>
+                <artifactId>hbase-server</artifactId>
+                <version>${hbase.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.hbase</groupId>
+                <artifactId>hbase-annotations</artifactId>
+                <version>${hbase.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.hbase</groupId>
+                <artifactId>hbase-protocol</artifactId>
                 <version>${hbase.version}</version>
             </dependency>
 
@@ -203,6 +240,47 @@
                 <groupId>org.elasticsearch.client</groupId>
                 <artifactId>elasticsearch-rest-client</artifactId>
                 <version>${elasticsearch.version}</version>
+            </dependency>
+
+            <!--GeoMesa-->
+            <dependency>
+                <groupId>org.locationtech.geomesa</groupId>
+                <artifactId>geomesa_2.11</artifactId>
+                <version>${geomesa.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!--GeoTools-->
+            <dependency>
+                <groupId>org.geotools</groupId>
+                <artifactId>gt-opengis</artifactId>
+                <version>${geotools.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.geotools</groupId>
+                <artifactId>gt-main</artifactId>
+                <version>${geotools.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.geotools</groupId>
+                <artifactId>gt-shapefile</artifactId>
+                <version>${geotools.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.geotools</groupId>
+                <artifactId>gt-epsg-hsql</artifactId>
+                <version>${geotools.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.geotools</groupId>
+                <artifactId>gt-epsg-wkt</artifactId>
+                <version>${geotools.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.geotools</groupId>
+                <artifactId>gt-swing</artifactId>
+                <version>${geotools.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -330,4 +408,38 @@
             </plugin>
         </plugins>
     </build>
+
+    <repositories>
+        <!--geotools仓库-->
+        <repository>
+            <id>osgeo</id>
+            <name>OSGeo Release Repository</name>
+            <url>https://repo.osgeo.org/repository/release/</url>
+            <snapshots><enabled>false</enabled></snapshots>
+            <releases><enabled>true</enabled></releases>
+        </repository>
+        <repository>
+            <id>osgeo-snapshot</id>
+            <name>OSGeo Snapshot Repository</name>
+            <url>https://repo.osgeo.org/repository/snapshot/</url>
+            <snapshots><enabled>true</enabled></snapshots>
+            <releases><enabled>false</enabled></releases>
+        </repository>
+        <repository>
+            <id>aliyunmaven</id>
+            <name>aliyunmaven</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>aliyunmavenApache</id>
+            <url>https://maven.aliyun.com/repository/apache-snapshots</url>
+        </repository>
+    </repositories>
 </project>

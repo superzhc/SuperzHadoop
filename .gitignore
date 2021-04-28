@@ -93,18 +93,3 @@ fabric.properties
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
-
-/SuperzFlink/target/classes.1263088930.timestamp
-/SuperzFlink/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
-/SuperzFlink/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
-/target/
-/SuperzFlink/target/classes/log4j.properties
-/SuperzFlinkManage/target/classes/application.properties
-/SuperzFlinkManage/target/classes/custom.properties
-/SuperzFlinkManage/target/classes/mapper/JobConfigMapper.xml
-/SuperzFlinkManage/target/classes/mapper/JobInfoMapper.xml
-/SuperzFlinkManage/target/classes/mapper/JobJarPackagesManageMapper.xml
-/SuperzFlinkManage/target/classes/log4j2-spring.xml
-/SuperzFlinkManage/target/classes/META-INF/spring-configuration-metadata.json
-/SuperzFlinkManage/target/classes/mapper/JobInfoJobConfigMapper.xml
-/SuperzFlinkManage/target/classes/bigdata.properties
