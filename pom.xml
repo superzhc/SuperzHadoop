@@ -17,7 +17,7 @@
         <module>SuperzHBase</module>
         <module>SuperzSpark</module>
         <module>SuperzFlink</module>
-        <module>SuperzDemo</module>
+        <module>SuperzOther</module>
         <module>SuperzES</module>
         <module>SuperzLeetcode</module>
         <module>SuperzWeb</module>
@@ -25,6 +25,8 @@
         <module>SuperzDB</module>
         <module>SuperzFlinkManage</module>
         <module>SuperzGIS</module>
+        <module>SuperzDataMing</module>
+        <module>SuperzDataMing-Smile</module>
     </modules>
     <packaging>pom</packaging>
 
