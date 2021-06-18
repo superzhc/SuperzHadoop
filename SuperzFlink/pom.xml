@@ -13,7 +13,7 @@
     <artifactId>SuperzFlink</artifactId>
 
     <properties>
-        <scala.version>2.11.8</scala.version>
+        <scala.version>2.11.12</scala.version>
     </properties>
 
     <dependencies>
