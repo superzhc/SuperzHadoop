@@ -39,7 +39,7 @@
         <mybatis-plus.version>3.0.6</mybatis-plus.version>
         <mysql.connector.version>8.0.13</mysql.connector.version>
         <hadoop.version>3.0.0</hadoop.version>
-        <zookeeper.version>3.4.10</zookeeper.version>
+        <zookeeper.version>3.4.14</zookeeper.version>
         <hive.version>1.2.1</hive.version>
         <hbase.version>2.2.3</hbase.version>
         <spark.version>2.3.0</spark.version>
