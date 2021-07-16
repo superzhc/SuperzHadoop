@@ -26,7 +26,6 @@
         <module>SuperzFlinkManage</module>
         <module>SuperzGIS</module>
         <module>SuperzDataMing</module>
-        <module>SuperzDataMing-Smile</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -47,7 +46,7 @@
         <flink.version>1.12.2</flink.version>
         <kafka.version>2.3.0</kafka.version>
         <elasticsearch.version>7.1.1</elasticsearch.version>
-        <geomesa.version>2.3.0</geomesa.version>
+        <geomesa.version>3.0.0</geomesa.version>
         <geotools.version>23.3</geotools.version>
     </properties>
 
