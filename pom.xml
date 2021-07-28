@@ -26,6 +26,7 @@
         <module>SuperzFlinkManage</module>
         <module>SuperzGIS</module>
         <module>SuperzDataMing</module>
+        <module>SuperzXxlJobExecutor</module>
     </modules>
     <packaging>pom</packaging>
 
