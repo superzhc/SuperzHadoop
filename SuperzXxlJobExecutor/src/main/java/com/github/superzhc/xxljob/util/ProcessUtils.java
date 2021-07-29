@@ -7,8 +7,8 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.StringTokenizer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -22,21 +22,23 @@ public class ProcessUtils {
     private static final Logger log = LoggerFactory.getLogger(ProcessUtils.class);
 
     public static int execCommand(String command) {
-        StringTokenizer st = new StringTokenizer(command);
+        /*StringTokenizer st = new StringTokenizer(command);
         List<String> cmdarray = new ArrayList<>(st.countTokens());
         while (st.hasMoreTokens()) {
             cmdarray.add(st.nextToken());
-        }
+        }*/
+        String[] cmdarray = CommandLineUtils.translateCommandline(command);
         return exec(cmdarray);
     }
 
     public static int execCommand(String command, Consumer<InputStream> consumer) {
-        StringTokenizer st = new StringTokenizer(command);
+        /*StringTokenizer st = new StringTokenizer(command);
         List<String> cmdarray = new ArrayList<>(st.countTokens());
         while (st.hasMoreTokens()) {
             cmdarray.add(st.nextToken());
-        }
-        return exec(cmdarray, consumer);
+        }*/
+        String[] cmdarray = CommandLineUtils.translateCommandline(command);
+        return exec(Arrays.asList(cmdarray), consumer);
     }
 
     public static int exec(String... command) {
@@ -79,7 +81,18 @@ public class ProcessUtils {
             log.debug("当前执行的命令为：{}", command.stream().collect(Collectors.joining(" ")));
         }
 
-        ProcessBuilder processBuilder = new ProcessBuilder(command);
+        // 2021年7月28日 window 系统命令执行需要在 cmd 环境下
+        ProcessBuilder processBuilder;
+        if (PlatformUtils.isWindows()) {
+            List<String> winCommand = new ArrayList<>();
+            winCommand.add("cmd");
+            winCommand.add("/C");
+            winCommand.add("\"" + command.stream().collect(Collectors.joining(" ")) + "\"");
+            processBuilder = new ProcessBuilder(winCommand);
+        } else {
+            processBuilder = new ProcessBuilder(command);
+        }
+
         // 将错误流重定向到输出流中，两个流进行合并
         processBuilder.redirectErrorStream(true);
 

@@ -15,7 +15,11 @@ public class CommnadHandler {
     @XxlJob("cmd")
     public void executor() throws Exception{
         String param= XxlJobHelper.getJobParam();
-        int code=ProcessUtils.execCommand(param,new CommonConsumer());
-        XxlJobHelper.log("code={}", code);
+        int exitValue=ProcessUtils.execCommand(param,new CommonConsumer());
+        if (exitValue == 0) {
+            XxlJobHelper.handleSuccess();
+        } else {
+            XxlJobHelper.handleFail("command exit value("+exitValue+") is failed");
+        }
     }
 }

@@ -17,12 +17,13 @@ public class CommonConsumer implements Consumer<InputStream> {
         // 获取当前操作系统的编码
         String encoding = System.getProperty("sun.jnu.encoding");
         try (BufferedReader output = new BufferedReader(new InputStreamReader(inputStream, encoding))) {
-            StringBuilder result = new StringBuilder();
+            // StringBuilder result = new StringBuilder();
             String line;
             while ((line = output.readLine()) != null) {
-                result.append(line);
+                // result.append(line);
+                XxlJobHelper.log(line);
             }
-            XxlJobHelper.log(result.toString());
+            //XxlJobHelper.log(result.toString());
         } catch (Exception e) {
             XxlJobHelper.log(e);
         }

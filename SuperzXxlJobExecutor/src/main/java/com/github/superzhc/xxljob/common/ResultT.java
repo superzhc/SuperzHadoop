@@ -11,6 +11,10 @@ public class ResultT {
     private String msg;
     private Object data;
 
+    public static ResultT success() {
+        return success(null);
+    }
+
     public static ResultT success(Object data) {
         return success(200, data);
     }
