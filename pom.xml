@@ -27,6 +27,7 @@
         <module>SuperzGIS</module>
         <module>SuperzDataMing</module>
         <module>SuperzXxlJobExecutor</module>
+        <module>SuperzGISWeb</module>
     </modules>
     <packaging>pom</packaging>
 
