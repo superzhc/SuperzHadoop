@@ -1,4 +1,4 @@
-package com.github.superzhc.geomesa;
+package com.github.superzhc.gis.geomesa;
 
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;

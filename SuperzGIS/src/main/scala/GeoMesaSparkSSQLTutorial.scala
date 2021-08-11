@@ -26,14 +26,15 @@ object GeoMesaSparkSSQLTutorial {
     val dataFrame = sparkSession.read
       .format("geomesa")
       .options(dsParams)
-      .option("geomesa.feature", "vehicle.tpms")
+      .option("geomesa.feature", "bsm.can.bus")
       .load()
 
-    dataFrame.createOrReplaceTempView("vehicle_tpms")
+    dataFrame.createOrReplaceTempView("bsm_can_bus")
 
-    val sqlQuery = "select * from vehicle_tpms where timestamp > '1990-01-01T00:00:00.000Z'"
+    val sqlQuery = "select * from bsm_can_bus where timestamp > '2020-08-03T20:00:00.000Z' and plate_number='苏A5999'"
     val resultDataFrame = sparkSession.sql(sqlQuery)
 
-    resultDataFrame.show
+    print(resultDataFrame.count())
+    resultDataFrame.show(1000)
   }
 }

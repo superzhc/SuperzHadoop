@@ -1,19 +1,16 @@
-package com.github.superzhc.geomesa.direct;
+package com.github.superzhc.gis.geomesa.direct;
 
+import com.github.superzhc.gis.geomesa.GeoMesa2MD;
 import org.geotools.data.*;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
-import org.geotools.util.Classes;
 import org.geotools.util.factory.Hints;
 import org.locationtech.geomesa.hbase.data.HBaseDataStoreParams;
 import org.locationtech.geomesa.utils.geotools.SimpleFeatureTypes;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.AttributeDescriptor;
-import org.opengis.feature.type.AttributeType;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -46,8 +43,10 @@ public class SimpleFeatureType_and_SimpleFeature {
         SimpleFeatureType_and_SimpleFeature ss = new SimpleFeatureType_and_SimpleFeature(dsi.getDataStore());
         // 列出所有schema
         String[] schemas = dsi.getDataStore().getTypeNames();
+        StringBuilder result=new StringBuilder();
         for (String schema : schemas) {
-//            SimpleFeatureType sft = dsi.getDataStore().getSchema(schema);
+            SimpleFeatureType sft = dsi.getDataStore().getSchema(schema);
+            result.append(GeoMesa2MD.template(sft));
 //            System.out.println(schema);
 //            System.out.println("    属性列表[" + sft.getAttributeCount() + "]：");
 //            for (AttributeDescriptor attribute : sft.getAttributeDescriptors()) {
@@ -59,13 +58,14 @@ public class SimpleFeatureType_and_SimpleFeature {
 //            for (Map.Entry<Object, Object> entry : sft.getUserData().entrySet()) {
 //                System.out.println("        " + entry.getKey() + ":" + entry.getValue());
 //            }
-            if ("district.info".equals(schema) || "geomesa.fence".equals(schema) || "vehicle.alarm.section".equals(schema) || "vehicle.risk".equals(schema)) {
-                continue;
-            }
-            System.out.println("-------------------------" + schema + "----------------------------");
-            ss.readingData(schema);
-            System.out.println("-------------------------" + schema + "----------------------------");
+//            if ("district.info".equals(schema) || "geomesa.fence".equals(schema) || "vehicle.alarm.section".equals(schema) || "vehicle.risk".equals(schema)) {
+//                continue;
+//            }
+//            System.out.println("-------------------------" + schema + "----------------------------");
+//            ss.readingData(schema);
+//            System.out.println("-------------------------" + schema + "----------------------------");
         }
+        System.out.println(result);
         dsi.close();
     }
 

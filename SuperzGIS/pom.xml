@@ -121,12 +121,12 @@
         <dependency>
             <groupId>org.locationtech.geomesa</groupId>
             <artifactId>geomesa-hbase-spark-runtime-hbase2_2.11</artifactId>
-            <!--<version>3.0.0</version>-->
+            <version>3.0.0</version>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.locationtech.geomesa</groupId>
             <artifactId>geomesa-spark-core_2.11</artifactId>
-        </dependency>
+        </dependency>-->
 
         <!-- scala -->
         <dependency>
