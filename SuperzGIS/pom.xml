@@ -69,16 +69,17 @@
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-hdfs</artifactId>
         </dependency>-->
-        <!--<dependency>
+        <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-auth</artifactId>
-        </dependency>-->
+            <scope>compile</scope>
+        </dependency>
         <!--<dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-client</artifactId>
-        </dependency>
+        </dependency>-->
 
-        <dependency>
+        <!--<dependency>
             <groupId>org.apache.zookeeper</groupId>
             <artifactId>zookeeper</artifactId>
         </dependency>
@@ -92,10 +93,11 @@
             <artifactId>gt-swing</artifactId>
         </dependency>-->
 
-        <!--<dependency>
+        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-        </dependency>-->
+            <scope>compile</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.spark</groupId>

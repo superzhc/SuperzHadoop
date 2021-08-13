@@ -1,6 +1,6 @@
 package com.github.superzhc.gis.geomesa.direct;
 
-import com.github.superzhc.gis.geomesa.GeoMesa2MD;
+import com.github.superzhc.gis.geomesa.tool.GeoMesa2MD;
 import org.geotools.data.*;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
