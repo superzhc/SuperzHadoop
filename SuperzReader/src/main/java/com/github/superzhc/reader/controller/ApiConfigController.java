@@ -3,33 +3,32 @@ package com.github.superzhc.reader.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.github.superzhc.reader.common.ResultT;
-import com.github.superzhc.reader.entity.DatasourceConfig;
-import com.github.superzhc.reader.mapper.DatasourceConfigMapper;
-import com.github.superzhc.reader.service.DatasourceConfigService;
+import com.github.superzhc.reader.entity.ApiConfig;
+import com.github.superzhc.reader.service.ApiConfigService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 /**
  * @author superz
- * @create 2021/8/17 20:12
+ * @create 2021/8/18 21:01
  */
 @RestController
-@RequestMapping("/datasourceconfig")
+@RequestMapping("/apiconfig")
 @Slf4j
-public class DatasourceConfigController {
+public class ApiConfigController {
     @Autowired
-    private DatasourceConfigService service;
+    private ApiConfigService apiConfigService;
 
     @GetMapping("/page")
     public ResultT page(@RequestParam Integer page, @RequestParam Integer limit) {
-        IPage<DatasourceConfig> data = service.page(new Page<>(page, limit));
-        return ResultT.success(data);
+        IPage<ApiConfig> datas = apiConfigService.page(new Page<>(page, limit));
+        return ResultT.success(datas);
     }
 
     @PostMapping
-    public ResultT add(DatasourceConfig datasourceConfig) {
-        boolean b = service.save(datasourceConfig);
+    public ResultT add(ApiConfig apiConfig) {
+        boolean b = apiConfigService.save(apiConfig);
         return ResultT.msg(b ? 0 : 1, b ? "新增成功" : "新增失败");
     }
 }

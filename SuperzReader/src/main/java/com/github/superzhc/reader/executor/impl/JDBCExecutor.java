@@ -1,25 +1,34 @@
 package com.github.superzhc.reader.executor.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.github.superzhc.reader.common.ResultT;
 import com.github.superzhc.reader.datasource.impl.JDBCDatasource;
+import com.github.superzhc.reader.executor.Executor;
 import com.github.superzhc.reader.param.impl.JDBCParam;
 import com.github.superzhc.reader.util.PlaceholderResolver;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author superz
  * @create 2021/8/17 16:53
  */
-public class JDBCExecutor {
+public class JDBCExecutor extends Executor {
     private JDBCDatasource dataSource;
     private JDBCParam param;
 
-    public JDBCExecutor(JDBCDatasource dataSource, JDBCParam param) {
-        this.dataSource = dataSource;
-        this.param = param;
+    public JDBCExecutor(String datasourceConfig, String paramConfig) {
+        super(datasourceConfig, paramConfig);
+        this.dataSource = new JDBCDatasource(JSON.parseObject(datasourceConfig).getInnerMap());
+        this.param = JSON.parseObject(paramConfig, JDBCParam.class);
     }
 
-    public void execute() {
+    @Override
+    public ResultT execute(Map<String, Object> values) {
         Connection connection = null;
         Statement stmt = null;
         try {
@@ -27,26 +36,36 @@ public class JDBCExecutor {
             Class.forName(dataSource.getDriver());
 
             // 获取数据库连接
-            connection = DriverManager.getConnection(dataSource.getUrl(), dataSource.convert());
+            connection = DriverManager.getConnection(dataSource.getUrl(), dataSource.convert("driver", "url"));
 
-            String sql = PlaceholderResolver.getDefaultResolver().resolveByMap(param.getSql(), param.getParams());
+            String sql = PlaceholderResolver.getDefaultResolver().resolveByMap(param.getSql(), values);
 
             // 创建Statement
             stmt = connection.createStatement();
-            ResultSet rs1 = stmt.executeQuery(sql);
+            ResultSet rs = stmt.executeQuery(sql);
 
-            // 遍历结果集
-            while (rs1.next()) {
-                // doing something
-                System.out.println(rs1.getDate(1));
+            List<Map<String, Object>> list = new ArrayList<>();
+            ResultSetMetaData metaData = rs.getMetaData();
+            int cols_len = metaData.getColumnCount();
+            while (rs.next()) {
+                Map<String, Object> map = new HashMap<>();
+                for (int i = 0; i < cols_len; i++) {
+                    String cols_name = metaData.getColumnName(i + 1);
+                    Object cols_value = rs.getObject(cols_name);
+                    map.put(cols_name, cols_value);
+                }
+                list.add(map);
             }
-
             // 关闭资源
-            rs1.close();
+            rs.close();
+
+            return ResultT.success(list);
         } catch (SQLException ex) {
-            ex.printStackTrace();
+            /*ex.printStackTrace();*/
+            return ResultT.fail(ex.getMessage());
         } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            /*e.printStackTrace();*/
+            return ResultT.fail(e.getMessage());
         } finally {
             try {
                 if (stmt != null) {

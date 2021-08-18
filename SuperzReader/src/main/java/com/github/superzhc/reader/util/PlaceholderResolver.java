@@ -183,6 +183,10 @@ public class PlaceholderResolver
      * @return   替换完成后的字符串。
      */
     public String resolveByMap(String content, final Map<String, Object> valueMap) {
+        if(null==valueMap||valueMap.size()==0){
+            return content;
+        }
+
         return resolveByRule(content, placeholderValue -> {
             /* 2021年8月17日 superz add 支持时间格式化，形如 date#YYYY-MM-dd HH:mm:ss*/
             if (!placeholderValue.startsWith("#") && placeholderValue.contains("#")) {

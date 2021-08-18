@@ -31,6 +31,10 @@ public class ResultT {
         return create(code, MessageFormat.format(msg, params), null);
     }
 
+    public static ResultT msg(int code, String msg) {
+        return create(code, msg, null);
+    }
+
     private static ResultT create(int code, String msg, Object data) {
         ResultT r = new ResultT();
         r.setCode(code);

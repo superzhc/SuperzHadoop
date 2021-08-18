@@ -23,5 +23,5 @@ public class JDBCParam implements Param {
      *     "age":25
      * }
      */
-    private Map<String,Object> params;
+    //private Map<String,Object> params;
 }

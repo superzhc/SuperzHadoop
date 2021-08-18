@@ -31,7 +31,7 @@
             </label>
             <div class="layui-input-block layui-form" lay-filter="type">
                 <select name="type" lay-verify="required" disabled>
-                    <option value="com.github.superzhc.reader.datasource.impl.JDBCDatasource"
+                    <option value="com.github.superzhc.reader.executor.impl.JDBCExecutor"
                             selected="">
                         JDBC数据源
                     </option>
@@ -92,12 +92,15 @@
 </div>
 <script type="text/javascript" src="../layui/layui.js">
 </script>
+<script type="text/javascript" src="../js/config.js"></script>
 <script>
-    layui.use(["jquery", "layer", "form"],
+    layui.use(["jquery", "layer", "form","http"],
         function () {
             var $ = layui.jquery,
                 layer = layui.layer,
-                form = layui.form;
+                form = layui.form,
+                http=layui.http
+            ;
 
             form.on('submit(btnds)', function (data) {
                 var obj = {
@@ -108,18 +111,7 @@
                 delete data.field.type;
                 obj.config = JSON.stringify(data.field);
 
-                $.ajax({
-                    url: "/datasourceconfig"
-                    , type: "POST"
-                    , data: obj
-                    , success: function (ret) {
-                        if (ret.code === 1) {
-                            layer.alert(ret.msg);
-                        } else {
-                            layer.alert("新增成功");
-                        }
-                    }
-                });
+                http.post("/datasourceconfig",obj);
 
                 return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
             });
