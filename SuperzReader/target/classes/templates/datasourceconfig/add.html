@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>
+        新增数据源
+    </title>
+    <link rel="stylesheet" href="../layui/css/layui.css"
+    />
+</head>
+
+<body>
+<div id="ds" style="margin: 10px 20px;">
+    <form class="layui-form" style="height:100%;" id="dsform">
+        <div id="name" class="layui-form-item active" data-id="name" data-tag="input"
+             data-index="0">
+            <label class="layui-form-label layui-form-required">
+                数据源名称:
+            </label>
+            <div class="layui-input-block">
+                <input name="name" value="" placeholder="请输入数据源名称" class="layui-input"
+                       lay-vertype="tips" lay-verify="required" style="width:100%">
+            </div>
+        </div>
+        <div id="type" class="layui-form-item active" data-id="type" data-tag="select"
+             data-index="1">
+            <label class="layui-form-label layui-form-required">
+                下拉框:
+            </label>
+            <div class="layui-input-block layui-form" lay-filter="type">
+                <select name="type" lay-verify="required">
+                    <option value="com.github.superzhc.reader.datasource.impl.JDBCDatasource"
+                            selected="">
+                        JDBC数据源
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div id="driver" class="layui-form-item active" data-id="driver" data-tag="input"
+             data-index="2">
+            <label class="layui-form-label layui-form-required">
+                驱动类:
+            </label>
+            <div class="layui-input-block">
+                <input name="driver" value="" placeholder="请输入驱动全类名" class="layui-input"
+                       lay-vertype="tips" lay-verify="required" style="width:100%">
+            </div>
+        </div>
+        <div id="url" class="layui-form-item active" data-id="url" data-tag="input"
+             data-index="3">
+            <label class="layui-form-label layui-form-required">
+                Url:
+            </label>
+            <div class="layui-input-block">
+                <input name="url" value="" placeholder="请输入Url" class="layui-input" lay-vertype="tips"
+                       lay-verify="required" style="width:100%">
+            </div>
+        </div>
+        <div id="user" class="layui-form-item active" data-id="user" data-tag="input"
+             data-index="4">
+            <label class="layui-form-label layui-form-required">
+                用户名:
+            </label>
+            <div class="layui-input-block">
+                <input name="user" value="" placeholder="请输入用户名" class="layui-input" lay-vertype="tips"
+                       lay-verify="required" style="width:100%">
+            </div>
+        </div>
+        <div id="password" class="layui-form-item active" data-id="password" data-tag="password"
+             data-index="5">
+            <label class="layui-form-label layui-form-required">
+                密码:
+            </label>
+            <div class="layui-input-block">
+                <input type="password" name="password" placeholder="请输入密码" value="" autocomplete="off"
+                       style="width:100%" lay-verify="required" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="submit" class="layui-btn" lay-submit="" lay-filter="btnds">
+                    提交
+                </button>
+                <button type="reset" class="layui-btn layui-btn-primary">
+                    重置
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript" src="../layui/layui.js">
+</script>
+<script>
+    layui.use(["jquery", "layer", "form"],
+        function () {
+            var $ = layui.jquery,
+                layer = layui.layer,
+                form = layui.form;
+
+            form.on('submit(btnds)', function (data) {
+                var obj = {
+                    name: data.field.name,
+                    type: data.field.type
+                };
+                delete data.field.name;
+                delete data.field.type;
+                obj.config = JSON.stringify(data.field);
+
+                $.ajax({
+                    url: "/datasourceconfig"
+                    , type: "POST"
+                    , data: obj
+                    , success: function (ret) {
+                        if (ret.code === 1) {
+                            layer.alert(ret.msg);
+                        } else {
+                            layer.alert("新增成功");
+                        }
+                    }
+                });
+
+                return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+            });
+        });
+</script>
+</body>
+
+</html>
