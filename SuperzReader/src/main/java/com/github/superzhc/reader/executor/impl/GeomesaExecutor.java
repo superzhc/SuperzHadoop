@@ -1,41 +1,52 @@
 package com.github.superzhc.reader.executor.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.github.superzhc.reader.common.ResultT;
 import com.github.superzhc.reader.datasource.impl.GeomesaDatasource;
+import com.github.superzhc.reader.executor.Executor;
 import com.github.superzhc.reader.param.impl.GeomesaParam;
+import lombok.extern.slf4j.Slf4j;
 import org.geotools.data.*;
 import org.geotools.filter.text.ecql.ECQL;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author superz
  * @create 2021/8/17 17:04
  */
-public class GeomesaExecutor {
+@Slf4j
+public class GeomesaExecutor extends Executor {
     private GeomesaDatasource dataSource;
     private GeomesaParam param;
 
-    public GeomesaExecutor(GeomesaDatasource dataSource, GeomesaParam param) {
-        this.dataSource = dataSource;
-        this.param = param;
+    public GeomesaExecutor(String datasourceConfig, String paramConfig) {
+        super(datasourceConfig, paramConfig);
+        this.dataSource = new GeomesaDatasource(JSON.parseObject(datasourceConfig).getInnerMap());
+        this.param = JSON.parseObject(paramConfig, GeomesaParam.class);
     }
 
-    public void execute() {
+    @Override
+    public ResultT execute(Map<String, Object> values) {
         DataStore datastore = null;
         try {
             // 创建数据源
-            System.out.println("Loading datastore");
+            log.info("Loading datastore");
             datastore = DataStoreFinder.getDataStore(dataSource.getParams());
             if (datastore == null) {
-                throw new RuntimeException("Could not create data store with provided parameters");
+                //throw new RuntimeException("Could not create data store with provided parameters");
+                return ResultT.fail("Could not create data store with provided parameters");
             }
-            System.out.println("Datastore loaded");
+            log.info("Datastore loaded");
 
             // 获取Schema
             SimpleFeatureType sft = datastore.getSchema(param.getSchema());
             if (null == sft) {
-                System.out.println("Schema '" + param.getSchema() + "' does not exist. ");
-                return;
+                return ResultT.fail("Schema {} does not exist.", param.getSchema());
             }
 
             Query query;
@@ -46,18 +57,21 @@ public class GeomesaExecutor {
             }
 
             try (FeatureReader<SimpleFeatureType, SimpleFeature> reader = datastore.getFeatureReader(query, Transaction.AUTO_COMMIT)) {
+                List<String> lst = new ArrayList<>();
                 while (reader.hasNext()) {
                     SimpleFeature next = reader.next();
-                    System.out.println(DataUtilities.encodeFeature(next));
+                    lst.add(DataUtilities.encodeFeature(next));
                 }
+                return ResultT.success(lst);
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
-        }
-        // when finished, be sure to clean up the store
-        if (datastore != null) {
-            datastore.dispose();
+            return ResultT.fail(e);
+        } finally {
+            // when finished, be sure to clean up the store
+            if (datastore != null) {
+                datastore.dispose();
+            }
         }
     }
 }

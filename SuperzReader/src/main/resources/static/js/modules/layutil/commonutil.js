@@ -6,6 +6,67 @@
 layui.define([], function (exports) {
     var util = {};
 
+    // 2021年8月19日 类型判断类
+    util.TypeUtil = {
+        isObject: function (input) {
+            return Object.prototype.toString.call(input) === '[object Object]';
+        },
+        isArray: function (input) {
+            return input instanceof Array || Object.prototype.toString.call(input) === '[object Array]';
+        },
+        isDate: function (input) {
+            return input instanceof Date || Object.prototype.toString.call(input) === '[object Date]';
+        },
+        isNumber: function (input) {
+            return input instanceof Number || Object.prototype.toString.call(input) === '[object Number]';
+        },
+        isString: function (input) {
+            return input instanceof String || Object.prototype.toString.call(input) === '[object String]';
+        },
+        isBoolean: function (input) {
+            return typeof input == 'boolean';
+        },
+        isFunction: function (input) {
+            return typeof input == 'function';
+        },
+        isNull: function (input) {
+            return input === undefined || input === null;
+        },
+        isPlainObject: function (obj) {
+            if (obj && Object.prototype.toString.call(obj) === "[object Object]" && obj.constructor === Object && !hasOwnProperty.call(obj, "constructor")) {
+                var key;
+                for (key in obj) {
+                }
+                return key === undefined || hasOwnProperty.call(obj, key);
+            }
+            return false;
+        }
+    }
+
+    // 2021年8月19日 对象工具类
+    util.ObjectUtil = {
+        getThenRemove: function (obj, key) {
+            if (!obj.hasOwnProperty(key)) return null;
+            var value = obj[key];
+            //delete obj[key];
+            obj[key] = undefined;
+            return value;
+        },
+        removeNull: function (obj) {
+            if (TypeUtil.isNull(obj)) {
+                return obj;
+            }
+
+            Object.keys(obj).forEach(item => {
+                if (TypeUtil.isNull(obj[item])) {
+                    // delete obj[item]
+                    obj[item] = undefined;
+                }
+            });
+            return obj;
+        }
+    }
+
     //电话号码工具类
     util.PhoneUtil = {
         phoneRegexs: {
@@ -396,6 +457,10 @@ layui.define([], function (exports) {
                 }
             }
             return false;
+        },
+        //从数组中移除 falsey 值。注：falsey 值 (false、null、0、""、undefined和NaN)
+        compact:function (arr){
+            return arr.filter(Boolean);
         }
     };
     //DateUtils命名空间

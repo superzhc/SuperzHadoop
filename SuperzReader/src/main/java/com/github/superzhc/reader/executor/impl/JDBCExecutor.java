@@ -6,6 +6,7 @@ import com.github.superzhc.reader.datasource.impl.JDBCDatasource;
 import com.github.superzhc.reader.executor.Executor;
 import com.github.superzhc.reader.param.impl.JDBCParam;
 import com.github.superzhc.reader.util.PlaceholderResolver;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import java.util.Map;
  * @author superz
  * @create 2021/8/17 16:53
  */
+@Slf4j
 public class JDBCExecutor extends Executor {
     private JDBCDatasource dataSource;
     private JDBCParam param;
@@ -36,9 +38,10 @@ public class JDBCExecutor extends Executor {
             Class.forName(dataSource.getDriver());
 
             // 获取数据库连接
-            connection = DriverManager.getConnection(dataSource.getUrl(), dataSource.convert("driver", "url"));
+            connection = DriverManager.getConnection(dataSource.getUrl(), dataSource.info());
 
             String sql = PlaceholderResolver.getDefaultResolver().resolveByMap(param.getSql(), values);
+            log.info("请求SQL：{}", sql);
 
             // 创建Statement
             stmt = connection.createStatement();

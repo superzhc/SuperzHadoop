@@ -23,6 +23,14 @@ public class ResultT {
         return create(code, null, data);
     }
 
+    public static ResultT fail(Throwable e) {
+        return fail(0, e);
+    }
+
+    public static ResultT fail(int code, Throwable e) {
+        return create(code, e.toString(), null);
+    }
+
     public static ResultT fail(String msg, Object... params) {
         return fail(1, msg, params);
     }

@@ -28,6 +28,12 @@ public class ApiConfigController {
 
     @PostMapping
     public ResultT add(ApiConfig apiConfig) {
+        // 判断数据服务地址是否存在
+        boolean isExist = apiConfigService.exist(apiConfig.getPath());
+        if (isExist) {
+            return ResultT.fail("数据服务地址[{}]已存在", apiConfig.getPath());
+        }
+
         boolean b = apiConfigService.save(apiConfig);
         return ResultT.msg(b ? 0 : 1, b ? "新增成功" : "新增失败");
     }

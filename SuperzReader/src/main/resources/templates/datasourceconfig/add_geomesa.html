@@ -27,55 +27,45 @@
         <div id="type" class="layui-form-item active" data-id="type" data-tag="select"
              data-index="1">
             <label class="layui-form-label layui-form-required">
-                下拉框:
+                数据源类型:
             </label>
             <div class="layui-input-block layui-form" lay-filter="type">
-                <select name="type" lay-verify="required">
-                    <option value="com.github.superzhc.reader.datasource.impl.JDBCDatasource"
+                <select name="type" lay-verify="required" disabled>
+                    <option value="com.github.superzhc.reader.executor.impl.JDBCExecutor"
                             selected="">
                         JDBC数据源
                     </option>
                 </select>
             </div>
         </div>
-        <div id="driver" class="layui-form-item active" data-id="driver" data-tag="input"
+        <div id="hbase.zookeepers" class="layui-form-item active" data-id="hbase.zookeepers" data-tag="input"
              data-index="2">
             <label class="layui-form-label layui-form-required">
-                驱动类:
+                HBase-Zookeeper:
             </label>
             <div class="layui-input-block">
-                <input name="driver" value="" placeholder="请输入驱动全类名" class="layui-input"
+                <input name="hbase.zookeepers" value="" placeholder="请输入HBase的Zookeeper连接，多个用逗号隔开" class="layui-input"
                        lay-vertype="tips" lay-verify="required" style="width:100%">
             </div>
         </div>
-        <div id="url" class="layui-form-item active" data-id="url" data-tag="input"
+        <div id="hbase.catalog" class="layui-form-item active" data-id="hbase.catalog" data-tag="input"
              data-index="3">
             <label class="layui-form-label layui-form-required">
-                Url:
+                Catalog:
             </label>
             <div class="layui-input-block">
-                <input name="url" value="" placeholder="请输入Url" class="layui-input" lay-vertype="tips"
+                <input name="hbase.catalog" value="" placeholder="请输入 Catalog" class="layui-input" lay-vertype="tips"
                        lay-verify="required" style="width:100%">
             </div>
         </div>
-        <div id="user" class="layui-form-item active" data-id="user" data-tag="input"
+        <div id="hbase.coprocessor.url" class="layui-form-item active" data-id="hbase.coprocessor.url" data-tag="input"
              data-index="4">
             <label class="layui-form-label layui-form-required">
-                用户名:
+                协处理器:
             </label>
             <div class="layui-input-block">
-                <input name="user" value="" placeholder="请输入用户名" class="layui-input" lay-vertype="tips"
-                       lay-verify="required" style="width:100%">
-            </div>
-        </div>
-        <div id="password" class="layui-form-item active" data-id="password" data-tag="password"
-             data-index="5">
-            <label class="layui-form-label layui-form-required">
-                密码:
-            </label>
-            <div class="layui-input-block">
-                <input type="password" name="password" placeholder="请输入密码" value="" autocomplete="off"
-                       style="width:100%" lay-verify="required" class="layui-input">
+                <input name="hbase.coprocessor.url" value="hdfs://datanode1:8020/hbase/lib/geomesa-hbase-distributed-runtime-hbase2_2.11-3.0.0.jar|org.locationtech.geomesa.hbase.server.coprocessor.GeoMesaCoprocessor|1073741823||org.locationtech.geomesa.hbase.server.coprocessor.GeoMesaCoprocessor|1073741823|"
+                       placeholder="请输入用户名" class="layui-input" lay-vertype="tips" lay-verify="required" style="width:100%">
             </div>
         </div>
         <div class="layui-form-item">
@@ -92,34 +82,35 @@
 </div>
 <script type="text/javascript" src="../layui/layui.js">
 </script>
+<script type="text/javascript" src="../js/config.js"></script>
 <script>
-    layui.use(["jquery", "layer", "form"],
+    layui.use(["jquery", "layer", "form", "http", "selectDynamic","commonutil"],
         function () {
             var $ = layui.jquery,
                 layer = layui.layer,
-                form = layui.form;
+                form = layui.form,
+                http = layui.http,
+                selectDynamic = layui.selectDynamic
+                ,objUtil=layui.commonutil.ObjectUtil
+            ;
+
+            selectDynamic.render({
+                el: '[name="type"]'
+                , data: [
+                    //{"title": "JDBC 数据源", "value": "com.github.superzhc.reader.executor.impl.JDBCExecutor"}
+                    {"title": "Geomesa 数据源", "value": "com.github.superzhc.reader.executor.impl.GeomesaExecutor"}
+                    //,{"title":"","value":""}
+                ]
+            });
 
             form.on('submit(btnds)', function (data) {
                 var obj = {
-                    name: data.field.name,
-                    type: data.field.type
+                    name: objUtil.getThenRemove(data.field,"name"),
+                    type: objUtil.getThenRemove(data.field,"type")
                 };
-                delete data.field.name;
-                delete data.field.type;
                 obj.config = JSON.stringify(data.field);
 
-                $.ajax({
-                    url: "/datasourceconfig"
-                    , type: "POST"
-                    , data: obj
-                    , success: function (ret) {
-                        if (ret.code === 1) {
-                            layer.alert(ret.msg);
-                        } else {
-                            layer.alert("新增成功");
-                        }
-                    }
-                });
+                http.post("/datasourceconfig", obj);
 
                 return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
             });

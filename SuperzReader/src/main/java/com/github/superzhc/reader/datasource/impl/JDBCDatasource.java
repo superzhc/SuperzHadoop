@@ -3,6 +3,7 @@ package com.github.superzhc.reader.datasource.impl;
 import com.github.superzhc.reader.datasource.Datasource;
 
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * @author superz
@@ -14,19 +15,23 @@ public class JDBCDatasource extends Datasource {
         super(params);
     }
 
-    public String getDriver(){
+    public String getDriver() {
         return (String) params.get("driver");
     }
 
-    public String getUrl(){
+    public String getUrl() {
         return (String) params.get("url");
     }
 
-    public String getUsername(){
+    public String getUsername() {
         return (String) params.get("user");
     }
 
-    public String getPassword(){
+    public String getPassword() {
         return (String) params.get("password");
+    }
+
+    public Properties info() {
+        return convert("driver", "url");
     }
 }

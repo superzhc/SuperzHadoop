@@ -27,7 +27,7 @@
         <div id="type" class="layui-form-item active" data-id="type" data-tag="select"
              data-index="1">
             <label class="layui-form-label layui-form-required">
-                下拉框:
+                数据源类型:
             </label>
             <div class="layui-input-block layui-form" lay-filter="type">
                 <select name="type" lay-verify="required" disabled>
@@ -94,24 +94,33 @@
 </script>
 <script type="text/javascript" src="../js/config.js"></script>
 <script>
-    layui.use(["jquery", "layer", "form","http"],
+    layui.use(["jquery", "layer", "form", "http", "selectDynamic","commonutil"],
         function () {
             var $ = layui.jquery,
                 layer = layui.layer,
                 form = layui.form,
-                http=layui.http
+                http = layui.http,
+                selectDynamic = layui.selectDynamic
+                ,objUtil=layui.commonutil.ObjectUtil
             ;
+
+            selectDynamic.render({
+                el: '[name="type"]'
+                , data: [
+                    {"title": "JDBC 数据源", "value": "com.github.superzhc.reader.executor.impl.JDBCExecutor"}
+                    , {"title": "Geomesa 数据源", "value": "com.github.superzhc.reader.executor.impl.GeomesaExecutor"}
+                    //,{"title":"","value":""}
+                ]
+            });
 
             form.on('submit(btnds)', function (data) {
                 var obj = {
-                    name: data.field.name,
-                    type: data.field.type
+                    name: objUtil.getThenRemove(data.field,"name"),
+                    type: objUtil.getThenRemove(data.field,"type")
                 };
-                delete data.field.name;
-                delete data.field.type;
                 obj.config = JSON.stringify(data.field);
 
-                http.post("/datasourceconfig",obj);
+                http.post("/datasourceconfig", obj);
 
                 return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
             });

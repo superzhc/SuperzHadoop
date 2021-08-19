@@ -61,7 +61,7 @@ public class ApiInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        DatasourceConfig datasourceConfig = datasourceConfigService.getById(apiConfig.getId());
+        DatasourceConfig datasourceConfig = datasourceConfigService.getById(apiConfig.getDsId());
         Class clazz = Class.forName(datasourceConfig.getType());
         Constructor<Executor> c = clazz.getConstructor(String.class, String.class);
         Executor executor = c.newInstance(datasourceConfig.getConfig(), apiConfig.getConfig());

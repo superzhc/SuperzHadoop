@@ -4,9 +4,10 @@ window.rootPath = (function (src) {
 })();
 
 layui.config({
-    base: rootPath+"modules/",
+    base: rootPath + "modules/",
     version: true
 }).extend({
-    "http": "layhttp/http"
-    ,"commonutil":"layutil/commonutil"
+    http: "layhttp/http"
+    , commonutil: "layutil/commonutil"
+    , selectDynamic: "layselect/selectDynamic"
 });

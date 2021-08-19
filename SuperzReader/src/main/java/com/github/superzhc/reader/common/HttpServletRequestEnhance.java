@@ -40,8 +40,10 @@ public class HttpServletRequestEnhance {
 
         Map<String, String[]> formParams = request.getParameterMap();
         if (null != formParams) {
+            /*fix bug:2021年8月19日 参数只有一个值也会包裹成数组，做一步改造，将一个值的去掉数组*/
             for (Map.Entry<String, String[]> formEntry : formParams.entrySet()) {
-                params.put(formEntry.getKey(), formEntry.getValue());
+                String[] values = formEntry.getValue();
+                params.put(formEntry.getKey(), values.length == 1 ? values[0] : values);
             }
         }
 
