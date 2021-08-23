@@ -10,6 +10,10 @@ import lombok.Data;
 @Data
 public class GeomesaParam implements Param {
     private String schema;
-    private String[] fields = null;
+    /* 2021年8月23日 modify 多个字段之间使用英文逗号进行分隔开 */
+    private String fields = null;
     private String ecql;
+    /* 2021年8月23日 add 排序 */
+    private String sortField;
+    private String sortOrder;
 }

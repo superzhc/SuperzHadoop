@@ -1,15 +1,22 @@
 package com.github.superzhc.reader.executor.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.github.superzhc.reader.common.ResultT;
 import com.github.superzhc.reader.datasource.impl.GeomesaDatasource;
 import com.github.superzhc.reader.executor.Executor;
 import com.github.superzhc.reader.param.impl.GeomesaParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.geotools.data.*;
+import org.geotools.filter.FilterFactoryImpl;
+import org.geotools.filter.SortByImpl;
 import org.geotools.filter.text.ecql.ECQL;
+import org.geotools.geojson.feature.FeatureJSON;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.filter.sort.SortBy;
+import org.opengis.filter.sort.SortOrder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,20 +56,25 @@ public class GeomesaExecutor extends Executor {
                 return ResultT.fail("Schema {} does not exist.", param.getSchema());
             }
 
-            Query query;
-            if (null == param.getFields() || param.getFields().length == 0) {
-                query = new Query(param.getSchema(), ECQL.toFilter(param.getEcql()));
-            } else {
-                query = new Query(param.getSchema(), ECQL.toFilter(param.getEcql()), param.getFields());
+            Query query = new Query(param.getSchema(), ECQL.toFilter(param.getEcql()), StringUtils.isBlank(param.getFields()) ? null : param.getFields().split(","));
+
+            /* 2021年8月23日 add 排序 */
+            if (StringUtils.isNotBlank(param.getSortField())) {
+                FilterFactoryImpl ff = new FilterFactoryImpl();
+                query.setSortBy(new SortBy[]{new SortByImpl(ff.property(param.getSortField()), "ASC".equals(param.getSortOrder()) ? SortOrder.ASCENDING : SortOrder.DESCENDING)});
             }
 
             try (FeatureReader<SimpleFeatureType, SimpleFeature> reader = datastore.getFeatureReader(query, Transaction.AUTO_COMMIT)) {
-                List<String> lst = new ArrayList<>();
+                /* 2021年8月23日 modify 使用 geojson 来展示数据会更友好 */
+                FeatureJSON featureJSON = new FeatureJSON();
+                //List<String> lst = new ArrayList<>();
+                List<JSONObject> lst2 = new ArrayList<>();
                 while (reader.hasNext()) {
                     SimpleFeature next = reader.next();
-                    lst.add(DataUtilities.encodeFeature(next));
+                    //lst.add(DataUtilities.encodeFeature(next));
+                    lst2.add(JSON.parseObject(featureJSON.toString(next)));
                 }
-                return ResultT.success(lst);
+                return ResultT.success(lst2);
             }
 
         } catch (Exception e) {

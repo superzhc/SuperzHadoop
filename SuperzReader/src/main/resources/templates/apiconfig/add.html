@@ -67,17 +67,40 @@
                            lay-vertype="tips" lay-verify="required" style="width:100%">
                 </div>
             </div>
+            <div id="fields" class="layui-form-item active" data-id="fields" data-tag="input"
+                 data-index="6">
+                <label class="layui-form-label">
+                    字段:
+                </label>
+                <div class="layui-input-block">
+                    <input name="fields" value="" placeholder="请输入字段，如果获取所有字段，直接为空即可" class="layui-input"
+                           lay-vertype="tips" style="width:100%">
+                </div>
+            </div>
             <div id="ecql" class="layui-form-item active" data-id="ecql" data-tag="input"
                  data-index="4">
                 <label class="layui-form-label layui-form-required">
                     ECQL:
                 </label>
                 <div class="layui-input-block">
-                    <input name="ecql" value="" placeholder="请输入ECQL语句" class="layui-input"
-                           lay-vertype="tips" lay-verify="required" style="width:100%">
+                    <textarea name="ecql" width="100%" value="" placeholder="请输入ECQL语句" class="layui-textarea" lay-verify="required"></textarea>
+                </div>
+            </div>
+            <div class="layui-form-item active" id="sort" data_id="sort" data-tag="input" data-index="5">
+                <label class="layui-form-label">排序:</label>
+                <div class="layui-input-inline" style="margin-right: 0px;">
+                    <input type="text" name="sortField" autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-input-inline" style="width: 6%;">
+                    <select name="sortOrder">
+                        <option value="ASC" selected="">升序</option>
+                        <option value="DESC"> 降序</option>
+                    </select>
                 </div>
             </div>
         </div>
+
+
         <div class="layui-form-item">
             <div class="layui-input-block">
                 <button type="submit" class="layui-btn" lay-submit="" lay-filter="btnSave">
@@ -94,14 +117,14 @@
 </script>
 <script type="text/javascript" src="../js/config.js"></script>
 <script>
-    layui.use(["layer", "form", "http", "selectDynamic","commonutil"],
+    layui.use(["layer", "form", "http", "selectDynamic", "commonutil"],
         function () {
             var $ = layui.jquery,
                 layer = layui.layer,
                 form = layui.form
                 , http = layui.http
                 , selectDynamic = layui.selectDynamic
-                , objUtil=layui.commonutil.ObjectUtil
+                , objUtil = layui.commonutil.ObjectUtil
             ;
 
             /* 动态绑定数据源下拉框 */
@@ -115,9 +138,9 @@
 
             form.on('submit(btnSave)', function (data) {
                 var obj = {
-                    name: objUtil.getThenRemove(data.field,"name")//data.field.name
-                    ,dsId: objUtil.getThenRemove(data.field,"dsId")//data.field.dsId
-                    ,path: objUtil.getThenRemove(data.field,"path")//data.field.path
+                    name: objUtil.getThenRemove(data.field, "name")//data.field.name
+                    , dsId: objUtil.getThenRemove(data.field, "dsId")//data.field.dsId
+                    , path: objUtil.getThenRemove(data.field, "path")//data.field.path
                 };
                 // delete data.field.name;
                 // delete data.field.dsId;

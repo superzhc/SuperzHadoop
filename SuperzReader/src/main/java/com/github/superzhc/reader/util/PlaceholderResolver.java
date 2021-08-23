@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Map;
@@ -191,6 +192,10 @@ public class PlaceholderResolver
             /* 2021年8月17日 superz add 支持时间格式化，形如 date#YYYY-MM-dd HH:mm:ss*/
             if (!placeholderValue.startsWith("#") && placeholderValue.contains("#")) {
                 String[] ss = placeholderValue.split("#");
+                // 如果字段不存在，直接返回null
+                if (!valueMap.containsKey(ss[0]) || null == valueMap.get(ss[0])) {
+                    return (String) null;
+                }
                 Object originalValue = valueMap.get(ss[0]);
                 if (originalValue instanceof Date) {
                     SimpleDateFormat sdf = new SimpleDateFormat(ss[1]);
@@ -204,6 +209,20 @@ public class PlaceholderResolver
                 } else if (originalValue instanceof LocalDateTime) {
                     DateTimeFormatter dtf = DateTimeFormatter.ofPattern(ss[1]);
                     return ((LocalDateTime) originalValue).format(dtf);
+                }
+                /* 2021年8月23日 add 新增时间戳判定 */
+                else if (originalValue instanceof Long || originalValue.getClass() == long.class) {
+                    Long originalValue2 = (Long) originalValue;
+                    LocalDateTime ldt;
+                    // 946656000000 毫秒时间戳对应的时间是 2000-01-01 00:00:00
+                    // 4102415999 秒时间戳对应的时间是 2099-12-31 23:59:59
+                    if (originalValue2 < 946656000000L && originalValue2 < 4102415999L) {
+                        ldt = LocalDateTime.ofEpochSecond(originalValue2, 0, ZoneOffset.ofHours(8));
+                    } else {
+                        ldt = LocalDateTime.ofEpochSecond(originalValue2 / 1000, 0, ZoneOffset.ofHours(8));
+                    }
+                    DateTimeFormatter dtf = DateTimeFormatter.ofPattern(ss[1]);
+                    return ldt.format(dtf);
                 }
             }
             /* 2021年8月17日 superz add 支持 string.format，形如 id:%s 占位符的数据*/
