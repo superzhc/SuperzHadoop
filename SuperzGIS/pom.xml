@@ -35,6 +35,12 @@
             <artifactId>gt-epsg-hsql</artifactId>
         </dependency>
 
+        <!--geomesa 使用 geojson-->
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-geojson</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.locationtech.geomesa</groupId>
             <artifactId>geomesa-hbase-tools_${scala.binary.version}</artifactId>
@@ -44,7 +50,7 @@
             <groupId>org.apache.hbase</groupId>
             <artifactId>hbase-client</artifactId>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.apache.hbase</groupId>
             <artifactId>hbase-common</artifactId>
         </dependency>
@@ -59,7 +65,7 @@
         <dependency>
             <groupId>org.apache.hbase</groupId>
             <artifactId>hbase-protocol</artifactId>
-        </dependency>
+        </dependency>-->
 
         <!--<dependency>
             <groupId>org.apache.hadoop</groupId>
@@ -82,9 +88,9 @@
         <!--<dependency>
             <groupId>org.apache.zookeeper</groupId>
             <artifactId>zookeeper</artifactId>
-        </dependency>
+        </dependency>-->
 
-        <dependency>
+        <!--<dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-shapefile</artifactId>
         </dependency>
@@ -99,6 +105,7 @@
             <scope>compile</scope>
         </dependency>
 
+        <!--geomesa spark-->
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-core_${scala.binary.version}</artifactId>

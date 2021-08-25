@@ -177,7 +177,7 @@ public class QueryWrapper {
 
     public String getECQL() {
         if (hasCondition) {
-            return query.toString().substring(4);
+            return query.toString();
         } else {
             return "";
         }

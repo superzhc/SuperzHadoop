@@ -3,20 +3,26 @@ package com.github.superzhc.gis.geomesa;
 import com.github.superzhc.gis.geomesa.source.GeomesaDataStore;
 import com.github.superzhc.gis.geomesa.source.config.Cloud4ControlSourceConfig;
 import com.google.common.base.CaseFormat;
+import org.apache.commons.lang3.StringUtils;
 import org.geotools.data.FeatureReader;
 import org.geotools.data.Query;
 import org.geotools.data.Transaction;
+import org.geotools.filter.FilterFactoryImpl;
+import org.geotools.filter.SortByImpl;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.factory.Hints;
 import org.locationtech.jts.geom.Geometry;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.filter.sort.SortBy;
+import org.opengis.filter.sort.SortOrder;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +35,7 @@ import java.util.stream.Collectors;
  */
 public class GeomesaQuery {
     private GeomesaDataStore dataStore;
+    /* 默认查询数据的条数 */
     private Integer number = null;
 
     public GeomesaQuery(GeomesaDataStore dataStore) {
@@ -41,14 +48,18 @@ public class GeomesaQuery {
     }
 
     public List<Map<String, Object>> query(String schema) {
-        return query(schema, (QueryWrapper) null, (Integer) null);
+        return query(schema, number, null, null);
+    }
+
+    public List<Map<String, Object>> query(String schema, Integer number, String sortField, String sortOrder) {
+        return query(schema, null, number, sortField, sortOrder);
     }
 
     public List<Map<String, Object>> query(String schema, QueryWrapper queryWrapper) {
-        return query(schema, queryWrapper, number);
+        return query(schema, queryWrapper, number, null, null);
     }
 
-    public List<Map<String, Object>> query(String schema, QueryWrapper queryWrapper, Integer number) {
+    public List<Map<String, Object>> query(String schema, QueryWrapper queryWrapper, Integer number, String sortField, String sortOrder) {
         try {
             Query query;
             if (null == queryWrapper) {
@@ -56,10 +67,25 @@ public class GeomesaQuery {
             } else {
                 query = new Query(schema, ECQL.toFilter(queryWrapper.getECQL()));
             }
+
+
+            // 设置返回数据的数量
             if (null != number && number > 0) {
-                // 设置最大返回条目
                 query.setMaxFeatures(number);
             }
+
+            // 排序
+            if (StringUtils.isNotBlank(sortField)) {
+                FilterFactoryImpl ff = new FilterFactoryImpl();
+                SortBy sort;
+                if ("desc".equalsIgnoreCase(sortOrder)) {
+                    sort = new SortByImpl(ff.property(sortField), SortOrder.DESCENDING);
+                } else {
+                    sort = new SortByImpl(ff.property(sortField), SortOrder.ASCENDING);
+                }
+                query.setSortBy(new SortBy[]{sort});
+            }
+
             try (FeatureReader<SimpleFeatureType, SimpleFeature> reader = dataStore.getDataStore().getFeatureReader(query, Transaction.AUTO_COMMIT)) {
                 if (!reader.hasNext()) {
                     return null;
@@ -104,14 +130,18 @@ public class GeomesaQuery {
     }
 
     public <T> List<T> query(String schema, Class<T> clazz) {
-        return query(schema, null, null, clazz);
+        return query(schema, number, null, null, clazz);
+    }
+
+    public <T> List<T> query(String schema, Integer number, String sortField, String sortOrder, Class<T> clazz) {
+        return query(schema, null, number, sortField, sortOrder, clazz);
     }
 
     public <T> List<T> query(String schema, QueryWrapper queryWrapper, Class<T> clazz) {
-        return query(schema, queryWrapper, null, clazz);
+        return query(schema, queryWrapper, number, null, null, clazz);
     }
 
-    public <T> List<T> query(String schema, QueryWrapper queryWrapper, Integer number, Class<T> clazz) {
+    public <T> List<T> query(String schema, QueryWrapper queryWrapper, Integer number, String sortField, String sortOrder, Class<T> clazz) {
         try {
             Query query;
             if (null == queryWrapper) {
@@ -119,10 +149,24 @@ public class GeomesaQuery {
             } else {
                 query = new Query(schema, ECQL.toFilter(queryWrapper.getECQL()));
             }
+
+            // 设置返回数据的数量
             if (null != number && number > 0) {
-                // 设置最大返回条目
                 query.setMaxFeatures(number);
             }
+
+            // 排序
+            if (StringUtils.isNotBlank(sortField)) {
+                FilterFactoryImpl ff = new FilterFactoryImpl();
+                SortBy sort;
+                if ("desc".equalsIgnoreCase(sortOrder)) {
+                    sort = new SortByImpl(ff.property(sortField), SortOrder.DESCENDING);
+                } else {
+                    sort = new SortByImpl(ff.property(sortField), SortOrder.ASCENDING);
+                }
+                query.setSortBy(new SortBy[]{sort});
+            }
+
             try (FeatureReader<SimpleFeatureType, SimpleFeature> reader = dataStore.getDataStore().getFeatureReader(query, Transaction.AUTO_COMMIT)) {
                 if (!reader.hasNext()) {
                     return null;
@@ -200,8 +244,11 @@ public class GeomesaQuery {
 
     public static void main(String[] args) {
         try (GeomesaDataStore geomesaDataStore = new GeomesaDataStore(new Cloud4ControlSourceConfig())) {
-            GeomesaQuery geomesaQuery = new GeomesaQuery(geomesaDataStore, 10);
-            List<Map<String, Object>> lst = geomesaQuery.query("adas.dsm.alarm");
+            GeomesaQuery geomesaQuery = new GeomesaQuery(geomesaDataStore, 1);
+            QueryWrapper queryWrapper = new QueryWrapper();
+            queryWrapper.during("timestamp", LocalDateTime.of(2021, 8, 4, 0, 0), LocalDateTime.of(2021, 8, 4, 23, 59))
+                    .eq("plate_number", "苏A19096");
+            List<Map<String, Object>> lst = geomesaQuery.query("bsm.gps", queryWrapper, 100, "timestamp", "desc");
             System.out.println(lst);
         } catch (IOException e) {
             e.printStackTrace();
