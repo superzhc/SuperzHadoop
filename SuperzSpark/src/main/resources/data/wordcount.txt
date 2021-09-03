@@ -1,3 +1,0 @@
-This is a Spark demo
-Spark Hello World
-author Superz
