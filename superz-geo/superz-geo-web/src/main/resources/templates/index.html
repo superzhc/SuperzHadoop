@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>
+        Geomesa查询工具
+    </title>
+    <link rel="stylesheet" href="/layui/css/layui.css"
+    />
+    <link rel="stylesheet" href="/jsonview/jquery.jsonview.min.css">
+</head>
+
+<body>
+<div id="testdemo" style="margin: 10px 20px;">
+    <form class="layui-form" style="height:100%;" id="formPreviewForm">
+        <!--<div id="hbaseZookeepers" class="layui-form-item active" data-id="hbaseZookeepers"
+             data-tag="input" data-index="0">
+            <label class="layui-form-label layui-form-required">
+                hbaseZookeepers:
+            </label>
+            <div class="layui-input-block">
+                <input name="hbaseZookeepers" value="namenode:2181,datanode1:2181,datanode1:2181"
+                       placeholder="请输入" class="layui-input" lay-vertype="tips" lay-verify="required"
+                       style="width:100%">
+            </div>
+        </div>
+        <div id="hbaseCoprocessorUrl" class="layui-form-item active" data-id="hbaseCoprocessorUrl"
+             data-tag="input" data-index="1">
+            <label class="layui-form-label layui-form-required">
+                hbaseCoprocessorUrl:
+            </label>
+            <div class="layui-input-block">
+                <input name="hbaseCoprocessorUrl" value="hdfs://datanode1:8020/hbase/lib/geomesa-hbase-distributed-runtime-hbase2_2.11-3.0.0.jar|org.locationtech.geomesa.hbase.server.coprocessor.GeoMesaCoprocessor|1073741823||org.locationtech.geomesa.hbase.server.coprocessor.GeoMesaCoprocessor|1073741823|"
+                       placeholder="请输入" class="layui-input" lay-vertype="tips" lay-verify="required"
+                       style="width:100%">
+            </div>
+        </div>
+        <div id="hbaseCatalog" class="layui-form-item active" data-id="hbaseCatalog"
+             data-tag="input" data-index="2">
+            <label class="layui-form-label layui-form-required">
+                hbaseCatalog:
+            </label>
+            <div class="layui-input-block">
+                <input name="hbaseCatalog" value="cloud4control" placeholder="请输入" class="layui-input"
+                       lay-vertype="tips" lay-verify="required" style="width:100%">
+            </div>
+        </div>-->
+        <div id="schema" class="layui-form-item active" data-id="schema" data-tag="input"
+             data-index="3">
+            <label class="layui-form-label layui-form-required">
+                表名:
+            </label>
+            <div class="layui-input-block">
+                <input name="schema" value="" placeholder="请输入" class="layui-input" lay-vertype="tips"
+                       lay-verify="required" style="width:100%">
+            </div>
+        </div>
+        <div id="ecql" class="layui-form-item layui-form-text active" data-id="ecql"
+             data-tag="textarea" data-index="4">
+            <label class="layui-form-label">
+                ECQL:
+            </label>
+            <div class="layui-input-block">
+                        <textarea name="ecql" placeholder="请输入" style="width:100%" class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <div id="number" class="layui-form-item active" data-id="number" data-tag="input"
+             data-index="5">
+            <label class="layui-form-label layui-form-required">
+                条数:
+            </label>
+            <div class="layui-input-block">
+                <input name="number" value="10" placeholder="请输入" class="layui-input"
+                       lay-vertype="tips" lay-verify="required" style="width:100%">
+            </div>
+        </div>
+        <div class="layui-form-item active" id="sort" data_id="sort" data-tag="input" data-index="5">
+            <label class="layui-form-label">排序:</label>
+            <div class="layui-input-inline" style="margin-right: 0px;">
+                <input type="text" name="sortField" autocomplete="off" class="layui-input">
+            </div>
+            <div class="layui-input-inline" style="width: 6%;">
+                <select name="sortOrder">
+                    <option value="ASC" selected="">升序</option>
+                    <option value="DESC"> 降序</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button type="submit" class="layui-btn" lay-submit="" lay-filter="formPreviewForm">
+                    提交
+                </button>
+                <button type="reset" class="layui-btn layui-btn-primary">
+                    重置
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+<div id="json" style="display: none;"></div>
+<script type="text/javascript" src="/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="/layui/layui.js"></script>
+<script type="text/javascript" src="/jsonview/jquery.jsonview.min.js"></script>
+<script>
+
+    layui.use(["layer", "form"],
+        function() {
+            var /*$ = layui.jquery,*/
+                layer = layui.layer,
+                form = layui.form;
+
+            /*$.ajax({
+                url:"/geomesa/init",
+                method: "GET",
+                success:function(res){
+                    $("[name=hbaseZookeepers]").val(res.data.zookeepers);
+                    $("[name=hbaseCoprocessorUrl]").val(res.data.coprocessorUrl);
+                    $("[name=hbaseCatalog]").val(res.data.catalog);
+                }
+            });*/
+
+            form.on('submit(formPreviewForm)', function (data) {
+                $.ajax({
+                    url:"/geomesa/query",
+                    method:"POST",
+                    data:data.field,
+                    success: function (res) {
+                        if(res.code===1){
+                            layer.alert(res.msg,{icon:2});
+                        }else{
+                            $("#json").JSONView(res.data);
+                            layer.open({
+                                type:1
+                                ,title: '返回结果'
+                                ,content:$("#json")
+                                ,area: ['500px', '500px']
+                            });
+                        }
+                    },
+                    error: function (xhr) {
+                        layer.alert(xhr.responseText, {icon: 2});
+                    }
+                });
+
+                return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+            });
+        });
+</script>
+</body>
+
+</html>

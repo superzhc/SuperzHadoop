@@ -5,16 +5,45 @@
     <parent>
         <artifactId>SuperzHadoop</artifactId>
         <groupId>com.github.superzhc</groupId>
-        <version>0.0.1</version>
+        <version>0.2.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>superz-hadoop</artifactId>
     <packaging>pom</packaging>
+    <modules>
+        <module>superz-hadoop-hdfs</module>
+        <module>superz-hadoop-mapreduce</module>
+        <module>superz-hadoop-yarn</module>
+        <module>superz-hadoop-hive</module>
+        <module>superz-hadoop-hbase</module>
+        <module>superz-hadoop-spark</module>
+        <module>superz-hadoop-flink</module>
+        <module>superz-hadoop-elasticsearch</module>
+        <module>superz-hadoop-kafka</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <log4j.version>2.9.1</log4j.version>
+        <hadoop.version>3.0.0</hadoop.version>
+        <zookeeper.version>3.4.10</zookeeper.version>
+        <hive.version>1.2.1</hive.version>
+        <hbase.version>2.2.3</hbase.version>
+        <spark.version>2.3.0</spark.version>
+        <flink.version>1.12.2</flink.version>
+        <kafka.version>2.3.0</kafka.version>
+        <elasticsearch.version>7.1.1</elasticsearch.version>
     </properties>
+
+    <dependencies>
+        <!--日志模块-->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.26</version>
+        </dependency>
+    </dependencies>
 
 </project>

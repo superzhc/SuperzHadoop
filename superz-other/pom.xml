@@ -5,12 +5,15 @@
     <parent>
         <artifactId>SuperzHadoop</artifactId>
         <groupId>com.github.superzhc</groupId>
-        <version>0.0.1</version>
+        <version>0.2.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>superz-other</artifactId>
     <packaging>pom</packaging>
+    <modules>
+        <module>superz-leetcode</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
