@@ -40,6 +40,12 @@
             <groupId>org.geotools</groupId>
             <artifactId>gt-geojson</artifactId>
         </dependency>
+        <!--GeoJson POJOs for Jackson-->
+        <!--<dependency>
+            <groupId>de.grundid.opendatalab</groupId>
+            <artifactId>geojson-jackson</artifactId>
+            <version>1.14</version>
+        </dependency>-->
 
         <dependency>
             <groupId>org.locationtech.geomesa</groupId>
@@ -136,6 +142,20 @@
             <groupId>org.locationtech.geomesa</groupId>
             <artifactId>geomesa-spark-core_2.11</artifactId>
         </dependency>-->
+
+        <!--直接通过原生的postgresql驱动去连接postgis-->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+        <!--PostGIS-->
+        <dependency>
+            <groupId>net.postgis</groupId>
+            <artifactId>postgis-jdbc</artifactId>
+            <version>2.5.1</version>
+        </dependency>
+
+
 
         <!-- scala -->
         <dependency>

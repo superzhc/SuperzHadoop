@@ -1,13 +1,11 @@
 package com.github.superzhc.flink.demo.kafka.windowfunction;
-import com.github.superzhc.data.jsdz.entity.api.StatisticsVehiclemodelDO;
-import com.github.superzhc.data.jsdz.entity.geomase.ObjectPTCDO;
+import com.github.superzhc.kafka.jsdz.entity.api.StatisticsVehiclemodelDO;
+import com.github.superzhc.kafka.jsdz.entity.geomase.ObjectPTCDO;
 import org.apache.flink.api.java.tuple.Tuple2;
-import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 

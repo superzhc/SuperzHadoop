@@ -9,9 +9,9 @@ public class JdbcHelperTest
 {
     @Test
     public void testQuery(){
-        JdbcHelper helper=new JdbcHelper("jdbc:mysql://localhost:3306/superz","root","123456");
+        //JdbcHelper helper=new JdbcHelper("jdbc:mysql://localhost:3306/superz","root","123456");
 //        Long num=helper.queryOne("select count(*) from book");
 //        System.out.println(num);
-        helper.show("select * from book");
+//        helper.show("select * from book");
     }
 }

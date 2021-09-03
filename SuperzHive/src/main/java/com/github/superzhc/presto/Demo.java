@@ -1,7 +1,7 @@
 package com.github.superzhc.presto;
 
-import com.facebook.presto.jdbc.PrestoConnection;
-import com.facebook.presto.jdbc.PrestoStatement;
+//import com.facebook.presto.jdbc.PrestoConnection;
+//import com.facebook.presto.jdbc.PrestoStatement;
 
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -13,7 +13,7 @@ import java.util.TimeZone;
  */
 public class Demo
 {
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         // 设置时区，这里必须要设置
         TimeZone.setDefault(TimeZone.getTimeZone("Asia/Shanghai"));
         try {
@@ -52,5 +52,5 @@ public class Demo
             e.printStackTrace();
         }
 
-    }
+    }*/
 }

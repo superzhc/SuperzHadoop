@@ -1,6 +1,6 @@
 package com.github.superzhc.kafka.jsdz;
 
-import com.github.superzhc.data.jsdz.generator.BayonetPassEventDetailData;
+import com.github.superzhc.kafka.jsdz.generator.BayonetPassEventDetailData;
 
 /**
  * 卡口事件的生产者

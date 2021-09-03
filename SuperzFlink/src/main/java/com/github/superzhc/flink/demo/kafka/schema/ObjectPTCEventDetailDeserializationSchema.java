@@ -2,8 +2,8 @@ package com.github.superzhc.flink.demo.kafka.schema;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
-import com.github.superzhc.data.jsdz.dto.EventDto;
-import com.github.superzhc.data.jsdz.dto.radarevent.ObjectPTCEventDetailDTO;
+import com.github.superzhc.kafka.jsdz.dto.EventDto;
+import com.github.superzhc.kafka.jsdz.dto.radarevent.ObjectPTCEventDetailDTO;
 import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.streaming.connectors.kafka.KafkaDeserializationSchema;

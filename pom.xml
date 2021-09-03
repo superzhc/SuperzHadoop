@@ -29,6 +29,7 @@
         <module>SuperzXxlJobExecutor</module>
         <module>SuperzGISWeb</module>
         <module>SuperzReader</module>
+        <module>SuperzAkka</module>
     </modules>
     <packaging>pom</packaging>
 

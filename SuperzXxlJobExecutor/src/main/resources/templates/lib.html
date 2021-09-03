@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>库</title>
+    <link rel="stylesheet" href="/layui/css/layui.css">
+</head>
+<body>
+
+<!--<fieldset class="table-search-fieldset">
+    <legend>搜索信息</legend>-->
+    <div style="margin: 10px 10px 10px 10px">
+        <form class="layui-form layui-form-pane" lay-filter="searchfilter">
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">库</label>
+                    <div class="layui-input-inline">
+                        <select name="uids" id="uids"></select>
+                    </div>
+                </div>
+                <div class="layui-inline">
+                    <button type="submit" class="layui-btn layui-btn-primary" lay-submit
+                            lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索
+                    </button>
+                </div>
+            </div>
+        </form>
+<!--    </div>
+</fieldset>-->
+
+<script type="text/html" id="toolbar">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add"> 上传</button>
+        <!--<button class="layui-btn layui-btn-sm layui-btn-danger data-delete-btn" lay-event="delete"> 删除</button>-->
+    </div>
+</script>
+
+<table class="layui-hide" id="files" lay-filter="files"></table>
+
+<script type="text/html" id="tableBar">
+    <!--<a class="layui-btn layui-btn-normal layui-btn-xs data-count-edit" lay-event="edit">编辑</a>-->
+    <a class="layui-btn layui-btn-xs layui-btn-danger data-count-delete" lay-event="delete">删除</a>
+</script>
+
+<script src="/layui/layui.js"></script>
+<script>
+    layui.use(['jquery', 'layer', 'form', "table"], function () {
+        var $ = layui.jquery
+            , layer = layui.layer
+            , form = layui.form
+            , table = layui.table;
+
+        $.get("/bigdata/lib/item", function (res) {
+            var $uids = $("#uids");
+            //var data = JSON.parse(res.data);
+            $.each(res.data, function (key, value) {
+                $uids.append("<option value='" + key + "'>" + key + "</option>")
+            });
+            form.render();//重载表单
+        });
+
+        table.render({
+            elem: '#files'
+            , url: '/bigdata/lib'
+            , where: {uid: "runtime"}
+            , title: '文件列表'
+            ,toolbar: '#toolbar'
+            , cols: [[
+                {field: "ID", type: "numbers"}
+                , {field: 'name', title: '文件名'}
+            ]]
+            , page: false
+            , response: {
+                statusCode: 200 //重新规定成功的状态码为 200，table 组件默认为 0
+            }
+            , parseData: function (res) { //将原始数据解析成 table 组件所规定的数据
+                return {
+                    "code": res.code, //解析接口状态
+                    "msg": res.msg, //解析提示文本
+                    "count": res.data.count, //解析数据长度
+                    "data": res.data.data //解析数据列表
+                };
+            }
+        });
+
+        /**
+         * toolbar监听事件
+         */
+        table.on('toolbar(files)', function (obj) {
+            if (obj.event === 'add') {  // 监听添加操作
+                var index = layer.open({
+                    title: '添加用户',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin: true,
+                    shadeClose: true,
+                    area: ['100%', '100%'],
+                    content: 'add.html',
+                });
+                $(window).on("resize", function () {
+                    layer.full(index);
+                });
+            } else if (obj.event === 'delete') {  // 监听删除操作
+                var checkStatus = table.checkStatus('datagrid')
+                    , data = checkStatus.data;
+
+                var ids = [];
+                for (item in data) {
+                    ids.push(data[item].id);
+                }
+
+                $.ajax({
+                    url: "/job-jar-packages-manage/batch-delete",
+                    type: "POST",
+                    data: {ids: ids},
+                    success: function (res) {
+                        if (res.code === 0) {
+                            layer.alert("删除成功", {icon: 1});
+                        } else {
+                            layer.alert(res.msg, {icon: 2});
+                        }
+                    }
+                });
+            }
+        });
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            //执行搜索重载
+            table.reload('files', {
+                where: {
+                    uid: data.field.uids
+                }
+            });
+
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

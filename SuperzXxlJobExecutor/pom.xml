@@ -48,6 +48,18 @@
             <version>${xxl-job.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.73</version>
+        </dependency>
+
         <!--命令行参数解析-->
         <dependency>
             <groupId>com.beust</groupId>
@@ -74,12 +86,10 @@
             <groupId>org.geotools</groupId>
             <artifactId>gt-epsg-hsql</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.locationtech.geomesa</groupId>
             <artifactId>geomesa-hbase-tools_${scala.binary.version}</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.apache.hbase</groupId>
             <artifactId>hbase-client</artifactId>
@@ -88,18 +98,6 @@
             <groupId>org.apache.hbase</groupId>
             <artifactId>hbase-common</artifactId>
         </dependency>
-        <!--<dependency>
-            <groupId>org.apache.hbase</groupId>
-            <artifactId>hbase-server</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.hbase</groupId>
-            <artifactId>hbase-annotations</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.hbase</groupId>
-            <artifactId>hbase-protocol</artifactId>
-        </dependency>-->
 
         <!--2021年7月16日 注意使用log4j作为日志文件，不然会报错-->
         <dependency>

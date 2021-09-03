@@ -6,6 +6,7 @@ import com.github.superzhc.reader.common.ResultT;
 import com.github.superzhc.reader.datasource.impl.GeomesaDatasource;
 import com.github.superzhc.reader.executor.Executor;
 import com.github.superzhc.reader.param.impl.GeomesaParam;
+import com.github.superzhc.reader.util.PlaceholderResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.geotools.data.*;
@@ -56,13 +57,17 @@ public class GeomesaExecutor extends Executor {
                 return ResultT.fail("Schema {} does not exist.", param.getSchema());
             }
 
-            Query query = new Query(param.getSchema(), ECQL.toFilter(param.getEcql()), StringUtils.isBlank(param.getFields()) ? null : param.getFields().split(","));
+            /* 2021年8月23日 新增占位符解析 */
+            String ecqlPredicate= PlaceholderResolver.getDefaultResolver().resolveByMap(param.getEcql(),values);
+            Query query = new Query(param.getSchema(), ECQL.toFilter(ecqlPredicate/*param.getEcql()*/), StringUtils.isBlank(param.getFields()) ? null : param.getFields().split(","));
 
             /* 2021年8月23日 add 排序 */
             if (StringUtils.isNotBlank(param.getSortField())) {
                 FilterFactoryImpl ff = new FilterFactoryImpl();
                 query.setSortBy(new SortBy[]{new SortByImpl(ff.property(param.getSortField()), "ASC".equals(param.getSortOrder()) ? SortOrder.ASCENDING : SortOrder.DESCENDING)});
             }
+
+            query.setMaxFeatures(100);
 
             try (FeatureReader<SimpleFeatureType, SimpleFeature> reader = datastore.getFeatureReader(query, Transaction.AUTO_COMMIT)) {
                 /* 2021年8月23日 modify 使用 geojson 来展示数据会更友好 */

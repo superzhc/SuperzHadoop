@@ -1,0 +1,6 @@
+com\github\superzhc\hive\Main.class
+com\github\superzhc\hive\udf\UDFDateFormat.class
+com\github\superzhc\hive\udf\UDFValueMapping.class
+com\github\superzhc\hive\udf\UDFZodiacSign.class
+com\github\superzhc\hive\udf\GenericUDFNvl.class
+com\github\superzhc\presto\Demo.class

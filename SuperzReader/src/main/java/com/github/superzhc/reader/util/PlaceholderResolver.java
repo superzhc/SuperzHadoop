@@ -211,8 +211,13 @@ public class PlaceholderResolver
                     return ((LocalDateTime) originalValue).format(dtf);
                 }
                 /* 2021年8月23日 add 新增时间戳判定 */
-                else if (originalValue instanceof Long || originalValue.getClass() == long.class) {
-                    Long originalValue2 = (Long) originalValue;
+                else if (originalValue instanceof String || originalValue instanceof Long || originalValue.getClass() == long.class) {
+                    Long originalValue2;
+                    if (originalValue instanceof String) {
+                        originalValue2 = Long.parseLong(originalValue.toString());
+                    } else {
+                        originalValue2 = (Long) originalValue;
+                    }
                     LocalDateTime ldt;
                     // 946656000000 毫秒时间戳对应的时间是 2000-01-01 00:00:00
                     // 4102415999 秒时间戳对应的时间是 2099-12-31 23:59:59

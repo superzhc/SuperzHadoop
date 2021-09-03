@@ -1,8 +1,8 @@
 package com.github.superzhc.flink.demo.kafka.state;
 
-import com.github.superzhc.data.jsdz.dto.EventDto;
-import com.github.superzhc.data.jsdz.dto.radarevent.ObjectPTCEventDetailDTO;
-import com.github.superzhc.data.jsdz.entity.geomase.ObjectPTCDO;
+import com.github.superzhc.kafka.jsdz.dto.EventDto;
+import com.github.superzhc.kafka.jsdz.dto.radarevent.ObjectPTCEventDetailDTO;
+import com.github.superzhc.kafka.jsdz.entity.geomase.ObjectPTCDO;
 import com.github.superzhc.util.DateUtils;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
 import org.apache.flink.api.common.state.ListState;
