@@ -7,6 +7,15 @@
     <groupId>com.github.superzhc</groupId>
     <artifactId>SuperzHadoop</artifactId>
     <version>0.0.1</version>
+    <modules>
+        <module>superz-geo</module>
+        <module>superz-common</module>
+        <module>superz-xxl-job-executors</module>
+        <module>superz-flink</module>
+        <module>superz-hadoop</module>
+        <module>superz-tool</module>
+        <module>superz-other</module>
+    </modules>
 
     <packaging>pom</packaging>
 
