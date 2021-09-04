@@ -41,7 +41,11 @@ public class HBaseMain {
 
     public static void main(String[] args) {
         HBaseMain hbase=new HBaseMain();
-
+        ResultScanner rs=hbase.getScanner("cloud4control");
+        for(Result r:rs){
+            System.out.println(r);
+        }
+        rs.close();
     }
 
     /**

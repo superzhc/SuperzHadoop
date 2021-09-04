@@ -17,5 +17,6 @@ public class Cloud4ControlSourceConfig extends GeomesaSourceConfig {
         // HBaseDataStoreParams.HBaseCatalogParam().key is the string "hbase.catalog"
         // the GeoMesa HBase data store will recognize the key and attempt to load itself
         sourceParams.put(HBaseDataStoreParams.HBaseCatalogParam().key, "cloud4control");
+        /*sourceParams.put("hbase.security.enabled", "false");*/
     }
 }

@@ -70,14 +70,14 @@
     <name>hbase.snapshot.master.timeout.millis</name>
     <value>300000</value>
   </property>
-  <!--<property>
+  <property>
     <name>hbase.security.authentication</name>
     <value>simple</value>
   </property>
   <property>
     <name>hbase.rpc.protection</name>
     <value>authentication</value>
-  </property>-->
+  </property>
   <property>
     <name>zookeeper.session.timeout</name>
     <value>60000</value>
