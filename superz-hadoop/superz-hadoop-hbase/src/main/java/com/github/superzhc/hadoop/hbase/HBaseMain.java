@@ -12,25 +12,36 @@ import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.hbase.filter.FilterList;
 import org.apache.hadoop.hbase.util.Bytes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 2020年04月29日 superz add
  */
-public class HBaseMain
-{
+public class HBaseMain {
+    private static final Logger log = LoggerFactory.getLogger(HBaseMain.class);
     private Connection connection = null;
 
     public HBaseMain() {
         Configuration configuration = HBaseConfiguration.create();
         configuration.set("hbase.zookeeper.property.clientPort", "2181");
         // 如果是集群 则主机名用逗号分隔
-        configuration.set("hbase.zookeeper.quorum", "ep-001.hadoop,ep-002.hadoop,ep-003.hadoop");
+        configuration.set("hbase.zookeeper.quorum", "namenode,datanode1,datanode2");
         try {
             connection = ConnectionFactory.createConnection(configuration);
-        }
-        catch (IOException e) {
+            if (null != connection) {
+                log.info("HBase connection success");
+            } else {
+                log.info("HBase connection failed");
+            }
+        } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void main(String[] args) {
+        HBaseMain hbase=new HBaseMain();
+
     }
 
     /**
@@ -93,8 +104,7 @@ public class HBaseMain
             put.addColumn(Bytes.toBytes(columnFamilyName), Bytes.toBytes(qualifier), Bytes.toBytes(value));
             table.put(put);
             table.close();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return true;
@@ -109,7 +119,7 @@ public class HBaseMain
      * @param pairList         列标识和值的集合
      */
     public boolean putRow(String tableName, String rowKey, String columnFamilyName,
-            List<Pair<String, String>> pairList) {
+                          List<Pair<String, String>> pairList) {
         try {
             Table table = connection.getTable(TableName.valueOf(tableName));
             Put put = new Put(Bytes.toBytes(rowKey));
@@ -117,8 +127,7 @@ public class HBaseMain
                     Bytes.toBytes(pair.getValue())));
             table.put(put);
             table.close();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return true;
@@ -135,8 +144,7 @@ public class HBaseMain
             Table table = connection.getTable(TableName.valueOf(tableName));
             Get get = new Get(Bytes.toBytes(rowKey));
             return table.get(get);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
@@ -159,13 +167,11 @@ public class HBaseMain
                 Result result = table.get(get);
                 byte[] resultValue = result.getValue(Bytes.toBytes(columnFamily), Bytes.toBytes(qualifier));
                 return Bytes.toString(resultValue);
-            }
-            else {
+            } else {
                 return null;
             }
 
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
@@ -181,8 +187,7 @@ public class HBaseMain
             Table table = connection.getTable(TableName.valueOf(tableName));
             Scan scan = new Scan();
             return table.getScanner(scan);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
@@ -201,8 +206,7 @@ public class HBaseMain
             Scan scan = new Scan();
             scan.setFilter(filterList);
             return table.getScanner(scan);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
@@ -225,8 +229,7 @@ public class HBaseMain
             scan.setStopRow(Bytes.toBytes(endRowKey));
             scan.setFilter(filterList);
             return table.getScanner(scan);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
@@ -243,8 +246,7 @@ public class HBaseMain
             Table table = connection.getTable(TableName.valueOf(tableName));
             Delete delete = new Delete(Bytes.toBytes(rowKey));
             table.delete(delete);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return true;
@@ -265,8 +267,7 @@ public class HBaseMain
             delete.addColumn(Bytes.toBytes(familyName), Bytes.toBytes(qualifier));
             table.delete(delete);
             table.close();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return true;
