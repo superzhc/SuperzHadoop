@@ -15,6 +15,7 @@
         <module>superz-common-core</module>
         <module>superz-common-okhttp3</module>
         <module>superz-common-faker</module>
+        <module>superz-common-tablesaw</module>
     </modules>
 
     <properties>

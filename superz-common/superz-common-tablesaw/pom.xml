@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>superz-common</artifactId>
+        <groupId>com.github.superzhc</groupId>
+        <version>0.2.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>superz-common-tablesaw</artifactId>
+    <description>Tablesaw 是一个Java的数据科学库。它包括一个数据框和一个可视化库，以及用于加载、转换、过滤和汇总数据的实用程序。</description>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <tablesaw.version>0.38.4</tablesaw.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>tech.tablesaw</groupId>
+            <artifactId>tablesaw-core</artifactId>
+            <version>${tablesaw.version}</version>
+        </dependency>
+        <!--读取HTML的数据-->
+        <dependency>
+            <groupId>tech.tablesaw</groupId>
+            <artifactId>tablesaw-html</artifactId>
+            <version>${tablesaw.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!--读取JSON数据-->
+        <dependency>
+            <groupId>tech.tablesaw</groupId>
+            <artifactId>tablesaw-json</artifactId>
+            <version>${tablesaw.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <!--读取Excel数据-->
+        <dependency>
+            <groupId>tech.tablesaw</groupId>
+            <artifactId>tablesaw-excel</artifactId>
+            <version>${tablesaw.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>tech.tablesaw</groupId>
+            <artifactId>tablesaw-jsplot</artifactId>
+            <version>${tablesaw.version}</version>
+        </dependency>
+    </dependencies>
+
+</project>
