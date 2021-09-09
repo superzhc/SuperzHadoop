@@ -1,4 +1,4 @@
-package com.github.superzhc.scala.basic
+package com.github.superzhc.scala.functions
 
 /**
  * @author superz
