@@ -7,6 +7,16 @@ package com.github.superzhc.scala.basic
  * @create 2021/9/8 15:44
  */
 object DeclareVarAndValueMain {
+
+  /**
+   * 定义变量的类型的语法格式如下：
+   * var VariableName : DataType [=  Initial Value]
+   *
+   * 或
+   *
+   * val VariableName : DataType [=  Initial Value]
+   */
+
   def main(args: Array[String]): Unit = {
     /* val 定义的变量实际上是一个常量 */
     val v1 = "test"

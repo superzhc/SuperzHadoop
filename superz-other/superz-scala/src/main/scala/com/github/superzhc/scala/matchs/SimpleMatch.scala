@@ -1,4 +1,4 @@
-package com.github.superzhc.scala.`match`
+package com.github.superzhc.scala.matchs
 
 /**
  * @author superz

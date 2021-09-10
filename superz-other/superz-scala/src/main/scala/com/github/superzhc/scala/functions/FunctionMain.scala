@@ -4,6 +4,10 @@ package com.github.superzhc.scala.functions
  * @author superz
  * @create 2021/9/8 17:19
  */
+class FunctionMain {
+  def /(str: String) = "object append " + str
+}
+
 object FunctionMain {
   def main(args: Array[String]): Unit = {
     // fun1()
@@ -12,6 +16,24 @@ object FunctionMain {
     // 如果传入一个整数区间，Scala 编译器无法识别这整数区间是一个参数还是可变参数的数组，因此会报错，可使用如下的方式将一个整数区间作为参数传入可变参数中
     println(sum(1 to 10: _*))
     box("Hello World")
+
+    /**
+     * 函数调用
+     * 1. 若调用的函数只有单一参数，那么一般情况下小括号和花括号是可以互换的
+     */
+    box("superz")
+    // 等价于
+    box {
+      "superz"
+    }
+
+    val fm = new FunctionMain
+    /**
+     * 中置操作符
+     * Scala 在当方法只有一个参数时, 可以省略点, 以及括号
+     */
+    val result = fm / "superz"
+    println(result)
   }
 
   /**

@@ -14,4 +14,16 @@ class CommonClass
 
   /* 重写特质的抽象方法时 override 可写可不写 */
   override def log(msg: String): Unit = log2(msg)
+
+  override var variable: String = _
+}
+
+object CommonClass {
+  def main(args: Array[String]): Unit = {
+    val commonClass=new CommonClass
+    commonClass.variable="变量"
+    println(commonClass.variable)
+    println("-------------------------------华丽的分割线-----------------------------------")
+    println(commonClass.constant)
+  }
 }

@@ -14,9 +14,11 @@ object ImplicitMain {
   /* 隐式参数：函数或方法可以带有一个标记为 implicit 的参数列表。这种情况下，编译器将会查找缺省值，提供给该函数或方法 */
   case class Parameter(p: String)
 
+  /* 隐式常量 */
   implicit val parameter = Parameter("Superz")
 
-  def intParamter(n: Int)(implicit parameter: Parameter) = n.toString +"@"+ parameter.p
+  /* 隐式参数：函数或方法可以带有一个标记为 implicit 的参数列表。这种情况下，编译器将会查找缺省值，提供给该函数或方法 */
+  def intParamter(n: Int)(implicit parameter: Parameter) = n.toString + "@" + parameter.p
 
   /**
    * 隐式转换规则
