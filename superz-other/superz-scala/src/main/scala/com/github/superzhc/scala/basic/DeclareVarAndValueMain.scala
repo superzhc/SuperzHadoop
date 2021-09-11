@@ -17,6 +17,11 @@ object DeclareVarAndValueMain {
    * val VariableName : DataType [=  Initial Value]
    */
 
+  // 2021年9月11日 声明变量的时候必须要初始化默认值，若不知道设置什么值比较好，可以使用下划线来替代
+  // 注意：要声明好类型，不然编译器会提示报错，因为 Scala 无法设置类型的默认值
+  var v3: String = _
+  var v4: Int = _
+
   def main(args: Array[String]): Unit = {
     /* val 定义的变量实际上是一个常量 */
     val v1 = "test"
