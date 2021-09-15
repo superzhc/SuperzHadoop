@@ -1,5 +1,7 @@
 package com.github.superzhc.scala.implicits
 
+import java.time.LocalDate
+
 /**
  * 隐式转换
  *
@@ -35,10 +37,21 @@ object ImplicitMain {
    * 3. 存在二义性的转换是个错误，这种情况编译器就会报错
    */
 
+  /**
+   * 隐式类
+   * 1. 只能在特质（trait）、类、对象内部定义
+   * 2. 构造函数只能携带一个非隐式参数
+   * 3. 在同一作用域内，不能有任何方法、成员或对象与隐式类同名
+   */
+  implicit class ImplicitClass(str: String) {
+    def copyright = s"${str} © 2015 ~ ${LocalDate.now.getYear}"
+  }
+
   def main(args: Array[String]): Unit = {
     val i: Int = 1
     // 下面的代码就调用了上面的 int2String 的转换
     println(i.substring(0))
     println(intParamter(10))
+    println("superz".copyright)
   }
 }
