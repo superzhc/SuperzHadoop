@@ -1,0 +1,324 @@
+{
+  "id": "2818424",
+  "name": "layui-icon-extend2",
+  "font_family": "layui-icon-extend",
+  "css_prefix_text": "layui-icon-extend-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "1127978",
+      "name": "文件夹",
+      "font_class": "wenjianjia",
+      "unicode": "e7aa",
+      "unicode_decimal": 59306
+    },
+    {
+      "icon_id": "5916393",
+      "name": "7z",
+      "font_class": "z",
+      "unicode": "e613",
+      "unicode_decimal": 58899
+    },
+    {
+      "icon_id": "5916394",
+      "name": "AVI",
+      "font_class": "AVI",
+      "unicode": "e614",
+      "unicode_decimal": 58900
+    },
+    {
+      "icon_id": "5916396",
+      "name": "BAT",
+      "font_class": "BAT",
+      "unicode": "e615",
+      "unicode_decimal": 58901
+    },
+    {
+      "icon_id": "5916397",
+      "name": "AI",
+      "font_class": "AI",
+      "unicode": "e616",
+      "unicode_decimal": 58902
+    },
+    {
+      "icon_id": "5916398",
+      "name": "BMP",
+      "font_class": "BMP",
+      "unicode": "e617",
+      "unicode_decimal": 58903
+    },
+    {
+      "icon_id": "5916400",
+      "name": "CSS",
+      "font_class": "CSS",
+      "unicode": "e618",
+      "unicode_decimal": 58904
+    },
+    {
+      "icon_id": "5916401",
+      "name": "CONF",
+      "font_class": "CONF",
+      "unicode": "e619",
+      "unicode_decimal": 58905
+    },
+    {
+      "icon_id": "5916402",
+      "name": "EOT",
+      "font_class": "EOT",
+      "unicode": "e61a",
+      "unicode_decimal": 58906
+    },
+    {
+      "icon_id": "5916403",
+      "name": "DOCX",
+      "font_class": "DOCX",
+      "unicode": "e61b",
+      "unicode_decimal": 58907
+    },
+    {
+      "icon_id": "5916404",
+      "name": "DOC",
+      "font_class": "DOC",
+      "unicode": "e61c",
+      "unicode_decimal": 58908
+    },
+    {
+      "icon_id": "5916405",
+      "name": "HTM",
+      "font_class": "HTM",
+      "unicode": "e61d",
+      "unicode_decimal": 58909
+    },
+    {
+      "icon_id": "5916406",
+      "name": "HTML",
+      "font_class": "HTML",
+      "unicode": "e61e",
+      "unicode_decimal": 58910
+    },
+    {
+      "icon_id": "5916407",
+      "name": "ICO",
+      "font_class": "ICO",
+      "unicode": "e61f",
+      "unicode_decimal": 58911
+    },
+    {
+      "icon_id": "5916408",
+      "name": "INI",
+      "font_class": "INI",
+      "unicode": "e620",
+      "unicode_decimal": 58912
+    },
+    {
+      "icon_id": "5916409",
+      "name": "JAR",
+      "font_class": "JAR",
+      "unicode": "e621",
+      "unicode_decimal": 58913
+    },
+    {
+      "icon_id": "5916413",
+      "name": "JAVA",
+      "font_class": "JAVA",
+      "unicode": "e622",
+      "unicode_decimal": 58914
+    },
+    {
+      "icon_id": "5916414",
+      "name": "JPEG",
+      "font_class": "JPEG",
+      "unicode": "e623",
+      "unicode_decimal": 58915
+    },
+    {
+      "icon_id": "5916415",
+      "name": "JPG",
+      "font_class": "JPG",
+      "unicode": "e624",
+      "unicode_decimal": 58916
+    },
+    {
+      "icon_id": "5916416",
+      "name": "JS",
+      "font_class": "JS",
+      "unicode": "e625",
+      "unicode_decimal": 58917
+    },
+    {
+      "icon_id": "5916417",
+      "name": "MD",
+      "font_class": "MD",
+      "unicode": "e626",
+      "unicode_decimal": 58918
+    },
+    {
+      "icon_id": "5916418",
+      "name": "MP3",
+      "font_class": "MP",
+      "unicode": "e627",
+      "unicode_decimal": 58919
+    },
+    {
+      "icon_id": "5916419",
+      "name": "MP4",
+      "font_class": "MP1",
+      "unicode": "e628",
+      "unicode_decimal": 58920
+    },
+    {
+      "icon_id": "5916420",
+      "name": "MP5",
+      "font_class": "MP2",
+      "unicode": "e629",
+      "unicode_decimal": 58921
+    },
+    {
+      "icon_id": "5916421",
+      "name": "MPGE",
+      "font_class": "MPGE",
+      "unicode": "e62a",
+      "unicode_decimal": 58922
+    },
+    {
+      "icon_id": "5916422",
+      "name": "PDF",
+      "font_class": "PDF",
+      "unicode": "e62b",
+      "unicode_decimal": 58923
+    },
+    {
+      "icon_id": "5916423",
+      "name": "PL",
+      "font_class": "PL",
+      "unicode": "e62c",
+      "unicode_decimal": 58924
+    },
+    {
+      "icon_id": "5916424",
+      "name": "PNG",
+      "font_class": "PNG",
+      "unicode": "e62d",
+      "unicode_decimal": 58925
+    },
+    {
+      "icon_id": "5916425",
+      "name": "PPT",
+      "font_class": "PPT",
+      "unicode": "e62e",
+      "unicode_decimal": 58926
+    },
+    {
+      "icon_id": "5916426",
+      "name": "PSD",
+      "font_class": "PSD",
+      "unicode": "e62f",
+      "unicode_decimal": 58927
+    },
+    {
+      "icon_id": "5916427",
+      "name": "PY",
+      "font_class": "PY",
+      "unicode": "e630",
+      "unicode_decimal": 58928
+    },
+    {
+      "icon_id": "5916428",
+      "name": "RAR",
+      "font_class": "RAR",
+      "unicode": "e631",
+      "unicode_decimal": 58929
+    },
+    {
+      "icon_id": "5916429",
+      "name": "RM",
+      "font_class": "RM",
+      "unicode": "e632",
+      "unicode_decimal": 58930
+    },
+    {
+      "icon_id": "5916430",
+      "name": "SH",
+      "font_class": "SH",
+      "unicode": "e633",
+      "unicode_decimal": 58931
+    },
+    {
+      "icon_id": "5916431",
+      "name": "SVG",
+      "font_class": "SVG",
+      "unicode": "e634",
+      "unicode_decimal": 58932
+    },
+    {
+      "icon_id": "5916432",
+      "name": "TTF",
+      "font_class": "TTF",
+      "unicode": "e635",
+      "unicode_decimal": 58933
+    },
+    {
+      "icon_id": "5916433",
+      "name": "TAR",
+      "font_class": "TAR",
+      "unicode": "e636",
+      "unicode_decimal": 58934
+    },
+    {
+      "icon_id": "5916434",
+      "name": "TEXT",
+      "font_class": "TEXT",
+      "unicode": "e637",
+      "unicode_decimal": 58935
+    },
+    {
+      "icon_id": "5916435",
+      "name": "XLSX",
+      "font_class": "XLSX",
+      "unicode": "e638",
+      "unicode_decimal": 58936
+    },
+    {
+      "icon_id": "5916436",
+      "name": "WOFF",
+      "font_class": "WOFF",
+      "unicode": "e639",
+      "unicode_decimal": 58937
+    },
+    {
+      "icon_id": "5916437",
+      "name": "XML",
+      "font_class": "XML",
+      "unicode": "e63a",
+      "unicode_decimal": 58938
+    },
+    {
+      "icon_id": "5916438",
+      "name": "YML",
+      "font_class": "YML",
+      "unicode": "e63b",
+      "unicode_decimal": 58939
+    },
+    {
+      "icon_id": "5916439",
+      "name": "YAML",
+      "font_class": "YAML",
+      "unicode": "e63c",
+      "unicode_decimal": 58940
+    },
+    {
+      "icon_id": "5916440",
+      "name": "ZIP",
+      "font_class": "ZIP",
+      "unicode": "e63d",
+      "unicode_decimal": 58941
+    },
+    {
+      "icon_id": "5916761",
+      "name": "BIN",
+      "font_class": "BIN",
+      "unicode": "e63e",
+      "unicode_decimal": 58942
+    }
+  ]
+}

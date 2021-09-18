@@ -11,6 +11,9 @@
 
     <artifactId>superz-xxl-job-executors</artifactId>
     <packaging>pom</packaging>
+    <modules>
+        <module>superz-flink-executor</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

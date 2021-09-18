@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>文件预览</title>
+</head>
+<body>
+<div id="main" style="vertical-align: middle;"></div>
+</body>
+<script src="./js/jquery-3.4.1.min.js" type="text/javascript"></script>
+<script src="./js/jquery.superz.extend.js" type="text/javascript"></script>
+<script src="./layer/layer.js" type="text/javascript"></script>
+<!--ace代码编辑器及相关主题-->
+<script src="./ace/ace.js" type="text/javascript"></script>
+<script src="./ace/mode-html.js" type="text/javascript"></script>
+<script src="./ace/mode-ini.js" type="text/javascript"></script>
+<script src="./ace/mode-javascript.js" type="text/javascript"></script>
+<script src="./ace/mode-json.js" type="text/javascript"></script>
+<script src="./ace/mode-markdown.js" type="text/javascript"></script>
+<script src="./ace/mode-sql.js" type="text/javascript"></script>
+<script src="./ace/mode-python.js" type="text/javascript"></script>
+<script>
+    $(document).ready(function () {
+        var previewText = function (language) {
+            $.ajax({
+                url: "/resources/download"
+                , data: {path: path}
+                , success: function (res) {
+                    $main.append("<pre id='editor' style='height:375px;max-height:100%;max-width: 100%;'></pre>");
+                    var editor = ace.edit("editor");
+                    editor.setOptions({
+                        tabSize: 2
+                        , wrap: true
+                        , readonly: true
+                    });
+                    if (language)
+                        editor.session.setMode("ace/mode/" + language);
+                    editor.setValue(res);
+                }
+            });
+        }
+
+        var path = $.http.getUrlParam("path");
+        var file = $.file;
+        var filename = file.filename(path);
+        var $main = $("#main");
+        if (file.isImage(filename)) {
+            $main.append("<img src='/resources/download?path=" + encodeURIComponent(path) + "' style='max-height:100%;max-width: 100%;'/>")
+        } else if (file.isJson(filename)) {
+            previewText("json");
+        } else if (file.isJs(filename)) {
+            previewText("javascript");
+        } else if (file.isMarkdown(filename)) {
+            previewText("markdown");
+        } else if (file.isPython(filename)) {
+            previewText("python");
+        } else if (file.isIni(filename)) {
+            previewText("ini");
+        } else if (file.isText(filename)) {
+            previewText();
+        } else {
+            $main.append("<h3>文件[" + filename + "]尚不支持预览</h3>")
+        }
+
+    });
+</script>
+</html>
