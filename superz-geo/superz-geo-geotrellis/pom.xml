@@ -14,6 +14,169 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <spring-boot.version>2.1.3.RELEASE</spring-boot.version>
+        <geotrellis.version>3.5.2</geotrellis.version>
     </properties>
+
+    <!--移动到父工程了，更简洁点
+    <repositories>
+        &lt;!&ndash;geotrellis仓库&ndash;&gt;
+        &lt;!&ndash;
+        2021年9月6日 备注：
+        1. GitHub上最新的版本是3.6.0，注意此版本是在scala版本为2.12的情况下；在scala版本为2.11的时候，geotrellis的版本为3.5.2
+        2. GeoTrellis的GitHub文档中，说明工具有单独仓库，为下列的eclipse-releases、eclipse-snapshots，但注意这是老版本的仓库，最新的3.5.2、3.6.0版本在Maven的中央仓库中
+        &ndash;&gt;
+        <repository>
+            <id>eclipse-releases</id>
+            <url>https://repo.eclipse.org/content/groups/releases/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>eclipse-snapshots</id>
+            <url>https://repo.eclipse.org/content/groups/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>aliyunmaven</id>
+            <name>aliyunmaven</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>aliyunmavenApache</id>
+            <url>https://maven.aliyun.com/repository/apache-snapshots</url>
+        </repository>
+    </repositories>-->
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-parent</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!--投影工程-->
+        <dependency>
+            <groupId>org.locationtech.geotrellis</groupId>
+            <artifactId>geotrellis-proj4_${scala.binary.version}</artifactId>
+            <version>${geotrellis.version}</version>
+        </dependency>
+        <!--栅格数据-->
+        <dependency>
+            <groupId>org.locationtech.geotrellis</groupId>
+            <artifactId>geotrellis-raster_${scala.binary.version}</artifactId>
+            <version>${geotrellis.version}</version>
+        </dependency>
+        <!--矢量数据-->
+        <dependency>
+            <groupId>org.locationtech.geotrellis</groupId>
+            <artifactId>geotrellis-vector_${scala.binary.version}</artifactId>
+            <version>${geotrellis.version}</version>
+        </dependency>
+        <!--GeoTrellis和Spark结合-->
+        <dependency>
+            <groupId>org.locationtech.geotrellis</groupId>
+            <artifactId>geotrellis-spark_${scala.binary.version}</artifactId>
+            <version>${geotrellis.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-core_${scala.binary.version}</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+
+        <!--第三方数据源的实现-->
+        <!--该包目前是实验性的，通过查看部分源码，读取的geomesa是使用accumulo作为底层存储的-->
+        <!--<dependency>
+            <groupId>org.locationtech.geotrellis</groupId>
+            <artifactId>geotrellis-geomesa_2.11</artifactId>
+            <version>3.0.0</version>
+        </dependency>-->
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.26</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.17</version>
+        </dependency>
+
+        <!--region scala-->
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-compiler</artifactId>
+            <version>${scala.version}</version>
+            <!--<scope>provided</scope>-->
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-reflect</artifactId>
+            <version>${scala.version}</version>
+            <!--<scope>provided</scope>-->
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>${scala.version}</version>
+            <!--<scope>provided</scope>-->
+        </dependency>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-actors</artifactId>
+            <version>${scala.version}</version>
+            <!--<scope>provided</scope>-->
+        </dependency>
+        <!--endregion-->
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
