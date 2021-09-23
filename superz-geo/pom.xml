@@ -14,7 +14,6 @@
     <modules>
         <module>superz-geo-geotool</module>
         <module>superz-geo-geomesa</module>
-        <module>superz-geo-postgis</module>
         <module>superz-geo-geotrellis</module>
         <module>superz-geo-web</module>
     </modules>
@@ -48,6 +47,33 @@
                 <enabled>false</enabled>
             </releases>
         </repository>
+        <!--geotrellis仓库-->
+        <!--
+        2021年9月6日 备注：
+        1. GitHub上最新的版本是3.6.0，注意此版本是在scala版本为2.12的情况下；在scala版本为2.11的时候，geotrellis的版本为3.5.2
+        2. GeoTrellis的GitHub文档中，说明工具有单独仓库，为下列的eclipse-releases、eclipse-snapshots，但注意这是老版本的仓库，最新的3.5.2、3.6.0版本在Maven的中央仓库中
+        -->
+        <repository>
+            <id>eclipse-releases</id>
+            <url>https://repo.eclipse.org/content/groups/releases/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>eclipse-snapshots</id>
+            <url>https://repo.eclipse.org/content/groups/snapshots/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+        <!--阿里云仓库-->
         <repository>
             <id>aliyunmaven</id>
             <name>aliyunmaven</name>

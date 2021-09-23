@@ -15,7 +15,4 @@ object DataTypes {
   var any: Any = _
   /*var str: String = Null*/
   /*var i:Int=Nothing*/
-
-  /* type 关键字：声明类型的别名 */
-  type S = String
 }

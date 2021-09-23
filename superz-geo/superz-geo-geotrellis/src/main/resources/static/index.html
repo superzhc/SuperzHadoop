@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>leafLet加载几种地图</title>
+    <link rel="stylesheet" href="./css/leaflet.css"/>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div id="map"></div>
+<script src="./js/jquery-3.4.1.min.js"></script>
+<script src="./js/leaflet.js"></script>
+<script src="./js/leaflet-providers.js"></script>
+<!--下面的地址根据你的实际项目地址进行引用-->
+<!--<script src="./js/leaflet.ChineseTmsProviders.js"></script>-->
+<script>
+    var NANJING = [32.050, 118.783];
+
+    $(document).ready(function () {
+        // 初始化地图
+        var map = L.map("map", {
+            // crs: L.CRS.EPSG3857, //球型墨卡托投影坐标系，默认的坐标参考系
+            // crs: L.CRS.EPSG4326, //WGS 84坐标系，GPS默认坐标系
+            center: NANJING, // 在 leaflet 中的经纬度坐标与实际坐标位置相反的
+            zoomControl: true
+            , zoom: 11 // 缩放比例
+        });
+
+        /**
+         * 添加瓦片图层到地图上
+         */
+        /*var tileLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 17, //最大视图
+            minZoom: 2, //最小视图
+            attribution: 'Superz &copy; OSM'
+        }).addTo(map);*/
+        L.tileLayer.provider('OpenStreetMap').addTo(map);
+
+        // 江心洲坐标，还是很严重的偏移
+        L.marker([32.00, 118.42]).addTo(map);
+
+        /* 使用 H5 API 进行定位，获取当前位置 */
+        if (navigator.geolocation) {// 判断浏览器是否支持获取定位
+            /* 异步函数 */
+            navigator.geolocation.getCurrentPosition(
+                // 获取成功
+                function (position) {
+                    $.ajax({
+                        url: "/crs/tool/transform"
+                        , data: {
+                            srcCode: 4326
+                            , destCode: 3857
+                            , longitude: position.coords.longitude
+                            , latitude: position.coords.latitude
+                        }
+                        , success: function (res) {
+                            // console.log(res);
+                            var marker = L.marker([res.data.y, res.data.x]).addTo(map);
+                        }
+                    });
+                    //var marker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(map);
+                }
+                // 获取失败
+                , function (error) {
+                    switch (error.code) {
+                        case error.PERMISSION_DENIED:
+                            console.log("User denied the request for Geolocation.");
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            console.log("Location information is unavailable.");
+                            break;
+                        case error.TIMEOUT:
+                            console.log("The request to get user location timed out.");
+                            break;
+                        case error.UNKNOWN_ERROR:
+                            console.log("An unknown error occurred.");
+                            break;
+                    }
+                }
+                // 选项
+                , {
+                    enableHighAccuracy: true, //是否获取高精度经纬度，默认值为false
+                    timeout: 5000, //获取位置信息的超时时间。单位为毫秒（ms），默认值为不超时
+                    maximumAge: 0, //获取位置信息的缓存时间。单位为毫秒（ms），默认值为0（立即更新获取）。如果设备缓存的位置信息超过指定的缓存时间，将重新更新位置信息后再返回。
+                    /* provider: (String 类型 )优先使用的定位模块。可取以下供应者： "system"：表示系统定位模块，支持wgs84坐标系； "baidu"：表示百度定位模块，支持gcj02/bd09/bd09ll坐标系；
+            "amap"：表示高德定位模板，支持gcj02坐标系。 默认值按以下优先顺序获取（amap>baidu>system），若指定的provider不存在或无效则返回错误回调。
+            注意：百度/高德定位模块需要配置百度/高德地图相关参数才能正常使用。平台支持Android - 2.2+ (支持)，iOS - 4.5+ (支持): provider为“baidu”时，
+            仅支持bd09ll坐标系，暂不支持高德定位模块。*/
+                    /* coordsType: (String 类型 )指定获取的定位数据坐标系类型。可取以下坐标系类型： “wgs84”：表示WGS-84坐标系；
+             “gcj02”：表示国测局经纬度坐标系； “bd09”：表示百度墨卡托坐标系； “bd09ll”：表示百度经纬度坐标系；
+              provider为“system”时，默认使用“wgs84”类型；provider为“baidu”是，默认使用“bd09ll”类型。
+              如果设置的坐标系类型provider不支持，则返回错误。*/
+                    /*geocode: (Boolean 类型 )是否解析地址信息。解析的地址信息保存到Position对象的address、addresses属性中，
+                   true表示解析地址信息，false表示不解析地址信息，返回的Position对象的address、addresses属性值为undefined，默认值为true。
+                   如果解析地址信息失败则返回的Position对象的address、addresses属性值为null。*/
+                }
+            )
+            ;
+        }
+    });
+
+    // 添加 marker
+    // var marker = L.marker([32.030, 118.702]).addTo(map);
+
+    // 添加 circle
+    /*var circle = L.circle([32.030, 118.702], {
+        color: 'red',         //圈轨迹颜色，即外边框的颜色
+        fillColor: '#f03',    //填充色，默认值与color值一致
+        fillOpacity: 0.5,     //填充透明度
+        radius: 500           //circle半径，单位为米
+    }).addTo(map);*/
+
+    //面是一个二维坐标数组
+    /*var polygon = L.polygon([
+        [51.509, -0.08],
+        [51.503, -0.06],
+        [51.51, -0.047]
+    ]).addTo(mymap);*/
+
+    // 弹窗
+    // circle.bindPopup("company address");
+
+    // 删除地图
+    //map.removeLayer(tileLayer);
+</script>
+</body>
+</html>

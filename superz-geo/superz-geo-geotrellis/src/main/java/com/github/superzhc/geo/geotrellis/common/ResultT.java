@@ -1,4 +1,4 @@
-package com.github.superzhc.common.http;
+package com.github.superzhc.geo.geotrellis.common;
 
 import java.text.MessageFormat;
 
@@ -7,6 +7,9 @@ import java.text.MessageFormat;
  * @create 2021/7/20 19:54
  */
 public class ResultT {
+    public static final Integer DEFAULT_SUCCESS_CODE = 0;
+    public static final Integer DEFAULT_FAIL_CODE = 1;
+
     private int code;
     private String msg;
     private Object data;
@@ -16,7 +19,7 @@ public class ResultT {
     }
 
     public static ResultT success(Object data) {
-        return success(0, data);
+        return success(DEFAULT_SUCCESS_CODE, data);
     }
 
     public static ResultT success(int code, Object data) {
@@ -24,7 +27,7 @@ public class ResultT {
     }
 
     public static ResultT fail(Throwable e) {
-        return fail(0, e);
+        return fail(DEFAULT_FAIL_CODE, e);
     }
 
     public static ResultT fail(int code, Throwable e) {
@@ -32,7 +35,7 @@ public class ResultT {
     }
 
     public static ResultT fail(String msg, Object... params) {
-        return fail(1, msg, params);
+        return fail(DEFAULT_FAIL_CODE, msg, params);
     }
 
     public static ResultT fail(int code, String msg, Object... params) {

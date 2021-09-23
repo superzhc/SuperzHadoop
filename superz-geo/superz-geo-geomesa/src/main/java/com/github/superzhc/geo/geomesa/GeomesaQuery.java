@@ -17,6 +17,8 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -27,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -34,6 +37,8 @@ import java.util.stream.Collectors;
  * @create 2021/8/12 16:54
  */
 public class GeomesaQuery {
+    private static final Logger log = LoggerFactory.getLogger(GeomesaQuery.class);
+
     private GeomesaDataStore dataStore;
     /* 默认查询数据的条数 */
     private Integer number = null;
@@ -52,53 +57,32 @@ public class GeomesaQuery {
     }
 
     public List<Map<String, Object>> query(String schema, Integer number, String sortField, String sortOrder) {
-        return query(schema, null, number, sortField, sortOrder);
+        return query(schema, (String) null, number, sortField, sortOrder);
     }
 
     public List<Map<String, Object>> query(String schema, QueryWrapper queryWrapper) {
         return query(schema, queryWrapper, number, null, null);
     }
 
+    public List<Map<String, Object>> query(String schema, String ecql) {
+        return query(schema, ecql, number, null, null);
+    }
+
     public List<Map<String, Object>> query(String schema, QueryWrapper queryWrapper, Integer number, String sortField, String sortOrder) {
+        return query(schema, null == queryWrapper ? null : queryWrapper.getECQL(), number, sortField, sortOrder);
+    }
+
+    public List<Map<String, Object>> query(String schema, String ecql, Integer number, String sortField, String sortOrder) {
         try {
-            Query query;
-            if (null == queryWrapper) {
-                query = new Query(schema);
-            } else {
-                query = new Query(schema, ECQL.toFilter(queryWrapper.getECQL()));
-            }
+            SimpleFeatureType sft = dataStore.getDataStore().getSchema(schema);
+            List<String> attributeNames = sft.getAttributeDescriptors().stream().map(attributeDescriptor -> attributeDescriptor.getLocalName()).collect(Collectors.toList());
 
-
-            // 设置返回数据的数量
-            if (null != number && number > 0) {
-                query.setMaxFeatures(number);
-            }
-
-            // 排序
-            if (StringUtils.isNotBlank(sortField)) {
-                FilterFactoryImpl ff = new FilterFactoryImpl();
-                SortBy sort;
-                if ("desc".equalsIgnoreCase(sortOrder)) {
-                    sort = new SortByImpl(ff.property(sortField), SortOrder.DESCENDING);
-                } else {
-                    sort = new SortByImpl(ff.property(sortField), SortOrder.ASCENDING);
-                }
-                query.setSortBy(new SortBy[]{sort});
-            }
-
-            try (FeatureReader<SimpleFeatureType, SimpleFeature> reader = dataStore.getDataStore().getFeatureReader(query, Transaction.AUTO_COMMIT)) {
-                if (!reader.hasNext()) {
-                    return null;
-                }
-
-                List<Map<String, Object>> result = new ArrayList<>();
-
-                SimpleFeatureType sft = reader.getFeatureType();
-                List<String> attributeNames = sft.getAttributeDescriptors().stream().map(attributeDescriptor -> attributeDescriptor.getLocalName()).collect(Collectors.toList());
-
-                while (reader.hasNext()) {
-                    SimpleFeature feature = reader.next();
-
+            List<Map<String, Object>> result = query(schema, ecql, number, sortField, sortOrder, new Function<SimpleFeature, Map<String, Object>>() {
+                @Override
+                public Map<String, Object> apply(SimpleFeature feature) {
+                    if (null == feature) {
+                        return null;
+                    }
 
                     Map<String, Object> map = new HashMap<>();
 
@@ -116,13 +100,11 @@ public class GeomesaQuery {
                         }
                         map.put(name, value);
                     }
-
-                    result.add(map);
+                    return map;
                 }
-                return result;
-            }
-        } catch (CQLException e) {
-            e.printStackTrace();
+            });
+
+            return result;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -134,20 +116,102 @@ public class GeomesaQuery {
     }
 
     public <T> List<T> query(String schema, Integer number, String sortField, String sortOrder, Class<T> clazz) {
-        return query(schema, null, number, sortField, sortOrder, clazz);
+        return query(schema, (String) null, number, sortField, sortOrder, clazz);
     }
 
     public <T> List<T> query(String schema, QueryWrapper queryWrapper, Class<T> clazz) {
-        return query(schema, queryWrapper, number, null, null, clazz);
+        return query(schema, queryWrapper.getECQL(), number, null, null, clazz);
+    }
+
+    public <T> List<T> query(String schema, String ecql, Class<T> clazz) {
+        return query(schema, ecql, number, null, null, clazz);
     }
 
     public <T> List<T> query(String schema, QueryWrapper queryWrapper, Integer number, String sortField, String sortOrder, Class<T> clazz) {
+        return query(schema, queryWrapper.getECQL(), number, sortField, sortOrder, clazz);
+    }
+
+    public <T> List<T> query(String schema, String ecql /*QueryWrapper queryWrapper*/, Integer number, String sortField, String sortOrder, Class<T> clazz) {
+        try {
+            SimpleFeatureType sft = dataStore.getDataStore().getSchema(schema);
+            List<String> attributeNames = sft.getAttributeDescriptors().stream().map(attributeDescriptor -> attributeDescriptor.getLocalName()).collect(Collectors.toList());
+
+            List<T> result = query(schema, ecql, number, sortField, sortOrder, new Function<SimpleFeature, T>() {
+                @Override
+                public T apply(SimpleFeature feature) {
+                    try {
+                        boolean emptyConstructor = false;
+                        Constructor[] constructors = clazz.getDeclaredConstructors();
+                        for (Constructor constructor : constructors) {
+                            if (constructor.getParameterCount() == 0) {
+                                emptyConstructor = true;
+                                break;
+                            }
+                        }
+
+                        if (!emptyConstructor) {
+                            throw new RuntimeException("无空构造函数,无法转换成实体" + clazz.getName());
+                        }
+
+                        T obj = clazz.newInstance();
+
+                        Field[] fields = clazz.getDeclaredFields();
+                        for (Field field : fields) {
+                            int mod = field.getModifiers();
+                            // 静态变量不做处理，一般Bean中不存在静态变量
+                            if (Modifier.isStatic(mod)) {
+                                continue;
+                            }
+
+                            if ("id".equals(field.getName()) || "fid".equals(field.getName())) {
+                                String fid = feature.getID();
+                                if (feature.getUserData().containsKey(Hints.PROVIDED_FID)) {
+                                    fid = (String) feature.getUserData().get(Hints.PROVIDED_FID);
+                                }
+                                field.setAccessible(true);
+                                field.set(obj, fid);
+                            } else if (attributeNames.contains(field.getName())) {
+                                Object value = feature.getAttribute(field.getName());
+                                if (value instanceof Geometry) {
+                                    // 转换成 WTK 格式数据
+                                    value = ((Geometry) value).toText();
+                                }
+
+                                field.setAccessible(true);
+                                field.set(obj, value);
+                            } else if (attributeNames.contains(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName()))) {
+                                // 支持驼峰式命名的赋值
+                                Object value = feature.getAttribute(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName()));
+                                if (value instanceof Geometry) {
+                                    // 转换成 WTK 格式数据
+                                    value = ((Geometry) value).toText();
+                                }
+
+                                field.setAccessible(true);
+                                field.set(obj, value);
+                            }
+                        }
+                        return obj;
+                    } catch (Exception e) {
+                        log.error("Geomesa 转实体异常");
+                        return null;
+                    }
+                }
+            });
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    private <T> List<T> query(String schema, String ecql, Integer number, String sortField, String sortOrder, Function<SimpleFeature, T> function) {
         try {
             Query query;
-            if (null == queryWrapper) {
+            if (null == ecql) {
                 query = new Query(schema);
             } else {
-                query = new Query(schema, ECQL.toFilter(queryWrapper.getECQL()));
+                query = new Query(schema, ECQL.toFilter(ecql));
             }
 
             // 设置返回数据的数量
@@ -167,6 +231,7 @@ public class GeomesaQuery {
                 query.setSortBy(new SortBy[]{sort});
             }
 
+            /* 2021年9月6日 note org.locationtech.geomesa.utils.audit.AuditLogger$ 打印查询的相关参数 */
             try (FeatureReader<SimpleFeatureType, SimpleFeature> reader = dataStore.getDataStore().getFeatureReader(query, Transaction.AUTO_COMMIT)) {
                 if (!reader.hasNext()) {
                     return null;
@@ -174,70 +239,24 @@ public class GeomesaQuery {
 
                 List<T> result = new ArrayList<>();
 
-                SimpleFeatureType sft = reader.getFeatureType();
-                List<String> attributeNames = sft.getAttributeDescriptors().stream().map(attributeDescriptor -> attributeDescriptor.getLocalName()).collect(Collectors.toList());
+//                SimpleFeatureType sft = reader.getFeatureType();
+//                List<String> attributeNames = sft.getAttributeDescriptors().stream().map(attributeDescriptor -> attributeDescriptor.getLocalName()).collect(Collectors.toList());
 
+                Long count = 0L;
                 while (reader.hasNext()) {
+                    count++;
                     SimpleFeature feature = reader.next();
 
-
-                    boolean emptyConstructor = false;
-                    Constructor[] constructors = clazz.getDeclaredConstructors();
-                    for (Constructor constructor : constructors) {
-                        if (constructor.getParameterCount() == 0) {
-                            emptyConstructor = true;
-                            break;
-                        }
+                    T obj = function.apply(feature);
+                    if (null != obj) {
+                        result.add(obj);
                     }
-                    if (!emptyConstructor) {
-                        throw new RuntimeException("无空构造函数,无法转换成实体" + clazz.getName());
-                    }
-
-                    T obj = clazz.newInstance();
-
-                    Field[] fields = clazz.getDeclaredFields();
-                    for (Field field : fields) {
-                        int mod = field.getModifiers();
-                        // 静态变量不做处理，一般Bean中不存在静态变量
-                        if (Modifier.isStatic(mod)) {
-                            continue;
-                        }
-
-                        if ("id".equals(field.getName()) || "fid".equals(field.getName())) {
-                            String fid = feature.getID();
-                            if (feature.getUserData().containsKey(Hints.PROVIDED_FID)) {
-                                fid = (String) feature.getUserData().get(Hints.PROVIDED_FID);
-                            }
-                            field.setAccessible(true);
-                            field.set(obj, fid);
-                        } else if (attributeNames.contains(field.getName())) {
-                            Object value = feature.getAttribute(field.getName());
-                            if (value instanceof Geometry) {
-                                // 转换成 WTK 格式数据
-                                value = ((Geometry) value).toText();
-                            }
-
-                            field.setAccessible(true);
-                            field.set(obj, value);
-                        } else if (attributeNames.contains(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName()))) {
-                            // 支持驼峰式命名的赋值
-                            Object value = feature.getAttribute(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName()));
-                            if (value instanceof Geometry) {
-                                // 转换成 WTK 格式数据
-                                value = ((Geometry) value).toText();
-                            }
-
-                            field.setAccessible(true);
-                            field.set(obj, value);
-                        }
-                    }
-
-                    result.add(obj);
                 }
+                log.info("deal data count:{}", count);
                 return result;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (CQLException | IOException e) {
+            log.error("Geomesa 查询异常", e);
         }
         return null;
     }
