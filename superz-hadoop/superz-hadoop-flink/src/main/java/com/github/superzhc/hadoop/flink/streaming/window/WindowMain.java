@@ -1,5 +1,15 @@
 package com.github.superzhc.hadoop.flink.streaming.window;
 
+import org.apache.flink.api.common.functions.AggregateFunction;
+import org.apache.flink.api.common.functions.ReduceFunction;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.datastream.KeyedStream;
+import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
+import org.apache.flink.streaming.api.windowing.assigners.*;
+import org.apache.flink.streaming.api.windowing.time.Time;
+import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
+import org.apache.flink.util.Collector;
+
 /**
  * 窗口
  * <p>
@@ -22,4 +32,138 @@ package com.github.superzhc.hadoop.flink.streaming.window;
  * @create 2021/10/9 16:43
  */
 public class WindowMain {
+    /**
+     * 全部的流数据
+     *
+     * @param ds
+     * @param <T>
+     */
+    public <T> void allWindowStruct(DataStream<T> ds) {
+        ds
+                .windowAll(null)           // 指定窗口分配器类型，定义如何将数据流分配到一个或多个窗口
+                .trigger(null)                      // 指定触发器类型，定义窗口满足什么样的条件触发计算（可选）
+                .evictor(null)                      // 指定 evictor，用于数据剔除（可选）
+                .allowedLateness(null)              // 标记是否处理迟到数据，当迟到数据到达窗口中是否触发计算（可选）
+                .sideOutputLateData(null)           // 指定 Output Lag，标记输出标签，然后再通过 getSideOutput 将窗口中的数据根据标签输出（可选）
+                .apply(null)               // 指定窗口计算函数
+                .getSideOutput(null) // 指定 Tag 输出数据（可选）
+        ;
+    }
+
+    /**
+     * key-value 流数据
+     *
+     * @param ks
+     * @param <K>
+     * @param <V>
+     */
+    public <K, V> void keyedWindowStruct(KeyedStream<K, V> ks) {
+        ks
+                //.window(null)              // 指定窗口分配器类型，定义如何将数据流分配到一个或多个窗口
+                .window(TimeTumblingWindow.tumblingEventTime(10L))
+                .trigger(null)                      // 指定触发器类型，定义窗口满足什么样的条件触发计算（可选）
+                .evictor(null)                      // 指定 evictor，用于数据剔除（可选）
+                .allowedLateness(null)              // 标记是否处理迟到数据，当迟到数据到达窗口中是否触发计算（可选）
+                .sideOutputLateData(null)           // 指定 Output Lag，标记输出标签，然后再通过 getSideOutput 将窗口中的数据根据标签输出（可选）
+                // .apply(null)               // 指定窗口计算函数
+                .aggregate(MyAggregateFunction.aggregate())
+                .getSideOutput(null) // 指定 Tag 输出数据（可选）
+        ;
+    }
+
+    // region 窗口类型
+
+    /**
+     * 基于时间的滑动窗口
+     */
+    static class TimeTumblingWindow {
+        public static WindowAssigner<Object, TimeWindow> tumblingEventTime(Long size) {
+            /* of 用于定义窗口的大小 */
+            return TumblingEventTimeWindows.of(Time.seconds(size));
+        }
+
+        public static WindowAssigner<Object, TimeWindow> tumblingProcessingTime(Long size) {
+            return TumblingProcessingTimeWindows.of(Time.seconds(size));
+        }
+    }
+
+    static class TimeSlidingWindow {
+        public WindowAssigner<Object, TimeWindow> slidingEventTime() {
+            /* of 用于定义窗口的大小 */
+            return SlidingEventTimeWindows.of(Time.seconds(10), Time.seconds(5));
+        }
+
+        public WindowAssigner<Object, TimeWindow> slidingProcessingTime() {
+            return SlidingProcessingTimeWindows.of(Time.seconds(10), Time.seconds(5));
+        }
+    }
+
+    static class CountTumblingWindow {
+    }
+
+    static class CountSlidingWindow {
+    }
+    // endregion
+
+    // region 窗口函数
+    static class MyReduceFunction {
+        public static <T> ReduceFunction<T> reduce() {
+            return new ReduceFunction<T>() {
+                @Override
+                public T reduce(T value1, T value2) throws Exception {
+                    return value1;
+                }
+            };
+        }
+    }
+
+    static class MyAggregateFunction {
+        public static <T> AggregateFunction<T/*输入数据类型*/, Long/*中间结果类型*/, Long/*输出结果类型*/> aggregate() {
+            return new AggregateFunction<T, Long, Long>() {
+
+                @Override
+                public Long createAccumulator() {
+                    return 0L;
+                }
+
+                @Override
+                public Long add(T value, Long accumulator) {
+                    return accumulator++;
+                }
+
+                @Override
+                public Long getResult(Long accumulator) {
+                    return accumulator;
+                }
+
+                @Override
+                public Long merge(Long a, Long b) {
+                    return a + b;
+                }
+            };
+        }
+    }
+
+    /**
+     * FoldFunction 已经在 Flink DataStream API 中被标记为 `@Deprecated`，也就是说很可能会在未来的版本中移除，Flink 建议用户使用 AggregateFunction 来替换使用 FoldFunction。
+     */
+    @Deprecated
+    static class MyFoldFunction {
+    }
+
+    static class MyProcessWindowFunction {
+        public static <In, Out, K> ProcessWindowFunction<In, Out, K, TimeWindow> process() {
+            return new ProcessWindowFunction<In, Out, K, TimeWindow>() {
+                @Override
+                public void process(K k, ProcessWindowFunction<In, Out, K, TimeWindow>.Context context, Iterable<In> elements, Collector<Out> out) throws Exception {
+
+                }
+            };
+        }
+    }
+    // endregion
+
+    // region 窗口触发器
+
+    // endregion
 }

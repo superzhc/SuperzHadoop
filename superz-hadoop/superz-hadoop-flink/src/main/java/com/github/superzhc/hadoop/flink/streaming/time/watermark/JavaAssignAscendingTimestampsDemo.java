@@ -14,6 +14,7 @@ import org.apache.flink.streaming.api.windowing.time.Time;
 /**
  * 2020年11月24日 superz add
  */
+@Deprecated
 public class JavaAssignAscendingTimestampsDemo
 {
     public static void main(String[] args) {

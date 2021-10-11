@@ -8,6 +8,7 @@ import org.apache.flink.streaming.api.watermark.Watermark;
 /**
  * 2020年11月25日 superz add
  */
+@Deprecated
 public class JavaCustomAssignerWithPeriodicWatermarks
 {
     public static void main(String[] args) {
