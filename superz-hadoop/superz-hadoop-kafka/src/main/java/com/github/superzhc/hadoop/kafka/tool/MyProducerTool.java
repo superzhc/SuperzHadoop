@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -16,11 +17,21 @@ public abstract class MyProducerTool extends MyBasicTool {
     private static final Logger log = LoggerFactory.getLogger(MyProducerTool.class);
 
     public void run(String[] args) {
+        /* 消息发送时间是否随机 */
+        boolean isRandom = false;
+        if (null != args) {
+            for (String arg : args) {
+                if ("random".equalsIgnoreCase(arg)) {
+                    isRandom = true;
+                }
+            }
+        }
+
         log.info("{}\nKafka相关信息：\n\tbrokers:{}\n\ttopic:{}", this.getClass().getName(), brokers(), topic());
         try (MyAdminClient adminClient = new MyAdminClient(brokers())) {
             if (!adminClient.exist(topic())) {
                 log.info("主题【{}】不存在，开始创建...");
-                adminClient.create(topic(), 1, (short) 0, null);
+                adminClient.create(topic(), 1, (short) 1, null);
                 log.info("主题【{}】创建成功！");
             }
         }
@@ -34,7 +45,7 @@ public abstract class MyProducerTool extends MyBasicTool {
 //                    log.info("消息发送成功：\n\tkey:【{}】\n\tmessage:【{}】", key(), message());
 //                }
 
-                Thread.sleep(1000);
+                Thread.sleep(isRandom ? new Random().nextInt(60) * 1000 : 1000);
             }
         } catch (IOException | InterruptedException | ExecutionException e) {
             log.info("生产者异常", e);
