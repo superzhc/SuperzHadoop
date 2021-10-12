@@ -1,9 +1,13 @@
 package com.github.superzhc.hadoop.flink.streaming.window;
 
+import com.github.superzhc.hadoop.flink.streaming.connector.kafka.KafkaConnectorMain;
 import org.apache.flink.api.common.functions.AggregateFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;
+import org.apache.flink.api.java.functions.KeySelector;
+import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.assigners.*;
 import org.apache.flink.streaming.api.windowing.time.Time;
@@ -32,6 +36,43 @@ import org.apache.flink.util.Collector;
  * @create 2021/10/9 16:43
  */
 public class WindowMain {
+    public static void main(String[] args) throws Exception {
+        final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        env.setParallelism(1);
+
+        DataStream<ObjectNode> ds = env.addSource(KafkaConnectorMain.sourceWithJson("superz-" + WindowMain.class.getSimpleName(), "flink-test2"))
+                .map(data -> {
+                    ObjectNode newData = data.get("value").deepCopy();
+                    return newData;
+                });
+        ds = ds
+                .keyBy(new KeySelector<ObjectNode, String>() {
+                    @Override
+                    public String getKey(ObjectNode value) throws Exception {
+                        String content = value.get("content").asText();
+                        if (null != content && content.length() > 0) {
+                            String heroInfo = content.split(" ")[0];
+                            return heroInfo.split("-")[1];
+                        }
+                        return null;
+                    }
+                })
+                .window(TumblingProcessingTimeWindows.of(Time.minutes(5)))
+                .reduce(new ReduceFunction<ObjectNode>() {
+                    @Override
+                    public ObjectNode reduce(ObjectNode value1, ObjectNode value2) throws Exception {
+                        /*String content = value1.get("content").asText("") +"\n"+ value2.get("content").asText("");
+                        return value1.put("content", content);*/
+                        String eventTimes = value1.get("event_time").asText("") + "," + value2.get("event_time").asText("");
+                        return value1.put("event_time", eventTimes);
+                    }
+                });
+
+        ds.print();
+
+        env.execute(WindowMain.class.getName());
+    }
+
     /**
      * 全部的流数据
      *
@@ -164,6 +205,10 @@ public class WindowMain {
     // endregion
 
     // region 窗口触发器
+    /**
+     *数据接入窗口后，窗口是否触发 Window Funciton 计算，取决于窗口是否满足触发条件，每种类型的窗口都有对应的窗口触发机制，保障每一次接入窗口的数据都能够按照规定的触发逻辑进行统计计算。
+     * Flink 在内部定义了窗口触发器来控制窗口的触发机制，分别有 EventTimeTrigger、ProcessTimeTrigger 以及 CountTrigger 等。
+     */
 
     // endregion
 }
