@@ -1,0 +1,23 @@
+{
+  "eventFrequency": 1000,
+  "varyEventFrequency": true,
+  "repeatWorkflow": true,
+  "timeBetweenRepeat": 2000,
+  "varyRepeatFrequency": true,
+  "steps": [
+    {
+      "config": [
+        {
+          "timestamp": "nowTimestamp()",
+          "name": "name()",
+          "age": "integer(18,80)",
+          "phone": "phone()",
+          "address": "address()",
+          "location": "address('latlon')"
+        }
+      ],
+      "duration": 0
+    }
+  ]
+}
+

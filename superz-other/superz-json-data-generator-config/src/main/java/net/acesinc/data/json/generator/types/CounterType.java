@@ -31,7 +31,7 @@ public class CounterType extends TypeHandler {
         }
         currentCounterName = launchArguments[0];
         if (namedCounterMap.get(currentCounterName) == null) {
-            namedCounterMap.put(currentCounterName, 0l);
+            namedCounterMap.put(currentCounterName, 0L);
         }
     }
     

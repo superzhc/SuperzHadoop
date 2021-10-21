@@ -42,6 +42,7 @@ public class SimulationRunner {
         running = false;
         for (WorkflowConfig workflowConfig : config.getWorkflows()) {
             try {
+                /*2021年10月21日 superz note 读取 Workflow 文件并准换成实体*/
                 Workflow w = JSONConfigReader.readConfig(this.getClass().getClassLoader().getResourceAsStream(workflowConfig.getWorkflowFilename()), Workflow.class);
                 final EventGenerator gen = new EventGenerator(w, workflowConfig, eventLoggers);
                 log.info("Adding EventGenerator for [ " + workflowConfig.getWorkflowName()+ "," + workflowConfig.getWorkflowFilename()+ " ]");

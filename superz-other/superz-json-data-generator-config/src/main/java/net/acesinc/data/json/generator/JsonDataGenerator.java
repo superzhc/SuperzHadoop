@@ -37,8 +37,17 @@ public class JsonDataGenerator {
             SimulationConfig simConfig = getSimConfig();
             List<EventLogger> loggers = new ArrayList<>();
             for (Map<String, Object> elProps : simConfig.getProducers()) {
+                /**
+                 * 2021年10月21日 superz note
+                 * 此处定义生成数据的目的地
+                 */
                 String elType = (String) elProps.get("type");
                 switch (elType) {
+                    case "console":{
+                        log.info("Adding Console Producer");
+                        loggers.add(new ConsoleLogger());
+                        break;
+                    }
                     case "logger": {
                         log.info("Adding Log4JLogger Producer");
                         loggers.add(new Log4JLogger());

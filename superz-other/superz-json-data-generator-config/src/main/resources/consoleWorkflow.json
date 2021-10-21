@@ -1,0 +1,23 @@
+{
+  "eventFrequency": 1000,
+  "varyEventFrequency": true,
+  "repeatWorkflow": true,
+  "timeBetweenRepeat": 2000,
+  "varyRepeatFrequency": false,
+  "steps": [{
+    "config": [{
+      "timestamp": "nowTimestamp()",
+      "name": "name()",
+      "age": "integer(18,80)",
+      "creditCard": "creditCard('number')",
+      "phone": "phone()",
+      "address": "address()",
+      "zipCode": "address('zipCode')",
+      "location": "address('latlon')",
+      "book": "book()"
+
+    }],
+    "duration": 0
+  }]
+}
+

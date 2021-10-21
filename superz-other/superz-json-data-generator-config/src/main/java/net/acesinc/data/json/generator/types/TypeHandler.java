@@ -5,7 +5,10 @@
  */
 package net.acesinc.data.json.generator.types;
 
+import com.github.javafaker.Faker;
 import org.apache.commons.math3.random.RandomDataGenerator;
+
+import java.util.Locale;
 
 /**
  *
@@ -13,10 +16,12 @@ import org.apache.commons.math3.random.RandomDataGenerator;
  */
 public abstract class TypeHandler {
     private RandomDataGenerator rand;
+    private Faker faker;
     private String[] launchArguments;
     
     public TypeHandler() {
         rand = new RandomDataGenerator();
+        faker=new Faker(new Locale("zh-CN"));
     }
     
     public abstract Object getNextRandomValue();
@@ -34,6 +39,14 @@ public abstract class TypeHandler {
      */
     public void setRand(RandomDataGenerator rand) {
         this.rand = rand;
+    }
+
+    public Faker getFaker() {
+        return faker;
+    }
+
+    public void setFaker(Faker faker) {
+        this.faker = faker;
     }
 
     /**

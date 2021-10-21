@@ -1,0 +1,17 @@
+{
+  "workflows": [
+    {
+      "workflowName": "Kafka",
+      "workflowFilename": "kafkaWorkflow.json"
+    }
+  ],
+  "producers": [
+    {
+      "type": "kafka",
+      "broker.server": "127.0.0.1",
+      "broker.port": 19092,
+      "topic": "logevent",
+      "sync": false
+    }
+  ]
+}

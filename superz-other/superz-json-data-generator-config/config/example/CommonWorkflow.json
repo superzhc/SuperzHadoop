@@ -1,0 +1,30 @@
+{
+  "eventFrequency": 1000,
+  "varyEventFrequency": true,
+  "repeatWorkflow": true,
+  "timeBetweenRepeat": 1000,
+  "varyRepeatFrequency": true,
+  "steps": [
+    {
+      "config": [
+        {
+          "id": "uuid()",
+          "first_name": "firstName()",
+          "last_name": "lastName()",
+          "age": "integer(15,80)",
+          "sex": "random('F','M')",
+          "system": "random('BADGE', 'AUDIT', 'WEB')",
+          "action": "random('ENTER','LOGIN','EXIT', 'LOGOUT')",
+          "location": {
+            "lat": "double(-90.0, 90.0)",
+            "lon": "double(-180.0, 180.0)"
+          },
+          "message": "alphaNumeric(10)",
+          "timestamp": "nowTimestamp()",
+          "creator": "JsonDataGenerator"
+        }
+      ],
+      "duration": 0
+    }
+  ]
+}

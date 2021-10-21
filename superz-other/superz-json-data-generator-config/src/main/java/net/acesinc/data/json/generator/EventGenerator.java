@@ -46,6 +46,9 @@ public class EventGenerator implements Runnable {
         this.eventLoggers = loggers;
     }
 
+    /**
+     * 执行 workflow
+     */
     public void runWorkflow() {
         String runMode = "sequential";
         if (workflow.getStepRunMode() != null) {

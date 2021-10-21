@@ -1,0 +1,10 @@
+{
+  "workflows": [{
+    "workflowName": "Test",
+    "workflowFilename": "consoleWorkflow.json"
+  }
+  ],
+  "producers": [{
+    "type":"console"
+  }]
+}

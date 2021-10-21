@@ -1,0 +1,19 @@
+{
+  "workflows": [
+    {
+      "workflowName": "example",
+      "workflowFilename": "exampleWorkflow.json"
+    }
+  ],
+  "producers": [
+    {
+      "type": "logger"
+    },
+    {
+      "type": "file",
+      "output.directory": "D:\\data\\output",
+      "file.prefix": "superz_json_data_generator_",
+      "file.extension": ".json"
+    }
+  ]
+}
