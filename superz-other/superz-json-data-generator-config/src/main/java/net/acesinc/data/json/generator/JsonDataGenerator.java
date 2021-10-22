@@ -118,6 +118,17 @@ public class JsonDataGenerator {
                         }
                         break;
                     }
+                    case "socket":{
+                        log.info("Adding Socket Logger with properties: "+elProps);
+                        try {
+                            loggers.add(new ServerSocketLogger(elProps));
+                        } catch (final PulsarClientException ex) {
+                            log.error("Socket Logger unable to initialize", ex);
+                        }
+                        break;
+                    }
+                    default:
+                        log.error(elType + " Logger unsupported");
                 }
             }
             if (loggers.isEmpty()) {

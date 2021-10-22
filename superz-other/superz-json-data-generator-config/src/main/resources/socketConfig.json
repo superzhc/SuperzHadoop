@@ -1,0 +1,14 @@
+{
+  "workflows": [
+    {
+      "workflowName": "Socket",
+      "workflowFilename": "kafkaWorkflow.json"
+    }
+  ],
+  "producers": [
+    {
+      "type": "socket",
+      "port": 8421
+    }
+  ]
+}
