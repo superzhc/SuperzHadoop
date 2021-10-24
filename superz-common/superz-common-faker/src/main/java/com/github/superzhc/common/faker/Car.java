@@ -11,6 +11,8 @@ public class Car {
     private static final String NEW_ENERGY_LICENSE_PLATE_PATTERN = "[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[A-Z]{1}(([0-9]{5}[DF])|([DF][A-HJ-NP-Z0-9][0-9]{4}))";
     private static final String LICENSE_PLATE_PATTERN = "[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[a-zA-Z](([DF]((?![IO])[a-zA-Z0-9](?![IO]))[0-9]{4})|([0-9]{5}[DF]))|[京津沪渝冀豫云辽黑湘皖鲁新苏浙赣鄂桂甘晋蒙陕吉闽贵粤青藏川宁琼使领A-Z]{1}[A-Z]{1}[A-Z0-9]{4}[A-Z0-9挂学警港澳]{1}";
     private static final String[] LICENSE_PLATE_COLOR_PATTERN = {"蓝", "黄", "白", "绿", "黑"};
+    /* 车架 VIN 正则表达式 */
+    private static final String VIN_PATTERN="[A-HJ-NPR-Z\\d]{8}[X\\d][A-HJ-NPR-Z\\d]{3}\\d{5}";
 
     private final Faker faker;
 
@@ -58,5 +60,19 @@ public class Car {
      */
     public String licensePlateColor() {
         return this.faker.options().option(LICENSE_PLATE_COLOR_PATTERN);
+    }
+
+    /**
+     * 车辆的 vin
+     *
+     * 规则：
+     * 1. 由大写字母和数字组成，长度17位；
+     * 2. 字母不会出现O、Q、I三个字母；
+     * 3. 第9位只能是【0-9】的数字和字母X;
+     * 4. 第13-17位只能是数字；
+     * @return
+     */
+    public String vin(){
+        return this.faker.regexify(VIN_PATTERN);
     }
 }

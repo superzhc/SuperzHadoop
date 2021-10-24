@@ -80,8 +80,6 @@ public class FlinkFakerTableSourceFactory implements DynamicTableSourceFactory {
   public static final List<LogicalTypeRoot> COLLECTION_ROOT_TYPES =
       Arrays.asList(LogicalTypeRoot.ARRAY, LogicalTypeRoot.MAP, LogicalTypeRoot.MULTISET);
 
-  private Faker faker;
-
   @Override
   public FlinkFakerTableSource createDynamicTableSource(final Context context) {
 
@@ -90,20 +88,22 @@ public class FlinkFakerTableSourceFactory implements DynamicTableSourceFactory {
     Configuration options = new Configuration();
     context.getCatalogTable().getOptions().forEach(options::setString);
 
-    /* 初始化 faker 实例 */
-    this.faker = Faker.instance(new Locale(options.get(LOCALE)));
-
+    /* 获取定义的表结构信息 */
     TableSchema schema = TableSchemaUtils.getPhysicalSchema(catalogTable.getSchema());
     Float[] fieldNullRates = new Float[schema.getFieldCount()];
     String[][] fieldExpressions = new String[schema.getFieldCount()][];
     Integer[] fieldCollectionLengths = new Integer[schema.getFieldCount()];
 
+    /* 初始化 faker 实例，验证表达式时使用 */
+    Faker faker = Faker.instance(new Locale(options.get(LOCALE)));
+
     for (int i = 0; i < fieldExpressions.length; i++) {
+      /* 获取字段名和字段类型，并且验证字段类型 */
       String fieldName = schema.getFieldName(i).get();
       DataType dataType = schema.getFieldDataType(i).get();
       validateDataType(fieldName, dataType);
 
-      fieldExpressions[i] = readAndValidateFieldExpression(options, fieldName, dataType);
+      fieldExpressions[i] = readAndValidateFieldExpression(options, fieldName, dataType,faker);
       fieldNullRates[i] = readAndValidateNullRate(options, fieldName);
       fieldCollectionLengths[i] = readAndValidateCollectionLength(options, fieldName, dataType);
     }
@@ -157,7 +157,7 @@ public class FlinkFakerTableSourceFactory implements DynamicTableSourceFactory {
   }
 
   private String[] readAndValidateFieldExpression(
-      Configuration options, String fieldName, DataType dataType) {
+      Configuration options, String fieldName, DataType dataType,Faker faker) {
     String[] fieldExpression;
 
     if (dataType.getLogicalType().getTypeRoot() == LogicalTypeRoot.MAP) {
@@ -210,6 +210,11 @@ public class FlinkFakerTableSourceFactory implements DynamicTableSourceFactory {
     return fieldExpression;
   }
 
+  /**
+   * 验证数据类型是否是支持的类型
+   * @param fieldName
+   * @param dataType
+   */
   private void validateDataType(String fieldName, DataType dataType) {
     if (!SUPPORTED_ROOT_TYPES.contains(dataType.getLogicalType().getTypeRoot())) {
       throw new ValidationException(
@@ -250,6 +255,7 @@ public class FlinkFakerTableSourceFactory implements DynamicTableSourceFactory {
     Set<ConfigOption<?>> options = new HashSet<>();
     options.add(ROWS_PER_SECOND);
     options.add(NUMBER_OF_ROWS);
+    options.add(LOCALE);
     return options;
   }
 }
