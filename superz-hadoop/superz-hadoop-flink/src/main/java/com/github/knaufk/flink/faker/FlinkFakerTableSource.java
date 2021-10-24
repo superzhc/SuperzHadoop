@@ -3,6 +3,8 @@ package com.github.knaufk.flink.faker;
 import static com.github.knaufk.flink.faker.FlinkFakerTableSourceFactory.UNLIMITED_ROWS;
 
 import java.util.Arrays;
+
+import com.github.javafaker.Faker;
 import org.apache.flink.table.api.TableSchema;
 import org.apache.flink.table.connector.ChangelogMode;
 import org.apache.flink.table.connector.source.*;
@@ -18,14 +20,16 @@ public class FlinkFakerTableSource implements ScanTableSource, LookupTableSource
   private final LogicalType[] types;
   private long rowsPerSecond;
   private long numberOfRows;
+  private String locale;
 
   public FlinkFakerTableSource(
-      String[][] fieldExpressions,
-      Float[] fieldNullRates,
-      Integer[] fieldCollectionLengths,
-      TableSchema schema,
-      long rowsPerSecond,
-      long numberOfRows) {
+          String[][] fieldExpressions,
+          Float[] fieldNullRates,
+          Integer[] fieldCollectionLengths,
+          TableSchema schema,
+          long rowsPerSecond,
+          long numberOfRows,
+          String locale) {
     this.fieldExpressions = fieldExpressions;
     this.fieldNullRates = fieldNullRates;
     this.fieldCollectionLengths = fieldCollectionLengths;
@@ -36,6 +40,7 @@ public class FlinkFakerTableSource implements ScanTableSource, LookupTableSource
             .toArray(LogicalType[]::new);
     this.rowsPerSecond = rowsPerSecond;
     this.numberOfRows = numberOfRows;
+    this.locale=locale;
   }
 
   @Override
@@ -53,6 +58,7 @@ public class FlinkFakerTableSource implements ScanTableSource, LookupTableSource
     boolean isBounded = numberOfRows != UNLIMITED_ROWS;
     return SourceFunctionProvider.of(
         new FlinkFakerSourceFunction(
+            locale,
             fieldExpressions,
             fieldNullRates,
             fieldCollectionLengths,
@@ -70,7 +76,8 @@ public class FlinkFakerTableSource implements ScanTableSource, LookupTableSource
         fieldCollectionLengths,
         schema,
         rowsPerSecond,
-        numberOfRows);
+        numberOfRows,
+        locale);
   }
 
   @Override
@@ -87,6 +94,6 @@ public class FlinkFakerTableSource implements ScanTableSource, LookupTableSource
   public LookupRuntimeProvider getLookupRuntimeProvider(LookupContext context) {
     return TableFunctionProvider.of(
         new FlinkFakerLookupFunction(
-            fieldExpressions, fieldNullRates, fieldCollectionLengths, types, context.getKeys()));
+                locale,fieldExpressions, fieldNullRates, fieldCollectionLengths, types, context.getKeys()));
   }
 }

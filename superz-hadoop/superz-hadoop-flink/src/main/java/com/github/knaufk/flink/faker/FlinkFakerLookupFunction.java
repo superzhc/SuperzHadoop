@@ -3,6 +3,7 @@ package com.github.knaufk.flink.faker;
 import com.github.javafaker.Faker;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import org.apache.flink.table.data.GenericRowData;
 import org.apache.flink.table.data.RowData;
@@ -18,15 +19,18 @@ public class FlinkFakerLookupFunction extends TableFunction<RowData> {
   private LogicalType[] types;
   private int[][] keys;
   private List<Integer> keyIndeces;
+  private String locale;
   private Faker faker;
   private Random rand;
 
   public FlinkFakerLookupFunction(
+      String locale,
       String[][] fieldExpressions,
       Float[] fieldNullRates,
       Integer[] fieldCollectionLengths,
       LogicalType[] types,
       int[][] keys) {
+    this.locale=locale;
     this.fieldExpressions = fieldExpressions;
     this.fieldNullRates = fieldNullRates;
     this.fieldCollectionLengths = fieldCollectionLengths;
@@ -44,7 +48,7 @@ public class FlinkFakerLookupFunction extends TableFunction<RowData> {
   @Override
   public void open(FunctionContext context) throws Exception {
     super.open(context);
-    faker = new Faker();
+    faker = new Faker(new Locale(locale));
     rand = new Random();
   }
 

@@ -20,6 +20,7 @@ public class FlinkFakerSourceFunction extends RichParallelSourceFunction<RowData
   private Faker faker;
   private Random rand;
 
+  private String locale;
   private String[][] fieldExpressions;
   private Float[] fieldNullRates;
   private Integer[] fieldCollectionLengths;
@@ -28,12 +29,14 @@ public class FlinkFakerSourceFunction extends RichParallelSourceFunction<RowData
   private long numberOfRows;
 
   public FlinkFakerSourceFunction(
+      String locale,
       String[][] fieldExpressions,
       Float[] fieldNullRates,
       Integer[] fieldCollectionLengths,
       LogicalType[] types,
       long rowsPerSecond,
       long numberOfRows) {
+    this.locale=locale;
     this.fieldExpressions = fieldExpressions;
     this.fieldNullRates = fieldNullRates;
     this.fieldCollectionLengths = fieldCollectionLengths;
@@ -45,7 +48,7 @@ public class FlinkFakerSourceFunction extends RichParallelSourceFunction<RowData
   @Override
   public void open(final Configuration parameters) throws Exception {
     super.open(parameters);
-    faker = new Faker(new Locale("zh-CN"));
+    faker = new Faker(new Locale(locale));
     rand = new Random();
   }
 

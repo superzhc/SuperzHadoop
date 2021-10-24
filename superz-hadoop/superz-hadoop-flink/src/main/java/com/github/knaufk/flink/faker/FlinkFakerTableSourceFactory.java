@@ -31,21 +31,31 @@ public class FlinkFakerTableSourceFactory implements DynamicTableSourceFactory {
 
   public static final Long ROWS_PER_SECOND_DEFAULT_VALUE = 10000L;
   public static final Long UNLIMITED_ROWS = -1L;
+  public static final String DEFAULT_LOCALE="zh-CN";
 
   /**
    * 定义 Connector 需要的各项参数，利用内置的 ConfigOption/ConfigOptions 类来定义
    */
+  /* 每秒产生数据的条数 */
   public static final ConfigOption<Long> ROWS_PER_SECOND =
       key("rows-per-second")
           .longType()
           .defaultValue(ROWS_PER_SECOND_DEFAULT_VALUE)
           .withDescription("Rows per second to control the emit rate.");
 
+  /* 要产生的数据数量，若该参数被设置则代表是数据有界，否则则代表是无解的流式数据 */
   public static final ConfigOption<Long> NUMBER_OF_ROWS =
       key("number-of-rows")
           .longType()
           .defaultValue(UNLIMITED_ROWS)
           .withDescription("Total number of rows to emit. By default, the source is unbounded.");
+
+  /* Faker 使用的国际化 */
+  public static final ConfigOption<String> LOCALE =
+          key("locale")
+                  .stringType()
+                  .defaultValue(DEFAULT_LOCALE)
+                  .withDescription("Faker's Usage with Locales ");
 
   public static final List<LogicalTypeRoot> SUPPORTED_ROOT_TYPES =
       Arrays.asList(
@@ -71,9 +81,6 @@ public class FlinkFakerTableSourceFactory implements DynamicTableSourceFactory {
       Arrays.asList(LogicalTypeRoot.ARRAY, LogicalTypeRoot.MAP, LogicalTypeRoot.MULTISET);
 
   private Faker faker;
-  public FlinkFakerTableSourceFactory(){
-    this.faker=Faker.instance(new Locale("zh-CN"));
-  }
 
   @Override
   public FlinkFakerTableSource createDynamicTableSource(final Context context) {
@@ -82,6 +89,9 @@ public class FlinkFakerTableSourceFactory implements DynamicTableSourceFactory {
 
     Configuration options = new Configuration();
     context.getCatalogTable().getOptions().forEach(options::setString);
+
+    /* 初始化 faker 实例 */
+    this.faker = Faker.instance(new Locale(options.get(LOCALE)));
 
     TableSchema schema = TableSchemaUtils.getPhysicalSchema(catalogTable.getSchema());
     Float[] fieldNullRates = new Float[schema.getFieldCount()];
@@ -103,7 +113,8 @@ public class FlinkFakerTableSourceFactory implements DynamicTableSourceFactory {
         fieldCollectionLengths,
         schema,
         options.get(ROWS_PER_SECOND),
-        options.get(NUMBER_OF_ROWS));
+        options.get(NUMBER_OF_ROWS),
+        options.get(LOCALE));
   }
 
   private Integer readAndValidateCollectionLength(
