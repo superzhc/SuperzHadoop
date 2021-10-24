@@ -71,6 +71,20 @@
             <artifactId>flink-connector-kafka_2.11</artifactId>
             <version>${flink.version}</version>
         </dependency>
+        <!--2021年10月24日 github relase下载的jar包，Flink相关接口还是老的，存在问题，直接copy下来代码，引入javafaker依赖包-->
+        <!--<dependency>
+            <groupId>com.github.knaufk</groupId>
+            <artifactId>flink-faker</artifactId>
+            <version>0.3.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/flink-faker-0.3.0.jar</systemPath>
+        </dependency>-->
+        <dependency>
+            <groupId>com.github.javafaker</groupId>
+            <artifactId>javafaker</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+
         <!--endregion-->
     </dependencies>
 
