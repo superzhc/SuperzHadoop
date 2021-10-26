@@ -205,10 +205,22 @@ public class WindowMain {
     // endregion
 
     // region 窗口触发器
+
     /**
-     *数据接入窗口后，窗口是否触发 Window Funciton 计算，取决于窗口是否满足触发条件，每种类型的窗口都有对应的窗口触发机制，保障每一次接入窗口的数据都能够按照规定的触发逻辑进行统计计算。
+     * 数据接入窗口后，窗口是否触发 Window Funciton 计算，取决于窗口是否满足触发条件，每种类型的窗口都有对应的窗口触发机制，保障每一次接入窗口的数据都能够按照规定的触发逻辑进行统计计算。
      * Flink 在内部定义了窗口触发器来控制窗口的触发机制，分别有 EventTimeTrigger、ProcessTimeTrigger 以及 CountTrigger 等。
      */
-
+    static class Trigger {
+        /**
+         * 每一个窗口都拥有一个属于自己的 Trigger，Trigger 上会有定时器，用来决定一个窗口何时能够被计算或清除。
+         * 每当有元素加入到该窗口，或者之前注册的定时器超时了，那么 Trigger 都会被调用。
+         * Trigger 的返回结果可以是 continue（不做任何操作），fire（处理窗口数据），purge（移除窗口和窗口中的数据），或者 fire + purge。
+         * 一个 Trigger 的调用结果只是 fire 的话，那么会计算窗口并保留窗口原样，也就是说窗口中的数据仍然保留不变，等待下次 Trigger fire 的时候再次执行计算。
+         * 一个窗口可以被重复计算多次直到它被 purge 了。在 purge 之前，窗口会一直占用着内存。
+         *
+         * 当 Trigger fire 了，窗口中的元素集合就会交给Evictor（如果指定了的话）。
+         * Evictor 主要用来遍历窗口中的元素列表，并决定最先进入窗口的多少个元素需要被移除。剩余的元素会交给用户指定的函数进行窗口的计算。如果没有 Evictor 的话，窗口中的所有元素会一起交给函数进行计算。
+         */
+    }
     // endregion
 }

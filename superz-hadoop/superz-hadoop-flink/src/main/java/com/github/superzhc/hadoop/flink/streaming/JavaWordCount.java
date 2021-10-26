@@ -3,6 +3,7 @@ package com.github.superzhc.hadoop.flink.streaming;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
@@ -19,11 +20,15 @@ import org.apache.flink.util.Collector;
 public class JavaWordCount
 {
     public static void main(String[] args) throws Exception {
+        // 2021年10月15日 设置 WEB UI 的端口号
+        Configuration conf = new Configuration();
+        conf.setInteger("rest.port", 8888);
+
         // 设置任务的执行环境，任务执行环境用于定义任务的属性、创建数据源以及最终启动任务的执行。
         StreamExecutionEnvironment env=StreamExecutionEnvironment.getExecutionEnvironment();
 
         // 连接Socket获取输入的数据
-        DataStreamSource<String> text=env.socketTextStream("localhost",9090);
+        DataStreamSource<String> text=env.socketTextStream("localhost",8421);
 
         DataStream<Tuple2<String,Long>> wordCount=text.flatMap(new FlatMapFunction<String, Tuple2<String, Long>>()
         {

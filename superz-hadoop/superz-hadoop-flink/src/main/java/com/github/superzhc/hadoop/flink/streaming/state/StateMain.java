@@ -1,9 +1,11 @@
 package com.github.superzhc.hadoop.flink.streaming.state;
 
-import org.apache.flink.api.common.functions.AggregateFunction;
-import org.apache.flink.api.common.functions.ReduceFunction;
-import org.apache.flink.api.common.functions.RichFunction;
+import org.apache.flink.api.common.functions.*;
 import org.apache.flink.api.common.state.*;
+import org.apache.flink.api.java.functions.KeySelector;
+import org.apache.flink.configuration.Configuration;
+import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 /**
  * 有状态的计算是流处理框架要实现的重要功能，因为稍复杂的流处理场景都需要记录状态，然后在新流入数据的基础上不断更新状态。
@@ -27,10 +29,6 @@ import org.apache.flink.api.common.state.*;
  * @create 2021/10/12 10:02
  */
 public class StateMain {
-    public static void main(String[] args) throws Exception {
-
-    }
-
     /**
      * 状态的使用：
      * 首先要注册一个 StateDescriptor，StateDescriptor 是状态的一种描述，它描述了状态的名称和状态的数据结构。
@@ -148,10 +146,11 @@ public class StateMain {
     static class OperatorState {
         /**
          * 这种状态以一个列表的形式序列化并存储，以适应横向扩展时状态重分布的问题
+         *
          * @param <T>
          * @return
          */
-        public <T> ListState<T> listState(){
+        public <T> ListState<T> listState() {
             return null;
         }
 
@@ -159,8 +158,83 @@ public class StateMain {
 //            return null;
 //        }
 
-        public <K,V> BroadcastState<K,V> broadcastState(){
+        public <K, V> BroadcastState<K, V> broadcastState() {
             return null;
         }
     }
+
+    // region 状态的使用
+
+    /**
+     * 注意：此函数只用于 Keyed Stream，因为算子内部的状态都是使用的 Keyed State
+     */
+    public static class MapFunctionWithState extends RichMapFunction<String, String> {
+        private transient ValueState<String> valueState;
+        private transient MapState<String, Integer> mapState;
+        private transient ListState<String> listState;
+
+        @Override
+        public void open(Configuration parameters) throws Exception {
+            super.open(parameters);
+            /* 初始化状态 */
+            ValueStateDescriptor<String> valueStateDescriptor = new ValueStateDescriptor<>("max-string", String.class);
+            valueState = getRuntimeContext().getState(valueStateDescriptor);
+
+            MapStateDescriptor<String, Integer> mapStateDescriptor = new MapStateDescriptor<>("count-string", String.class, Integer.class);
+            mapState = getRuntimeContext().getMapState(mapStateDescriptor);
+
+            ListStateDescriptor<String> listStateDescriptor = new ListStateDescriptor<>("list-string", String.class);
+            listState = getRuntimeContext().getListState(listStateDescriptor);
+        }
+
+        @Override
+        public String map(String value) throws Exception {
+            StringBuilder result = new StringBuilder(value);
+            /* 状态操作 */
+            // 获取状态值
+            String str = valueState.value();
+            str = (str == null || (value != null && str.length() < value.length())) ? value : str;
+            // 更新状态值
+            valueState.update(str);
+            result.append("-").append(null == str ? 0 : str.length());
+
+
+            int counter;
+            if (!mapState.contains(value)) {
+                counter = 1;
+            } else {
+                counter = mapState.get(value) + 1;
+            }
+            mapState.put(value, counter);
+            result.append("-").append(mapState.get(value));
+
+
+            listState.add(value);
+
+            return result.toString();
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        env.setParallelism(1);
+
+        DataStream<String> ds = env.fromElements("lisi", "zhangsan", "lisi", "zhangsan2");
+
+        // 直接像如下方式使用的话，报错：Job execution failed.
+        /* Keyed state can only be used on a 'keyed stream', i.e., after a 'keyBy()' operation. */
+        // ds.map(new MapFunctionWithState()).print();
+
+        // 如下做个假分区就没有什么问题
+        ds.keyBy(new KeySelector<String, String>() {
+            @Override
+            public String getKey(String value) throws Exception {
+                return "1";
+            }
+        }).map(new MapFunctionWithState()).print();
+
+
+        env.execute("state demo");
+    }
+    // endregion
 }
