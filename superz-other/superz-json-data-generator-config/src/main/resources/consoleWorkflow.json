@@ -14,7 +14,8 @@
       "address": "address()",
       "zipCode": "address('zipCode')",
       "location": "address('latlon')",
-      "book": "book()"
+      "book": "book()",
+      "test": "faker('#{bothify ''1?5?D#F#''}')"
 
     }],
     "duration": 0

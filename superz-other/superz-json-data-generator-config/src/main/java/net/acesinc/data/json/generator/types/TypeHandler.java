@@ -64,6 +64,7 @@ public abstract class TypeHandler {
     }
     
     public static String stripQuotes(String s) {
-        return s.replaceAll("'", "").replaceAll("\"", "").trim();
+        // 2021年10月26日 参数中包含两个单引号的代表是转义，这个要保留，将 ★ 作为关键符号
+        return s.replaceAll("''","★").replaceAll("'", "").replaceAll("\"", "").replaceAll("★","'").trim();
     }
 }
