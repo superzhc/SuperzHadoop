@@ -9,8 +9,17 @@ package com.github.superzhc.scala.functions
 object AdvancedFunction {
   /* 参数为函数的函数 */
   // 该函数可以是任何接受 Double 并返回 Double 的函数
-  // 函数类型的语法：(参数类型) => 结果类型
+  // 函数类型的语法：(参数类型1,...) => 结果类型
   def valueAtOneQuarter(f: (Double) => Double) = f(0.25)
+
+  def method1: String = {
+    ""
+  }
+
+  /*将method1作为参数可使用如下的写法*/
+  def method2(m: => String): String = {
+    m
+  }
 
   def fun1[T](lst: List[T]) = {
     /* 匿名函数 */

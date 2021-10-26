@@ -62,8 +62,16 @@ object HelloRaster {
     val colorRamp: ColorRamp = ColorRamps.GreenToRedOrange
     //iat.renderPng(colorRamp).write(GeoTrellisConfig.root + s"${DateUtils.format()}_hello_raster.png")
 
+    /**
+     * 黑色：0   0   0
+     * 红色：255 0   0
+     * 黄色：255 255 0
+     * 绿色：0   255 0
+     * 蓝色：0   0   255
+     * 白色：255 255 255
+     */
     val colorMap = ColorMap(Map(
-      1 -> RGB(255, 255, 255)
+      1 -> RGB(255, 0, 0)
       , 2 -> RGB(0, 255, 0)
       , 3 -> RGB(0, 0, 0)
       , 4 -> RGB(0, 0, 0)

@@ -1,7 +1,11 @@
 package com.github.superzhc.hadoop.spark;
 
 import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * SparkContext的示例
@@ -28,5 +32,16 @@ public class SparkContextDemo
 //        conf.set("spark.default.parallelism", "80");// 核数*executor实例数*(2~3)倍数
 
         JavaSparkContext jsc = new JavaSparkContext(conf);
+
+        List<String> words=new ArrayList<>();
+        for(int i=1;i<20;i++){
+            StringBuilder word=new StringBuilder();
+            for(int j=0;j<i;j++){
+                word.append("t");
+            }
+            words.add(word.toString());
+        }
+        JavaRDD<String> rdd=jsc.parallelize(words);
+        System.out.println(rdd.count());
     }
 }

@@ -15,6 +15,7 @@
         <module>superz-leetcode</module>
         <module>superz-scala</module>
         <module>superz-json-data-generator-config</module>
+        <module>superz-windows-bat</module>
     </modules>
 
     <properties>

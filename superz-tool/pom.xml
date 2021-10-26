@@ -13,6 +13,8 @@
     <packaging>pom</packaging>
     <modules>
         <module>superz-data</module>
+        <module>superz-screw</module>
+        <module>superz-tool-main</module>
     </modules>
 
     <properties>

@@ -10,7 +10,7 @@ import geotrellis.vector.{Geometry, LineString, Point, Polygon}
  */
 object HelloVector {
   /* 点 */
-  val p1 = Point(0, 0)
+  val p1:Point = Point(0, 0)
   val p2 = Point(0, 1)
   val p3 = Point(1, 1)
   val p4 = Point(1, 0)

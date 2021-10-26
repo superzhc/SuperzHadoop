@@ -51,8 +51,14 @@
         }).addTo(map);*/
         L.tileLayer.provider('OpenStreetMap').addTo(map);
 
-        // 江心洲坐标，还是很严重的偏移
-        L.marker([32.00, 118.42]).addTo(map);
+        // 江心洲坐标，还是很严重的偏移~~~
+        // L.marker([32.00, 118.42]).addTo(map);
+        // 通过leaflet事件来获取的坐标系
+        L.marker([32.026425, 118.691963]).addTo(map);
+
+        map.on("click", function (latlon) {
+            alert(Object.values(latlon));
+        });
 
         /* 使用 H5 API 进行定位，获取当前位置 */
         if (navigator.geolocation) {// 判断浏览器是否支持获取定位
@@ -60,6 +66,7 @@
             navigator.geolocation.getCurrentPosition(
                 // 获取成功
                 function (position) {
+                    // 转换后的坐标还是存在问题
                     $.ajax({
                         url: "/crs/tool/transform"
                         , data: {
@@ -73,7 +80,9 @@
                             var marker = L.marker([res.data.y, res.data.x]).addTo(map);
                         }
                     });
-                    //var marker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(map);
+
+                    // 直接通过 H5 API 获取到的坐标
+                    var marker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(map);
                 }
                 // 获取失败
                 , function (error) {

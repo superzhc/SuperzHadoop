@@ -25,6 +25,11 @@
         </dependency>
         <dependency>
             <groupId>com.github.superzhc</groupId>
+            <artifactId>superz-common-tablesaw</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.superzhc</groupId>
             <artifactId>superz-common-okhttp3</artifactId>
             <version>${project.version}</version>
         </dependency>

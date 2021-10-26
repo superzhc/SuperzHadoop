@@ -414,9 +414,9 @@ public class Snowball {
         Request request = builder.get().build();
         try (Response response = okHttpClient.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                throw new RuntimeException("请求异常:code={" + response.code() + "}\n异常信息:" + response.body().toString());
+                throw new RuntimeException("请求异常:code={" + response.code() + "}\n异常信息:" + response.body().string());
             }
-            JSONObject json = JSON.parseObject(response.body().toString());
+            JSONObject json = JSON.parseObject(response.body().string());
             return json;
         } catch (IOException e) {
             throw new RuntimeException(e);

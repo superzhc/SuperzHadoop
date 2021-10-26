@@ -13,6 +13,13 @@ package com.github.superzhc.scala.basic
  */
 object DataTypes {
   var any: Any = _
-  /*var str: String = Null*/
-  /*var i:Int=Nothing*/
+  val whole: Int = 10
+  val fractional: Double = 1.4
+  val trueOrFalse: Boolean = true
+  val words: String = "A value"
+  val lines: String =
+    """
+      Triple quotes let you have many lines
+      in your string
+    """
 }

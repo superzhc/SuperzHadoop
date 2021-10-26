@@ -34,5 +34,11 @@ object HelloTile {
 
     // val coloredTile: Tile = tile.color(colorMap)
     tile.renderPng(colorMap).write(GeoTrellisConfig.root + s"${DateUtils.format()}_${HelloTile.getClass.getSimpleName}.png")
+
+    /**
+     * /zooom
+     *      |-x
+     *      |
+     */
   }
 }
