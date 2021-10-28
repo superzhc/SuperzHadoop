@@ -46,7 +46,7 @@ public class ExpressionMain {
 
         /* Name */
         System.out.println("----------------------------Name-----------------------------");
-        System.out.println(faker.expression("#{Name.name}"));
+        System.out.println(faker.expression("#{Name.name }"));
         System.out.println(faker.expression("#{Name.nameWithMiddle}"));
         System.out.println(faker.expression("#{Name.fullName}"));
         System.out.println(faker.expression("#{Name.lastName}"));

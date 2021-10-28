@@ -1,11 +1,28 @@
 package com.github.superzhc.hadoop.flink.streaming.state;
 
+import com.github.superzhc.hadoop.flink.streaming.connector.customsource.JavaFakerSource;
+import com.github.superzhc.hadoop.flink.utils.FakerUtils;
+import com.github.superzhc.hadoop.flink.utils.SimpleCache;
 import org.apache.flink.api.common.functions.*;
 import org.apache.flink.api.common.state.*;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.configuration.Configuration;
+import org.apache.flink.configuration.GlobalConfiguration;
+import org.apache.flink.core.fs.FileSystem;
+import org.apache.flink.runtime.state.FunctionInitializationContext;
+import org.apache.flink.runtime.state.FunctionSnapshotContext;
+import org.apache.flink.runtime.state.filesystem.FsStateBackend;
+import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.flink.streaming.api.CheckpointingMode;
+import org.apache.flink.streaming.api.checkpoint.CheckpointedFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
+import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 有状态的计算是流处理框架要实现的重要功能，因为稍复杂的流处理场景都需要记录状态，然后在新流入数据的基础上不断更新状态。
@@ -46,6 +63,9 @@ public class StateMain {
      * 2. 初始化或重启应用时，以一定的逻辑从存储中读出并变为算子子任务的本地内存数据。
      */
 
+    /**
+     * Keyed State 对上述两项内容做了更完善的封装，开发者可以开箱即用。
+     */
     static class KeyedState {
         /**
          * ValueState<T> 是单一变量的状态，T 是某种具体的数据类型，比如 Double、String，或用户自己定义的复杂数据结构。
@@ -143,6 +163,11 @@ public class StateMain {
         }
     }
 
+    /**
+     * 对于 Operator State，每个算子子任务管理自己的 Operateor State，或者说每个算子子任务上的数据流共享，可以访问和修改该状态。
+     * Flink 的算子子任务上的数据在程序重启、横向伸缩等场景下不能保证百分百的一致性。换句话说，重启 Flink 应用后，某个数据流元素不一定会和上次一样，还能流入该算子子任务上。
+     * 因此，需要根据自己的业务场景来设计snapshot和restore的逻辑。为了实现这两个步骤，Flink提供了最为基础的CheckpointedFunction接口类。
+     */
     static class OperatorState {
         /**
          * 这种状态以一个列表的形式序列化并存储，以适应横向扩展时状态重分布的问题
@@ -151,6 +176,41 @@ public class StateMain {
          * @return
          */
         public <T> ListState<T> listState() {
+            new CheckpointedFunction() {
+                private static final String CACHE_NAME = "operator_cache";
+                private transient ListState<String> listState;
+
+                /**
+                 * Checkpoint时会调用这个方法，要实现具体的snapshot逻辑，比如将哪些本地状态持久化
+                 * @param context
+                 * @throws Exception
+                 */
+                @Override
+                public void snapshotState(FunctionSnapshotContext context) throws Exception {
+                    // 将之前的 checkpoint 清理掉
+                    listState.clear();
+                    // 将最新的写入状态中
+                    listState.add((String) SimpleCache.get(CACHE_NAME));
+                }
+
+                /**
+                 * 初始化时会调用这个方法，向本地状态中填充数据
+                 * @param context
+                 * @throws Exception
+                 */
+                @Override
+                public void initializeState(FunctionInitializationContext context) throws Exception {
+                    ListStateDescriptor<String> listStateDescriptor = new ListStateDescriptor<String>("operator count", String.class);
+                    listState = context.getOperatorStateStore().getListState(listStateDescriptor);
+
+                    /* 注意：如果作业重启，listState 中是会存在数据的，这个数据可以填充本地缓存 */
+                    Iterable<String> itr = listState.get();
+                    for (String str : itr) {
+                        SimpleCache.set(CACHE_NAME, str);
+                    }
+                }
+            };
+
             return null;
         }
 
@@ -163,75 +223,208 @@ public class StateMain {
         }
     }
 
+    /**
+     * 状态管理器：
+     * <p>
+     * 默认情况下，所有的状态都存储在 JVM 的堆内存中，在状态数据过多的情况下，这种方式很有可能导致内存溢出，因此 Flink 该提供了其它方式来存储状态数据，这些存储方式统一称为状态后端 (或状态管理器)。
+     * <p>
+     * 状态管理器主要有以下三种：
+     * 1. MemoryStateBackend：默认的方式，即基于 JVM 的堆内存进行存储，主要适用于本地开发和调试。
+     * 2. FsStateBackend：基于文件系统进行存储，可以是本地文件系统，也可以是 HDFS 等分布式文件系统。需要注意而是虽然选择使用了 FsStateBackend ，但正在进行的数据仍然是存储在 TaskManager 的内存中的，只有在 checkpoint 时，才会将状态快照写入到指定文件系统上。
+     * 3. RocksDBStateBackend：RocksDBStateBackend 是 Flink 内置的第三方状态管理器，采用嵌入式的 key-value 型数据库 RocksDB 来存储正在进行的数据。等到 checkpoint 时，再将其中的数据持久化到指定的文件系统中，所以采用 RocksDBStateBackend 时也需要配置持久化存储的文件系统。之所以这样做是因为 RocksDB 作为嵌入式数据库安全性比较低，但比起全文件系统的方式，其读取速率更快；比起全内存的方式，其存储空间更大，因此它是一种比较均衡的方案。
+     */
+    static class StateManager {
+        /**
+         * 配置方式
+         * <p>
+         * Flink 支持使用两种方式来配置后端管理器：
+         * 1. 基于代码方式进行配置，只对当前作业生效
+         * 2. 基于 flink-conf.yaml 配置文件的方式进行配置，对所有部署在该集群上的作业都生效
+         */
+
+        void setStateBackend(StreamExecutionEnvironment env) {
+            // 配置 FsStateBackend
+            env.setStateBackend(new FsStateBackend("hdfs://namenode:40010/flink/checkpoints"));
+            // 配置 RocksDBStateBackend
+            /* 配置 RocksDBStateBackend 时，需要额外导入下面的依赖
+            *
+              <dependency>
+                <groupId>org.apache.flink</groupId>
+                <artifactId>flink-statebackend-rocksdb_2.11</artifactId>
+                <version>1.12.0</version>
+              </dependency>
+            *  */
+            //env.setStateBackend(new RocksDBStateBackend("hdfs://namenode:40010/flink/checkpoints"));
+        }
+
+        void flinkConfYaml() {
+            /**
+             * state.backend: filesystem
+             * state.checkpoints.dir: hdfs://namenode:40010/flink/checkpoints
+             */
+        }
+    }
+
     // region 状态的使用
 
     /**
      * 注意：此函数只用于 Keyed Stream，因为算子内部的状态都是使用的 Keyed State
      */
-    public static class MapFunctionWithState extends RichMapFunction<String, String> {
+    public static class KeyedMapFunctionWithState extends RichMapFunction<String, String> {
         private transient ValueState<String> valueState;
         private transient MapState<String, Integer> mapState;
         private transient ListState<String> listState;
+        private transient ValueState<Long> totalState;
+        private transient ValueState<Long> distinctState;
+
+        private ObjectMapper mapper;
+
+        public KeyedMapFunctionWithState(ObjectMapper mapper) {
+            this.mapper = mapper;
+        }
 
         @Override
         public void open(Configuration parameters) throws Exception {
             super.open(parameters);
             /* 初始化状态 */
-            ValueStateDescriptor<String> valueStateDescriptor = new ValueStateDescriptor<>("max-string", String.class);
+            ValueStateDescriptor<String> valueStateDescriptor = new ValueStateDescriptor<>("key append", String.class);
             valueState = getRuntimeContext().getState(valueStateDescriptor);
 
-            MapStateDescriptor<String, Integer> mapStateDescriptor = new MapStateDescriptor<>("count-string", String.class, Integer.class);
+            MapStateDescriptor<String, Integer> mapStateDescriptor = new MapStateDescriptor<>("key counter", String.class, Integer.class);
             mapState = getRuntimeContext().getMapState(mapStateDescriptor);
 
-            ListStateDescriptor<String> listStateDescriptor = new ListStateDescriptor<>("list-string", String.class);
+            ListStateDescriptor<String> listStateDescriptor = new ListStateDescriptor<>("key list", String.class);
             listState = getRuntimeContext().getListState(listStateDescriptor);
+
+            ValueStateDescriptor<Long> totalStateDescriptor = new ValueStateDescriptor<>("key total user", Long.class);
+            totalState = getRuntimeContext().getState(totalStateDescriptor);
+
+            ValueStateDescriptor<Long> distinctStateDescriptor = new ValueStateDescriptor<>("key distinct", Long.class);
+            distinctState = getRuntimeContext().getState(distinctStateDescriptor);
         }
 
         @Override
         public String map(String value) throws Exception {
-            StringBuilder result = new StringBuilder(value);
+            ObjectNode node = (ObjectNode) mapper.readTree(value);
+            String name = node.get("name").asText();
+            String sex = node.get("sex").asText();
             /* 状态操作 */
             // 获取状态值
             String str = valueState.value();
-            str = (str == null || (value != null && str.length() < value.length())) ? value : str;
+            str = ((null == str) ? "" : str + ",") + name;
             // 更新状态值
             valueState.update(str);
-            result.append("-").append(null == str ? 0 : str.length());
 
+            Long total = (null == totalState.value() ? 0L : totalState.value()) + 1;
+            totalState.update(total);
+
+            Long distinct = (null == distinctState.value() ? 0L : distinctState.value());
 
             int counter;
-            if (!mapState.contains(value)) {
+            if (!mapState.contains(name)) {
                 counter = 1;
+                distinct += 1;
+                distinctState.update(distinct);
             } else {
-                counter = mapState.get(value) + 1;
+                counter = mapState.get(name) + 1;
             }
-            mapState.put(value, counter);
-            result.append("-").append(mapState.get(value));
-
+            mapState.put(name, counter);
 
             listState.add(value);
 
-            return result.toString();
+            node.put("total-" + sex, total);
+            node.put("distinct-" + sex, distinct);
+            node.put("counter-" + name, counter);
+
+            return mapper.writeValueAsString(node);
+        }
+    }
+
+    public static class OperatorMapFunctionWithState implements MapFunction<String, String>, CheckpointedFunction {
+        private static final String COUNTER_CACHE_NAME = "counter";
+        private transient ListState<Long> listState;
+
+        private ObjectMapper mapper;
+
+        public OperatorMapFunctionWithState(ObjectMapper mapper) {
+            this.mapper = mapper;
+        }
+
+        @Override
+        public String map(String value) throws Exception {
+            ObjectNode node = (ObjectNode) mapper.readTree(value);
+
+            Long oldCounter = (Long) SimpleCache.getOrDefault(COUNTER_CACHE_NAME, 0L);
+            Long counter = oldCounter + 1;
+
+            // 更新缓存
+            SimpleCache.set(COUNTER_CACHE_NAME, counter);
+
+            node.put("counter", counter);
+            node.put("date", FakerUtils.toLocalDateTime(node.get("date").asText()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            return mapper.writeValueAsString(node);
+        }
+
+        @Override
+        public void snapshotState(FunctionSnapshotContext context) throws Exception {
+            // 将之前的 checkpoint 清理掉
+            listState.clear();
+
+            Long counter = (Long) SimpleCache.get(COUNTER_CACHE_NAME);
+            System.err.println("快照保存的counter：" + counter);
+
+            // 将最新的写入状态中
+            listState.add(counter);
+        }
+
+        @Override
+        public void initializeState(FunctionInitializationContext context) throws Exception {
+            ListStateDescriptor<Long> listStateDescriptor = new ListStateDescriptor<>("operator count", Long.class);
+            listState = context.getOperatorStateStore().getListState(listStateDescriptor);
+
+            for (Long i : listState.get()) {
+                SimpleCache.set(COUNTER_CACHE_NAME, i);
+            }
         }
     }
 
     public static void main(String[] args) throws Exception {
-        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+        /* 2021年10月27日 note flink不会主动去读取 flink-conf.yaml 配置文件，使用方式主动去读取配置 */
+        Configuration conf = GlobalConfiguration.loadConfiguration(StateMain.class.getResource("/").getPath());
+        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment(conf);
         env.setParallelism(1);
 
-        DataStream<String> ds = env.fromElements("lisi", "zhangsan", "lisi", "zhangsan2");
+        // 检查点
+        env.enableCheckpointing(3000, CheckpointingMode.EXACTLY_ONCE);
+        env.getCheckpointConfig().setMinPauseBetweenCheckpoints(1000);
+        env.getCheckpointConfig().setMaxConcurrentCheckpoints(1);
+        env.getCheckpointConfig().enableExternalizedCheckpoints(
+                CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
+
+        // 设置状态的管理器，使用s3对象
+        /* 2021年10月27日 note 使用 s3 兼容性的minio，一定要在 env.execute() 之前将配置注册到文件系统，不然不会读取 endpoint，使用默认的 awe s3 的接口地址，参考：<https://stackoverflow.com/questions/48460533/how-to-set-presto-s3-xxx-properties-when-running-flink-from-an-ide> */
+        FileSystem.initialize(conf, null);
+        //env.setStateBackend(new FsStateBackend("s3://flink/state"));
+
+        Map<String, String> map = new HashMap<>();
+        map.put("fields.name.expression", FakerUtils.Expression.name());
+        map.put("fields.age.expression", FakerUtils.Expression.age(1, 80));
+        map.put("fields.sex.expression", FakerUtils.Expression.options("F", "M"));
+        map.put("fields.date.expression", FakerUtils.Expression.expression("date.past", "5", "SECONDS"));
+        DataStream<String> ds = env.addSource(new JavaFakerSource(map));
 
         // 直接像如下方式使用的话，报错：Job execution failed.
         /* Keyed state can only be used on a 'keyed stream', i.e., after a 'keyBy()' operation. */
         // ds.map(new MapFunctionWithState()).print();
 
-        // 如下做个假分区就没有什么问题
-        ds.keyBy(new KeySelector<String, String>() {
-            @Override
-            public String getKey(String value) throws Exception {
-                return "1";
-            }
-        }).map(new MapFunctionWithState()).print();
+        final ObjectMapper mapper = new ObjectMapper();
+        ds.map(new OperatorMapFunctionWithState(mapper))
+                .keyBy(new KeySelector<String, String>() {
+                    @Override
+                    public String getKey(String value) throws Exception {
+                        return mapper.readTree(value).get("sex").asText();
+                    }
+                }).map(new KeyedMapFunctionWithState(mapper)).print();
 
 
         env.execute("state demo");

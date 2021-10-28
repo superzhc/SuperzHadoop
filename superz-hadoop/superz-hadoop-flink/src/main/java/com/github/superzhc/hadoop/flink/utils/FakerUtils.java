@@ -61,4 +61,46 @@ public class FakerUtils {
     public static BigDecimal toBigDecimal(String value) {
         return new BigDecimal(value);
     }
+
+    public static class Expression{
+        private static final String EXPRESSION_TEMPLATE = "#{%s %s}";
+
+        public static String name() {
+            return expression("Name.name");
+        }
+
+        public static String age(int min, int max) {
+            return expression("number.number_between", min, max);
+        }
+
+        public static String options(Object one, Object... params) {
+            String template = "(%s){1}";
+            StringBuilder optionSb = new StringBuilder();
+            optionSb.append(one);
+            if (null != params) {
+                for (Object param : params) {
+                    optionSb.append("|");
+                    optionSb.append(param);
+                }
+            }
+            return regexify(String.format(template, optionSb.toString()));
+        }
+
+        public static String regexify(String pattern) {
+            return expression("regexify", pattern);
+        }
+
+        public static String expression(String method, Object... params) {
+            StringBuilder sb = new StringBuilder();
+            if (null != params && params.length > 0) {
+                for (int i = 0, len = params.length; i < len; i++) {
+                    if (i > 0) {
+                        sb.append(",");
+                    }
+                    sb.append("'").append(params[i]).append("'");
+                }
+            }
+            return String.format(EXPRESSION_TEMPLATE, method, sb.toString());
+        }
+    }
 }

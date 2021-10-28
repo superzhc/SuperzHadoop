@@ -1,0 +1,6 @@
+state.backend: filesystem
+state.checkpoints.dir: s3://flink/state
+s3.endpoint: http://localhost:9000
+s3.path.style.access: true
+s3.access-key: admin
+s3.secret-key: admin123456
