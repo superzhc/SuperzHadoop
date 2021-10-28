@@ -1,5 +1,8 @@
+rest.port: 5064
 state.backend: filesystem
-state.checkpoints.dir: s3://flink/state
+state.checkpoints.dir: s3://flink/state/checkpoints
+state.checkpoints.num-retained: 20
+state.savepoints.dir: s3://flink/state/savepoints
 s3.endpoint: http://localhost:9000
 s3.path.style.access: true
 s3.access-key: admin

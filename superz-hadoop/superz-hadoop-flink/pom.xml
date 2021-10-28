@@ -79,11 +79,6 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/libs/flink-faker-0.3.0.jar</systemPath>
         </dependency>-->
-        <dependency>
-            <groupId>com.github.javafaker</groupId>
-            <artifactId>javafaker</artifactId>
-            <version>1.0.2</version>
-        </dependency>
         <!--2021年10月25日 新增 JDBC 数据源操作-->
         <dependency>
             <groupId>org.apache.flink</groupId>
@@ -101,6 +96,19 @@
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-s3-fs-presto</artifactId>
             <version>${flink.version}</version>
+        </dependency>
+        <!--endregion-->
+
+        <!--region 工具类-->
+        <dependency>
+            <groupId>com.github.javafaker</groupId>
+            <artifactId>javafaker</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.0.0</version>
         </dependency>
         <!--endregion-->
     </dependencies>

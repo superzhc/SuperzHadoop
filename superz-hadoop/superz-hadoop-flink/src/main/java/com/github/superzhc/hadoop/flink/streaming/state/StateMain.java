@@ -3,7 +3,10 @@ package com.github.superzhc.hadoop.flink.streaming.state;
 import com.github.superzhc.hadoop.flink.streaming.connector.customsource.JavaFakerSource;
 import com.github.superzhc.hadoop.flink.utils.FakerUtils;
 import com.github.superzhc.hadoop.flink.utils.SimpleCache;
-import org.apache.flink.api.common.functions.*;
+import org.apache.flink.api.common.functions.AggregateFunction;
+import org.apache.flink.api.common.functions.ReduceFunction;
+import org.apache.flink.api.common.functions.RichFunction;
+import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.flink.api.common.state.*;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.configuration.Configuration;
@@ -340,14 +343,23 @@ public class StateMain {
         }
     }
 
-    public static class OperatorMapFunctionWithState implements MapFunction<String, String>, CheckpointedFunction {
+    public static class OperatorMapFunctionWithState extends RichMapFunction<String, String> implements CheckpointedFunction {
         private static final String COUNTER_CACHE_NAME = "counter";
         private transient ListState<Long> listState;
+
+        /* 2021年10月28日 通过使用 rich function 接口，实现本地缓存数据，这种方式跟 Operator State 的状态值保存更合理点 */
+        private Long counterCache;
 
         private ObjectMapper mapper;
 
         public OperatorMapFunctionWithState(ObjectMapper mapper) {
             this.mapper = mapper;
+        }
+
+        @Override
+        public void open(Configuration parameters) throws Exception {
+            super.open(parameters);
+            counterCache = 0L;
         }
 
         @Override
@@ -360,6 +372,8 @@ public class StateMain {
             // 更新缓存
             SimpleCache.set(COUNTER_CACHE_NAME, counter);
 
+            counterCache++;
+
             node.put("counter", counter);
             node.put("date", FakerUtils.toLocalDateTime(node.get("date").asText()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
             return mapper.writeValueAsString(node);
@@ -371,12 +385,19 @@ public class StateMain {
             listState.clear();
 
             Long counter = (Long) SimpleCache.get(COUNTER_CACHE_NAME);
-            System.err.println("快照保存的counter：" + counter);
+            System.err.println("快照保存的SimpleCache：" + counter);
+            System.err.println("快照保存的CounterCache：" + counterCache);
 
             // 将最新的写入状态中
             listState.add(counter);
         }
 
+        /**
+         * 注意：运行的阶段只会执行一次从checkpoint中获取状态
+         *
+         * @param context
+         * @throws Exception
+         */
         @Override
         public void initializeState(FunctionInitializationContext context) throws Exception {
             ListStateDescriptor<Long> listStateDescriptor = new ListStateDescriptor<>("operator count", Long.class);
@@ -384,7 +405,11 @@ public class StateMain {
 
             for (Long i : listState.get()) {
                 SimpleCache.set(COUNTER_CACHE_NAME, i);
+                counterCache = i;
             }
+
+            System.err.println("还原快照的SimpleCache：" + SimpleCache.get(COUNTER_CACHE_NAME));
+            System.err.println("还原快照的CounterCache：" + counterCache);
         }
     }
 
@@ -398,8 +423,7 @@ public class StateMain {
         env.enableCheckpointing(3000, CheckpointingMode.EXACTLY_ONCE);
         env.getCheckpointConfig().setMinPauseBetweenCheckpoints(1000);
         env.getCheckpointConfig().setMaxConcurrentCheckpoints(1);
-        env.getCheckpointConfig().enableExternalizedCheckpoints(
-                CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
+        env.getCheckpointConfig().enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
 
         // 设置状态的管理器，使用s3对象
         /* 2021年10月27日 note 使用 s3 兼容性的minio，一定要在 env.execute() 之前将配置注册到文件系统，不然不会读取 endpoint，使用默认的 awe s3 的接口地址，参考：<https://stackoverflow.com/questions/48460533/how-to-set-presto-s3-xxx-properties-when-running-flink-from-an-ide> */
