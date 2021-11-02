@@ -22,19 +22,6 @@ public class KafkaSourceDemo {
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 //        //设置并行度（使用几个CPU核心）
 //        env.setParallelism(2);
-//        //每隔2000ms进行启动一个检查点
-//        env.enableCheckpointing(2000);
-//        //高级选项：
-//        //设置模式为exactly-once
-//        env.getCheckpointConfig().setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);
-//        //确保检查点之间至少有500ms的间隔（CheckPoint最小间隔）
-//        env.getCheckpointConfig().setMinPauseBetweenCheckpoints(500);
-//        //检查点必须在1min内完成，或者被丢弃（CheckPoint的超时时间）
-//        env.getCheckpointConfig().setCheckpointTimeout(60000);
-//        //同一时间只允许操作一个检查点
-//        env.getCheckpointConfig().setMaxConcurrentCheckpoints(1);
-//        //表示一旦Flink处理程序被cancel后，会保留CheckPoint数据，以便根据实际需要恢复到指定的CheckPoint
-//        env.getCheckpointConfig().enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
 
         //1.消费者客户端连接到kafka
         Properties props = new Properties();

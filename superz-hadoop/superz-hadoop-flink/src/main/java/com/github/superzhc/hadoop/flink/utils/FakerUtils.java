@@ -62,7 +62,7 @@ public class FakerUtils {
         return new BigDecimal(value);
     }
 
-    public static class Expression{
+    public static class Expression {
         private static final String EXPRESSION_TEMPLATE = "#{%s %s}";
 
         public static String name() {
@@ -71,6 +71,22 @@ public class FakerUtils {
 
         public static String age(int min, int max) {
             return expression("number.number_between", min, max);
+        }
+
+        /**
+         * 2021年11月2日 superz add
+         * <p>
+         * 随机生成当前时间的过去 @param:second 秒的时间
+         * <p>
+         * 例子：
+         * <p>
+         * 当前时间 2021-11-2 16:38:15，设置的参数 second 为 5 秒，那么生成的时间将会在 [2021-11-2 16:38:10,2021-11-2 16:38:15) 之间
+         *
+         * @param second
+         * @return
+         */
+        public static String pastDate(int second) {
+            return expression("date.past", second, 0, "SECONDS");
         }
 
         public static String options(Object one, Object... params) {

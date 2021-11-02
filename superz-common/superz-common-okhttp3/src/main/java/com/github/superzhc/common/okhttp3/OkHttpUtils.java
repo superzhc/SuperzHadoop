@@ -185,7 +185,7 @@ public class OkHttpUtils {
 
     private static OkHttpResponse execute(Request request) throws IOException {
         try (Response response = okHttpClient.newCall(request).execute()) {
-            OkHttpResponse response1 = new OkHttpResponse(response.code(), response.body().toString());
+            OkHttpResponse response1 = new OkHttpResponse(response.code(), response.body().string());
             return response1;
         }
     }

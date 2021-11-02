@@ -1,18 +1,30 @@
 package com.github.superzhc.hadoop.flink.streaming.window;
 
 import com.github.superzhc.hadoop.flink.streaming.connector.kafka.KafkaConnectorMain;
+import com.github.superzhc.hadoop.flink.streaming.demo.fund.FlinkFundSource;
 import org.apache.flink.api.common.functions.AggregateFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;
+import org.apache.flink.api.common.state.ValueState;
+import org.apache.flink.api.common.state.ValueStateDescriptor;
+import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.flink.streaming.api.datastream.AllWindowedStream;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
+import org.apache.flink.streaming.api.datastream.WindowedStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.streaming.api.functions.windowing.ProcessAllWindowFunction;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.assigners.*;
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
+import org.apache.flink.streaming.api.windowing.windows.Window;
 import org.apache.flink.util.Collector;
+import org.apache.flink.util.OutputTag;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * 窗口
@@ -204,6 +216,19 @@ public class WindowMain {
     }
     // endregion
 
+    // region 窗口起始时间
+    /**
+     * Flink 中窗口的计算时间不是根据进入窗口的第一个元素记为窗口的开始时间和加 Size 记为窗口结束时间，而是根据 Flink 内置计算公式：
+     * timestamp - (timestamp - offset + windowSize) % windowSize
+     */
+
+    /**
+     * 注意事项：
+     * 1. Flink 的窗口开始时间都是按照整点来统计的，比如：当前时间是 17:28，按照每 30 分钟统计一次，那么统计的开始时间就是 [2021-11-02 17:00:00,2021-11-02 17:30:00]
+     * 2. Flink 如果按天来统计数据，则需要考虑时区的问题会造成从早晨8点开始统计，需要进行 offset 设置：.window(TumblingEventTimeWindows.of(Time.days(1), Time.hours(16)))，详细见：https://blog.csdn.net/maomaoqiukqq/article/details/104334993
+     */
+    // endregion
+
     // region 窗口触发器
 
     /**
@@ -221,6 +246,80 @@ public class WindowMain {
          * 当 Trigger fire 了，窗口中的元素集合就会交给Evictor（如果指定了的话）。
          * Evictor 主要用来遍历窗口中的元素列表，并决定最先进入窗口的多少个元素需要被移除。剩余的元素会交给用户指定的函数进行窗口的计算。如果没有 Evictor 的话，窗口中的所有元素会一起交给函数进行计算。
          */
+    }
+    // endregion
+
+    // region 迟到数据处理
+
+    /**
+     * 目前Flink有三种处理迟到数据的方式：
+     * 1. 直接将迟到数据丢弃【默认情况】
+     * 2. 将迟到数据发送到另一个流
+     * 3. 重新执行一次计算，将迟到数据考虑进来，更新计算结果
+     */
+
+    /* 将迟到数据发送到另一个流 */
+    public <T, K, W extends Window> WindowedStream<T, K, W> sideOutputLateDate(WindowedStream<T, K, W> ws) {
+        return ws.sideOutputLateData(new OutputTag<>("late-element"));
+    }
+
+    /* 将迟到数据发送到另一个流 */
+    public <T, W extends Window> AllWindowedStream<T, W> sideOutputLateDate(AllWindowedStream<T, W> ws) {
+        return ws.sideOutputLateData(new OutputTag<>("late-element"));
+    }
+
+    /* 重新执行一次计算，将迟到数据考虑进来，更新计算结果 */
+    public <T, K, W extends Window> DataStream<String> allowedLateness(WindowedStream<T, K, W> ws) {
+        return ws
+                .allowedLateness(Time.seconds(5))
+                .process(new ProcessWindowFunction<T, String, K, W>() {
+                    @Override
+                    public void process(K k, ProcessWindowFunction<T, String, K, W>.Context context, Iterable<T> elements, Collector<String> out) throws Exception {
+                        // 是否被迟到数据更新
+                        ValueState<Boolean> isUpdated = context.windowState().getState(new ValueStateDescriptor<Boolean>("isUpdated", Boolean.class));
+
+                        int count = 0;
+                        for (T element : elements) {
+                            count++;
+                        }
+
+                        if (!isUpdated.value()) {
+                            out.collect("first:" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + count);
+                            isUpdated.update(true);
+                        } else {
+                            out.collect("update:" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + count);
+                        }
+                    }
+                })
+                ;
+    }
+
+    /* 重新执行一次计算，将迟到数据考虑进来，更新计算结果 */
+    public <T, W extends Window> DataStream<String> allowedLateness(AllWindowedStream<T, W> ws) {
+        return ws
+                // 调用 allowedLateness 设置延迟时间，如果不明确调用，则默认的允许延迟参数是 0。
+                // 注意事项：如果对一个 Processing Time 的程序使用 allowedLateness，将引发异常
+                .allowedLateness(Time.seconds(5))
+                .process(new ProcessAllWindowFunction<T, String, W>() {
+                    @Override
+                    public void process(ProcessAllWindowFunction<T, String, W>.Context context, Iterable<T> elements, Collector<String> out) throws Exception {
+                        // 是否被迟到数据更新
+                        ValueState<Boolean> isUpdated = context.windowState().getState(new ValueStateDescriptor<Boolean>("isUpdated", Boolean.class));
+
+                        int count = 0;
+                        for (T element : elements) {
+                            count++;
+                        }
+
+                        if (!isUpdated.value()) {
+                            out.collect("first:" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + count);
+                            isUpdated.update(true);
+                        } else {
+                            out.collect("update:" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")) + count);
+                        }
+                    }
+                })
+                ;
     }
     // endregion
 }

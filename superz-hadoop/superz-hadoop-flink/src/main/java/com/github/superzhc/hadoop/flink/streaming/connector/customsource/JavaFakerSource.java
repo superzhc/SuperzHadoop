@@ -1,9 +1,14 @@
 package com.github.superzhc.hadoop.flink.streaming.connector.customsource;
 
 import com.github.javafaker.Faker;
+import org.apache.flink.api.common.state.ListState;
+import org.apache.flink.api.common.state.ListStateDescriptor;
 import org.apache.flink.configuration.Configuration;
+import org.apache.flink.runtime.state.FunctionInitializationContext;
+import org.apache.flink.runtime.state.FunctionSnapshotContext;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ObjectNode;
+import org.apache.flink.streaming.api.checkpoint.CheckpointedFunction;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
 
@@ -15,14 +20,20 @@ import java.util.Map;
  * @author superz
  * @create 2021/10/25 18:22
  */
-public class JavaFakerSource extends RichSourceFunction<String> {
+public class JavaFakerSource extends RichSourceFunction<String> implements CheckpointedFunction {
     private static final String DEFAULT_LOCALE = "zh-CN";
     private static final Long DEFAULT_ROW_PER_SECOND = 1L;
     private static final Long DEFAULT_NUMBER_OF_ROWS = -1L;
+    /* 2021年11月2日 superz add 新增数据序号字段 */
+    private static final String DEFAULT_ID_NAME = "id";
     private static final String PREFIX = "fields";
     private static final String SUFFIX = "expression";
 
     private volatile boolean cancelled = false;
+
+    private transient ListState<Long> idState;
+    private Long idCache;
+    private boolean autoId = true;
 
     private Map<String, String> expressions;
     private String locale;
@@ -55,6 +66,7 @@ public class JavaFakerSource extends RichSourceFunction<String> {
         this.expressions = expressions;
         this.rowPerSecond = rowsPerSecond;
         this.numberOfRows = numberOfRows;
+        this.idCache = 0L;
     }
 
     @Override
@@ -72,6 +84,12 @@ public class JavaFakerSource extends RichSourceFunction<String> {
             // fields.<column_name>.expression
             String field = entry.getKey().substring(PREFIX.length() + 1).substring(0, entry.getKey().length() - (PREFIX.length() + 1) - (SUFFIX.length() + 1));
             fields[i] = field;
+
+            // 判断是否自定义了 id 字段的生成
+            if (DEFAULT_ID_NAME.equalsIgnoreCase(field)) {
+                autoId = false;
+            }
+
             String expression = entry.getValue();
             try {
                 faker.expression(expression);
@@ -91,6 +109,11 @@ public class JavaFakerSource extends RichSourceFunction<String> {
             for (int j = 0; j < rowPerSecond; j++) {
                 if (!cancelled && (numberOfRows == -1L || rowsSoFar < numberOfRows)) {
                     ObjectNode objectNode = mapper.createObjectNode();
+
+                    if (autoId) {
+                        objectNode.put(DEFAULT_ID_NAME, ++idCache);
+                    }
+
                     for (int i = 0, len = fields.length; i < len; i++) {
                         objectNode.put(fields[i], faker.expression(expressionArr[i]));
                     }
@@ -108,6 +131,21 @@ public class JavaFakerSource extends RichSourceFunction<String> {
     @Override
     public void cancel() {
         cancelled = true;
+    }
+
+    @Override
+    public void snapshotState(FunctionSnapshotContext context) throws Exception {
+        idState.clear();
+        idState.add(idCache);
+    }
+
+    @Override
+    public void initializeState(FunctionInitializationContext context) throws Exception {
+        ListStateDescriptor<Long> idStateDescriptior = new ListStateDescriptor<Long>(DEFAULT_ID_NAME, Long.class);
+        idState = context.getOperatorStateStore().getListState(idStateDescriptior);
+        for (Long item : idState.get()) {
+            this.idCache = item;
+        }
     }
 
     public static void main(String[] args) throws Exception {
