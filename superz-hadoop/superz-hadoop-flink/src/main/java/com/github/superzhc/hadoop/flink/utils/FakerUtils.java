@@ -89,6 +89,16 @@ public class FakerUtils {
             return expression("date.past", second, 0, "SECONDS");
         }
 
+        /**
+         * 随机生成当前时间之后 @param:second 秒的时间
+         *
+         * @param second
+         * @return
+         */
+        public static String futureDate(int second) {
+            return expression("date.future", second, 0, "SECONDS");
+        }
+
         public static String options(Object one, Object... params) {
             String template = "(%s){1}";
             StringBuilder optionSb = new StringBuilder();

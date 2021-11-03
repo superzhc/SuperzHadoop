@@ -1,6 +1,7 @@
 package com.github.superzhc.hadoop.flink.streaming.time.watermark;
 
 import com.github.superzhc.hadoop.flink.streaming.connector.customsource.JavaFakerSource;
+import com.github.superzhc.hadoop.flink.streaming.window.WindowMain;
 import com.github.superzhc.hadoop.flink.utils.FakerUtils;
 import org.apache.flink.api.common.eventtime.*;
 import org.apache.flink.api.common.functions.AggregateFunction;
@@ -126,6 +127,7 @@ public class WatermarkStrategyMain<T> {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
+        env.getConfig().setAutoWatermarkInterval(1000);
 
         Map<String, String> fakerConfig = new HashMap<>();
         fakerConfig.put("fields.name.expression", "#{Name.name}");
@@ -135,7 +137,8 @@ public class WatermarkStrategyMain<T> {
         final Long defaultTimestamp = LocalDateTime.of(1970, 1, 1, 0, 0, 0).toInstant(ZoneOffset.of("+8")).toEpochMilli();
         final ObjectMapper mapper = new ObjectMapper();
         /* 2021年11月2日 superz add 注意 OutputTag 后面的大括号，这里必须这样写，直接 new 的话，Flink 报错：The types of the interface org.apache.flink.util.OutputTag could not be inferred. Support for synthetic interfaces, lambdas, and generic or raw types is limited at this point */
-        final OutputTag<String> tag=new OutputTag<String>("WatermarkStrategyMainLateData"){};
+        final OutputTag<String> tag = new OutputTag<String>("WatermarkStrategyMainLateData") {
+        };
         SingleOutputStreamOperator<String> ds = env.addSource(new JavaFakerSource(fakerConfig))
                 // 抽取时间戳
                 .assignTimestampsAndWatermarks(
@@ -158,39 +161,37 @@ public class WatermarkStrategyMain<T> {
                                 })
                 )
                 .windowAll(TumblingEventTimeWindows.of(Time.seconds(10)))
+                .trigger(WindowMain.MyTrigger.trigger())
                 .sideOutputLateData(tag)
-                // 简单的每个窗口计数器
-//                .aggregate(new AggregateFunction<String, Integer, Integer>() {
-//                    @Override
-//                    public Integer createAccumulator() {
-//                        return 0;
-//                    }
-//
-//                    @Override
-//                    public Integer add(String value, Integer accumulator) {
-//                        accumulator += 1;
-//                        return accumulator;
-//                    }
-//
-//                    @Override
-//                    public Integer getResult(Integer accumulator) {
-//                        return accumulator;
-//                    }
-//
-//                    @Override
-//                    public Integer merge(Integer a, Integer b) {
-//                        return a + b;
-//                    }
-//                })
-                // 为了获取窗口的信息
-                .process(new ProcessAllWindowFunction<String, String, TimeWindow>() {
+                // 简单的每个窗口计数器，采用增量方式 ProcessWindowFunction
+                .aggregate(new AggregateFunction<String, Integer, Integer>() {
                     @Override
-                    public void process(ProcessAllWindowFunction<String, String, TimeWindow>.Context context, Iterable<String> elements, Collector<String> out) throws Exception {
-                        int counter = 0;
-                        for (String element : elements) {
-                            counter++;
-                        }
+                    public Integer createAccumulator() {
+                        return 0;
+                    }
 
+                    @Override
+                    public Integer add(String value, Integer accumulator) {
+                        accumulator += 1;
+                        return accumulator;
+                    }
+
+                    @Override
+                    public Integer getResult(Integer accumulator) {
+                        return accumulator;
+                    }
+
+                    @Override
+                    public Integer merge(Integer a, Integer b) {
+                        return a + b;
+                    }
+                }, new ProcessAllWindowFunction<Integer, String, TimeWindow>() {
+                    @Override
+                    public void process(ProcessAllWindowFunction<Integer, String, TimeWindow>.Context context, Iterable<Integer> elements, Collector<String> out) throws Exception {
+                        Integer counter = -1;
+                        for (Integer element : elements) {
+                            counter = element;
+                        }
                         TimeWindow tw = context.window();
                         String start = LocalDateTime.ofInstant(Instant.ofEpochMilli(tw.getStart()), ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
                         String end = LocalDateTime.ofInstant(Instant.ofEpochMilli(tw.getEnd()), ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -200,11 +201,11 @@ public class WatermarkStrategyMain<T> {
 
         ds.print();
 
-        DataStream<String> lateDs=ds.getSideOutput(tag);
+        DataStream<String> lateDs = ds.getSideOutput(tag);
         lateDs.map(new MapFunction<String, String>() {
             @Override
             public String map(String value) throws Exception {
-                return "Late Data:"+value;
+                return "Late Data:" + value;
             }
         }).print();
 
