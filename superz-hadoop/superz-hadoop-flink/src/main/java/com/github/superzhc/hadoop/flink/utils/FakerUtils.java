@@ -54,6 +54,7 @@ public class FakerUtils {
         return Float.parseFloat(value);
     }
 
+    @Deprecated
     public static Double toDouble(String value) {
         return Double.parseDouble(value);
     }
@@ -114,6 +115,10 @@ public class FakerUtils {
 
         public static String regexify(String pattern) {
             return expression("regexify", pattern);
+        }
+
+        public static String bothify(String pattern) {
+            return expression("bothify", pattern);
         }
 
         public static String expression(String method, Object... params) {

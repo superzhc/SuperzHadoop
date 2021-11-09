@@ -1,39 +1,32 @@
 package com.github.superzhc.hadoop.flink.streaming.connector.customsource;
 
 import com.github.javafaker.Faker;
-import com.github.superzhc.hadoop.flink.utils.FakerUtils;
-import org.apache.flink.api.common.state.ListState;
-import org.apache.flink.api.common.state.ListStateDescriptor;
 import org.apache.flink.configuration.Configuration;
-import org.apache.flink.runtime.state.FunctionInitializationContext;
-import org.apache.flink.runtime.state.FunctionSnapshotContext;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.flink.streaming.api.checkpoint.CheckpointedFunction;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
+import org.apache.flink.streaming.api.functions.source.RichParallelSourceFunction;
 
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
 /**
+ * 带分区的 javafaker 数据源
+ *
  * @author superz
- * @create 2021/10/25 18:22
+ * @create 2021/11/4 14:59
  */
-public class JavaFakerSource extends RichSourceFunction<String> implements CheckpointedFunction {
+public class JavaFakerParallelSource extends RichParallelSourceFunction<String> {
     private static final String DEFAULT_LOCALE = "zh-CN";
-    private static final Long DEFAULT_ROWS_PER_SECOND = 1L;
+    private static final Long DEFAULT_ROWS_PER_SECOND = 8L;
     private static final Long DEFAULT_NUMBER_OF_ROWS = -1L;
-    /* 2021年11月2日 superz add 新增数据序号字段 */
-    private static final String DEFAULT_ID_NAME = "id";
+    /* 2021年11月2日 superz add 新增数据所在分区字段 */
+    private static final String DEFAULT_PARTITION_NAME = "partition";
     private static final String PREFIX = "fields";
     private static final String SUFFIX = "expression";
 
     private volatile boolean cancelled = false;
-
-    private transient ListState<Long> idState;
-    private Long idCache;
 
     private Map<String, String> expressions;
     private String locale;
@@ -45,28 +38,27 @@ public class JavaFakerSource extends RichSourceFunction<String> implements Check
     private String[] fields;
     private String[] expressionArr;
 
-    public JavaFakerSource(Map<String, String> expressions) {
+    public JavaFakerParallelSource(Map<String, String> expressions) {
         this(expressions, DEFAULT_LOCALE);
     }
 
-    public JavaFakerSource(Map<String, String> expressions, String locale) {
+    public JavaFakerParallelSource(Map<String, String> expressions, String locale) {
         this(expressions, locale, DEFAULT_ROWS_PER_SECOND);
     }
 
-    public JavaFakerSource(Map<String, String> expressions, Long rowsPerSecond) {
+    public JavaFakerParallelSource(Map<String, String> expressions, Long rowsPerSecond) {
         this(expressions, DEFAULT_LOCALE, rowsPerSecond);
     }
 
-    public JavaFakerSource(Map<String, String> expressions, String locale, Long rowsPerSecond) {
+    public JavaFakerParallelSource(Map<String, String> expressions, String locale, Long rowsPerSecond) {
         this(expressions, locale, rowsPerSecond, DEFAULT_NUMBER_OF_ROWS);
     }
 
-    public JavaFakerSource(Map<String, String> expressions, String locale, Long rowsPerSecond, Long numberOfRows) {
+    public JavaFakerParallelSource(Map<String, String> expressions, String locale, Long rowsPerSecond, Long numberOfRows) {
         this.locale = locale;
         this.expressions = expressions;
         this.rowsPerSecond = rowsPerSecond;
         this.numberOfRows = numberOfRows;
-        this.idCache = 0L;
     }
 
     @Override
@@ -100,13 +92,16 @@ public class JavaFakerSource extends RichSourceFunction<String> implements Check
     public void run(SourceContext<String> ctx) throws Exception {
         long rowsSoFar = 0;
         long nextReadTime = System.currentTimeMillis();
-        while (!cancelled && (numberOfRows == -1L || rowsSoFar < numberOfRows)) {
-            for (int j = 0; j < rowsPerSecond; j++) {
-                if (!cancelled && (numberOfRows == -1L || rowsSoFar < numberOfRows)) {
+
+        Long numberOfRowsForSubTask = getRowsForThisSubTask();
+        Long rowsPerSecondForSubTask = getRowsPerSecondForSubTask();
+        while (!cancelled && (numberOfRowsForSubTask == -1L || rowsSoFar < numberOfRowsForSubTask)) {
+            for (int j = 0; j < rowsPerSecondForSubTask; j++) {
+                if (!cancelled && (numberOfRowsForSubTask == -1L || rowsSoFar < numberOfRowsForSubTask)) {
                     ObjectNode objectNode = mapper.createObjectNode();
 
-                    // 用户自定义的 id 字段的优先级过于默认的 id 生成
-                    objectNode.put(DEFAULT_ID_NAME, ++idCache);
+                    /* 分区字段，分区是从 0 开始的，加 1 是为了个直观的查看 */
+                    objectNode.put(DEFAULT_PARTITION_NAME, getRuntimeContext().getIndexOfThisSubtask() + 1);
 
                     for (int i = 0, len = fields.length; i < len; i++) {
                         objectNode.put(fields[i], faker.expression(expressionArr[i]));
@@ -127,33 +122,37 @@ public class JavaFakerSource extends RichSourceFunction<String> implements Check
         cancelled = true;
     }
 
-    @Override
-    public void snapshotState(FunctionSnapshotContext context) throws Exception {
-        idState.clear();
-        idState.add(idCache);
+    private long getRowsPerSecondForSubTask() {
+        /* 获取子任务的分区数 */
+        int numSubtasks = getRuntimeContext().getNumberOfParallelSubtasks();
+        int indexOfThisSubtask = getRuntimeContext().getIndexOfThisSubtask();
+        /* 每个任务每秒产生的数据数 */
+        long baseRowsPerSecondPerSubtask = rowsPerSecond / numSubtasks;
+        return (rowsPerSecond % numSubtasks > indexOfThisSubtask)
+                ? baseRowsPerSecondPerSubtask + 1
+                : baseRowsPerSecondPerSubtask;
     }
 
-    @Override
-    public void initializeState(FunctionInitializationContext context) throws Exception {
-        ListStateDescriptor<Long> idStateDescriptior = new ListStateDescriptor<Long>(DEFAULT_ID_NAME, Long.class);
-        idState = context.getOperatorStateStore().getListState(idStateDescriptior);
-        for (Long item : idState.get()) {
-            this.idCache = item;
+    private long getRowsForThisSubTask() {
+        if (numberOfRows == -1) {
+            return numberOfRows;
+        } else {
+            int numSubtasks = getRuntimeContext().getNumberOfParallelSubtasks();
+            int indexOfThisSubtask = getRuntimeContext().getIndexOfThisSubtask();
+            final long baseNumOfRowsPerSubtask = numberOfRows / numSubtasks;
+            return (numberOfRows % numSubtasks > indexOfThisSubtask)
+                    ? baseNumOfRowsPerSubtask + 1
+                    : baseNumOfRowsPerSubtask;
         }
-    }
-
-    public static String field(String fieldName) {
-        return String.format("%s.%s.%s", PREFIX, fieldName, SUFFIX);
     }
 
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        env.setParallelism(1);
-        Map<String, String> fakerConfigs = new HashMap<>();
-        fakerConfigs.put("fields.name.expression", FakerUtils.Expression.name());
-        fakerConfigs.put("fields.age.expression", FakerUtils.Expression.age(1, 80));
-        fakerConfigs.put("fields.date.expression", FakerUtils.Expression.pastDate(5));
-        env.addSource(new JavaFakerSource(fakerConfigs)).print();
-        env.execute("javafaker source");
+        Map<String, String> map = new HashMap<>();
+        map.put("fields.name.expression", "#{Name.name}");
+        map.put("fields.age.expression", "#{number.number_between '1','80'}");
+        map.put("fields.date.expression", "#{date.past '5','SECONDS'}");
+        env.addSource(new JavaFakerParallelSource(map,2L)).print();
+        env.execute("javafaker parallel source");
     }
 }

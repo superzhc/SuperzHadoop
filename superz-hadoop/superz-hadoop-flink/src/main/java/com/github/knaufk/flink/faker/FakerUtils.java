@@ -3,6 +3,8 @@ package com.github.knaufk.flink.faker;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Locale;
@@ -46,7 +48,9 @@ public class FakerUtils {
       case TIME_WITHOUT_TIME_ZONE:
       case TIMESTAMP_WITHOUT_TIME_ZONE:
       case TIMESTAMP_WITH_LOCAL_TIME_ZONE:
-        return TimestampData.fromInstant(Instant.from(formatter.parse(value)));
+        // 2021年11月5日 superz modify 直接用如下的方式存在时区的问题
+        // return TimestampData.fromInstant(Instant.from(formatter.parse(value)));
+        return TimestampData.fromLocalDateTime(LocalDateTime.parse(value,formatter).atZone(ZoneId.systemDefault()).toLocalDateTime());
         //        break;
         //              case INTERVAL_YEAR_MONTH:
         //        break;

@@ -26,6 +26,7 @@ import org.apache.flink.util.OutputTag;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 /**
@@ -94,17 +95,17 @@ public class WindowMain {
      * @param <T>
      */
     public <T> void allWindowStruct(DataStream<T> ds) {
-        SingleOutputStreamOperator<T> output=ds
+        SingleOutputStreamOperator<T> output = ds
                 .windowAll(null)           // 指定窗口分配器类型，定义如何将数据流分配到一个或多个窗口
                 .trigger(null)                      // 指定触发器类型，定义窗口满足什么样的条件触发计算（可选）
                 .evictor(null)                      // 指定 evictor，用于数据剔除（可选）
                 .allowedLateness(null)              // 标记是否处理迟到数据，当迟到数据到达窗口中是否触发计算（可选）
                 .sideOutputLateData(null)           // 指定 Output Lag，标记输出标签，然后再通过 getSideOutput 将窗口中的数据根据标签输出（可选）
                 .apply(null)               // 指定窗口计算函数
-        ;
+                ;
 
         // 获取指定 sideOutputLateData 的数据
-        DataStream<T> lateData=output.getSideOutput(null);
+        DataStream<T> lateData = output.getSideOutput(null);
     }
 
     /**
@@ -115,7 +116,7 @@ public class WindowMain {
      * @param <V>
      */
     public <K, V> void keyedWindowStruct(KeyedStream<K, V> ks) {
-        SingleOutputStreamOperator<Long> output=ks
+        SingleOutputStreamOperator<Long> output = ks
                 //.window(null)              // 指定窗口分配器类型，定义如何将数据流分配到一个或多个窗口
                 .window(TimeTumblingWindow.tumblingEventTime(10L))
                 //.trigger(null)                      // 指定触发器类型，定义窗口满足什么样的条件触发计算（可选）
@@ -124,10 +125,9 @@ public class WindowMain {
                 .allowedLateness(null)              // 标记是否处理迟到数据，当迟到数据到达窗口中是否触发计算（可选）
                 .sideOutputLateData(null)           // 指定 Output Lag，标记输出标签，然后再通过 getSideOutput 将窗口中的数据根据标签输出（可选）
                 // .apply(null)               // 指定窗口计算函数
-                .aggregate(MyAggregateFunction.aggregate())
-        ;
-        DataStream<String> ds=output.getSideOutput(null) // 指定 Tag 输出数据（可选）
-        ;
+                .aggregate(MyAggregateFunction.aggregate());
+        DataStream<String> ds = output.getSideOutput(null) // 指定 Tag 输出数据（可选）
+                ;
     }
 
     // region 窗口类型，窗口分配器
@@ -341,7 +341,10 @@ public class WindowMain {
 
                 /**
                  * 当基于 EventTime 的 Timer 触发了 FIRE 时调用该方法
-                 * @param time
+                 *
+                 * 注意：如果窗口没有任何元素则不会触发
+                 *
+                 * @param time 触发时间
                  * @param window
                  * @param ctx
                  * @return
@@ -350,7 +353,12 @@ public class WindowMain {
                 @Override
                 public TriggerResult onEventTime(long time, TimeWindow window, TriggerContext ctx) throws Exception {
                     TriggerResult tr = time == window.maxTimestamp() ? TriggerResult.FIRE : TriggerResult.CONTINUE;
-                    System.out.println("系统时间触发窗口，触发时间：" + LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                    System.out.println("系统时间触发窗口，触发时间："
+                                    + LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                                    + "；当前 Watermark：" + LocalDateTime.ofInstant(Instant.ofEpochMilli(ctx.getCurrentWatermark()), ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                                    + "；当前 Processing Time：" + LocalDateTime.ofInstant(Instant.ofEpochMilli(ctx.getCurrentProcessingTime()), ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                            //LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+                    );
                     return tr;
                 }
 
