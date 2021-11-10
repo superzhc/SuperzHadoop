@@ -11,6 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -34,9 +37,9 @@ public class MyAdminClient extends KafkaBrokers implements Closeable {
         this(brokers, null, properties);
     }
 
-    public MyAdminClient(String brokers,
-                         Object kerberosSASL,//KerberosSASL kerberosSASL,
-                         Map<String, String> properties) {
+    private MyAdminClient(String brokers,
+                          Object kerberosSASL,//KerberosSASL kerberosSASL,
+                          Map<String, String> properties) {
         super(brokers);
 
         Properties props = new Properties();
@@ -250,5 +253,13 @@ public class MyAdminClient extends KafkaBrokers implements Closeable {
 
     public void setAdminClient(AdminClient adminClient) {
         this.adminClient = adminClient;
+    }
+
+    public static void main(String[] args) {
+        String brokers = "localhost:19092";
+        try (MyAdminClient myAdminClient = new MyAdminClient(brokers)) {
+            myAdminClient.create("superz-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")), 3, (short) 1, null);
+        }
+
     }
 }

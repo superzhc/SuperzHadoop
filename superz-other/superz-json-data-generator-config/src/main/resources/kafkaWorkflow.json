@@ -10,7 +10,8 @@
         {
           "timestamp": "nowTimestamp()",
           "name": "name()",
-          "age": "integer(18,80)",
+          "age": "integer(18,65)",
+          "sex": "faker('#{regexify ''(男|女){1}''}')",
           "phone": "phone()",
           "address": "address()",
           "location": "address('latlon')"

@@ -71,6 +71,10 @@ public class FakerUtils {
         }
 
         public static String age(int min, int max) {
+            return numberBetween(min, max);
+        }
+
+        public static String numberBetween(int min, int max) {
             return expression("number.number_between", min, max);
         }
 

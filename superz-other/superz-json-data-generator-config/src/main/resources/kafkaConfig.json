@@ -10,7 +10,7 @@
       "type": "kafka",
       "broker.server": "127.0.0.1",
       "broker.port": 19092,
-      "topic": "logevent",
+      "topic": "superz-20211110133745",
       "sync": false
     }
   ]
