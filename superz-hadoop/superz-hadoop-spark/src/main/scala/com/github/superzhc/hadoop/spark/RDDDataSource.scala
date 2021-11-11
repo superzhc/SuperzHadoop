@@ -18,13 +18,14 @@ sealed abstract class RDDDataSource(val sc: SparkContext) {
  */
 class SeqRDDDataSource(sc: SparkContext) extends RDDDataSource(sc) {
   def read[T](seq: Seq[T]): RDD[T] = {
-    sc.parallelize(seq)
+    //sc.parallelize(seq)
+    null
   }
 }
 
 class JDBCRDDDataSource(sc:SparkContext) extends RDDDataSource(sc){
   def read(driver:String,url:String,username:String,password:String,sql:String): Unit ={
-    new JdbcRDD[String](sc,()=>{null},"select * from jd limit ?,?")
+    // new JdbcRDD[String](sc,()=>{null},"select * from jd limit ?,?")
   }
 }
 
