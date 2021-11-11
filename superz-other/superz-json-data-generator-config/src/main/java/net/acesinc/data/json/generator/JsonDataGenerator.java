@@ -127,6 +127,15 @@ public class JsonDataGenerator {
                         }
                         break;
                     }
+                    case "jdbc":{
+                        log.info("Adding JDBC Logger with properties: "+elProps);
+                        try {
+                            loggers.add(new JDBCLogger(elProps));
+                        } catch (Exception ex) {
+                            log.error("JDBC Logger unable to initialize", ex);
+                        }
+                        break;
+                    }
                     default:
                         log.error(elType + " Logger unsupported");
                 }

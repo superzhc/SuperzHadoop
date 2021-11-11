@@ -25,7 +25,7 @@ public class MyProducer extends KafkaBrokers implements Closeable
         this(brokers, null, properties);
     }
 
-    public MyProducer(String brokers,
+    private MyProducer(String brokers,
                       Object kerberosSASL,// KerberosSASL kerberosSASL, //2021年3月17日 该类没有了，去掉
                       Map<String, String> properties) {
         super(brokers);

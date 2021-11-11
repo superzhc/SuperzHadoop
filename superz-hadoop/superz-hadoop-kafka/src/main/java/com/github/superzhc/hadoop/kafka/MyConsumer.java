@@ -28,7 +28,7 @@ public class MyConsumer extends KafkaBrokers implements Closeable
         this(brokers, groupId, null, properties);
     }
 
-    public MyConsumer(String brokers, String groupId,
+    private MyConsumer(String brokers, String groupId,
                       Object kerberosSASL, //KerberosSASL kerberosSASL, //2021年3月17日 该类没有了，去掉
                       Map<String, String> properties) {
         super(brokers);
