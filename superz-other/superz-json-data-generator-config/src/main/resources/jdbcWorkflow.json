@@ -1,0 +1,23 @@
+{
+  "eventFrequency": 10,
+  "varyEventFrequency": true,
+  "repeatWorkflow": true,
+  "timeBetweenRepeat": 2000,
+  "varyRepeatFrequency": true,
+  "steps": [
+    {
+      "config": [
+        {
+          "rowguid": "uuid()",
+          "name": "name()",
+          "password": "alphaNumeric(8)",
+          "age": "integer(18,65)",
+          "sex": "random('F','M')",
+          "phone": "phone()",
+          "create_time": "nowTimestamp()"
+        }
+      ],
+      "duration": 0
+    }
+  ]
+}

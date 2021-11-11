@@ -164,6 +164,12 @@
             <artifactId>javafaker</artifactId>
             <version>1.0.2</version>
         </dependency>
+        <!--2021年11月11日 superz add 新增mysql数据生成-->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.21</version>
+        </dependency>
     </dependencies>
     <!--<repositories>
         &lt;!&ndash; These are set in the settings.xml to our nexus repo &ndash;&gt;
