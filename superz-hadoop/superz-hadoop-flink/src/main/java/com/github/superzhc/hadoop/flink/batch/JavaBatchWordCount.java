@@ -8,8 +8,10 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.util.Collector;
 
 /**
+ * 2021年11月12日 Flink 1.12 版本及之后，见 com.github.superzhc.hadoop.flink.batch.JavaWordCount
  * 2020年11月19日 superz add
  */
+@Deprecated
 public class JavaBatchWordCount {
     public static void main(String[] args) throws Exception {
         // 获取运行环境
