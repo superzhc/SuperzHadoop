@@ -16,6 +16,9 @@
         <module>superz-geo-geomesa</module>
         <module>superz-geo-geotrellis</module>
         <module>superz-geo-web</module>
+        <module>superz-geo-geomesa-common</module>
+        <module>superz-geo-geomesa-hbase</module>
+        <module>superz-geo-geomesa-accumulo</module>
     </modules>
 
     <properties>

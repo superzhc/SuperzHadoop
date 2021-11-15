@@ -1,6 +1,5 @@
 package com.github.superzhc.geo.geomesa.direct;
 
-import com.github.superzhc.geo.geomesa.tool.GeoMesa2MD;
 import org.geotools.data.*;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
@@ -46,7 +45,7 @@ public class SimpleFeatureType_and_SimpleFeature {
         StringBuilder result=new StringBuilder();
         for (String schema : schemas) {
             SimpleFeatureType sft = dsi.getDataStore().getSchema(schema);
-            result.append(GeoMesa2MD.template(sft));
+            //result.append(GeoMesa2MD.template(sft));
 //            System.out.println(schema);
 //            System.out.println("    属性列表[" + sft.getAttributeCount() + "]：");
 //            for (AttributeDescriptor attribute : sft.getAttributeDescriptors()) {
