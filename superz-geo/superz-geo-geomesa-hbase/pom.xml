@@ -9,16 +9,14 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>superz-geo-geomesa</artifactId>
+    <artifactId>superz-geo-geomesa-hbase</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <geotools.version>23.0</geotools.version>
         <geomesa.version>3.0.0</geomesa.version>
         <hadoop.version>3.0.0</hadoop.version>
         <hbase.version>2.2.3</hbase.version>
-        <accumulo.version>1.9.2</accumulo.version>
     </properties>
 
     <dependencyManagement>
@@ -35,14 +33,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-opengis</artifactId>
-            <version>${geotools.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-main</artifactId>
-            <version>${geotools.version}</version>
+            <groupId>com.github.superzhc</groupId>
+            <artifactId>superz-geo-geomesa-common</artifactId>
+            <version>0.2.0</version>
         </dependency>
 
         <!--region common-->
@@ -55,7 +48,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <scope>compile</scope>
+            <scope>runtime</scope>
         </dependency>
         <!--endregion-->
 
@@ -101,33 +94,6 @@
             <scope>runtime</scope>
         </dependency>
         <!--endregion-->
-
-        <!--2021年11月15日 Accumulo 数据源-->
-        <dependency>
-            <groupId>org.locationtech.geomesa</groupId>
-            <artifactId>geomesa-accumulo-tools_${scala.binary.version}</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.accumulo</groupId>
-            <artifactId>accumulo-core</artifactId>
-            <version>${accumulo.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.accumulo</groupId>
-            <artifactId>accumulo-start</artifactId>
-            <version>${accumulo.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <scope>compile</scope>
-        </dependency>
     </dependencies>
 
 </project>

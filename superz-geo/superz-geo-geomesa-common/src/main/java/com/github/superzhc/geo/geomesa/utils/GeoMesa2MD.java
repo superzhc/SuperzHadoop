@@ -1,4 +1,4 @@
-package com.github.superzhc.geo.geomesa.tool;
+package com.github.superzhc.geo.geomesa.utils;
 
 import org.geotools.util.Classes;
 import org.opengis.feature.simple.SimpleFeatureType;

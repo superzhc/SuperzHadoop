@@ -1,16 +1,12 @@
 package com.github.superzhc.geo.geomesa.direct;
 
-import com.github.superzhc.geo.geomesa.source.GeomesaDataStore;
-import com.github.superzhc.geo.geomesa.source.config.Cloud4ControlSourceConfig;
 import org.geotools.data.*;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 //import org.geotools.geojson.feature.FeatureJSON;
 import org.locationtech.geomesa.index.conf.QueryHints;
-import org.locationtech.geomesa.index.iterators.StatsScan;
 import org.locationtech.geomesa.index.iterators.StatsScan$;
 import org.locationtech.geomesa.utils.stats.CountStat;
-import org.locationtech.geomesa.utils.stats.MinMax;
 import org.locationtech.geomesa.utils.stats.Stat;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -24,17 +20,6 @@ import java.io.IOException;
  * @create 2021/8/24 14:52
  */
 public class StatisticalQueries {
-    public static void main(String[] args) {
-        try (GeomesaDataStore dataStore = new GeomesaDataStore(new Cloud4ControlSourceConfig())) {
-            /*CountStat(dataStore.getDataStore());*/
-            /*MinMax(dataStore.getDataStore());*/
-            Sum(dataStore.getDataStore());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (CQLException e) {
-            e.printStackTrace();
-        }
-    }
 
     /**
      * 统计数据的数量

@@ -1,7 +1,6 @@
 package com.github.superzhc.geo.geomesa;
 
 import com.github.superzhc.geo.geomesa.source.GeomesaDataStore;
-import com.github.superzhc.geo.geomesa.source.config.Cloud4ControlSourceConfig;
 import com.google.common.base.CaseFormat;
 import org.apache.commons.lang3.StringUtils;
 import org.geotools.data.FeatureReader;
@@ -24,7 +23,6 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -259,18 +257,5 @@ public class GeomesaQuery {
             log.error("Geomesa 查询异常", e);
         }
         return null;
-    }
-
-    public static void main(String[] args) {
-        try (GeomesaDataStore geomesaDataStore = new GeomesaDataStore(new Cloud4ControlSourceConfig())) {
-            GeomesaQuery geomesaQuery = new GeomesaQuery(geomesaDataStore, 1);
-            QueryWrapper queryWrapper = new QueryWrapper();
-            queryWrapper.during("timestamp", LocalDateTime.of(2021, 8, 4, 0, 0), LocalDateTime.of(2021, 8, 4, 23, 59))
-                    .eq("plate_number", "苏A19096");
-            List<Map<String, Object>> lst = geomesaQuery.query("bsm.gps", queryWrapper, 100, "timestamp", "desc");
-            System.out.println(lst);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }
