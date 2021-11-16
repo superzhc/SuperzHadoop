@@ -54,8 +54,8 @@ public class GeomesaTutorial {
             gt.sft = datastore.getSchema(gt.getTypeName());
             if (null == gt.sft) {
                 System.out.println("Schema '" + gt.getTypeName() + "' does not exist. ");
-//                gt.sft = gt.getSimpleFeatureType();
-//                datastore.createSchema(gt.sft);
+                gt.sft = gt.getSimpleFeatureType();
+                datastore.createSchema(gt.sft);
             } else {
                 System.out.println("Schema '" + gt.getTypeName() + "' exist.");
             }
@@ -70,7 +70,7 @@ public class GeomesaTutorial {
     }
 
     public String getTypeName() {
-        return "bsm.speed";
+        return "superz-test20211116";
     }
 
     public SimpleFeatureType getSimpleFeatureType() {
