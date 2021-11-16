@@ -73,6 +73,7 @@ public class GeomesaAdmin {
 
     /**
      * create a new SimpleFeatureType
+     * FIXME:创建会报错误 org.apache.hadoop.hbase.ipc.RemoteWithExtrasException(org.apache.hadoop.hbase.DoNotRetryIOException): org.apache.hadoop.hbase.DoNotRetryIOException: Call From datanode2/10.80.2.191 to datanode1:8020 failed on connection exception: java.net.ConnectException: Connection refused; For more details see:  http://wiki.apache.org/hadoop/ConnectionRefused Set hbase.table.sanity.checks to false at conf or table descriptor if you want to bypass sanity checks
      *
      * @param schema
      * @param spec   : The SimpleFeatureType specification to create

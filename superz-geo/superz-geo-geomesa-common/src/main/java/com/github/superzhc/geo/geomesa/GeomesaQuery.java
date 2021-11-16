@@ -50,6 +50,10 @@ public class GeomesaQuery {
         this.number = number;
     }
 
+    public List<Map<String, Object>> scan(String schema){
+        return query(schema);
+    }
+
     public List<Map<String, Object>> query(String schema) {
         return query(schema, number, null, null);
     }
@@ -107,6 +111,10 @@ public class GeomesaQuery {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public <T> List<T> scan(String schema, Class<T> clazz){
+        return query(schema,clazz);
     }
 
     public <T> List<T> query(String schema, Class<T> clazz) {

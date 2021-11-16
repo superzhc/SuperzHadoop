@@ -49,6 +49,20 @@ public class GeomesaUpsert {
         }
     }
 
+    public void insert(String schema, SimpleFeature simpleFeature) {
+        try (FeatureWriter<SimpleFeatureType, SimpleFeature> writer = dataStore.getDataStore().getFeatureWriterAppend(schema, Transaction.AUTO_COMMIT)) {
+            // repeat as needed, once per feature
+            // note: hasNext() will always return false, but can be ignored
+            SimpleFeature next = writer.next();
+            // 唯一标识
+            next.getUserData().put(Hints.PROVIDED_FID, UUID.randomUUID().toString());
+            next.setAttributes(simpleFeature.getAttributes());
+            writer.write();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * 修改写，需要先通过一个filter来获取需要修改的数据
      *
