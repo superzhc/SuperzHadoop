@@ -81,7 +81,8 @@ public class HBaseAdmin {
     public static void main(String[] args) {
         try (HBaseConnection hBaseConnection = new HBaseConnection(new Cloud4ControlConfig())) {
             HBaseAdmin hBaseAdmin = new HBaseAdmin(hBaseConnection);
-            hBaseAdmin.describe("hbase:meta");
+            //hBaseAdmin.describe("hbase:meta");
+
         } catch (IOException e) {
             e.printStackTrace();
         }

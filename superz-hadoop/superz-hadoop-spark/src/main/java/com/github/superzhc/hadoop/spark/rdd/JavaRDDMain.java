@@ -20,6 +20,8 @@ public class JavaRDDMain {
         SparkConf conf = new SparkConf();
         conf.setAppName("superz").setMaster("local[1]");
         JavaSparkContext jsc = new JavaSparkContext(conf);
+
+
     }
 
     /**
