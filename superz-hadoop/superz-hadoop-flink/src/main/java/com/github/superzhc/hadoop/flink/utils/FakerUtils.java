@@ -78,6 +78,10 @@ public class FakerUtils {
             return expression("number.number_between", min, max);
         }
 
+        public static String randomDouble(int maxNumberOfDecimals, int min, int max) {
+            return expression("number.random_double", maxNumberOfDecimals, min, max);
+        }
+
         /**
          * 2021年11月2日 superz add
          * <p>

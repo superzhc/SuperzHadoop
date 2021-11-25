@@ -46,22 +46,22 @@ public class Cloud4ControlSourceConfig extends GeomesaSourceConfig {
 //            System.out.println(lst);
 
             // 无条件查询
-            System.out.println(geomesaQuery.scan("plc_info"));
+//            System.out.println(geomesaQuery.scan("plc_info"));
 
             GeomesaAdmin geomesaAdmin = new GeomesaAdmin(geomesaDataStore);
-//            String[] schemas=geomesaAdmin.list();
-//
-//            if(null==schemas || schemas.length==0){
-//                System.out.println("无 Schema");
-//                return;
-//            }
-//
-//            for(String schema:schemas){
-//                System.out.println(schema);
-//            }
+            String[] schemas=geomesaAdmin.list();
 
-            String sft=geomesaAdmin.formatSft("plc_info");
-            System.out.println("SimepleFeatureType 信息："+sft);
+            if(null==schemas || schemas.length==0){
+                System.out.println("无 Schema");
+                return;
+            }
+
+            for(String schema:schemas){
+                System.out.println(schema);
+            }
+
+//            String sft=geomesaAdmin.formatSft("plc_info");
+//            System.out.println("SimepleFeatureType 信息："+sft);
 
 //            StringBuilder attributes = new StringBuilder();
 //            attributes.append("CraneName:String,");
@@ -92,7 +92,7 @@ public class Cloud4ControlSourceConfig extends GeomesaSourceConfig {
 //            geomesaDataStore.getDataStore().createSchema(sft);
 //
             // 2021年11月16日 创建表报错
-//            geomesaAdmin.create("plc_test3", attributes.toString());
+//            geomesaAdmin.create("plc_test5", attributes.toString());
 //            System.out.println("创建表成功");
 
 //            GeomesaUpsert geomesaUpsert=new GeomesaUpsert(geomesaDataStore);

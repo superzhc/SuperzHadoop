@@ -6,19 +6,21 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 /**
  * 为了使 Flink 的状态具有良好的容错性，Flink 提供了检查点机制 (CheckPoints) 。
- *
+ * <p>
  * 通过检查点机制，Flink 定期在数据流上生成 checkpoint barrier ，当某个算子收到 barrier 时，即会基于当前状态生成一份快照，然后再将该 barrier 传递到下游算子，下游算子接收到该 barrier 后，也基于当前状态生成一份快照，依次传递直至到最后的 Sink 算子上。
  * 当出现异常后，Flink 就可以根据最近的一次的快照数据将所有算子恢复到先前的状态。
- *
+ * <p>
  * 默认情况下，Flink不会触发一次 Checkpoint 当系统有其他 Checkpoint 在进行时，也就是说 Checkpoint 默认的并发为 1。
+ *
  * @author superz
  * @create 2021/10/27 9:38
  */
 public class CheckpointMain {
     /**
      * 针对 Flink DataStream 任务，程序需要经历从 StreamGraph -> JobGraph -> ExecutionGraph -> 物理执行图四个步骤，其中在 ExecutionGraph 构建时，会初始化 CheckpointCoordinator。
-     *  ExecutionGraph 通过 ExecutionGraphBuilder.buildGraph 方法构建，在构建完时，会调用 ExecutionGraph 的 enableCheckpointing 方法创建 CheckpointCoordinator。
-     *  CheckpoinCoordinator 是 Flink 任务 Checkpoint 的关键，针对每一个 Flink 任务，都会初始化一个 CheckpointCoordinator 类，来触发 Flink 任务 Checkpoint。
+     * ExecutionGraph 通过 ExecutionGraphBuilder.buildGraph 方法构建，在构建完时，会调用 ExecutionGraph 的 enableCheckpointing 方法创建 CheckpointCoordinator。
+     * <p>
+     * CheckpoinCoordinator 是 Flink 任务 Checkpoint 的关键，针对每一个 Flink 任务，都会初始化一个 CheckpointCoordinator 类，来触发 Flink 任务 Checkpoint。
      */
 
     public static void main(String[] args) {
@@ -63,9 +65,9 @@ public class CheckpointMain {
         env.getCheckpointConfig().setPreferCheckpointForRecovery(true);
 
         /**
-         * 默认情况下，如果设置了 Checkpoint 选项，则 Flink 只保留最近成功生成的 1 个Checkpoint，而当 Flink 程序失败时，可以从最近的这个 Checkpoint 来进行恢复。
+         * 默认情况下，如果设置了 Checkpoint 选项，则 Flink 只保留最近成功生成的 1 个 Checkpoint，而当 Flink 程序失败时，可以从最近的这个 Checkpoint 来进行恢复。
          * 但是，如果希望保留多个 Checkpoint，并能够根据实际需要选择其中一个进行恢复，这样会更加灵活，比如，用户发现最近4个小时数据记录处理有问题，希望将整个状态还原到4小时之前。
-         * Flink可以支持保留多个Checkpoint，需要在Flink的配置文件 conf/flink-conf.yaml 中，添加如下配置，指定最多需要保存 Checkpoint 的个数：
+         * Flink 可以支持保留多个 Checkpoint，需要在 Flink 的配置文件 conf/flink-conf.yaml 中，添加如下配置，指定最多需要保存 Checkpoint 的个数：
          *
          * state.checkpoints.num-retained: 20
          */
