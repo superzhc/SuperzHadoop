@@ -170,7 +170,7 @@ public class TusharePro {
         PropertiesUtils.read("application.properties");
         TusharePro pro = new TusharePro(PropertiesUtils.get("tushare.token"));
 
-        Table table = pro.execute2("index_basic", null, new String[]{
+        List<Map<String, Object>> datas=pro.execute("index_basic", null, new String[]{
                 "ts_code",
                 "name",
                 "market",
@@ -180,10 +180,25 @@ public class TusharePro {
                 "base_point",
                 "list_date"
         });
-        System.out.println(table.structure());
-        System.out.println("------------------------华丽的分割线-----------------------------");
-        System.out.println(table.shape());
-        System.out.println("------------------------华丽的分割线-----------------------------");
-        System.out.println(table.printAll());
+
+        for(Map<String,Object> data:datas){
+            System.out.println(JSON.toJSONString(data));
+        }
+
+//        Table table = pro.execute2("index_basic", null, new String[]{
+//                "ts_code",
+//                "name",
+//                "market",
+//                "publisher",
+//                "category",
+//                "base_date",
+//                "base_point",
+//                "list_date"
+//        });
+//        System.out.println(table.structure());
+//        System.out.println("------------------------华丽的分割线-----------------------------");
+//        System.out.println(table.shape());
+//        System.out.println("------------------------华丽的分割线-----------------------------");
+//        System.out.println(table.printAll());
     }
 }

@@ -21,6 +21,7 @@
         <module>superz-hadoop-flink</module>
         <module>superz-hadoop-elasticsearch</module>
         <module>superz-hadoop-kafka</module>
+        <module>superz-hadoop-zookeeper</module>
     </modules>
 
     <properties>
