@@ -95,3 +95,4 @@ fabric.properties
 hs_err_pid*
 /testoutput/
 /logs/
+/superzmqtt-tcplocalhost1883/.lck
