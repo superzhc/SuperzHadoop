@@ -97,6 +97,13 @@
             <artifactId>flink-s3-fs-presto</artifactId>
             <version>${flink.version}</version>
         </dependency>
+
+        <!--Mqtt 客户端-->
+        <dependency>
+            <groupId>org.eclipse.paho</groupId>
+            <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+            <version>1.2.2</version>
+        </dependency>
         <!--endregion-->
 
         <!--region 工具类-->

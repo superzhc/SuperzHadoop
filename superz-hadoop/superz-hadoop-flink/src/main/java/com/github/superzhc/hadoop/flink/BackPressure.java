@@ -27,6 +27,15 @@ import java.util.Map;
  * @create 2021/11/8 15:14
  */
 public class BackPressure {
+
+    /**
+     * 反压出现的场景：
+     * <p>
+     * 反压经常出现在促销、热门活动等场景。短时间内流量陡增造成数据的堆积或者消费速度变慢。
+     * <p>
+     * 总结：数据的消费速度小于数据的生产速度
+     */
+
     public static void main(String[] args) throws Exception {
         Configuration conf = new Configuration();
         conf.setInteger("rest.port", 8888);
