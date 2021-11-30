@@ -150,8 +150,13 @@ public class JavaFakerSource extends RichSourceFunction<String> implements Check
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
         Map<String, String> fakerConfigs = new HashMap<>();
-        fakerConfigs.put("fields.name.expression", FakerUtils.Expression.name());
+        //fakerConfigs.put("fields..expression",FakerUtils.Expression);
+        fakerConfigs.put("fields.name.expression", FakerUtils.Expression.NAME);
         fakerConfigs.put("fields.age.expression", FakerUtils.Expression.age(1, 80));
+        fakerConfigs.put("fields.id_card.expression",FakerUtils.Expression.ID_CARD);
+        fakerConfigs.put("fields.qq.expression",FakerUtils.Expression.QQ);
+        fakerConfigs.put("fields.ip.expression",FakerUtils.Expression.IP);
+        fakerConfigs.put("fields.plate_number.expression",FakerUtils.Expression.Car.LICESE_PLATE);
         fakerConfigs.put("fields.date.expression", FakerUtils.Expression.pastDate(5));
         env.addSource(new JavaFakerSource(fakerConfigs)).print();
         env.execute("javafaker source");
