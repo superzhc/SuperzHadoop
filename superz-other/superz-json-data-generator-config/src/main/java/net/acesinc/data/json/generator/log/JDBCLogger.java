@@ -13,6 +13,7 @@ import java.util.*;
  * @author superz
  * @create 2021/11/11 10:52
  */
+@Deprecated
 public class JDBCLogger implements EventLogger {
     private static final Logger log = LogManager.getLogger(JDBCLogger.class);
 
