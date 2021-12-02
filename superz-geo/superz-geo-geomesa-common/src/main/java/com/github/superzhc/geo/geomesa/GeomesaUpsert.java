@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.UUID;
 
@@ -28,6 +29,29 @@ public class GeomesaUpsert {
 
     public GeomesaUpsert(GeomesaDataStore dataStore) {
         this.dataStore = dataStore;
+    }
+
+    public <T> void insert(String schema, T attributes) {
+        try {
+            SimpleFeatureType sft = dataStore.getDataStore().getSchema(schema);
+            if (null == sft) {
+                throw new RuntimeException("schema[" + schema + "] not exist");
+            }
+
+            SimpleFeatureBuilder builder = new SimpleFeatureBuilder(sft);
+
+            Class clazz = attributes.getClass();
+            Field[] fields = clazz.getDeclaredFields();
+            for (Field field : fields) {
+                field.setAccessible(true);
+                builder.set(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, field.getName()), field.get(attributes));
+            }
+
+            SimpleFeature simpleFeature = builder.buildFeature(UUID.randomUUID().toString());
+            insert(schema, simpleFeature);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void insert(String schema, Map<String, Object> attributes) {

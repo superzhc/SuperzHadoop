@@ -27,7 +27,7 @@ public class Cloud4ControlSourceConfig extends GeomesaSourceConfig {
         // 下面的写法无法连接远程的zookeeper，使用 hbase.zookeepers 参数项
         // parameters.put("hbase.zookeeper.quorum","namenode,datanode1,datanode2");
         // parameters.put("hbase.zookeeper.property.clientPort","2181");
-        sourceParams.put("hbase.zookeepers", "namenode:2181,datanode1:2181,datanode1:2181");
+        sourceParams.put("hbase.zookeepers", "namenode:2181,datanode1:2181,datanode2:2181");
         sourceParams.put("hbase.coprocessor.url", "hdfs://datanode1:8020/hbase/lib/geomesa-hbase-distributed-runtime-hbase2_2.11-3.0.0.jar|org.locationtech.geomesa.hbase.server.coprocessor.GeoMesaCoprocessor|1073741823||org.locationtech.geomesa.hbase.server.coprocessor.GeoMesaCoprocessor|1073741823|");
         // HBaseDataStoreParams.HBaseCatalogParam().key is the string "hbase.catalog"
         // the GeoMesa HBase data store will recognize the key and attempt to load itself
@@ -37,7 +37,7 @@ public class Cloud4ControlSourceConfig extends GeomesaSourceConfig {
 
     public static void main(String[] args) {
         try (GeomesaDataStore geomesaDataStore = new GeomesaDataStore(new Cloud4ControlSourceConfig())) {
-            String schema = "quay.crane.plc2";
+            String schema = "quay.crane.helmet";
 
             // region 查询
             GeomesaQuery geomesaQuery = new GeomesaQuery(geomesaDataStore/*, 1*/);
@@ -49,7 +49,7 @@ public class Cloud4ControlSourceConfig extends GeomesaSourceConfig {
 //            System.out.println(lst);
 
             // 无条件查询
-            // System.out.println(geomesaQuery.scan(schema));
+            System.out.println(geomesaQuery.scan(schema));
 
             // endregion
 
@@ -68,19 +68,19 @@ public class Cloud4ControlSourceConfig extends GeomesaSourceConfig {
 //            System.out.println("schema[" + schema + "]是否存在：" + geomesaAdmin.exist(schema));
 
             // 2021年11月16日 创建表报错
-//            StringBuilder attributes = new StringBuilder();
-//            attributes.append("timestamp:Date,crane_name:String,control_on:String,wind_speed:String,is_lock:String,ht_pos:String,gt_pos:String,tt_pos:String,pt_pos:String,ht_state:String,tt_state:String,gt_state:String,pt_state:String,");
-//            attributes.append("ht_masterchain_soft:String,").append("ht_masterchain_hard:String,").append("ht_masterchain:String,").append("ht_functionchain:String,");
-//            attributes.append("gt_masterchain_soft:String,").append("gt_masterchain_hard:String,").append("gt_masterchain:String,").append("gt_functionchain:String,");
-//            attributes.append("tt_masterchain_soft:String,").append("tt_masterchain_hard:String,").append("tt_masterchain:String,").append("tt_functionchain:String,");
-//            attributes.append("pt_masterchain_soft:String,").append("pt_masterchain_hard:String,").append("pt_masterchain:String,").append("pt_functionchain:String");
-//            System.out.println(attributes.toString());
-//            // geomesaAdmin.create(schema, attributes.toString());
-//            SimpleFeatureType sft = SimpleFeatureTypes.createType(schema, attributes.toString());
-//            // 设置时空索引时间字段
-//            sft.getUserData().put("geomesa.index.dtg", "timestamp");
-//            geomesaAdmin.create(sft);
-//            System.out.println("创建表成功");
+            StringBuilder attributes = new StringBuilder();
+            attributes.append("timestamp:Date,crane_name:String,control_on:String,wind_speed:String,is_lock:String,ht_pos:String,gt_pos:String,tt_pos:String,pt_pos:String,ht_state:String,tt_state:String,gt_state:String,pt_state:String,");
+            attributes.append("ht_masterchain_soft:String,").append("ht_masterchain_hard:String,").append("ht_masterchain:String,").append("ht_functionchain:String,");
+            attributes.append("gt_masterchain_soft:String,").append("gt_masterchain_hard:String,").append("gt_masterchain:String,").append("gt_functionchain:String,");
+            attributes.append("tt_masterchain_soft:String,").append("tt_masterchain_hard:String,").append("tt_masterchain:String,").append("tt_functionchain:String,");
+            attributes.append("pt_masterchain_soft:String,").append("pt_masterchain_hard:String,").append("pt_masterchain:String,").append("pt_functionchain:String");
+            // System.out.println(attributes.toString());
+            // geomesaAdmin.create(schema, attributes.toString());
+            SimpleFeatureType sft = SimpleFeatureTypes.createType("quay.crane.plc2", attributes.toString());
+            // 设置时空索引时间字段
+            sft.getUserData().put("geomesa.index.dtg", "timestamp");
+            geomesaAdmin.create(sft);
+            System.out.println("创建表成功");
 
             // endregion
 

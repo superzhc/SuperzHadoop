@@ -15,7 +15,8 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <geomesa.version>3.0.0</geomesa.version>
-        <hadoop.version>3.0.0</hadoop.version>
+        <!--<hadoop.version>3.0.0</hadoop.version>-->
+        <hadoop.version>2.8.5</hadoop.version>
         <hbase.version>2.2.3</hbase.version>
     </properties>
 
@@ -43,11 +44,13 @@
         <dependency>
             <groupId>org.apache.zookeeper</groupId>
             <artifactId>zookeeper</artifactId>
+            <version>3.4.10</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
+            <version>11.0.2</version>
             <scope>runtime</scope>
         </dependency>
         <!--endregion-->
@@ -96,6 +99,18 @@
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-client</artifactId>
+            <version>${hadoop.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-hdfs</artifactId>
+            <version>${hadoop.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-annotations</artifactId>
             <version>${hadoop.version}</version>
             <scope>runtime</scope>
         </dependency>

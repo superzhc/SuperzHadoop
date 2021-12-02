@@ -2,7 +2,7 @@
   "workflows": [
     {
       "workflowName": "MQTT",
-      "workflowFilename": "kafkaWorkflow.json"
+      "workflowFilename": "helmetPosWorkflow.json"
     }
   ],
   "producers": [
@@ -11,8 +11,8 @@
       "broker.server": "tcp://36.153.0.227",
       "broker.port": 1621,
       "topic": "superz/mqtt",
-      "clientId": "superzmqtt",
-      "qos": 2,
+      "clientId": "json-data-generate",
+      "qos": 0,
       "username": "user",
       "password": "123456"
     }
