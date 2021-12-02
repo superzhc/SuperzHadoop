@@ -37,6 +37,9 @@ public class Cloud4ControlSourceConfig extends GeomesaSourceConfig {
 
     public static void main(String[] args) {
         try (GeomesaDataStore geomesaDataStore = new GeomesaDataStore(new Cloud4ControlSourceConfig())) {
+            String schema = "quay.crane.plc2";
+
+            // region 查询
             GeomesaQuery geomesaQuery = new GeomesaQuery(geomesaDataStore/*, 1*/);
 
 //            QueryWrapper queryWrapper = new QueryWrapper();
@@ -46,56 +49,43 @@ public class Cloud4ControlSourceConfig extends GeomesaSourceConfig {
 //            System.out.println(lst);
 
             // 无条件查询
-//            System.out.println(geomesaQuery.scan("plc_info"));
+            // System.out.println(geomesaQuery.scan(schema));
 
+            // endregion
+
+            // region 表管理
             GeomesaAdmin geomesaAdmin = new GeomesaAdmin(geomesaDataStore);
-            String[] schemas=geomesaAdmin.list();
 
-            if(null==schemas || schemas.length==0){
-                System.out.println("无 Schema");
-                return;
-            }
+//            System.out.println(geomesaAdmin.show());
+//            System.out.println(geomesaAdmin.show(schema));
 
-            for(String schema:schemas){
-                System.out.println(schema);
-            }
-
-//            String sft=geomesaAdmin.formatSft("plc_info");
+//            String sft=geomesaAdmin.formatSft(schema);
 //            System.out.println("SimepleFeatureType 信息："+sft);
 
-//            StringBuilder attributes = new StringBuilder();
-//            attributes.append("CraneName:String,");
-//            attributes.append("ControlOn:String,");
-//            attributes.append("WindSpeed:String,");
-//            attributes.append("IsLock:String,");
-//            attributes.append("HTPos:String,");
-//            attributes.append("GTPos:String,");
-//            attributes.append("TTPos:String,");
-//            attributes.append("PTPos:String,");
-//            attributes.append("HTState:String,");
-//            attributes.append("TTState:String,");
-//            attributes.append("GTState:String,");
-//            attributes.append("PTState:String,");
-//            attributes.append("HTFault_Fault1:String,");
-//            attributes.append("HTFault_Fault2:String,");
-//            attributes.append("GTFault_Fault1:String,");
-//            attributes.append("GTFault_Fault2:String,");
-//            attributes.append("TTFault_Fault1:String,");
-//            attributes.append("TTFault_Fault2:String,");
-//            attributes.append("PTFault_Fault1:String,");
-//            attributes.append("PTFault_Fault2:String,");
-//            attributes.append("ReadTime:Date");
-//
-//            SimpleFeatureType sft = SimpleFeatureTypes.createType("plc_test2", attributes.toString());
-//            // 设置时空索引时间字段
-//            sft.getUserData().put("geomesa.index.dtg", "ReadTime");
-//            geomesaDataStore.getDataStore().createSchema(sft);
-//
+            // 删除表
+//            System.out.println("schema[" + schema + "]是否存在：" + geomesaAdmin.exist(schema));
+//            geomesaAdmin.delete(schema);
+//            System.out.println("schema[" + schema + "]是否存在：" + geomesaAdmin.exist(schema));
+
             // 2021年11月16日 创建表报错
-//            geomesaAdmin.create("plc_test5", attributes.toString());
+//            StringBuilder attributes = new StringBuilder();
+//            attributes.append("timestamp:Date,crane_name:String,control_on:String,wind_speed:String,is_lock:String,ht_pos:String,gt_pos:String,tt_pos:String,pt_pos:String,ht_state:String,tt_state:String,gt_state:String,pt_state:String,");
+//            attributes.append("ht_masterchain_soft:String,").append("ht_masterchain_hard:String,").append("ht_masterchain:String,").append("ht_functionchain:String,");
+//            attributes.append("gt_masterchain_soft:String,").append("gt_masterchain_hard:String,").append("gt_masterchain:String,").append("gt_functionchain:String,");
+//            attributes.append("tt_masterchain_soft:String,").append("tt_masterchain_hard:String,").append("tt_masterchain:String,").append("tt_functionchain:String,");
+//            attributes.append("pt_masterchain_soft:String,").append("pt_masterchain_hard:String,").append("pt_masterchain:String,").append("pt_functionchain:String");
+//            System.out.println(attributes.toString());
+//            // geomesaAdmin.create(schema, attributes.toString());
+//            SimpleFeatureType sft = SimpleFeatureTypes.createType(schema, attributes.toString());
+//            // 设置时空索引时间字段
+//            sft.getUserData().put("geomesa.index.dtg", "timestamp");
+//            geomesaAdmin.create(sft);
 //            System.out.println("创建表成功");
 
-//            GeomesaUpsert geomesaUpsert=new GeomesaUpsert(geomesaDataStore);
+            // endregion
+
+            // region 增删改查
+            GeomesaUpsert geomesaUpsert = new GeomesaUpsert(geomesaDataStore);
 //            Map<String,Object> map=new HashMap<>();
 //            map.put("ReadTime",new Date());
 //            map.put("CraneName","Q10");
@@ -118,11 +108,8 @@ public class Cloud4ControlSourceConfig extends GeomesaSourceConfig {
 //            map.put("TTFault_Fault2","0");
 //            map.put("PTFault_Fault1","0");
 //            map.put("PTFault_Fault2","0");
-//            geomesaUpsert.insert("plc_test",map);
-
-//            // 删除表
-//            geomesaAdmin.delete("plc_test2");
-//            System.out.println(geomesaAdmin.exist("plc_test2"));
+//            geomesaUpsert.insert(schema,map);
+            //endregion
         } catch (IOException e) {
             e.printStackTrace();
         }

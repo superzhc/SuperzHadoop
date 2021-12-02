@@ -1,8 +1,10 @@
 package com.github.superzhc.geo.geomesa;
 
 import com.github.superzhc.geo.geomesa.source.GeomesaDataStore;
+import com.google.common.base.CaseFormat;
 import org.geotools.data.FeatureWriter;
 import org.geotools.data.Transaction;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.factory.Hints;
@@ -29,21 +31,38 @@ public class GeomesaUpsert {
     }
 
     public void insert(String schema, Map<String, Object> attributes) {
-        try (FeatureWriter<SimpleFeatureType, SimpleFeature> writer = dataStore.getDataStore().getFeatureWriterAppend(schema, Transaction.AUTO_COMMIT)) {
-            // repeat as needed, once per feature
-            // note: hasNext() will always return false, but can be ignored
-            SimpleFeature next = writer.next();
-            // 唯一标识
-            next.getUserData().put(Hints.PROVIDED_FID, UUID.randomUUID().toString());
+//        try (FeatureWriter<SimpleFeatureType, SimpleFeature> writer = dataStore.getDataStore().getFeatureWriterAppend(schema, Transaction.AUTO_COMMIT)) {
+//            // repeat as needed, once per feature
+//            // note: hasNext() will always return false, but can be ignored
+//            SimpleFeature next = writer.next();
+//            // 唯一标识
+//            next.getUserData().put(Hints.PROVIDED_FID, UUID.randomUUID().toString());
 //            next.setAttribute("field1", "value1");
 //            next.setAttribute("field2", 100);
 //            // attributes will be converted to the appropriate type if needed
 //            next.setAttribute("date", "2020-01-01T00:00:00.000Z");
 //            next.setAttribute("location", "POINT (-82.379 34.1782)");
-            for (Map.Entry<String, Object> attribute : attributes.entrySet()) {
-                next.setAttribute(attribute.getKey(), attribute.getValue());
+//            for (Map.Entry<String, Object> attribute : attributes.entrySet()) {
+//                next.setAttribute(attribute.getKey(), attribute.getValue());
+//            }
+//            writer.write();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+        try {
+            SimpleFeatureType sft = dataStore.getDataStore().getSchema(schema);
+            if (null == sft) {
+                throw new RuntimeException("schema[" + schema + "] not exist");
             }
-            writer.write();
+
+            SimpleFeatureBuilder builder = new SimpleFeatureBuilder(sft);
+            for (Map.Entry<String, Object> attribute : attributes.entrySet()) {
+                /* 使用驼峰命名法 */
+                builder.set(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, attribute.getKey()), attribute.getValue());
+            }
+            SimpleFeature simpleFeature = builder.buildFeature(UUID.randomUUID().toString());
+            insert(schema, simpleFeature);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -55,7 +74,7 @@ public class GeomesaUpsert {
             // note: hasNext() will always return false, but can be ignored
             SimpleFeature next = writer.next();
             // 唯一标识
-            next.getUserData().put(Hints.PROVIDED_FID, UUID.randomUUID().toString());
+            next.getUserData().put(Hints.PROVIDED_FID, /*UUID.randomUUID().toString()*/simpleFeature.getID());
             next.setAttributes(simpleFeature.getAttributes());
             writer.write();
         } catch (IOException e) {
@@ -74,7 +93,7 @@ public class GeomesaUpsert {
             while (writer.hasNext()) {
                 SimpleFeature next = writer.next();
                 for (Map.Entry<String, Object> attribute : attributes.entrySet()) {
-                    next.setAttribute(attribute.getKey(), attribute.getValue());
+                    next.setAttribute(CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, attribute.getKey()), attribute.getValue());
                 }
                 writer.write();
             }

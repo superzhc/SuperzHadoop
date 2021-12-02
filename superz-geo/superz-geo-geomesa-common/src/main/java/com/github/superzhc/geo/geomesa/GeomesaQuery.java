@@ -50,7 +50,7 @@ public class GeomesaQuery {
         this.number = number;
     }
 
-    public List<Map<String, Object>> scan(String schema){
+    public List<Map<String, Object>> scan(String schema) {
         return query(schema);
     }
 
@@ -77,6 +77,9 @@ public class GeomesaQuery {
     public List<Map<String, Object>> query(String schema, String ecql, Integer number, String sortField, String sortOrder) {
         try {
             SimpleFeatureType sft = dataStore.getDataStore().getSchema(schema);
+            if (null == sft) {
+                throw new RuntimeException("schema[" + schema + "] not exist");
+            }
             List<String> attributeNames = sft.getAttributeDescriptors().stream().map(attributeDescriptor -> attributeDescriptor.getLocalName()).collect(Collectors.toList());
 
             List<Map<String, Object>> result = query(schema, ecql, number, sortField, sortOrder, new Function<SimpleFeature, Map<String, Object>>() {
@@ -113,8 +116,8 @@ public class GeomesaQuery {
         return null;
     }
 
-    public <T> List<T> scan(String schema, Class<T> clazz){
-        return query(schema,clazz);
+    public <T> List<T> scan(String schema, Class<T> clazz) {
+        return query(schema, clazz);
     }
 
     public <T> List<T> query(String schema, Class<T> clazz) {
@@ -140,6 +143,9 @@ public class GeomesaQuery {
     public <T> List<T> query(String schema, String ecql /*QueryWrapper queryWrapper*/, Integer number, String sortField, String sortOrder, Class<T> clazz) {
         try {
             SimpleFeatureType sft = dataStore.getDataStore().getSchema(schema);
+            if (null == sft) {
+                throw new RuntimeException("schema[" + schema + "] not exist");
+            }
             List<String> attributeNames = sft.getAttributeDescriptors().stream().map(attributeDescriptor -> attributeDescriptor.getLocalName()).collect(Collectors.toList());
 
             List<T> result = query(schema, ecql, number, sortField, sortOrder, new Function<SimpleFeature, T>() {

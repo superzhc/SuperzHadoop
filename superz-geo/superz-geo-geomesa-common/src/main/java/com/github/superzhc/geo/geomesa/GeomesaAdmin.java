@@ -48,6 +48,35 @@ public class GeomesaAdmin {
         }
     }
 
+    public String show(String... schemas) {
+        if (null == schemas || schemas.length == 0) {
+            schemas = list();
+        }
+
+        /* 进行二次判定 geomesa 中是否有表 */
+        if (null == schemas || schemas.length == 0) {
+            return "no schema";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        StringBuilder detail = new StringBuilder();
+        int total = 0;
+        for (String schema : schemas) {
+            SimpleFeatureType sft = sft(schema);
+            if (null == sft) {
+                continue;
+            }
+
+            sb.append(",").append("\"").append(schema).append("\"");
+            /* 格式形如："column":"attribute1:string,attribute2:int..." */
+            detail.append(",").append("\"").append(schema).append("\"").append(":").append("\"").append(DataUtilities.encodeType(sft)).append("\"");
+
+            total++;
+        }
+
+        return String.format("{\"schemas\":[%s],\"detail\":{%s},\"total\":%d}", sb.substring(1), detail.substring(1), total);
+    }
+
     /**
      * Describe a specific SimpleFeatureType
      *
@@ -62,13 +91,9 @@ public class GeomesaAdmin {
         }
     }
 
+    @Deprecated
     public String formatSft(String schema) {
-        SimpleFeatureType sft = sft(schema);
-        if (null == sft) {
-            return null;
-        } else {
-            return DataUtilities.encodeType(sft);
-        }
+        return show(schema);
     }
 
     /**
@@ -98,6 +123,10 @@ public class GeomesaAdmin {
      */
     public void create(String schema, String spec) throws IOException {
         SimpleFeatureType sft = SimpleFeatureTypes.createType(schema, spec);
+        create(sft);
+    }
+
+    public void create(SimpleFeatureType sft) throws IOException {
         dataStore.getDataStore().createSchema(sft);
     }
 
