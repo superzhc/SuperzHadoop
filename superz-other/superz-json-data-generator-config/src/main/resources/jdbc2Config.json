@@ -1,0 +1,17 @@
+{
+  "workflows": [
+    {
+      "workflowName": "JDBC",
+      "workflowFilename": "jdbcWorkflow.json"
+    }
+  ],
+  "producers": [
+    {
+      "type": "jdbc2",
+      "driver": "com.mysql.cj.jdbc.Driver",
+      "url": "jdbc:mysql://127.0.0.1:3306/superz?zeroDateTimeBehavior=convertToNull&serverTimezone=GMT%2b8&useSSL=true",
+      "username": "root",
+      "password": "123456"
+    }
+  ]
+}

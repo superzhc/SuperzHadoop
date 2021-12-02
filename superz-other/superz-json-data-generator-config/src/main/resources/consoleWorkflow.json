@@ -17,7 +17,20 @@
       "book": "book()",
       "test": "faker('#{bothify ''1?5?D#F#''}')"
 
-    }],
+    }
+    ,{
+        "timestamp": "nowTimestamp()",
+        "name2": "name()",
+        "age2": "integer(18,80)",
+        "creditCard2": "creditCard('number')",
+        "phone2": "phone()",
+        "address2": "address()",
+        "zipCode2": "address('zipCode')",
+        "location2": "address('latlon')",
+        "book2": "book()",
+        "test2": "faker('#{bothify ''1?5?D#F#''}')"
+
+      }],
     "duration": 0
   }]
 }

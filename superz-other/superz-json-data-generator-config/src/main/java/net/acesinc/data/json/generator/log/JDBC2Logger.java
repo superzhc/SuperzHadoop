@@ -41,7 +41,7 @@ public class JDBC2Logger implements EventLogger {
 
     private static class Table {
         private String name;
-        private PreparedStatement pstmt = null;
+        private PreparedStatement pstmt;
         private Integer addBatchSize;
         private Integer currentBatchSize = 0;
         private Map<String, String> columnInfos;
@@ -86,6 +86,7 @@ public class JDBC2Logger implements EventLogger {
         try {
             Table table;
             if (!tables.containsKey(tableName)) {
+                // 获取每批数据的大小
                 Integer addBatchSize = (Integer) producerConfig.getOrDefault(PRODUCER_CONFIG_BATCH_SIZE_NAME, DEFAULT_BATCH_SIZE);
                 if (addBatchSize < 1) {
                     addBatchSize = DEFAULT_BATCH_SIZE;
@@ -143,11 +144,11 @@ public class JDBC2Logger implements EventLogger {
             }
             table.pstmt.addBatch();
 
-            log.debug("\n\tsql:%s\n\tvalues:%s\n", table.sql, valueLog.substring(1));
+            log.debug(String.format("\n\tevent  : %s\n\tsql    : %s\n\tvalues : [%s]\n", event, table.sql, valueLog.substring(1)));
 
             table.currentBatchSize++;
             if (table.currentBatchSize >= table.addBatchSize) {
-                flush(table.pstmt);
+                flush(table);
                 table.currentBatchSize = 0;
             }
 
@@ -224,8 +225,8 @@ public class JDBC2Logger implements EventLogger {
      *
      * @throws Exception
      */
-    private void flush(PreparedStatement pstmt) throws Exception {
-        int[] results = pstmt.executeBatch();
+    private void flush(Table table) throws Exception {
+        int[] results = table.pstmt.executeBatch();
         conn.commit();
 
         int success = 0;
@@ -237,7 +238,7 @@ public class JDBC2Logger implements EventLogger {
                 failed++;
             }
         }
-        log.debug(String.format("新增：%d 条，成功：%d 条，失败：%d 条", results.length, success, failed));
+        log.info(String.format("表[%s]新增：%d 条，成功：%d 条，失败：%d 条", table.name, results.length, success, failed));
     }
 
     @Override
@@ -245,7 +246,7 @@ public class JDBC2Logger implements EventLogger {
         try {
             for (Table table : tables.values()) {
                 // 先执行一次提交
-                flush(table.pstmt);
+                flush(table);
 
                 if (null != table.pstmt) {
                     table.pstmt.close();

@@ -11,12 +11,44 @@
           "rowguid": "uuid()",
           "name": "name()",
           "password": "alphaNumeric(8)",
-          "age": "integer(18,65)",
+          "age": "integer(18,30)",
+          "sex": "random('F','M')",
+          "phone": "phone()",
+          "create_time": "nowTimestamp()"
+        },
+        {
+          "rowguid": "uuid()",
+          "name": "name()",
+          "password": "alphaNumeric(8)",
+          "age": "integer(30,65)",
+          "sex": "random('男','女')",
+          "phone": "phone()",
+          "create_time": "nowTimestamp()",
+          "type": "integer(1,10)"
+        }
+      ],
+      "producerConfig": {
+        "table.name": "json_data_generator2",
+        "table.batch.size": 100
+      },
+      "duration": 0
+    },
+    {
+      "config": [
+        {
+          "rowguid": "uuid()",
+          "name": "name()",
+          "password": "alphaNumeric(8)",
+          "age": "integer(18,30)",
           "sex": "random('F','M')",
           "phone": "phone()",
           "create_time": "nowTimestamp()"
         }
       ],
+      "producerConfig": {
+        "table.name": "json_data_generator",
+        "table.batch.size": 100
+      },
       "duration": 0
     }
   ]

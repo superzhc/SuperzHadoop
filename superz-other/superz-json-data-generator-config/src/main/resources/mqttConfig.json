@@ -8,11 +8,13 @@
   "producers": [
     {
       "type": "mqtt",
-      "broker.server": "tcp://localhost",
-      "broker.port": 1883,
-      "topic": "/superz-mqtt",
+      "broker.server": "tcp://36.153.0.227",
+      "broker.port": 1621,
+      "topic": "superz/mqtt",
       "clientId": "superzmqtt",
-      "qos": 2
+      "qos": 2,
+      "username": "user",
+      "password": "123456"
     }
   ]
 }
