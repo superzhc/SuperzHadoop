@@ -54,6 +54,10 @@ public class GeomesaQuery {
         return query(schema);
     }
 
+    public List<Map<String, Object>> scan(String schema, Integer number, String sortField, String sortOrder) {
+        return query(schema, (String) null, number, sortField, sortOrder);
+    }
+
     public List<Map<String, Object>> query(String schema) {
         return query(schema, number, null, null);
     }

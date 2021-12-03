@@ -67,8 +67,9 @@ public class FakerUtils {
     public static class Expression {
         private static final String EXPRESSION_TEMPLATE = "#{%s %s}";
 
-        public static final String NAME=expression("Name.name");
-        public static final String ID_CARD=regexify("(\\d{6})(\\d{4})(\\d{2})(\\d{2})(\\d{3})([0-9]|X)");
+        public static final String NAME = expression("Name.name");
+        public static final String SEX = options("男", "女");
+        public static final String ID_CARD = regexify("(\\d{6})(\\d{4})(\\d{2})(\\d{2})(\\d{3})([0-9]|X)");
         public static final String QQ = regexify("[1-9][0-9]{4,10}");
         public static final String IP = regexify("((2[0-4]\\d|25[0-5]|[01]?\\d\\d?)\\.){3}(2[0-4]\\d|25[0-5]|[01]?\\d\\d?)");
 
