@@ -3,15 +3,14 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>SuperzHadoop</artifactId>
+        <artifactId>superz-data-warehouse</artifactId>
         <groupId>com.github.superzhc</groupId>
         <version>0.2.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>superz-dataming</artifactId>
-    <packaging>pom</packaging>
-    <description>数据挖掘模块</description>
+    <artifactId>superz-data-warehouse-bigdata</artifactId>
+    <description>基于大数据构建的数据仓库平台</description>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

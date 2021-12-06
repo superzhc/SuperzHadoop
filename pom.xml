@@ -16,7 +16,8 @@
         <module>superz-hadoop</module>
         <module>superz-tool</module>
         <module>superz-other</module>
-        <module>superz-dataming</module>
+        <module>superz-data-mining</module>
+        <module>superz-data-warehouse</module>
     </modules>
 
     <properties>
