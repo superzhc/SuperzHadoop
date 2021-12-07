@@ -159,14 +159,14 @@ public class Hot {
         Hot hot = new Hot();
         // System.out.println(hot.baiduHot());
         System.out.println(hot.baiduHotWord());
-        System.out.println(hot.baiduTodayHot());
+        // System.out.println(hot.baiduTodayHot());
         System.out.println(hot.doubanMovie());
         System.out.println(hot.doubanWeekPraise());
         System.out.println(hot.zhihuHot());
         System.out.println(hot.zhihuHotSearch());
         System.out.println(hot.weixinHot());
         System.out.println(hot.weixinHotWord());
-        System.out.println(hot.weiboHotSearch());
-        System.out.println(hot.weiboNewEra());
+        // System.out.println(hot.weiboHotSearch());
+        // System.out.println(hot.weiboNewEra());
     }
 }

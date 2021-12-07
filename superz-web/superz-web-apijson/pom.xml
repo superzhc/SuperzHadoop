@@ -3,19 +3,14 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>SuperzHadoop</artifactId>
+        <artifactId>superz-web</artifactId>
         <groupId>com.github.superzhc</groupId>
         <version>0.2.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>superz-web</artifactId>
-    <packaging>pom</packaging>
-    <description>WEB模块，工作中使用WEB是普遍常见的，该模块以实验性为目的</description>
-    <modules>
-        <module>superz-web-base</module>
-        <module>superz-web-apijson</module>
-    </modules>
+    <artifactId>superz-web-apijson</artifactId>
+    <description>基于[APIJSON](https://gitee.com/Tencent/APIJSON)实验性</description>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
