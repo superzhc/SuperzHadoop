@@ -224,7 +224,7 @@ public class GeomesaQuery {
     private <T> List<T> query(String schema, String ecql, Integer number, String sortField, String sortOrder, Function<SimpleFeature, T> function) {
         try {
             Query query;
-            if (null == ecql) {
+            if (StringUtils.isBlank(ecql)) {
                 query = new Query(schema);
             } else {
                 query = new Query(schema, ECQL.toFilter(ecql));

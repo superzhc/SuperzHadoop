@@ -8,9 +8,9 @@ import lombok.Data;
  */
 @Data
 public class GeomesaToolDTO {
-    private String hbaseZookeepers;
-    private String hbaseCoprocessorUrl;
-    private String hbaseCatalog;
+//    private String hbaseZookeepers;
+//    private String hbaseCoprocessorUrl;
+//    private String hbaseCatalog;
 
     private String schema;
     private String ecql;

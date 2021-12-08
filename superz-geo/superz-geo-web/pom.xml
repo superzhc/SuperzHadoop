@@ -134,6 +134,17 @@
             <artifactId>zookeeper</artifactId>
             <scope>runtime</scope>
         </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.superzhc</groupId>
+            <artifactId>superz-geo-geomesa-common</artifactId>
+            <version>0.2.0</version>
+        </dependency>
     </dependencies>
 
 </project>

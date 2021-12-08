@@ -49,12 +49,15 @@ public class Cloud4ControlSourceConfig extends GeomesaSourceConfig {
 //            System.out.println(lst);
 
             // 无条件查询
-            System.out.println(geomesaQuery.scan(schema));
+            while (true) {
+                System.out.println(geomesaQuery.scan(schema,100,"timestamp","desc"));
+                Thread.sleep(1000 * 10);
+            }
 
             // endregion
 
             // region 表管理
-            GeomesaAdmin geomesaAdmin = new GeomesaAdmin(geomesaDataStore);
+//            GeomesaAdmin geomesaAdmin = new GeomesaAdmin(geomesaDataStore);
 
 //            System.out.println(geomesaAdmin.show());
 //            System.out.println(geomesaAdmin.show(schema));
@@ -68,24 +71,24 @@ public class Cloud4ControlSourceConfig extends GeomesaSourceConfig {
 //            System.out.println("schema[" + schema + "]是否存在：" + geomesaAdmin.exist(schema));
 
             // 2021年11月16日 创建表报错
-            StringBuilder attributes = new StringBuilder();
-            attributes.append("timestamp:Date,crane_name:String,control_on:String,wind_speed:String,is_lock:String,ht_pos:String,gt_pos:String,tt_pos:String,pt_pos:String,ht_state:String,tt_state:String,gt_state:String,pt_state:String,");
-            attributes.append("ht_masterchain_soft:String,").append("ht_masterchain_hard:String,").append("ht_masterchain:String,").append("ht_functionchain:String,");
-            attributes.append("gt_masterchain_soft:String,").append("gt_masterchain_hard:String,").append("gt_masterchain:String,").append("gt_functionchain:String,");
-            attributes.append("tt_masterchain_soft:String,").append("tt_masterchain_hard:String,").append("tt_masterchain:String,").append("tt_functionchain:String,");
-            attributes.append("pt_masterchain_soft:String,").append("pt_masterchain_hard:String,").append("pt_masterchain:String,").append("pt_functionchain:String");
-            // System.out.println(attributes.toString());
-            // geomesaAdmin.create(schema, attributes.toString());
-            SimpleFeatureType sft = SimpleFeatureTypes.createType("quay.crane.plc2", attributes.toString());
-            // 设置时空索引时间字段
-            sft.getUserData().put("geomesa.index.dtg", "timestamp");
-            geomesaAdmin.create(sft);
-            System.out.println("创建表成功");
+//            StringBuilder attributes = new StringBuilder();
+//            attributes.append("timestamp:Date,crane_name:String,control_on:String,wind_speed:String,is_lock:String,ht_pos:String,gt_pos:String,tt_pos:String,pt_pos:String,ht_state:String,tt_state:String,gt_state:String,pt_state:String,");
+//            attributes.append("ht_masterchain_soft:String,").append("ht_masterchain_hard:String,").append("ht_masterchain:String,").append("ht_functionchain:String,");
+//            attributes.append("gt_masterchain_soft:String,").append("gt_masterchain_hard:String,").append("gt_masterchain:String,").append("gt_functionchain:String,");
+//            attributes.append("tt_masterchain_soft:String,").append("tt_masterchain_hard:String,").append("tt_masterchain:String,").append("tt_functionchain:String,");
+//            attributes.append("pt_masterchain_soft:String,").append("pt_masterchain_hard:String,").append("pt_masterchain:String,").append("pt_functionchain:String");
+//            // System.out.println(attributes.toString());
+//            // geomesaAdmin.create(schema, attributes.toString());
+//            SimpleFeatureType sft = SimpleFeatureTypes.createType("quay.crane.plc2", attributes.toString());
+//            // 设置时空索引时间字段
+//            sft.getUserData().put("geomesa.index.dtg", "timestamp");
+//            geomesaAdmin.create(sft);
+//            System.out.println("创建表成功");
 
             // endregion
 
             // region 增删改查
-            GeomesaUpsert geomesaUpsert = new GeomesaUpsert(geomesaDataStore);
+//            GeomesaUpsert geomesaUpsert = new GeomesaUpsert(geomesaDataStore);
 //            Map<String,Object> map=new HashMap<>();
 //            map.put("ReadTime",new Date());
 //            map.put("CraneName","Q10");
@@ -110,7 +113,7 @@ public class Cloud4ControlSourceConfig extends GeomesaSourceConfig {
 //            map.put("PTFault_Fault2","0");
 //            geomesaUpsert.insert(schema,map);
             //endregion
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
