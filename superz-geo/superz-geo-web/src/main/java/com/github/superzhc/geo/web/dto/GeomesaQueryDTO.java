@@ -7,7 +7,7 @@ import lombok.Data;
  * @create 2021/8/23 16:57
  */
 @Data
-public class GeomesaToolDTO {
+public class GeomesaQueryDTO {
 //    private String hbaseZookeepers;
 //    private String hbaseCoprocessorUrl;
 //    private String hbaseCatalog;

@@ -126,7 +126,10 @@
                 $.ajax({
                     url:"/geomesa/query",
                     method:"POST",
-                    data:data.field,
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    data:JSON.stringify(data.field),
                     success: function (res) {
                         if(res.code===1){
                             layer.alert(res.msg,{icon:2});
