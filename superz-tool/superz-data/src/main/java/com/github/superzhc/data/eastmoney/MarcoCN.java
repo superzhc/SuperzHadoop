@@ -4,7 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.superzhc.common.okhttp3.OkHttpUtils;
+import com.github.superzhc.data.common.HttpData;
+import com.github.superzhc.data.common.ResultT;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
@@ -26,7 +27,7 @@ import java.util.*;
  * @author superz
  * @create 2021/12/4 11:25
  */
-public class MarcoCN {
+public class MarcoCN extends HttpData {
     private static final Logger log = LoggerFactory.getLogger(MarcoCN.class);
 
     private ObjectMapper mapper;
@@ -155,9 +156,10 @@ public class MarcoCN {
 
     /**
      * 获取采购经理人指数(PMI)
+     *
      * @return
      */
-    public String PMI(){
+    public String PMI() {
         String[] columns = new String[]{"月份", "制造业指数", "制造业同比增长", "非制造业指数", "非制造业同比增长"};
         Map<String, String> params = new HashMap<>();
         params.put("type", "GJZB");
@@ -170,9 +172,10 @@ public class MarcoCN {
 
     /**
      * 获取存款准备金率数据
+     *
      * @return
      */
-    public String RRR(){
+    public String RRR() {
         String[] columns = new String[]{"公布时间", "生效时间", "大型金融机构 调整前", "大型金融机构 调整后", "大型金融机构 调整幅度", "中小型金融机构 调整前", "中小型金融机构 调整后", "中小型金融机构 调整幅度", "备注", "消息公布次日指数涨跌 上证", "消息公布次日指数涨跌 深证"};
         Map<String, String> params = new HashMap<>();
         params.put("type", "GJZB");
@@ -185,9 +188,10 @@ public class MarcoCN {
 
     /**
      * 获取货币供应量数据
+     *
      * @return
      */
-    public String moneySupply(){
+    public String moneySupply() {
         String[] columns = new String[]{"月份", "货币和准货币(M2) 数量(亿元)", "货币和准货币(M2) 同比增长", "货币和准货币(M2) 环比增长", "货币(M1) 数量(亿元)", "货币(M1) 同比增长", "货币(M1) 环比增长", "流通中的现金(M0) 数量(亿元)", "流通中的现金(M0) 同比增长", "流通中的现金(M0) 环比增长"};
         Map<String, String> params = new HashMap<>();
         params.put("type", "GJZB");
@@ -200,9 +204,10 @@ public class MarcoCN {
 
     /**
      * 获取外汇储备
+     *
      * @return
      */
-    public String goldAndForeignReserve(){
+    public String goldAndForeignReserve() {
         String[] columns = new String[]{"月份", "国家外汇储备(亿美元) 数值", "国家外汇储备(亿美元) 同比", "国家外汇储备(亿美元) 环比", "黄金储备(万盎司) 数值", "黄金储备(万盎司) 同比", "黄金储备(万盎司) 环比"};
         Map<String, String> params = new HashMap<>();
         params.put("type", "GJZB");
@@ -215,9 +220,10 @@ public class MarcoCN {
 
     /**
      * 获取工业增加值增长
+     *
      * @return
      */
-    public String industrialGrowth(){
+    public String industrialGrowth() {
         String[] columns = new String[]{"月份", "制造业指数", "制造业同比增长", "非制造业指数", "非制造业同比增长"};
         Map<String, String> params = new HashMap<>();
         params.put("type", "GJZB");
@@ -230,9 +236,10 @@ public class MarcoCN {
 
     /**
      * 获取财政收入
+     *
      * @return
      */
-    public String fiscalRevenue(){
+    public String fiscalRevenue() {
         String[] columns = new String[]{"月份", "当月(亿元)", "同比增长", "环比增长", "累计(亿元)", "同比增长"};
         Map<String, String> params = new HashMap<>();
         params.put("type", "GJZB");
@@ -245,9 +252,10 @@ public class MarcoCN {
 
     /**
      * 获取社会消费品零售总额
+     *
      * @return
      */
-    public String consumerTotal(){
+    public String consumerTotal() {
         String[] columns = new String[]{"月份", "当月(亿元)", "同比增长", "环比增长", "累计(亿元)", "同比增长"};
         Map<String, String> params = new HashMap<>();
         params.put("type", "GJZB");
@@ -260,9 +268,10 @@ public class MarcoCN {
 
     /**
      * 获取信贷数据
+     *
      * @return
      */
-    public String creditData(){
+    public String creditData() {
         String[] columns = new String[]{"月份", "当月(亿元)", "同比增长", "环比增长", "累计(亿元)", "同比增长"};
         Map<String, String> params = new HashMap<>();
         params.put("type", "GJZB");
@@ -275,9 +284,10 @@ public class MarcoCN {
 
     /**
      * 获取外商直接投资数据(FDI)
+     *
      * @return
      */
-    public String fdiData(){
+    public String fdiData() {
         String[] columns = new String[]{"月份", "当月(十万元)", "同比增长", "环比增长", "累计(十万元)", "同比增长"};
         Map<String, String> params = new HashMap<>();
         params.put("type", "GJZB");
@@ -291,12 +301,12 @@ public class MarcoCN {
     private String EMDataCenter(Map<String, String> params, String[] columns) {
         String url = "http://datainterface.eastmoney.com/EM_DataCenter/JS.aspx";
         try {
-            OkHttpUtils.OkHttpResponse response = OkHttpUtils.get(url, null, params);
-            String result = response.getBody();
+            ResultT result = get(url, null, params);
+            String rData = (String) result.getData();
 
             ArrayNode ret = mapper.createArrayNode();
 
-            JsonNode arr = mapper.readTree(result.substring(1, result.length() - 1));
+            JsonNode arr = mapper.readTree(rData.substring(1, rData.length() - 1));
             for (JsonNode node : arr) {
                 String row = node.asText();
                 String[] item = row.split(",");

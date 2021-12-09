@@ -1,23 +1,22 @@
 package com.github.superzhc.data.snowball;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.superzhc.data.common.HttpData;
+import com.github.superzhc.data.common.ResultT;
 import com.github.superzhc.data.snowball.entity.*;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author superz
  * @create 2021/8/2 17:34
  */
-public class Snowball {
+public class Snowball extends HttpData {
     private static final String BASE_URL = "https://stock.xueqiu.com";
 
     // finance
@@ -55,12 +54,6 @@ public class Snowball {
     private static final String REALTIME_QUOTEC_URL = BASE_URL + "/v5/stock/realtime/quotec.json?symbol=";
     private static final String REALTIME_PANKOU_URL = BASE_URL + "/v5/stock/realtime/pankou.json?symbol=";
 
-    private static final OkHttpClient okHttpClient = new OkHttpClient.Builder()
-            .connectTimeout(120, TimeUnit.SECONDS)
-            .readTimeout(120, TimeUnit.SECONDS)
-            .writeTimeout(120, TimeUnit.SECONDS)
-            .build();
-
     private static final Map<String, String> HEADERS = new HashMap<>();
 
     static {
@@ -83,9 +76,13 @@ public class Snowball {
 
     private String token;
 
+    private final ObjectMapper mapper;
+
     public Snowball(String token) {
         this.token = token;
         HEADERS.put("Cookie", this.token);
+
+        mapper = new ObjectMapper();
     }
 
 
@@ -176,8 +173,7 @@ public class Snowball {
      */
     public List<CapitalMargin> margin(String symbol, Integer page, Integer size) {
         String url = new StringBuilder(CAPITAL_MARGIN_URL).append(symbol).append("&page=").append(page).append("&size=").append(size).toString();
-        JSONObject json = fetch(url);
-        return json.getJSONObject("data").getJSONArray("items").toJavaList(CapitalMargin.class);
+        return fetchItems(url);
     }
 
     public List<CapitalBlocktrans> blocktrans(String symbol) {
@@ -196,8 +192,7 @@ public class Snowball {
      */
     public List<CapitalBlocktrans> blocktrans(String symbol, Integer page, Integer size) {
         String url = new StringBuilder(CAPITAL_BLOCKTRANS_URL).append(symbol).append("&page=").append(page).append("&size=").append(size).toString();
-        JSONObject json = fetch(url);
-        return json.getJSONObject("data").getJSONArray("items").toJavaList(CapitalBlocktrans.class);
+        return fetchItems(url);
     }
 
     /**
@@ -267,8 +262,7 @@ public class Snowball {
      */
     public List<F10Holders> holders(String symbol) {
         String url = F10_HOLDERS_URL + symbol;
-        JSONObject json = fetch(url);
-        return json.getJSONObject("data").getJSONArray("items").toJavaList(F10Holders.class);
+        return fetchItems(url);
     }
 
     public F10Bonus bonus(String symbol) {
@@ -296,8 +290,7 @@ public class Snowball {
      */
     public List<F10OrgHoldingChange> orgHoldingChange(String symbol) {
         String url = F10_ORG_HOLDING_CHANGE_URL + symbol;
-        JSONObject json = fetch(url);
-        return json.getJSONObject("data").getJSONArray("items").toJavaList(F10OrgHoldingChange.class);
+        return fetchItems(url);
     }
 
     /**
@@ -350,8 +343,7 @@ public class Snowball {
      */
     public List<F10Indicator> mainIndicator(String symbol) {
         String url = F10_INDICATOR_URL + symbol;
-        JSONObject json = fetch(url);
-        return json.getJSONObject("data").getJSONArray("items").toJavaList(F10Indicator.class);
+        return fetchItems(url);
     }
 
     /**
@@ -390,7 +382,7 @@ public class Snowball {
      */
     public List<ReportLatest> report(String symbol) {
         String url = REPORT_LATEST_URL + symbol;
-        return fetchList(url, ReportLatest.class);
+        return fetchList(url/*, ReportLatest.class*/);
     }
 
     /**
@@ -403,34 +395,34 @@ public class Snowball {
      */
     public List<ReportEarningforecast> earningforecast(String symbol) {
         String url = REPORT_EARNINGFORECAST_URL + symbol;
-        return fetchList(url, ReportEarningforecast.class);
+        return fetchList(url/*, ReportEarningforecast.class*/);
     }
 
-    private JSONObject fetch(String url) {
-        Request.Builder builder = new Request.Builder().url(url);
-        for (Map.Entry<String, String> header : HEADERS.entrySet()) {
-            builder.addHeader(header.getKey(), header.getValue());
-        }
-        Request request = builder.get().build();
-        try (Response response = okHttpClient.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                throw new RuntimeException("请求异常:code={" + response.code() + "}\n异常信息:" + response.body().string());
-            }
-            JSONObject json = JSON.parseObject(response.body().string());
+    private JsonNode fetch(String url) {
+        try {
+            ResultT result = get(url, HEADERS);
+            JsonNode json = mapper.readTree((String) result.getData());
             return json;
-        } catch (IOException e) {
+        } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
 
     private <T> T fetch(String url, Class<T> clazz) {
-        JSONObject json = fetch(url);
-        return json.getObject("data", clazz);
+        JsonNode json = fetch(url);
+        return mapper.convertValue(json.get("data"), clazz);
     }
 
-    private <T> List<T> fetchList(String url, Class<T> clazz) {
-        JSONObject json = fetch(url);
-        return json.getJSONArray("list").toJavaList(clazz);
+    private <T> List<T> fetchList(String url/*, Class<T> clazz*/) {
+        JsonNode json = fetch(url);
+        return mapper.convertValue(json.get("list"), new TypeReference<List<T>>() {
+        });
+    }
+
+    private <T> List<T> fetchItems(String url) {
+        JsonNode json = fetch(url);
+        return mapper.convertValue(json.get("data").get("items"), new TypeReference<List<T>>() {
+        });
     }
 
     public String getToken() {
