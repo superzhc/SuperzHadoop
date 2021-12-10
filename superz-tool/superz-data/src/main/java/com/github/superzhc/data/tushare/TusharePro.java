@@ -1,7 +1,6 @@
 package com.github.superzhc.data.tushare;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.util.TypeUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.superzhc.common.utils.PropertiesUtils;
 import com.google.common.base.CaseFormat;
 import okhttp3.*;
@@ -31,9 +30,11 @@ public class TusharePro {
             .writeTimeout(120, TimeUnit.SECONDS)
             .build();
 
+    private ObjectMapper mapper;
     private String token;
 
     public TusharePro(String token) {
+        this.mapper = new ObjectMapper();
         this.token = token;
     }
 
@@ -92,7 +93,7 @@ public class TusharePro {
                     for (int i = 0, len = data.getItems().length; i < len; i++) {
                         for (int j = 0; j < fieldSize; j++) {
                             Column<?> column = table.column(j);
-                            column.appendObj(TypeUtils.castToString(data.getItems()[i][j]));
+                            column.appendObj(data.getItems()[i][j]);
                         }
                     }
                 }
@@ -147,20 +148,22 @@ public class TusharePro {
         body.put("token", token);
         body.put("params", params);
         body.put("fields", fields);
-        RequestBody requestBody = RequestBody.create(JSON.toJSONString(body), MediaType.parse("application/json"));
+        try {
+            RequestBody requestBody = RequestBody.create(mapper.writeValueAsString(body), MediaType.parse("application/json"));
 
-        Request request = new Request.Builder().url(URL).post(requestBody).build();
-        try (Response response = okHttpClient.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                throw new RuntimeException("请求异常:code={" + response.code() + "}\n异常信息:" + response.body().string());
+            Request request = new Request.Builder().url(URL).post(requestBody).build();
+            try (Response response = okHttpClient.newCall(request).execute()) {
+                if (!response.isSuccessful()) {
+                    throw new RuntimeException("请求异常:code={" + response.code() + "}\n异常信息:" + response.body().string());
+                }
+
+                TushareResponse tr = mapper.readValue(response.body().toString(), TushareResponse.class);
+                if (null == tr.getCode() || tr.getCode() != 0) {
+                    throw new RuntimeException("请求失败:code={" + tr.getCode() + "}\n失败信息:" + tr.getMsg());
+                }
+
+                return function.apply(tr.getData());
             }
-
-            TushareResponse tr = JSON.parseObject(response.body().string(), TushareResponse.class);
-            if (null == tr.getCode() || tr.getCode() != 0) {
-                throw new RuntimeException("请求失败:code={" + tr.getCode() + "}\n失败信息:" + tr.getMsg());
-            }
-
-            return function.apply(tr.getData());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -170,7 +173,7 @@ public class TusharePro {
         PropertiesUtils.read("application.properties");
         TusharePro pro = new TusharePro(PropertiesUtils.get("tushare.token"));
 
-        List<Map<String, Object>> datas=pro.execute("index_basic", null, new String[]{
+        List<Map<String, Object>> datas = pro.execute("index_basic", null, new String[]{
                 "ts_code",
                 "name",
                 "market",
@@ -181,8 +184,8 @@ public class TusharePro {
                 "list_date"
         });
 
-        for(Map<String,Object> data:datas){
-            System.out.println(JSON.toJSONString(data));
+        for (Map<String, Object> data : datas) {
+            System.out.println(pro.mapper.writeValueAsString(data));
         }
 
 //        Table table = pro.execute2("index_basic", null, new String[]{

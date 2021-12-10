@@ -419,15 +419,42 @@ public class JdbcHelper implements Closeable {
         return result;
     }
 
-    public int[] batchUpdate(String sql, List<Map<Integer, Object>> params) {
+//    public int[] batchUpdate(String sql, List<Map<Integer, Object>> params) {
+//        int[] result = new int[]{};
+//        PreparedStatement preparedStatement = null;
+//        try {
+//            getConnection().setAutoCommit(false);
+//            preparedStatement = getConnection().prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+//            for (Map<Integer, Object> param : params) {
+//                for (Map.Entry<Integer, Object> entry : param.entrySet()) {
+//                    preparedStatement.setObject(entry.getKey(), entry.getValue());
+//                }
+//                preparedStatement.addBatch();
+//            }
+//            result = preparedStatement.executeBatch();
+//            getConnection().commit();
+//        } catch (SQLException e) {
+//            try {
+//                getConnection().rollback();
+//            } catch (SQLException e1) {
+//                throw new ExceptionInInitializerError(e1);
+//            }
+//            throw new ExceptionInInitializerError(e);
+//        } finally {
+//            free(null, preparedStatement, null);
+//        }
+//        return result;
+//    }
+
+    public int[] batchUpdate(String sql, List<List<Object>> params) {
         int[] result = new int[]{};
         PreparedStatement preparedStatement = null;
         try {
             getConnection().setAutoCommit(false);
             preparedStatement = getConnection().prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
-            for (Map<Integer, Object> param : params) {
-                for (Map.Entry<Integer, Object> entry : param.entrySet()) {
-                    preparedStatement.setObject(entry.getKey(), entry.getValue());
+            for (List<Object> param : params) {
+                for (int i = 0, len = param.size(); i < len; i++) {
+                    preparedStatement.setObject(i + 1, param.get(i));
                 }
                 preparedStatement.addBatch();
             }

@@ -38,7 +38,7 @@ public class GeomesaToolController {
      * 创建Schema
      *
      * 接口代码访问示例：
-     * cUrl：curl --location --request POST 'http://localhost:7777/geomesa/schema/create' --header 'Content-Type: application/json' --data '{"schema":"test202112091716","attributes":"timestamp:Date,attr1:String,attr2:Integer"}'
+     * cURL：curl --location --request POST 'http://localhost:7777/geomesa/schema/create' --header 'Content-Type: application/json' --data '{"schema":"test202112091716","attributes":"timestamp:Date,attr1:String,attr2:Integer"}'
      *
      * @param dto
      * @return
@@ -62,7 +62,7 @@ public class GeomesaToolController {
      * 查看Schema的结构
      *
      * 接口代码访问示例：
-     * cUrl：curl --location --request GET 'http://localhost:7777/geomesa/schema/view?schema=helmet.pos'
+     * cURL：curl --location --request GET 'http://localhost:7777/geomesa/schema/view?schema=helmet.pos'
      *
      * @param schema
      * @return
@@ -85,7 +85,7 @@ public class GeomesaToolController {
      * 删除Schema
      *
      * 接口代码访问示例：
-     * cUrl：curl --location --request POST 'http://localhost:7777/geomesa/schema/delete?schema=test202112091716'
+     * cURL：curl --location --request POST 'http://localhost:7777/geomesa/schema/delete?schema=test202112091716'
      *
      * @param schema
      * @return
@@ -105,6 +105,15 @@ public class GeomesaToolController {
         }
     }
 
+    /**
+     * 新增数据
+     *
+     * 接口代码访问示例
+     * cURL:curl --location --request POST 'http://localhost:7777/geomesa/insert' --header 'Content-Type: application/json' --data '{"schema":"helmet.pos","data":{"device_id":"15625533","lng":116.1426,"lat":35.0537,"battery":57.6348,"high":13.4017,"gps_type":3,"dev_type":"11","timestamp":"2021-12-09T17:56:54.000+0000"}}'
+     *
+     * @param dto
+     * @return
+     */
     @PostMapping("/insert")
     public ResultT insert(@RequestBody GeomesaInsertDTO dto) {
         try (GeomesaDataStore geomesaDataStore = new GeomesaDataStore(geomesaSourceConfig)) {
@@ -116,6 +125,15 @@ public class GeomesaToolController {
         }
     }
 
+    /**
+     * 数据查询
+     *
+     * 接口代码访问示例
+     * cURL：curl --location --request POST 'http://localhost:7777/geomesa/query' --header 'Content-Type: application/json' --data '{"schema": "quay.crane.plc","number": 10,"sortField": "timestamp","sortOrder": "desc"}'
+     *
+     * @param dto
+     * @return
+     */
     @PostMapping("/query")
     public ResultT query(@RequestBody GeomesaQueryDTO dto) {
         try (GeomesaDataStore geomesaDataStore = new GeomesaDataStore(geomesaSourceConfig)) {

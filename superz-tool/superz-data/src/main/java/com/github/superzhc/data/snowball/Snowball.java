@@ -8,6 +8,7 @@ import com.github.superzhc.data.common.HttpData;
 import com.github.superzhc.data.common.ResultT;
 import com.github.superzhc.data.snowball.entity.*;
 
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -173,7 +174,7 @@ public class Snowball extends HttpData {
      */
     public List<CapitalMargin> margin(String symbol, Integer page, Integer size) {
         String url = new StringBuilder(CAPITAL_MARGIN_URL).append(symbol).append("&page=").append(page).append("&size=").append(size).toString();
-        return fetchItems(url);
+        return fetchItems(url, CapitalMargin.class);
     }
 
     public List<CapitalBlocktrans> blocktrans(String symbol) {
@@ -192,7 +193,7 @@ public class Snowball extends HttpData {
      */
     public List<CapitalBlocktrans> blocktrans(String symbol, Integer page, Integer size) {
         String url = new StringBuilder(CAPITAL_BLOCKTRANS_URL).append(symbol).append("&page=").append(page).append("&size=").append(size).toString();
-        return fetchItems(url);
+        return fetchItems(url, CapitalBlocktrans.class);
     }
 
     /**
@@ -262,7 +263,7 @@ public class Snowball extends HttpData {
      */
     public List<F10Holders> holders(String symbol) {
         String url = F10_HOLDERS_URL + symbol;
-        return fetchItems(url);
+        return fetchItems(url, F10Holders.class);
     }
 
     public F10Bonus bonus(String symbol) {
@@ -290,7 +291,7 @@ public class Snowball extends HttpData {
      */
     public List<F10OrgHoldingChange> orgHoldingChange(String symbol) {
         String url = F10_ORG_HOLDING_CHANGE_URL + symbol;
-        return fetchItems(url);
+        return fetchItems(url, F10OrgHoldingChange.class);
     }
 
     /**
@@ -343,7 +344,7 @@ public class Snowball extends HttpData {
      */
     public List<F10Indicator> mainIndicator(String symbol) {
         String url = F10_INDICATOR_URL + symbol;
-        return fetchItems(url);
+        return fetchItems(url, F10Indicator.class);
     }
 
     /**
@@ -382,7 +383,7 @@ public class Snowball extends HttpData {
      */
     public List<ReportLatest> report(String symbol) {
         String url = REPORT_LATEST_URL + symbol;
-        return fetchList(url/*, ReportLatest.class*/);
+        return fetchList(url, ReportLatest.class);
     }
 
     /**
@@ -395,7 +396,7 @@ public class Snowball extends HttpData {
      */
     public List<ReportEarningforecast> earningforecast(String symbol) {
         String url = REPORT_EARNINGFORECAST_URL + symbol;
-        return fetchList(url/*, ReportEarningforecast.class*/);
+        return fetchList(url, ReportEarningforecast.class);
     }
 
     private JsonNode fetch(String url) {
@@ -413,15 +414,23 @@ public class Snowball extends HttpData {
         return mapper.convertValue(json.get("data"), clazz);
     }
 
-    private <T> List<T> fetchList(String url/*, Class<T> clazz*/) {
+    private <T> List<T> fetchList(String url, Class<T> clazz) {
         JsonNode json = fetch(url);
         return mapper.convertValue(json.get("list"), new TypeReference<List<T>>() {
+//            @Override
+//            public Type getType() {
+//                return clazz;
+//            }
         });
     }
 
-    private <T> List<T> fetchItems(String url) {
+    private <T> List<T> fetchItems(String url, Class<T> clazz) {
         JsonNode json = fetch(url);
         return mapper.convertValue(json.get("data").get("items"), new TypeReference<List<T>>() {
+//            @Override
+//            public Type getType() {
+//                return clazz;
+//            }
         });
     }
 
