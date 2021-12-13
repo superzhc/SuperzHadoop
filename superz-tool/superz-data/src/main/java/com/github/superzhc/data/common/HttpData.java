@@ -1,6 +1,8 @@
 package com.github.superzhc.data.common;
 
 import okhttp3.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Map;
@@ -11,6 +13,7 @@ import java.util.concurrent.TimeUnit;
  * @create 2021/12/9 10:49
  */
 public abstract class HttpData {
+    private static final Logger log = LoggerFactory.getLogger(HttpData.class);
     private static final String HTTP_JSON = "application/json; charset=utf-8";
 
     private static final OkHttpClient okHttpClient = new OkHttpClient.Builder()
@@ -18,6 +21,10 @@ public abstract class HttpData {
             .readTimeout(120, TimeUnit.SECONDS)
             .writeTimeout(120, TimeUnit.SECONDS)
             .build();
+
+    public HttpData() {
+
+    }
 
     protected ResultT get(String url) {
         return get(url, null);
@@ -77,15 +84,20 @@ public abstract class HttpData {
         return builder;
     }
 
-    protected ResultT execute(Request request) {
+    private ResultT execute(Request request) {
+        log.debug(request.toString());
         try (Response response = okHttpClient.newCall(request).execute()) {
-            if(!response.isSuccessful()){
-                return ResultT.fail(response.message());
-            }
-
-            return ResultT.success(response.body().string());
+            return dealResponse(response);
         } catch (IOException e) {
             return ResultT.fail(e);
         }
+    }
+
+    protected ResultT dealResponse(Response response) throws IOException {
+        if (!response.isSuccessful()) {
+            return ResultT.fail(response.message());
+        }
+
+        return ResultT.success(response.body().string());
     }
 }

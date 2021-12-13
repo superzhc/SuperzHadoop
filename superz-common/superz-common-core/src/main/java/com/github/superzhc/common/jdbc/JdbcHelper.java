@@ -395,17 +395,34 @@ public class JdbcHelper implements Closeable {
      * @param sqlList 一组sql
      * @return
      */
-    public int[] batchUpdate(List<String> sqlList) {
-        int[] result = new int[]{};
+    public void batchUpdate(List<String> sqlList) {
+        batchUpdate(sqlList, sqlList.size());
+    }
+
+    public void batchUpdate(List<String> sqlList, Integer batchSize) {
         Statement statement = null;
         try {
             getConnection().setAutoCommit(false);
             statement = getConnection().createStatement();
+
+            int currentBatchSize = 0;
             for (String sql : sqlList) {
                 statement.addBatch(sql);
+
+                currentBatchSize++;
+
+                if (currentBatchSize == batchSize) {
+                    statement.executeBatch();
+                    getConnection().commit();
+                    currentBatchSize = 0;
+                    log.debug("插入" + batchSize + "条数据");
+                }
             }
-            result = statement.executeBatch();
-            getConnection().commit();
+
+            if (currentBatchSize > 0) {
+                statement.executeBatch();
+                getConnection().commit();
+            }
         } catch (SQLException e) {
             try {
                 getConnection().rollback();
@@ -416,7 +433,6 @@ public class JdbcHelper implements Closeable {
         } finally {
             free(null, statement, null);
         }
-        return result;
     }
 
 //    public int[] batchUpdate(String sql, List<Map<Integer, Object>> params) {
@@ -446,20 +462,53 @@ public class JdbcHelper implements Closeable {
 //        return result;
 //    }
 
-    public int[] batchUpdate(String sql, List<List<Object>> params) {
-        int[] result = new int[]{};
+    public void batchUpdate(String schema, String[] columns, List<List<Object>> params) {
+        batchUpdate(schema, columns, params, params.size());
+    }
+
+    public void batchUpdate(String schema, String[] columns, List<List<Object>> params, Integer batchSize) {
+
+        StringBuilder columnsSb = new StringBuilder();
+        StringBuilder placeholdSb = new StringBuilder();
+        for (String column : columns) {
+            columnsSb.append(",").append(column);
+            placeholdSb.append(",?");
+        }
+
+        String sql = String.format("INSERT INTO %s(%s) VALUES(%s)", schema, columnsSb.substring(1), placeholdSb.substring(1));
+        batchUpdate(sql, params, batchSize);
+    }
+
+    public void batchUpdate(String sql, List<List<Object>> params) {
+        batchUpdate(sql, params, params.size());
+    }
+
+    public void batchUpdate(String sql, List<List<Object>> params, Integer batchSize) {
         PreparedStatement preparedStatement = null;
         try {
             getConnection().setAutoCommit(false);
             preparedStatement = getConnection().prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+
+            int currentBatchSize = 0;
             for (List<Object> param : params) {
                 for (int i = 0, len = param.size(); i < len; i++) {
                     preparedStatement.setObject(i + 1, param.get(i));
                 }
                 preparedStatement.addBatch();
+                currentBatchSize++;
+
+                if (currentBatchSize == batchSize) {
+                    preparedStatement.executeBatch();
+                    getConnection().commit();
+                    currentBatchSize = 0;
+                    log.debug("插入" + batchSize + "条数据");
+                }
             }
-            result = preparedStatement.executeBatch();
-            getConnection().commit();
+
+            if (currentBatchSize > 0) {
+                preparedStatement.executeBatch();
+                getConnection().commit();
+            }
         } catch (SQLException e) {
             try {
                 getConnection().rollback();
@@ -470,6 +519,5 @@ public class JdbcHelper implements Closeable {
         } finally {
             free(null, preparedStatement, null);
         }
-        return result;
     }
 }
