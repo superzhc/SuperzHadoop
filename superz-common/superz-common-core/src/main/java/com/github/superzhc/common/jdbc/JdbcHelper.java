@@ -484,6 +484,7 @@ public class JdbcHelper implements Closeable {
     }
 
     public void batchUpdate(String sql, List<List<Object>> params, Integer batchSize) {
+        log.debug("batch sql:" + sql);
         PreparedStatement preparedStatement = null;
         try {
             getConnection().setAutoCommit(false);
