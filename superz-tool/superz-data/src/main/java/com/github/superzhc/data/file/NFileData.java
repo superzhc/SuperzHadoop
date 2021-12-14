@@ -1,4 +1,4 @@
-package com.github.superzhc.data.common;
+package com.github.superzhc.data.file;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +12,7 @@ import java.util.List;
  * @author superz
  * @create 2021/12/14 13:55
  */
+@Deprecated
 public abstract class NFileData {
     private static final Logger log = LoggerFactory.getLogger(NFileData.class);
 

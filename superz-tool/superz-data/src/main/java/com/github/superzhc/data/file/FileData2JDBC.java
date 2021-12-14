@@ -1,7 +1,6 @@
 package com.github.superzhc.data.file;
 
 import com.github.superzhc.common.jdbc.JdbcHelper;
-import com.github.superzhc.data.common.NFileData;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,6 +10,7 @@ import java.util.List;
  * @author superz
  * @create 2021/12/14 15:17
  */
+@Deprecated
 public abstract class FileData2JDBC extends NFileData {
     private String url;
     private String username;

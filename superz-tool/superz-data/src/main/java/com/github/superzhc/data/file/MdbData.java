@@ -1,4 +1,4 @@
-package com.github.superzhc.data.common;
+package com.github.superzhc.data.file;
 
 import com.github.superzhc.common.jdbc.JdbcHelper;
 
@@ -6,7 +6,7 @@ import com.github.superzhc.common.jdbc.JdbcHelper;
  * @author superz
  * @create 2021/12/14 16:37
  */
-public class MdbData {
+public class MdbData implements FileData {
 
     private String path;
     private JdbcHelper jdbc;
@@ -21,10 +21,7 @@ public class MdbData {
         jdbc = new JdbcHelper(url);
     }
 
-    public void preview() {
-        preview(20);
-    }
-
+    @Override
     public void preview(Integer number) {
         String[] tables = jdbc.tables();
         String sqlTemplate = "SELECT TOP %d * FROM %s";
