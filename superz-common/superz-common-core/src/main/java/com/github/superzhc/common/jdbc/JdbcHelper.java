@@ -72,7 +72,7 @@ public class JdbcHelper implements Closeable {
     }
 
     public JdbcHelper(String url, String username, String password) {
-        this(Driver.match(url).fullClassName(), url, username, password);
+        this(null == Driver.match(url) ? null : Driver.match(url).fullClassName(), url, username, password);
     }
 
     public JdbcHelper(String driver, String url, String username, String password) {
@@ -82,7 +82,9 @@ public class JdbcHelper implements Closeable {
     private Connection getConnection() {
         if (null == conn) {
             try {
-                Class.forName(dbConfig.driver);
+                if (null != dbConfig.driver) {
+                    Class.forName(dbConfig.driver);
+                }
                 Properties info = new Properties();
 
                 if (null != dbConfig.username && dbConfig.username.trim().length() > 0) {
@@ -161,6 +163,87 @@ public class JdbcHelper implements Closeable {
     @Override
     public void close() {
         free(conn, null, null);
+    }
+
+    public String[] tables() {
+        ResultSet rs = null;
+        try {
+            Connection connection = getConnection();
+            List<String> result = new ArrayList<>();
+
+            DatabaseMetaData meta = connection.getMetaData();
+            rs = meta.getTables(connection.getCatalog(), connection.getSchema(), "%", new String[]{"TABLE"});
+            while (rs.next()) {
+                result.add(rs.getString("TABLE_NAME"));
+            }
+
+            String[] rt = new String[result.size()];
+            result.toArray(rt);
+            return rt;
+        } catch (SQLException throwables) {
+            log.error("获取表元数据异常", throwables);
+            return null;
+        } finally {
+            free(null, null, rs);
+        }
+    }
+
+    public String[] views() {
+        ResultSet rs = null;
+        try {
+            Connection connection = getConnection();
+            List<String> result = new ArrayList<>();
+
+            DatabaseMetaData meta = connection.getMetaData();
+            rs = meta.getTables(connection.getCatalog(), connection.getSchema(), "%", new String[]{"VIEW"});
+            while (rs.next()) {
+                result.add(rs.getString("TABLE_NAME"));
+            }
+
+            String[] rt = new String[result.size()];
+            result.toArray(rt);
+            return rt;
+        } catch (SQLException throwables) {
+            log.error("获取表元数据异常", throwables);
+            return null;
+        } finally {
+            free(null, null, rs);
+        }
+    }
+
+    public String[] columns(String schema) {
+        ResultSet rs = null;
+        try {
+            Connection connection = getConnection();
+            List<String> result = new ArrayList<>();
+
+            DatabaseMetaData meta = connection.getMetaData();
+            rs = meta.getColumns(connection.getCatalog(), connection.getSchema(), schema, "%");
+            while (rs.next()) {
+                result.add(rs.getString("COLUMN_NAME"));
+            }
+
+            String[] rt = new String[result.size()];
+            result.toArray(rt);
+            return rt;
+        } catch (SQLException throwables) {
+            log.error("获取表元数据异常", throwables);
+            return null;
+        } finally {
+            free(null, null, rs);
+        }
+    }
+
+    public int dmlExecute(String schema, String[] columns, Object... params) {
+        StringBuilder columnsSb = new StringBuilder();
+        StringBuilder placeholdSb = new StringBuilder();
+        for (String column : columns) {
+            columnsSb.append(",").append(column);
+            placeholdSb.append(",?");
+        }
+
+        String sql = String.format("INSERT INTO %s(%s) VALUES(%s)", schema, columnsSb.substring(1), placeholdSb.substring(1));
+        return dmlExecute(sql, params);
     }
 
     /**
@@ -264,7 +347,20 @@ public class JdbcHelper implements Closeable {
         }
     }
 
+    @Deprecated
     public <T> T queryOne(String sql, Object... params) {
+        return aggregate(sql, params);
+    }
+
+    /**
+     * 总计
+     *
+     * @param sql
+     * @param params
+     * @param <T>
+     * @return
+     */
+    public <T> T aggregate(String sql, Object... params) {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         Object result = null;
@@ -485,12 +581,16 @@ public class JdbcHelper implements Closeable {
 
     public void batchUpdate(String sql, List<List<Object>> params, Integer batchSize) {
         log.debug("batch sql:" + sql);
+        log.debug("batch size:" + batchSize);
         PreparedStatement preparedStatement = null;
         try {
             getConnection().setAutoCommit(false);
             preparedStatement = getConnection().prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
 
+            long start = System.currentTimeMillis();
             int currentBatchSize = 0;
+            int totalSize = params.size();
+            int remainSize = totalSize;
             for (List<Object> param : params) {
                 for (int i = 0, len = param.size(); i < len; i++) {
                     preparedStatement.setObject(i + 1, param.get(i));
@@ -502,13 +602,19 @@ public class JdbcHelper implements Closeable {
                     preparedStatement.executeBatch();
                     getConnection().commit();
                     currentBatchSize = 0;
-                    log.debug("插入" + batchSize + "条数据");
+                    remainSize = remainSize - batchSize;
+                    long end = System.currentTimeMillis();
+                    log.debug("[总数：" + totalSize + "，剩余：" + remainSize + "]插入" + batchSize + "条数据，耗时：" + ((end - start) / 1000.0) + "s");
+                    start = end;
                 }
             }
 
             if (currentBatchSize > 0) {
                 preparedStatement.executeBatch();
                 getConnection().commit();
+                remainSize = remainSize - currentBatchSize;
+                long end = System.currentTimeMillis();
+                log.debug("[总数：" + totalSize + "，剩余：" + remainSize + "]插入" + batchSize + "条数据，耗时：" + ((end - start) / 1000.0) + "s");
             }
         } catch (SQLException e) {
             try {
