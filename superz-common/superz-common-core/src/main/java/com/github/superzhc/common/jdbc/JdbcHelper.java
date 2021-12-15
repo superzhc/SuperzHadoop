@@ -165,6 +165,25 @@ public class JdbcHelper implements Closeable {
         free(conn, null, null);
     }
 
+    /**
+     * 判断表是否存在
+     *
+     * @param schema
+     * @return
+     */
+    public boolean exist(String schema) {
+        ResultSet rs = null;
+        try {
+            DatabaseMetaData metaData = getConnection().getMetaData();
+            rs = metaData.getTables(conn.getCatalog(), conn.getSchema(), schema, new String[]{"TABLE"});
+            return rs.next();
+        } catch (Exception e) {
+            return false;
+        } finally {
+            free(null, null, rs);
+        }
+    }
+
     public String[] tables() {
         ResultSet rs = null;
         try {
@@ -231,6 +250,20 @@ public class JdbcHelper implements Closeable {
             return null;
         } finally {
             free(null, null, rs);
+        }
+    }
+
+    public int ddlExecute(String sql) {
+        Statement stmt = null;
+        try {
+            log.debug("DDL 语句：{}", sql);
+            stmt = getConnection().createStatement();
+            return stmt.executeUpdate(sql);
+        } catch (Exception e) {
+            log.error("DDL异常", e);
+            return -1;
+        } finally {
+            free(null, stmt, null);
         }
     }
 
@@ -523,9 +556,9 @@ public class JdbcHelper implements Closeable {
             try {
                 getConnection().rollback();
             } catch (SQLException e1) {
-                throw new ExceptionInInitializerError(e1);
+                throw new RuntimeException(e1);
             }
-            throw new ExceptionInInitializerError(e);
+            throw new RuntimeException(e);
         } finally {
             free(null, statement, null);
         }
@@ -582,6 +615,11 @@ public class JdbcHelper implements Closeable {
     public void batchUpdate(String sql, List<List<Object>> params, Integer batchSize) {
         log.debug("batch sql:" + sql);
         log.debug("batch size:" + batchSize);
+        if (null == params || params.size() == 0) {
+            log.debug("no data");
+            return;
+        }
+
         PreparedStatement preparedStatement = null;
         try {
             getConnection().setAutoCommit(false);
@@ -620,9 +658,9 @@ public class JdbcHelper implements Closeable {
             try {
                 getConnection().rollback();
             } catch (SQLException e1) {
-                throw new ExceptionInInitializerError(e1);
+                throw new RuntimeException(e1);
             }
-            throw new ExceptionInInitializerError(e);
+            throw new RuntimeException(e);
         } finally {
             free(null, preparedStatement, null);
         }

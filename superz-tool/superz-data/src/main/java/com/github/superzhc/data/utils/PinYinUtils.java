@@ -1,5 +1,6 @@
 package com.github.superzhc.data.utils;
 
+import net.sourceforge.pinyin4j.PinyinHelper;
 import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
 import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
 import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
@@ -16,7 +17,7 @@ public class PinYinUtils {
         // 控制大小写
         // UPPERCASE：大写  (ZHONG)
         // LOWERCASE：小写  (zhong)
-        defaultFormat.setCaseType(HanyuPinyinCaseType.UPPERCASE);
+        defaultFormat.setCaseType(HanyuPinyinCaseType.LOWERCASE);
         // WITHOUT_TONE：无音标  (zhong)
         // WITH_TONE_NUMBER：1-4数字表示英标  (zhong4)
         // WITH_TONE_MARK：直接用音标符（必须WITH_U_UNICODE否则异常）  (zhòng)
@@ -27,16 +28,29 @@ public class PinYinUtils {
         defaultFormat.setVCharType(HanyuPinyinVCharType.WITH_V);
     }
 
-    public static String pinyin(String str){
-        if(null==str||str.trim().length()==0){
+    public static String pinyin(String str) {
+        if (null == str || str.trim().length() == 0) {
             return str;
         }
 
-        str=str.trim();
+        str = str.trim();
 
-        StringBuilder result=new StringBuilder();
-        for(int i=0,len=str.length();i<len;i++){
-
+        try {
+            StringBuilder result = new StringBuilder();
+            for (int i = 0, len = str.length(); i < len; i++) {
+                // 判断是否为汉字
+                if (String.valueOf(str.charAt(i)).matches("[\\u4E00-\\u9FA5]+")) {
+                    String[] ss = PinyinHelper.toHanyuPinyinStringArray(str.charAt(i), defaultFormat);
+                    if (null != ss && ss.length > 0) {
+                        result.append(ss[0]);
+                    }
+                } else {
+                    result.append(str.charAt(i));
+                }
+            }
+            return result.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }
