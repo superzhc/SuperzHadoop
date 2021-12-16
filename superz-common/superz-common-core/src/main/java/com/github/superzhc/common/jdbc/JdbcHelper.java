@@ -253,6 +253,34 @@ public class JdbcHelper implements Closeable {
         }
     }
 
+    public Map<String, String> columnAndTypes(String schema) {
+        ResultSet rs = null;
+        try {
+            Connection connection = getConnection();
+            // 注意用有序的map，不然获取的列是无序的，不是很好用
+            Map<String, String> result = new LinkedHashMap<>();
+
+            DatabaseMetaData meta = connection.getMetaData();
+            rs = meta.getColumns(connection.getCatalog(), connection.getSchema(), schema, "%");
+            while (rs.next()) {
+                String type;
+                if ("VARCHAR".equalsIgnoreCase(rs.getString("TYPE_NAME"))) {
+                    type = rs.getString("TYPE_NAME") + "(" + rs.getString("COLUMN_SIZE") + ")";
+                } else {
+                    type = rs.getString("TYPE_NAME");
+                }
+                result.put(rs.getString("COLUMN_NAME"), type);
+            }
+
+            return result;
+        } catch (SQLException throwables) {
+            log.error("获取表元数据异常", throwables);
+            return null;
+        } finally {
+            free(null, null, rs);
+        }
+    }
+
     public int ddlExecute(String sql) {
         Statement stmt = null;
         try {
@@ -345,8 +373,10 @@ public class JdbcHelper implements Closeable {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
+            log.debug("查询语句：{}", sql);
             pstmt = getConnection().prepareStatement(sql);
             if (null != params && params.length != 0) {
+                log.debug("查询参数：{}", params);
                 for (int i = 0, len = params.length; i < len; i++) {
                     pstmt.setObject(i + 1, params[i]);
                 }
@@ -365,8 +395,10 @@ public class JdbcHelper implements Closeable {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
+            log.debug("查询语句：{}", sql);
             pstmt = getConnection().prepareStatement(sql);
             if (null != params && params.length != 0) {
+                log.debug("查询参数：{}", params);
                 for (int i = 0, len = params.length; i < len; i++) {
                     pstmt.setObject(i + 1, params[i]);
                 }
@@ -398,8 +430,10 @@ public class JdbcHelper implements Closeable {
         ResultSet rs = null;
         Object result = null;
         try {
+            log.debug("查询语句：{}", sql);
             pstmt = getConnection().prepareStatement(sql);
             if (null != params && params.length != 0) {
+                log.debug("查询参数：{}", params);
                 for (int i = 0, len = params.length; i < len; i++) {
                     pstmt.setObject(i + 1, params[i]);
                 }
@@ -626,6 +660,7 @@ public class JdbcHelper implements Closeable {
             preparedStatement = getConnection().prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
 
             long start = System.currentTimeMillis();
+            long totalStart = start;
             int currentBatchSize = 0;
             int totalSize = params.size();
             int remainSize = totalSize;
@@ -654,6 +689,7 @@ public class JdbcHelper implements Closeable {
                 long end = System.currentTimeMillis();
                 log.debug("[总数：" + totalSize + "，剩余：" + remainSize + "]插入" + batchSize + "条数据，耗时：" + ((end - start) / 1000.0) + "s");
             }
+            log.debug("[总数：" + totalSize + "]插入总耗时：" + ((System.currentTimeMillis() - totalStart) / 1000.0) + "s");
         } catch (SQLException e) {
             try {
                 getConnection().rollback();
