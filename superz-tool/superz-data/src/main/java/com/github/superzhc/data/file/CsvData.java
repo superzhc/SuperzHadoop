@@ -1,80 +1,64 @@
 package com.github.superzhc.data.file;
 
 import com.github.superzhc.common.jdbc.JdbcHelper;
-import com.github.superzhc.data.utils.ExcelUtils;
 import com.github.superzhc.data.utils.PinYinUtils;
+import com.opencsv.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
 /**
  * @author superz
- * @create 2021/12/15 1:21
+ * @create 2021/12/16 16:18
  */
-public class TxtData implements FileData {
-    private static final Logger log = LoggerFactory.getLogger(TxtData.class);
+public class CsvData implements FileData {
+    private static final Logger log = LoggerFactory.getLogger(CsvData.class);
 
     private static final String DEFAULT_CHARSET = "UTF-8";
-    private static final Integer DEFAULT_HEADERS = 0;
+    private static final char DEFAULT_SEPARATOR = ICSVParser.DEFAULT_SEPARATOR;
+    private static final Integer DEFAULT_HEADERS = CSVReader.DEFAULT_SKIP_LINES;
 
     private String path;
     private String charset;
     private Integer headers;
+    private char separator;
 
-    //private InputStream inputStream;
-
-    public TxtData(String path) {
-        this(path, DEFAULT_CHARSET, DEFAULT_HEADERS);
+    public CsvData(String path, String charset) {
+        this(path, charset, DEFAULT_SEPARATOR, DEFAULT_HEADERS);
     }
 
-    public TxtData(String path, Integer headers) {
-        this(path, DEFAULT_CHARSET, headers);
-    }
-
-    public TxtData(String path, String charset) {
-        this(path, charset, DEFAULT_HEADERS);
-    }
-
-    public TxtData(String path, String charset, Integer headers) {
+    public CsvData(String path, String charset, char separator, Integer headers) {
         this.path = path;
         this.charset = charset;
+        this.separator = separator;
         this.headers = headers;
-        //init();
     }
 
-    /**
-     * 不能在这初始化，不然的话流只能读一次报错
-     */
-//    private void init() {
-//        try {
-//            inputStream = new FileInputStream(new File(path));
-//        } catch (FileNotFoundException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
-    private void read(Function<List<String>, Void> headersFunction, Integer linesNum, Function<List<String>, Boolean> linesFunction) {
+    private void read(Function<List<String[]>, Void> headersFunction, Integer linesNum, Function<List<String[]>, Boolean> linesFunction) {
         try (InputStream inputStream = new FileInputStream(new File(path))) {
             try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream, Charset.forName(charset))) {
-                try (BufferedReader reader = new BufferedReader(inputStreamReader)) {
+                CSVParser parser = new CSVParserBuilder().withSeparator(separator).build();
+                try (CSVReader reader = new CSVReaderBuilder(inputStreamReader).withCSVParser(parser).build()) {
                     log.debug("文件开始读取...");
                     long start = System.currentTimeMillis();
                     long total = 0L;
 
-                    String str;
+                    String[] values;
 
                     Long currentLines = 0L;
                     /* 处理文件头 */
                     if (headers > 0) {
-                        List<String> headerLines = new ArrayList<>(headers);
+                        List<String[]> headerLines = new ArrayList<>(headers);
                         Integer headerCursor = headers;
-                        while (headerCursor > 0 && (str = reader.readLine()) != null) {
+                        while (headerCursor > 0 && (values = reader.readNext()) != null) {
                             currentLines++;
-                            headerLines.add(str);
+                            headerLines.add(values);
                             headerCursor--;
                         }
 
@@ -86,11 +70,11 @@ public class TxtData implements FileData {
                     }
 
                     /* 处理文件内容 */
-                    List<String> lines = new ArrayList<>(linesNum);
+                    List<String[]> lines = new ArrayList<>(linesNum);
                     int currentLinesNum = 0;
-                    while ((str = reader.readLine()) != null) {
+                    while ((values = reader.readNext()) != null) {
                         currentLines++;
-                        lines.add(str);
+                        lines.add(values);
                         currentLinesNum++;
                         total++;
 
@@ -122,11 +106,11 @@ public class TxtData implements FileData {
 
     @Override
     public void preview(Integer number) {
-        read(null, number, new Function<List<String>, Boolean>() {
+        read(null, number, new Function<List<String[]>, Boolean>() {
             @Override
-            public Boolean apply(List<String> strings) {
-                for (String str : strings) {
-                    System.out.println(str);
+            public Boolean apply(List<String[]> valuesList) {
+                for (String[] values : valuesList) {
+                    System.out.println(Arrays.asList(values));
                 }
                 return false;
             }
@@ -134,27 +118,15 @@ public class TxtData implements FileData {
     }
 
     public void count() {
-        final Count c = new Count();
-        read(null, 10000, new Function<List<String>, Boolean>() {
+        final TxtData.Count c = new TxtData.Count();
+        read(null, 10000, new Function<List<String[]>, Boolean>() {
             @Override
-            public Boolean apply(List<String> strings) {
-                c.add(strings.size());
+            public Boolean apply(List<String[]> valuesList) {
+                c.add(valuesList.size());
                 return true;
             }
         });
-        System.out.println("File[" + path + "] count:" + c.get());
-    }
-
-    public static class Count {
-        private Integer number = 0;
-
-        public void add(Integer i) {
-            number += i;
-        }
-
-        public Integer get() {
-            return number;
-        }
+        System.out.println("CSV File[" + path + "] count:" + c.get());
     }
 
     public void write2db(String url, String username, String password, String schema, String[] columns) {
@@ -190,26 +162,25 @@ public class TxtData implements FileData {
             }
 
             final ErrorData error = new ErrorData(schema);
-            read(null, 10000, new Function<List<String>, Boolean>() {
+            read(null, 10000, new Function<List<String[]>, Boolean>() {
                 @Override
-                public Boolean apply(List<String> strings) {
+                public Boolean apply(List<String[]> lineValuesList) {
                     List<List<Object>> values = new ArrayList<>();
                     int columnsNum = columns.length;
-                    for (String str : strings) {
-                        if (null == str || str.trim().length() == 0) {
+                    for (String[] lineValues : lineValuesList) {
+                        if (null == lineValues || lineValues.length == 0) {
                             continue;
                         }
 
-                        String[] arr = str.split(separator);
-                        if (arr.length != columnsNum) {
-                            error.add(str);
+                        if (lineValues.length != columnsNum) {
+                            error.add("[" + String.join(",", lineValues) + "]");
                             //log.debug("error data:" + str);
                             continue;
                         }
 
                         List<Object> value = new ArrayList<>(columnsNum);
                         for (int i = 0; i < columnsNum; i++) {
-                            value.add(arr[i].trim());
+                            value.add(lineValues[i].trim());
                         }
                         values.add(value);
                     }
@@ -223,19 +194,10 @@ public class TxtData implements FileData {
     }
 
     public static void main(String[] args) {
-        String path = "D:\\downloads\\Chrome\\";
-        String fileName = "xiaomi_com\\xiaomi_com.txt";
-        path = path + fileName;
+        String path = "D:\\downloads\\baidu\\car\\数据包二\\全国不区分地区\\13及以前\\2W车主信息+400银行卡信息.txt";
 
-        path = "D:\\downloads\\baidu\\car\\数据包二\\全国不区分地区\\13及以前\\2W车主信息+400银行卡信息.txt";
-
-        String url = "jdbc:mysql://localhost:13306/data_warehouse?useSSL=false&useUnicode=true&characterEncoding=utf-8";
-        String username = "root";
-        String password = "123456";
-
-        TxtData txtData = new TxtData(path,"GB2312");
-        txtData.preview();
-        txtData.count();
-        // txtData.write2db(url, username, password, "xiaomi", new String[]{"id", "username", "password", "email", "ip"}, "\\|");
+        CsvData csvData = new CsvData(path, "GB2312");
+        csvData.preview();
+        csvData.count();
     }
 }

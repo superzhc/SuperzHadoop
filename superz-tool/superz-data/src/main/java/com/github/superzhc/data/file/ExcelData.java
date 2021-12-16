@@ -287,8 +287,8 @@ public class ExcelData implements FileData {
         Sheet sheet = workbook.getSheetAt(sheetNumber);
         int numberOfRows = sheet.getPhysicalNumberOfRows();
         if (headers < numberOfRows) {
+            ErrorData error = new ErrorData(table);
             List<List<Object>> values = new ArrayList<>();
-            List<List<Object>> errors = new ArrayList<>();
             for (int i = headers; i < numberOfRows; i++) {
                 List<Object> value = new ArrayList<>();
                 Row row = sheet.getRow(i);
@@ -299,10 +299,7 @@ public class ExcelData implements FileData {
                 int numberOfCells = row.getPhysicalNumberOfCells();
 
                 if (numberOfCells != columns.length) {
-                    List<Object> error = new ArrayList<>();
                     error.add(ExcelUtils.json(row));
-                    error.add(table);
-                    errors.add(error);
                     // log.error("错误数据:" + ExcelUtils.format(row));
                     continue;
                 }
@@ -311,19 +308,17 @@ public class ExcelData implements FileData {
                     Cell cell = row.getCell(k);
                     Object obj = ExcelUtils.getCellFormatValue(cell);
                     if (String.valueOf(obj).length() > 255) {
-                        List<Object> error = new ArrayList<>();
                         error.add(ExcelUtils.json(row));
-                        error.add(table);
-                        errors.add(error);
                         break;
                     }
                     value.add(obj);
                 }
                 values.add(value);
             }
-            log.error("错误数据条数：" + errors.size());
+            log.debug("数据总条数（不包含错误数据）：" + values.size());
+            log.debug("错误数据条数：" + error.total());
             jdbc.batchUpdate(table, columns, values, 1000);
-            jdbc.batchUpdate("errors_data", new String[]{"data", "origin_schema"}, errors, 1000);
+            error.write2db(jdbc);
         }
     }
 

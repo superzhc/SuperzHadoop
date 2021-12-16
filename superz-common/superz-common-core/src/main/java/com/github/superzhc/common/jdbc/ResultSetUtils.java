@@ -11,8 +11,7 @@ import java.util.*;
 /**
  * 2020年07月16日 superz add
  */
-public class ResultSetUtils
-{
+public class ResultSetUtils {
     public static List<Map<String, Object>> Result2ListMap(ResultSet rs) {
         List<Map<String, Object>> list = new ArrayList<>();
         try {
@@ -21,7 +20,7 @@ public class ResultSetUtils
             while (rs.next()) {
                 Map<String, Object> map = new HashMap<>();
                 for (int i = 0; i < cols_len; i++) {
-                    String cols_name = metaData.getColumnName(i + 1);
+                    String cols_name = metaData.getColumnLabel(i + 1)/*metaData.getColumnName(i + 1)*/;
                     Object cols_value = rs.getObject(cols_name);
                     // null值不做处理
                     // if (null == cols_value) {
@@ -31,8 +30,7 @@ public class ResultSetUtils
                 }
                 list.add(map);
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         return list;
@@ -56,8 +54,7 @@ public class ResultSetUtils
                 }
                 list.add(MapUtils.mapToBean(map, beanClass));
             }
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
         return list;
@@ -69,6 +66,7 @@ public class ResultSetUtils
 
     /**
      * 打印数据
+     *
      * @param rs
      * @param num 预览的数据条数
      * @throws SQLException
