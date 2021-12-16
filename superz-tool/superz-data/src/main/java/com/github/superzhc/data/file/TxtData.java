@@ -1,5 +1,6 @@
 package com.github.superzhc.data.file;
 
+import com.github.superzhc.common.jdbc.JdbcHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +18,7 @@ public class TxtData implements FileData {
     private static final Logger log = LoggerFactory.getLogger(TxtData.class);
 
     private static final String DEFAULT_CHARSET = "UTF-8";
+    private static final Integer DEFAULT_HEADERS = 0;
 
     private String path;
     private String charset;
@@ -24,10 +26,19 @@ public class TxtData implements FileData {
 
     private InputStream inputStream;
 
+    public TxtData(String path) {
+        this(path, DEFAULT_CHARSET, DEFAULT_HEADERS);
+    }
+
+    public TxtData(String path, String charset) {
+        this(path, charset, DEFAULT_HEADERS);
+    }
+
     public TxtData(String path, String charset, Integer headers) {
         this.path = path;
         this.charset = charset;
         this.headers = headers;
+        init();
     }
 
     private void init() {
@@ -100,5 +111,41 @@ public class TxtData implements FileData {
                 return false;
             }
         });
+    }
+
+    public void write2db(String url, String username, String password, String schema, String[] columns) {
+        try (final JdbcHelper jdbc = new JdbcHelper(url, username, password)) {
+            read(null, 10000, new Function<List<String>, Boolean>() {
+                @Override
+                public Boolean apply(List<String> strings) {
+                    List<List<Object>> values = new ArrayList<>();
+                    for (String str : strings) {
+                        String[] arr = str.split("\t");
+                        if (arr.length < 2) {
+                            log.debug("error data:" + str);
+                            continue;
+                        }
+                        List<Object> value = new ArrayList<>();
+                        value.add(arr[0]);
+                        value.add(arr[1]);
+                        values.add(value);
+                    }
+                    jdbc.batchUpdate(schema, columns, values, 1000);
+                    return true;
+                }
+            });
+        }
+    }
+
+    public static void main(String[] args) {
+        String path = "D:\\download\\chrome\\xh-2.txt";
+
+        String url = "jdbc:mysql://localhost:3306/data_warehouse?useSSL=false&useUnicode=true&characterEncoding=utf-8";
+        String username = "root";
+        String password = "123456";
+
+        TxtData txtData = new TxtData(path);
+        //txtData.preview();
+        txtData.write2db(url, username, password, "renren", new String[]{"email", "note"});
     }
 }
