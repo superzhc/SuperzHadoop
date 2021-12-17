@@ -79,25 +79,34 @@ public class JdbcHelper implements Closeable {
         dbConfig = new DBConfig(driver, url, username, password);
     }
 
-    private Connection getConnection() {
-        if (null == conn) {
-            try {
-                if (null != dbConfig.driver) {
-                    Class.forName(dbConfig.driver);
-                }
-                Properties info = new Properties();
+    /**
+     * 开放出去，并进一步优化被关掉了也可以重新进行连接
+     *
+     * @return
+     */
+    public Connection getConnection() {
+        try {
+            if (null == conn || conn.isClosed()) {
+                synchronized (this) {
+                    if (null == conn || conn.isClosed()) {
+                        if (null != dbConfig.driver) {
+                            Class.forName(dbConfig.driver);
+                        }
+                        Properties info = new Properties();
 
-                if (null != dbConfig.username && dbConfig.username.trim().length() > 0) {
-                    info.put("user", dbConfig.username);
-                }
-                if (null != dbConfig.password && dbConfig.password.trim().length() > 0) {
-                    info.put("password", dbConfig.password);
-                }
+                        if (null != dbConfig.username && dbConfig.username.trim().length() > 0) {
+                            info.put("user", dbConfig.username);
+                        }
+                        if (null != dbConfig.password && dbConfig.password.trim().length() > 0) {
+                            info.put("password", dbConfig.password);
+                        }
 
-                conn = DriverManager.getConnection(dbConfig.url, info);
-            } catch (Exception e) {
-                e.printStackTrace();
+                        conn = DriverManager.getConnection(dbConfig.url, info);
+                    }
+                }
             }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
         return conn;
     }
@@ -168,16 +177,17 @@ public class JdbcHelper implements Closeable {
     /**
      * 判断表是否存在
      *
-     * @param schema
+     * @param table
      * @return
      */
-    public boolean exist(String schema) {
+    public boolean exist(String table) {
         ResultSet rs = null;
         try {
             DatabaseMetaData metaData = getConnection().getMetaData();
-            rs = metaData.getTables(conn.getCatalog(), conn.getSchema(), schema, new String[]{"TABLE"});
+            rs = metaData.getTables(conn.getCatalog(), conn.getSchema(), table, new String[]{"TABLE"});
             return rs.next();
         } catch (Exception e) {
+            log.error("判断表[" + table + "]是否存在异常，", e);
             return false;
         } finally {
             free(null, null, rs);
@@ -188,16 +198,16 @@ public class JdbcHelper implements Closeable {
         ResultSet rs = null;
         try {
             Connection connection = getConnection();
-            List<String> result = new ArrayList<>();
+            List<String> tables = new ArrayList<>();
 
             DatabaseMetaData meta = connection.getMetaData();
             rs = meta.getTables(connection.getCatalog(), connection.getSchema(), "%", new String[]{"TABLE"});
             while (rs.next()) {
-                result.add(rs.getString("TABLE_NAME"));
+                tables.add(rs.getString("TABLE_NAME"));
             }
 
-            String[] rt = new String[result.size()];
-            result.toArray(rt);
+            String[] rt = new String[tables.size()];
+            tables.toArray(rt);
             return rt;
         } catch (SQLException throwables) {
             log.error("获取表元数据异常", throwables);
@@ -230,14 +240,14 @@ public class JdbcHelper implements Closeable {
         }
     }
 
-    public String[] columns(String schema) {
+    public String[] columns(String table) {
         ResultSet rs = null;
         try {
             Connection connection = getConnection();
             List<String> result = new ArrayList<>();
 
             DatabaseMetaData meta = connection.getMetaData();
-            rs = meta.getColumns(connection.getCatalog(), connection.getSchema(), schema, "%");
+            rs = meta.getColumns(connection.getCatalog(), connection.getSchema(), table, "%");
             while (rs.next()) {
                 result.add(rs.getString("COLUMN_NAME"));
             }
@@ -253,7 +263,7 @@ public class JdbcHelper implements Closeable {
         }
     }
 
-    public Map<String, String> columnAndTypes(String schema) {
+    public Map<String, String> columnAndTypes(String table) {
         ResultSet rs = null;
         try {
             Connection connection = getConnection();
@@ -261,11 +271,16 @@ public class JdbcHelper implements Closeable {
             Map<String, String> result = new LinkedHashMap<>();
 
             DatabaseMetaData meta = connection.getMetaData();
-            rs = meta.getColumns(connection.getCatalog(), connection.getSchema(), schema, "%");
+            rs = meta.getColumns(connection.getCatalog(), connection.getSchema(), table, "%");
             while (rs.next()) {
                 String type;
                 if ("VARCHAR".equalsIgnoreCase(rs.getString("TYPE_NAME"))) {
-                    type = rs.getString("TYPE_NAME") + "(" + rs.getString("COLUMN_SIZE") + ")";
+                    // 此处做个限定
+                    Integer columnSize = rs.getInt("COLUMN_SIZE");
+                    if (columnSize > 1024) {
+                        columnSize = 1024;
+                    }
+                    type = rs.getString("TYPE_NAME") + "(" + columnSize + ")";
                 } else {
                     type = rs.getString("TYPE_NAME");
                 }
@@ -295,7 +310,7 @@ public class JdbcHelper implements Closeable {
         }
     }
 
-    public int dmlExecute(String schema, String[] columns, Object... params) {
+    public int insert(String table, String[] columns, Object... params) {
         StringBuilder columnsSb = new StringBuilder();
         StringBuilder placeholdSb = new StringBuilder();
         for (String column : columns) {
@@ -303,7 +318,7 @@ public class JdbcHelper implements Closeable {
             placeholdSb.append(",?");
         }
 
-        String sql = String.format("INSERT INTO %s(%s) VALUES(%s)", schema, columnsSb.substring(1), placeholdSb.substring(1));
+        String sql = String.format("INSERT INTO %s(%s) VALUES(%s)", table, columnsSb.substring(1), placeholdSb.substring(1));
         return dmlExecute(sql, params);
     }
 
@@ -625,12 +640,11 @@ public class JdbcHelper implements Closeable {
 //        return result;
 //    }
 
-    public void batchUpdate(String schema, String[] columns, List<List<Object>> params) {
-        batchUpdate(schema, columns, params, params.size());
+    public void batchUpdate(String table, String[] columns, List<List<Object>> params) {
+        batchUpdate(table, columns, params, params.size());
     }
 
-    public void batchUpdate(String schema, String[] columns, List<List<Object>> params, Integer batchSize) {
-
+    public void batchUpdate(String table, String[] columns, List<List<Object>> params, Integer batchSize) {
         StringBuilder columnsSb = new StringBuilder();
         StringBuilder placeholdSb = new StringBuilder();
         for (String column : columns) {
@@ -638,7 +652,7 @@ public class JdbcHelper implements Closeable {
             placeholdSb.append(",?");
         }
 
-        String sql = String.format("INSERT INTO %s(%s) VALUES(%s)", schema, columnsSb.substring(1), placeholdSb.substring(1));
+        String sql = String.format("INSERT INTO %s(%s) VALUES(%s)", table, columnsSb.substring(1), placeholdSb.substring(1));
         batchUpdate(sql, params, batchSize);
     }
 

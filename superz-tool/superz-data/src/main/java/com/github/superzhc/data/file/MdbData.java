@@ -76,7 +76,7 @@ public class MdbData implements FileData {
             } else {
                 idStr = "uid int auto_increment primary key";
             }
-            String ddl = String.format("create table if not exists %s(%s%s) ENGINE=MyISAM", PinYinUtils.pinyin(table), idStr, columnsStr);
+            String ddl = String.format("create table if not exists %s(%s%s)", PinYinUtils.pinyin(table), idStr, columnsStr);
             System.out.println(ddl);
         }
     }
@@ -193,7 +193,7 @@ public class MdbData implements FileData {
 
     public static void main(String[] args) {
         String path;
-        path = "D:\\downloads\\Chrome\\2011.12-智联招聘-244万-access\\智联招聘-南京苏州-835K.mdb";
+        path = "D:\\downloads\\Chrome\\xxx.mdb";
 
         String url = "jdbc:mysql://localhost:13306/data_warehouse?useSSL=false&useUnicode=true&characterEncoding=utf-8";
         String username = "root";

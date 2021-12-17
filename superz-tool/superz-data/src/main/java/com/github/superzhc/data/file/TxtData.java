@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
@@ -86,29 +87,43 @@ public class TxtData implements FileData {
                     }
 
                     /* 处理文件内容 */
-                    List<String> lines = new ArrayList<>(linesNum);
-                    int currentLinesNum = 0;
-                    while ((str = reader.readLine()) != null) {
-                        currentLines++;
-                        lines.add(str);
-                        currentLinesNum++;
-                        total++;
+                    // 批处理逻辑
+                    if (linesNum > 1) {
+                        List<String> lines = new ArrayList<>(linesNum);
+                        int currentLinesNum = 0;
+                        while ((str = reader.readLine()) != null) {
+                            currentLines++;
+                            lines.add(str);
+                            currentLinesNum++;
+                            total++;
 
-                        if (currentLinesNum >= linesNum) {
-                            log.debug("文件处理中，行号：[" + (currentLines - currentLinesNum + 1) + "~" + currentLines + "]");
-                            Boolean flag = linesFunction.apply(lines);
-                            currentLinesNum = 0;
-                            lines.clear();
+                            if (currentLinesNum >= linesNum) {
+                                log.debug("文件处理中，行号：[" + (currentLines - currentLinesNum + 1) + "~" + currentLines + "]");
+                                Boolean flag = linesFunction.apply(lines);
+                                currentLinesNum = 0;
+                                lines.clear();
 
+                                if (!flag) {
+                                    total = 0L;
+                                    break;
+                                }
+                            }
+                        }
+                        if (currentLinesNum > 0) {
+                            log.debug("文件处理中，行号：" + (currentLines - currentLinesNum + 1) + "~" + currentLines);
+                            linesFunction.apply(lines);
+                        }
+                    }
+                    // 逐行处理
+                    else {
+                        while ((str = reader.readLine()) != null) {
+                            total++;
+                            Boolean flag = linesFunction.apply(Collections.singletonList(str));
                             if (!flag) {
                                 total = 0L;
                                 break;
                             }
                         }
-                    }
-                    if (currentLinesNum > 0) {
-                        log.debug("文件处理中，行号：" + (currentLines - currentLinesNum + 1) + "~" + currentLines);
-                        linesFunction.apply(lines);
                     }
 
                     long end = System.currentTimeMillis();
@@ -121,7 +136,7 @@ public class TxtData implements FileData {
     }
 
     @Override
-    public void preview(Integer number) {
+    public void preview(final Integer number) {
         read(null, number, new Function<List<String>, Boolean>() {
             @Override
             public Boolean apply(List<String> strings) {
@@ -135,10 +150,10 @@ public class TxtData implements FileData {
 
     public void count() {
         final Count c = new Count();
-        read(null, 10000, new Function<List<String>, Boolean>() {
+        read(null, 1, new Function<List<String>, Boolean>() {
             @Override
             public Boolean apply(List<String> strings) {
-                c.add(strings.size());
+                c.add(null == strings ? 0 : strings.size());
                 return true;
             }
         });
@@ -182,7 +197,8 @@ public class TxtData implements FileData {
                 } else {
                     idStr = "uid int auto_increment primary key";
                 }
-                String ddl = String.format("create table if not exists %s(%s%s) ENGINE=MyISAM", schema, idStr, columnsStr);
+                // create table if not exists %s(%s%s)ENGINE=MyISAM
+                String ddl = String.format("create table if not exists %s(%s%s)", schema, idStr, columnsStr);
                 int result = jdbc.ddlExecute(ddl);
                 if (result == -1) {
                     throw new RuntimeException("创建表[" + schema + "]失败");
@@ -224,18 +240,19 @@ public class TxtData implements FileData {
 
     public static void main(String[] args) {
         String path = "D:\\downloads\\Chrome\\";
-        String fileName = "xiaomi_com\\xiaomi_com.txt";
+        String fileName = "xxx.txt";
         path = path + fileName;
 
-        path = "D:\\downloads\\baidu\\car\\数据包二\\全国不区分地区\\13及以前\\2W车主信息+400银行卡信息.txt";
+        //path = "D:\\downloads\\Chrome\\users.json";
+
 
         String url = "jdbc:mysql://localhost:13306/data_warehouse?useSSL=false&useUnicode=true&characterEncoding=utf-8";
         String username = "root";
         String password = "123456";
 
-        TxtData txtData = new TxtData(path,"GB2312");
+        TxtData txtData = new TxtData(path);
         txtData.preview();
         txtData.count();
-        // txtData.write2db(url, username, password, "xiaomi", new String[]{"id", "username", "password", "email", "ip"}, "\\|");
+        //txtData.write2db(url, username, password, "railway", new String[]{"email", "account", "username", "shenfenzheng", "password", "mobile", "email2"}, "----");
     }
 }

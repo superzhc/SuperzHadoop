@@ -15,6 +15,7 @@
         <module>superz-data</module>
         <module>superz-screw</module>
         <module>superz-tool-main</module>
+        <module>superz-mysql</module>
     </modules>
 
     <properties>

@@ -262,7 +262,7 @@ public class ExcelData implements FileData {
             } else {
                 idStr = "uid int auto_increment primary key";
             }
-            String ddl = String.format("create table if not exists %s(%s%s) ENGINE=MyISAM", table, idStr, columnsStr);
+            String ddl = String.format("create table if not exists %s(%s%s)", table, idStr, columnsStr);
             int result = jdbc.ddlExecute(ddl);
             if (result == -1) {
                 throw new RuntimeException("创建表[" + table + "]失败");
