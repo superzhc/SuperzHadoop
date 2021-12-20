@@ -8,6 +8,8 @@ object wordcount_scala {
     val conf = new SparkConf().setAppName("word count").setMaster("local")
     val spark = SparkSession.builder().config(conf).getOrCreate()
     val sc = spark.sparkContext
+    // 设置Spark程序运行时的日志等级
+    sc.setLogLevel("warn")
     val rdd = sc.textFile("D://data.txt")
     val wc = rdd.flatMap(_.split(" ")).map((_, 1)).reduceByKey(_ + _)
     wc.cache()
@@ -17,5 +19,6 @@ object wordcount_scala {
     import spark.implicits._
     val df = maxWorldRdd.toDF("world", "nums")
     df.write.parquet("test.parquet")
+    spark.stop()
   }
 }
