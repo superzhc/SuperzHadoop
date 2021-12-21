@@ -1,5 +1,6 @@
 package com.github.superzhc.common.jdbc;
 
+@Deprecated
 public enum Driver
 {
     MySQL("com.mysql.jdbc.Driver"), Oracle("oracle.jdbc.driver.OracleDriver"), SQLServer(

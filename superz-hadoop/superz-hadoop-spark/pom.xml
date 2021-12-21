@@ -18,6 +18,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.github.superzhc</groupId>
+            <artifactId>superz-common-core</artifactId>
+            <version>0.2.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-core_${scala.binary.version}</artifactId>
             <version>${spark.version}</version>

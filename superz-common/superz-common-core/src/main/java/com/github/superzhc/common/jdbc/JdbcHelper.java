@@ -7,14 +7,156 @@ import org.slf4j.LoggerFactory;
 import java.io.Closeable;
 import java.sql.*;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * 2020年11月04日 superz add
  */
 public class JdbcHelper implements Closeable {
     private static final Logger log = LoggerFactory.getLogger(JdbcHelper.class);
+
+    private static final Integer DEFAULT_SHOW_NUMBER = 20;
+
+    public static class Driver {
+        public static final String MySQL = "com.mysql.jdbc.Driver";
+        public static final String MySQL8 = "com.mysql.cj.jdbc.Driver";
+        public static final String Oracle = "oracle.jdbc.driver.OracleDriver";
+        public static final String SQLServer = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+        public static final String SQLServer_v2 = "com.microsoft.jdbc.sqlserver.SQLServerDriver";
+        public static final String PostgreSQL = "org.postgresql.Driver";
+        public static final String DB2 = "com.ibm.db2.jdbc.app.DB2.Driver";
+        public static final String Informix = "com.informix.jdbc.IfxDriver";
+        public static final String Sysbase = "com.sybase.jdbc.SybDriver";
+        public static final String ODBC = "sun.jdbc.odbc.JdbcOdbcDriver";
+
+        public static String match(String url) {
+            if (url.startsWith("jdbc:mysql:")) {
+                return MySQL;
+            } else if (url.startsWith("jdbc:microsoft:sqlserver:")) {
+                return SQLServer;
+            } else if (url.startsWith("jdbc:oracle:thin:")) {
+                return Oracle;
+            } else if (url.startsWith("jdbc:postgresql:")) {
+                return PostgreSQL;
+            } else if (url.startsWith("jdbc:db2:")) {
+                return DB2;
+            } else if (url.startsWith("jdbc:Informix-sqli:")) {
+                return Informix;
+            } else if (url.startsWith("jdbc:Sysbase:")) {
+                return Sysbase;
+            } else if (url.startsWith("jdbc:odbc:")) {
+                return ODBC;
+            }
+            return null;
+        }
+    }
+
+    public static class Page {
+        private JdbcHelper jdbc;
+        private String table;
+        private Integer start = 0;
+        private Integer size;
+
+        public Page(JdbcHelper jdbc, String table, Integer size) {
+            this(jdbc, table, 0, size);
+        }
+
+        public Page(JdbcHelper jdbc, String table, Integer start, Integer size) {
+            this.jdbc = jdbc;
+            this.table = table;
+            this.start = start;
+            this.size = size;
+        }
+
+        public String sql() {
+            String url = jdbc.dbConfig.getUrl();
+            if (url.startsWith("jdbc:mysql:")) {
+                return mysql();
+            } else if (url.startsWith("jdbc:microsoft:sqlserver:")) {
+                return sqlServer2005();
+            } else if (url.startsWith("jdbc:oracle:thin:")) {
+                return oracle();
+            } else if (url.startsWith("jdbc:postgresql:")) {
+                return postgreSql();
+            } else if (url.startsWith("jdbc:db2:")) {
+                return db2();
+            } else if (url.startsWith("jdbc:odbc:")) {
+                return null;
+            }
+            return null;
+        }
+
+        public String oracle() {
+            return String.format("SELECT * FROM (SELECT a.*,ROWNUM FROM %s AS a WHERE ROWNUM<=%d) WHERE ROWNUM>%d", table, start + size, start);
+        }
+
+        public String db2() {
+            ResultSet rs = null;
+            try {
+                // 随机获取一列的列名
+                Connection connection = jdbc.getConnection();
+                DatabaseMetaData meta = connection.getMetaData();
+                rs = meta.getColumns(connection.getCatalog(), connection.getSchema(), table, "%");
+                if (rs.next()) {
+                    String column = rs.getString("TABLE_NAME");
+                    String sqlTemplate = "SELECT * FROM (SELECT ROWNUMBER() OVER() AS rc,a.* FROM(SELECT * FROM %s ORDER BY %s) as a) WHERE rc BETWEEN %d AND %d";
+                    return String.format(sqlTemplate, table, column, start, start + size);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            } finally {
+                jdbc.free(null, null, rs);
+            }
+            return null;
+        }
+
+        public String sqlServer2000() {
+            ResultSet rs = null;
+            try {
+                // 随机获取一列的列名
+                Connection connection = jdbc.getConnection();
+                DatabaseMetaData meta = connection.getMetaData();
+                rs = meta.getColumns(connection.getCatalog(), connection.getSchema(), table, "%");
+                if (rs.next()) {
+                    String column = rs.getString("TABLE_NAME");
+                    String sqlTemplate = "SELECT TOP %d * FROM %s WHERE %s NOT IN(SELECT TOP %d %s FROM %s ORDER BY %s) ORDER BY %s";
+                    return String.format(sqlTemplate, size, table, column, start + size, column, table, column, column);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            } finally {
+                jdbc.free(null, null, rs);
+            }
+            return null;
+        }
+
+        public String sqlServer2005() {
+            ResultSet rs = null;
+            try {
+                // 随机获取一列的列名
+                Connection connection = jdbc.getConnection();
+                DatabaseMetaData meta = connection.getMetaData();
+                rs = meta.getColumns(connection.getCatalog(), connection.getSchema(), table, "%");
+                if (rs.next()) {
+                    String column = rs.getString("TABLE_NAME");
+                    String sqlTemplate = "SELECT * FROM (SELECT ROWNUMBER() OVER(ORDER BY %s) AS rc,a.* FROM %s as a) WHERE rc BETWEEN %d AND %d";
+                    return String.format(sqlTemplate, table, column, start, start + size);
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            } finally {
+                jdbc.free(null, null, rs);
+            }
+            return null;
+        }
+
+        public String mysql() {
+            return String.format("SELECT * FROM %s LIMIT %d,%d", table, start, size);
+        }
+
+        public String postgreSql() {
+            return String.format("SELECT * FROM %s LIMIT %d,%d", table, size, start);
+        }
+    }
 
     public static class DBConfig {
         private String driver;
@@ -72,7 +214,7 @@ public class JdbcHelper implements Closeable {
     }
 
     public JdbcHelper(String url, String username, String password) {
-        this(null == Driver.match(url) ? null : Driver.match(url).fullClassName(), url, username, password);
+        this(null == Driver.match(url) ? null : Driver.match(url), url, username, password);
     }
 
     public JdbcHelper(String driver, String url, String username, String password) {
@@ -118,9 +260,11 @@ public class JdbcHelper implements Closeable {
      */
     private void freeConnection(Connection conn) {
         try {
-            conn.close();
+            if (null != conn) {
+                conn.close();
+            }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -131,9 +275,11 @@ public class JdbcHelper implements Closeable {
      */
     private void freeStatement(Statement statement) {
         try {
-            statement.close();
+            if (null != statement) {
+                statement.close();
+            }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -144,9 +290,11 @@ public class JdbcHelper implements Closeable {
      */
     private void freeResultSet(ResultSet rs) {
         try {
-            rs.close();
+            if (null != rs) {
+                rs.close();
+            }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -158,15 +306,15 @@ public class JdbcHelper implements Closeable {
      * @param rs
      */
     public void free(Connection conn, Statement statement, ResultSet rs) {
-        if (rs != null) {
-            freeResultSet(rs);
-        }
-        if (statement != null) {
-            freeStatement(statement);
-        }
-        if (conn != null) {
-            freeConnection(conn);
-        }
+        //if (rs != null) {
+        freeResultSet(rs);
+        //}
+        //if (statement != null) {
+        freeStatement(statement);
+        //}
+        //if (conn != null) {
+        freeConnection(conn);
+        //}
     }
 
     @Override
@@ -404,6 +552,15 @@ public class JdbcHelper implements Closeable {
         } finally {
             free(null, pstmt, rs);
         }
+    }
+
+    public void preview(String table) {
+        preview(table, DEFAULT_SHOW_NUMBER);
+    }
+
+    public void preview(String table, Integer number) {
+        Page page = new Page(this, table, number);
+        show(page.sql());
     }
 
     public void show(String sql, Object... params) {

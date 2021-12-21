@@ -11,7 +11,7 @@ import java.sql.Connection;
  * @author superz
  * @create 2021/12/17 11:32
  */
-public class MysqlMain {
+public class JdbcMain {
     /*
     public void connectionTemplate(String url, String username, String password) {
         try (JdbcHelper jdbc = new JdbcHelper(url, username, password)) {
