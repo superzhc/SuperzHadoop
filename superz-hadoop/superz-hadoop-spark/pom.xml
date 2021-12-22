@@ -23,6 +23,12 @@
             <version>0.2.0</version>
         </dependency>
 
+        <!--guava 冲突，需要使用该版本-->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>11.0.2</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-core_${scala.binary.version}</artifactId>
