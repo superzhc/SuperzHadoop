@@ -98,6 +98,7 @@ public class ExcelData implements FileData {
         }
     }
 
+    @Deprecated
     protected void ddl() {
         int numberOfSheets = workbook.getNumberOfSheets();
         for (int i = 0; i < numberOfSheets; i++) {
