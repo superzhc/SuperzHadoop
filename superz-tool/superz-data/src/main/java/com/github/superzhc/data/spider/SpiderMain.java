@@ -1,5 +1,6 @@
 package com.github.superzhc.data.spider;
 
+import com.github.superzhc.data.spider.douban.DouBanBook;
 import us.codecraft.webmagic.Spider;
 
 /**

@@ -397,6 +397,10 @@ public class JdbcHelper implements Closeable {
             DatabaseMetaData meta = connection.getMetaData();
             rs = meta.getColumns(connection.getCatalog(), connection.getSchema(), table, "%");
             while (rs.next()) {
+                // 不返回自增列
+                if ("YES".equalsIgnoreCase(rs.getString("IS_AUTOINCREMENT"))) {
+                    continue;
+                }
                 result.add(rs.getString("COLUMN_NAME"));
             }
 
@@ -421,6 +425,11 @@ public class JdbcHelper implements Closeable {
             DatabaseMetaData meta = connection.getMetaData();
             rs = meta.getColumns(connection.getCatalog(), connection.getSchema(), table, "%");
             while (rs.next()) {
+                // 不返回自增列
+                if ("YES".equalsIgnoreCase(rs.getString("IS_AUTOINCREMENT"))) {
+                    continue;
+                }
+
                 String type;
                 if ("VARCHAR".equalsIgnoreCase(rs.getString("TYPE_NAME"))) {
                     // 此处做个限定
@@ -456,6 +465,10 @@ public class JdbcHelper implements Closeable {
         } finally {
             free(null, stmt, null);
         }
+    }
+
+    public int insert(String table, String[] columns, List<Object> params) {
+        return insert(table, columns, params.toArray());
     }
 
     public int insert(String table, String[] columns, Object... params) {
