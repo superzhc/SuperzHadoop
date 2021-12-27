@@ -1,6 +1,7 @@
 package com.github.superzhc.data.spider.douban;
 
 import com.github.superzhc.data.spider.DBPipeline;
+import com.github.superzhc.data.spider.proxy.ProxyPool;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
@@ -18,7 +19,9 @@ import java.util.UUID;
  * @create 2021/12/24 15:26
  */
 public class DouBanBookReview implements PageProcessor {
-    private Site site = Site.me().setRetryTimes(3).setSleepTime(1000);
+    private Site site = Site.me()
+            .addHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36")
+            .setRetryTimes(3).setSleepTime(1000);
 
 
     @Override
@@ -64,7 +67,8 @@ public class DouBanBookReview implements PageProcessor {
         String password = "123456";
 
         Spider.create(new DouBanBookReview())
-                .addUrl("https://book.douban.com/subject/1084336/reviews")
+                .addUrl("https://book.douban.com/subject/35481711/reviews")
+                .setDownloader(ProxyPool.getInstance().getHttpClientDownloader())
                 .addPipeline(new DBPipeline(url, username, password, "douban_book_review"))
                 .run();
     }
