@@ -221,6 +221,9 @@ public class ProxyFetcher implements PageProcessor {
         }
     }
 
+    /**
+     * 小幻代理
+     */
     private static class FreeProxy_IHuan {
         private static final String URL = "https://ip.ihuan.me/address/5Lit5Zu9.html";
 
@@ -286,16 +289,16 @@ public class ProxyFetcher implements PageProcessor {
         }
 
         Spider.create(new ProxyFetcher())
-                .addUrl(FreeProxy_MiMvp.URL1, FreeProxy_MiMvp.URL2)
-                .addUrl(FreeProxy_66ip.URL)
-                .addUrl(FreeProxy_KXDaiLi.URL1, FreeProxy_KXDaiLi.URL2)
-                .addUrl(FreeProxy_DieNiao.URL)
-                .addUrl(FreeProxy_Proxy11.URL)
-                .addUrl(FreeProxy_KuaiDaiLi.URL1, FreeProxy_KuaiDaiLi.URL2)
-                .addUrl(FreeProxy_Ip3366.URL1, FreeProxy_Ip3366.URL2)
+                // .addUrl(FreeProxy_MiMvp.URL1, FreeProxy_MiMvp.URL2)
+                // .addUrl(FreeProxy_66ip.URL)
+                // .addUrl(FreeProxy_KXDaiLi.URL1, FreeProxy_KXDaiLi.URL2)
+                // .addUrl(FreeProxy_DieNiao.URL)
+                // .addUrl(FreeProxy_Proxy11.URL)
+                // .addUrl(FreeProxy_KuaiDaiLi.URL1, FreeProxy_KuaiDaiLi.URL2)
+                // .addUrl(FreeProxy_Ip3366.URL1, FreeProxy_Ip3366.URL2)
                 .addUrl(FreeProxy_IHuan.URL)
-                .addUrl(FreeProxy_JiangXianLi.URL1)
-                .addUrl(FreeProxy_89Ip.URL)
+                // .addUrl(FreeProxy_JiangXianLi.URL1)
+                // .addUrl(FreeProxy_89Ip.URL)
                 .addPipeline(new Pipeline() {
                     private Logger logger = LoggerFactory.getLogger(ProxyFetcher.class);
 

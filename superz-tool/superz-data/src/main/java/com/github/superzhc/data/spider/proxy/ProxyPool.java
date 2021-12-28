@@ -9,6 +9,7 @@ import us.codecraft.webmagic.proxy.SimpleProxyProvider;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * @author superz
@@ -16,7 +17,9 @@ import java.util.List;
  */
 public class ProxyPool {
 
-    private static final Logger log= LoggerFactory.getLogger(ProxyPool.class);
+    private static final Logger log = LoggerFactory.getLogger(ProxyPool.class);
+
+    private static final String REGEX_IP = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}:\\d{1,5}";
 
     private static volatile ProxyPool instance;
 
@@ -27,12 +30,21 @@ public class ProxyPool {
     }
 
     public void init() {
-        log.info("读取代理文件");
+        log.info("代理文件读取开始");
         try (InputStream inputStream = new FileInputStream(new File(this.getClass().getResource("/proxy.txt").getPath()))) {
             try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream, "UTF-8")) {
                 try (BufferedReader reader = new BufferedReader(inputStreamReader)) {
+                    Pattern p = Pattern.compile(REGEX_IP);
+
                     String str;
                     while ((str = reader.readLine()) != null) {
+                        // 验证ip格式是否正确
+                        if (!p.matcher(str).matches()) {
+                            continue;
+                        }
+
+                        // 验证代理ip的有效性么，有点耗时~~~
+
                         proxies.add(str);
                     }
                 }
@@ -40,7 +52,7 @@ public class ProxyPool {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        log.info("代理文件读取完成");
+        log.info("代理文件读取完成，读取代理数量：" + proxies.size());
     }
 
     public static ProxyPool getInstance() {

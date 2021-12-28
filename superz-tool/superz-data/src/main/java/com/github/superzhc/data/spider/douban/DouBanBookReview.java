@@ -67,7 +67,7 @@ public class DouBanBookReview implements PageProcessor {
         String password = "123456";
 
         Spider.create(new DouBanBookReview())
-                .addUrl("https://book.douban.com/subject/35481711/reviews")
+                .addUrl("https://book.douban.com/subject/3183775/reviews")
                 .setDownloader(ProxyPool.getInstance().getHttpClientDownloader())
                 .addPipeline(new DBPipeline(url, username, password, "douban_book_review"))
                 .run();

@@ -3,21 +3,13 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>SuperzHadoop</artifactId>
+        <artifactId>superz-tool</artifactId>
         <groupId>com.github.superzhc</groupId>
         <version>0.2.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>superz-tool</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>superz-data</module>
-        <module>superz-screw</module>
-        <module>superz-tool-main</module>
-        <module>superz-mysql</module>
-        <module>superz-fund</module>
-    </modules>
+    <artifactId>superz-fund</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
