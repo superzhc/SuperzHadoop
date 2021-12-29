@@ -47,5 +47,10 @@ object StringMain extends App {
   /* 10.22 */
   println("-------------------------------华丽的分割线-----------------------------------")
   println(sm.interpolation_raw("superz"))
+
+  val str3=",,汕尾市道路运输协会,51441500784872885G,范守渔,汕尾市道路运输协会,51441500784872885G,,,"
+  println(str3)
+  println(str3.split(",").length)
+  println(str3.split(",").mkString("@"))
   /* superz\nsuperz */
 }

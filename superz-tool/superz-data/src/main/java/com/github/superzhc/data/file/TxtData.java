@@ -245,14 +245,15 @@ public class TxtData implements FileData {
 
         //path = "D:\\downloads\\Chrome\\users.json";
 
+        path = "D:\\downloads\\Chrome\\companyinfo.csv";
 
         String url = "jdbc:mysql://localhost:13306/data_warehouse?useSSL=false&useUnicode=true&characterEncoding=utf-8";
         String username = "root";
         String password = "123456";
 
-        TxtData txtData = new TxtData(path);
+        TxtData txtData = new TxtData(path, 1);
         txtData.preview();
-        txtData.count();
-        //txtData.write2db(url, username, password, "railway", new String[]{"email", "account", "username", "shenfenzheng", "password", "mobile", "email2"}, "----");
+        // txtData.count();
+        txtData.write2db(url, username, password, "company_info", "email,tel,entity,regno,legal,oldname,taxno,licenseno,lat,lon".split(","), ",");
     }
 }

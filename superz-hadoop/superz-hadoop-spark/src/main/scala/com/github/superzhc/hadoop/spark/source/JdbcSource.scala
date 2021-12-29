@@ -1,6 +1,6 @@
 package com.github.superzhc.hadoop.spark.source
 
-import com.github.superzhc.hadoop.spark.util.JdbcHelper
+import com.github.superzhc.common.jdbc.JdbcHelper
 import org.apache.spark.rdd.JdbcRDD
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.sql.SparkSession
@@ -29,7 +29,7 @@ object JdbcSource {
     // 读取表数据
     val rdd: JdbcRDD[Array[Object]] = new JdbcRDD[Array[Object]](
       sc,
-      () => JdbcHelper(driver, url, username, password).getConnection,
+      () => new JdbcHelper(driver, url, username, password).getConnection,
       "select * from car_import_5yuejiangxi1000_1 where ? <= id and id <= ?",
       1,
       1200,

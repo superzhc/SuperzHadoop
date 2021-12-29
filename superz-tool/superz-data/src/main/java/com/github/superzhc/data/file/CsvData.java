@@ -130,10 +130,6 @@ public class CsvData implements FileData {
     }
 
     public void write2db(String url, String username, String password, String schema, String[] columns) {
-        write2db(url, username, password, schema, columns, "\t");
-    }
-
-    public void write2db(String url, String username, String password, String schema, String[] columns, String separator) {
         try (final JdbcHelper jdbc = new JdbcHelper(url, username, password)) {
             // 判断表是否存在，如果不存在则创建，存在直接用
             if (!jdbc.exist(schema)) {
@@ -154,7 +150,7 @@ public class CsvData implements FileData {
                 } else {
                     idStr = "uid int auto_increment primary key";
                 }
-                String ddl = String.format("create table if not exists %s(%s%s) ENGINE=MyISAM", schema, idStr, columnsStr);
+                String ddl = String.format("create table if not exists %s(%s%s)", schema, idStr, columnsStr);
                 int result = jdbc.ddlExecute(ddl);
                 if (result == -1) {
                     throw new RuntimeException("创建表[" + schema + "]失败");
@@ -194,9 +190,9 @@ public class CsvData implements FileData {
     }
 
     public static void main(String[] args) {
-        String path = "D:\\downloads\\baidu\\car\\数据包二\\全国不区分地区\\13及以前\\2W车主信息+400银行卡信息.txt";
+        String path = "D:\\downloads\\Chrome\\companyinfo.csv";
 
-        CsvData csvData = new CsvData(path, "GB2312");
+        CsvData csvData = new CsvData(path, "UTF-8");
         csvData.preview();
         csvData.count();
     }
