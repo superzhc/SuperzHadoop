@@ -815,6 +815,100 @@ public class JdbcHelper implements Closeable {
     }
 
     public void batchUpdate(String table, String[] columns, List<List<Object>> params, Integer batchSize) {
+//        StringBuilder columnsSb = new StringBuilder();
+//        StringBuilder placeholdSb = new StringBuilder();
+//        for (String column : columns) {
+//            columnsSb.append(",").append(column);
+//            placeholdSb.append(",?");
+//        }
+//
+//        String sql = String.format("INSERT INTO %s(%s) VALUES(%s)", table, columnsSb.substring(1), placeholdSb.substring(1));
+//        batchUpdate(sql, params, batchSize);
+
+        Object[][] arrParams = new Object[params.size()][];
+        for (int i = 0, len = params.size(); i < len; i++) {
+            List<Object> param = params.get(i);
+            Object[] arrParam = new Object[param.size()];
+            param.toArray(arrParam);
+            arrParams[i] = arrParam;
+        }
+        batchUpdate(table, columns, arrParams, batchSize);
+    }
+
+    public void batchUpdate(String sql, List<List<Object>> params) {
+        batchUpdate(sql, params, params.size());
+    }
+
+    public void batchUpdate(String sql, List<List<Object>> params, Integer batchSize) {
+//        log.debug("batch sql:" + sql);
+//        log.debug("batch size:" + batchSize);
+//        if (null == params || params.size() == 0) {
+//            log.debug("no data");
+//            return;
+//        }
+//
+//        PreparedStatement preparedStatement = null;
+//        try {
+//            getConnection().setAutoCommit(false);
+//            preparedStatement = getConnection().prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+//
+//            long start = System.currentTimeMillis();
+//            long totalStart = start;
+//            int currentBatchSize = 0;
+//            int totalSize = params.size();
+//            int remainSize = totalSize;
+//            for (List<Object> param : params) {
+//                for (int i = 0, len = param.size(); i < len; i++) {
+//                    preparedStatement.setObject(i + 1, param.get(i));
+//                }
+//                preparedStatement.addBatch();
+//                currentBatchSize++;
+//
+//                if (currentBatchSize == batchSize) {
+//                    preparedStatement.executeBatch();
+//                    getConnection().commit();
+//                    currentBatchSize = 0;
+//                    remainSize = remainSize - batchSize;
+//                    long end = System.currentTimeMillis();
+//                    log.debug("[总数：" + totalSize + "，剩余：" + remainSize + "]插入" + batchSize + "条数据，耗时：" + ((end - start) / 1000.0) + "s");
+//                    start = end;
+//                }
+//            }
+//
+//            if (currentBatchSize > 0) {
+//                preparedStatement.executeBatch();
+//                getConnection().commit();
+//                remainSize = remainSize - currentBatchSize;
+//                long end = System.currentTimeMillis();
+//                log.debug("[总数：" + totalSize + "，剩余：" + remainSize + "]插入" + batchSize + "条数据，耗时：" + ((end - start) / 1000.0) + "s");
+//            }
+//            log.debug("[总数：" + totalSize + "]插入总耗时：" + ((System.currentTimeMillis() - totalStart) / 1000.0) + "s");
+//        } catch (SQLException e) {
+//            try {
+//                getConnection().rollback();
+//            } catch (SQLException e1) {
+//                throw new RuntimeException(e1);
+//            }
+//            throw new RuntimeException(e);
+//        } finally {
+//            free(null, preparedStatement, null);
+//        }
+
+        Object[][] arrParams = new Object[params.size()][];
+        for (int i = 0, len = params.size(); i < len; i++) {
+            List<Object> param = params.get(i);
+            Object[] arrParam = new Object[param.size()];
+            param.toArray(arrParam);
+            arrParams[i] = arrParam;
+        }
+        batchUpdate(sql, arrParams, batchSize);
+    }
+
+    public void batchUpdate(String table, String[] columns, Object[][] params) {
+        batchUpdate(table, columns, params, params.length);
+    }
+
+    public void batchUpdate(String table, String[] columns, Object[][] params, Integer batchSize) {
         StringBuilder columnsSb = new StringBuilder();
         StringBuilder placeholdSb = new StringBuilder();
         for (String column : columns) {
@@ -826,14 +920,14 @@ public class JdbcHelper implements Closeable {
         batchUpdate(sql, params, batchSize);
     }
 
-    public void batchUpdate(String sql, List<List<Object>> params) {
-        batchUpdate(sql, params, params.size());
+    public void batchUpdate(String sql, Object[][] params) {
+        batchUpdate(sql, params, params.length);
     }
 
-    public void batchUpdate(String sql, List<List<Object>> params, Integer batchSize) {
+    public void batchUpdate(String sql, Object[][] params, Integer batchSize) {
         log.debug("batch sql:" + sql);
         log.debug("batch size:" + batchSize);
-        if (null == params || params.size() == 0) {
+        if (null == params || params.length == 0) {
             log.debug("no data");
             return;
         }
@@ -846,11 +940,11 @@ public class JdbcHelper implements Closeable {
             long start = System.currentTimeMillis();
             long totalStart = start;
             int currentBatchSize = 0;
-            int totalSize = params.size();
+            int totalSize = params.length;
             int remainSize = totalSize;
-            for (List<Object> param : params) {
-                for (int i = 0, len = param.size(); i < len; i++) {
-                    preparedStatement.setObject(i + 1, param.get(i));
+            for (Object[] param : params) {
+                for (int i = 0, len = param.length; i < len; i++) {
+                    preparedStatement.setObject(i + 1, param[i]);
                 }
                 preparedStatement.addBatch();
                 currentBatchSize++;

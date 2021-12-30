@@ -1,4 +1,4 @@
-package com.github.superzhc.hadoop.spark.demo
+package com.github.superzhc.hadoop.spark.demo.errordata
 
 import com.github.superzhc.common.jdbc.JdbcHelper
 import org.apache.spark.rdd.JdbcRDD

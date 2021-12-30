@@ -138,9 +138,9 @@ public class TusharePro {
         });
     }
 
-//    public <R> R execute0(String apiName, Map<String, String> params, String[] fields, Function<TushareResponse.Data, R> function) {
-//        return execute0(apiName, params, String.join(",", fields), function);
-//    }
+    public <R> R execute0(String apiName, Map<String, String> params, String[] fields, Function<TushareResponse.Data, R> function) {
+        return execute0(apiName, params, String.join(",", fields), function);
+    }
 
     public <R> R execute0(String apiName, Map<String, String> params, String fields, Function<TushareResponse.Data, R> function) {
         Map<String, Object> body = new HashMap<>();
@@ -157,7 +157,7 @@ public class TusharePro {
                     throw new RuntimeException("请求异常:code={" + response.code() + "}\n异常信息:" + response.body().string());
                 }
 
-                TushareResponse tr = mapper.readValue(response.body().toString(), TushareResponse.class);
+                TushareResponse tr = mapper.readValue(response.body().string(), TushareResponse.class);
                 if (null == tr.getCode() || tr.getCode() != 0) {
                     throw new RuntimeException("请求失败:code={" + tr.getCode() + "}\n失败信息:" + tr.getMsg());
                 }
@@ -173,7 +173,16 @@ public class TusharePro {
         PropertiesUtils.read("application.properties");
         TusharePro pro = new TusharePro(PropertiesUtils.get("tushare.token"));
 
-        List<Map<String, Object>> datas = pro.execute("index_basic", null, new String[]{
+        Map<String,String> params=new HashMap<>();
+        params.put("ts_code","");
+        params.put("market","");
+        params.put("publicsher","");
+        params.put("category","");
+        params.put("name","");
+        params.put("limit","");
+        params.put("offset","");
+
+        List<Map<String, Object>> datas = pro.execute("index_basic", params, new String[]{
                 "ts_code",
                 "name",
                 "market",

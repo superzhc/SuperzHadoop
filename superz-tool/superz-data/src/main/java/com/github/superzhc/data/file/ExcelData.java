@@ -275,6 +275,10 @@ public class ExcelData implements FileData {
         }
     }
 
+    public void append2db(String url, String username, String password, String table, String[] columns, Integer sheetNumber) {
+        append2db(url, username, password, table, columns, sheetNumber, 0);
+    }
+
     public void append2db(String url, String username, String password, String table, String[] columns, Integer sheetNumber, Integer headers) {
         try (JdbcHelper jdbc = new JdbcHelper(url, username, password)) {
             transform2db(jdbc, table, columns, sheetNumber, headers);

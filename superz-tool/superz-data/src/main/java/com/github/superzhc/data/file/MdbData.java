@@ -141,7 +141,7 @@ public class MdbData implements FileData {
                 } else {
                     idStr = "uid int auto_increment primary key";
                 }
-                String ddl = String.format("create table if not exists %s(%s%s) ENGINE=MyISAM", tablePinYin, idStr, columnsStr);
+                String ddl = String.format("create table if not exists %s(%s%s)", tablePinYin, idStr, columnsStr);
                 int result = otherJdbc.ddlExecute(ddl);
                 if (result == -1) {
                     throw new RuntimeException("创建表[" + tablePinYin + "]失败");
