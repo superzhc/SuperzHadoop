@@ -1,6 +1,7 @@
 package com.github.superzhc.common.jdbc;
 
 
+import com.github.superzhc.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -454,6 +455,10 @@ public class JdbcHelper implements Closeable {
     }
 
     public int ddlExecute(String sql) {
+        if (StringUtils.isBlank(sql)) {
+            throw new RuntimeException("SQL不能为空");
+        }
+
         Statement stmt = null;
         try {
             log.debug("DDL 语句：{}", sql);
@@ -492,6 +497,10 @@ public class JdbcHelper implements Closeable {
      * @throws SQLException
      */
     public int dmlExecute(String sql, Object... params) {
+        if (StringUtils.isBlank(sql)) {
+            throw new RuntimeException("SQL不能为空");
+        }
+
         PreparedStatement pstmt = null;
         try {
             log.debug("DML 语句：{}", sql);
@@ -524,6 +533,10 @@ public class JdbcHelper implements Closeable {
      * @throws SQLException
      */
     public List<Map<String, Object>> query(String sql, Object... params) {
+        if (StringUtils.isBlank(sql)) {
+            throw new RuntimeException("SQL不能为空");
+        }
+
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
@@ -546,6 +559,10 @@ public class JdbcHelper implements Closeable {
     }
 
     public <T> List<T> queryBeans(String sql, Class<T> beanClass, Object... params) {
+        if (StringUtils.isBlank(sql)) {
+            throw new RuntimeException("SQL不能为空");
+        }
+
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
@@ -577,6 +594,10 @@ public class JdbcHelper implements Closeable {
     }
 
     public void show(String sql, Object... params) {
+        if (StringUtils.isBlank(sql)) {
+            throw new RuntimeException("SQL不能为空");
+        }
+
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
@@ -611,6 +632,10 @@ public class JdbcHelper implements Closeable {
      * @return
      */
     public <T> T aggregate(String sql, Object... params) {
+        if (StringUtils.isBlank(sql)) {
+            throw new RuntimeException("SQL不能为空");
+        }
+
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         Object result = null;
@@ -645,6 +670,10 @@ public class JdbcHelper implements Closeable {
      * @throws SQLException
      */
     public List<Map<String, Object>> callableQuery(String sql, Object... paramters) {
+        if (StringUtils.isBlank(sql)) {
+            throw new RuntimeException("SQL不能为空");
+        }
+
         CallableStatement cstmt = null;
         ResultSet rs = null;
         try {
@@ -666,6 +695,10 @@ public class JdbcHelper implements Closeable {
     }
 
     public void callableShow(String sql, Object... paramters) {
+        if (StringUtils.isBlank(sql)) {
+            throw new RuntimeException("SQL不能为空");
+        }
+
         CallableStatement cstmt = null;
         ResultSet rs = null;
         try {
@@ -686,6 +719,10 @@ public class JdbcHelper implements Closeable {
     }
 
     public <T> T callableQueryOne(String sql, Object... paramters) {
+        if (StringUtils.isBlank(sql)) {
+            throw new RuntimeException("SQL不能为空");
+        }
+
         CallableStatement cstmt = null;
         ResultSet rs = null;
         Object result = null;
@@ -720,6 +757,10 @@ public class JdbcHelper implements Closeable {
      * @throws SQLException
      */
     public int callableUpdate(String sql, Object... parameters) {
+        if (StringUtils.isBlank(sql)) {
+            throw new RuntimeException("SQL不能为空");
+        }
+
         CallableStatement cstmt = null;
         try {
             cstmt = getConnection().prepareCall(sql);
@@ -783,48 +824,26 @@ public class JdbcHelper implements Closeable {
         }
     }
 
-//    public int[] batchUpdate(String sql, List<Map<Integer, Object>> params) {
-//        int[] result = new int[]{};
-//        PreparedStatement preparedStatement = null;
-//        try {
-//            getConnection().setAutoCommit(false);
-//            preparedStatement = getConnection().prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
-//            for (Map<Integer, Object> param : params) {
-//                for (Map.Entry<Integer, Object> entry : param.entrySet()) {
-//                    preparedStatement.setObject(entry.getKey(), entry.getValue());
-//                }
-//                preparedStatement.addBatch();
-//            }
-//            result = preparedStatement.executeBatch();
-//            getConnection().commit();
-//        } catch (SQLException e) {
-//            try {
-//                getConnection().rollback();
-//            } catch (SQLException e1) {
-//                throw new ExceptionInInitializerError(e1);
-//            }
-//            throw new ExceptionInInitializerError(e);
-//        } finally {
-//            free(null, preparedStatement, null);
-//        }
-//        return result;
-//    }
+    public void batchUpdate(String table, String columns, List<List<Object>> params) {
+        batchUpdate(table, columns, params, params.size());
+    }
+
+    public void batchUpdate(String table, String columns, List<List<Object>> params, Integer batchSize) {
+        Object[][] arrParams = new Object[params.size()][];
+        for (int i = 0, len = params.size(); i < len; i++) {
+            List<Object> param = params.get(i);
+            Object[] arrParam = new Object[param.size()];
+            param.toArray(arrParam);
+            arrParams[i] = arrParam;
+        }
+        batchUpdate(table, columns, arrParams, batchSize);
+    }
 
     public void batchUpdate(String table, String[] columns, List<List<Object>> params) {
         batchUpdate(table, columns, params, params.size());
     }
 
     public void batchUpdate(String table, String[] columns, List<List<Object>> params, Integer batchSize) {
-//        StringBuilder columnsSb = new StringBuilder();
-//        StringBuilder placeholdSb = new StringBuilder();
-//        for (String column : columns) {
-//            columnsSb.append(",").append(column);
-//            placeholdSb.append(",?");
-//        }
-//
-//        String sql = String.format("INSERT INTO %s(%s) VALUES(%s)", table, columnsSb.substring(1), placeholdSb.substring(1));
-//        batchUpdate(sql, params, batchSize);
-
         Object[][] arrParams = new Object[params.size()][];
         for (int i = 0, len = params.size(); i < len; i++) {
             List<Object> param = params.get(i);
@@ -840,60 +859,6 @@ public class JdbcHelper implements Closeable {
     }
 
     public void batchUpdate(String sql, List<List<Object>> params, Integer batchSize) {
-//        log.debug("batch sql:" + sql);
-//        log.debug("batch size:" + batchSize);
-//        if (null == params || params.size() == 0) {
-//            log.debug("no data");
-//            return;
-//        }
-//
-//        PreparedStatement preparedStatement = null;
-//        try {
-//            getConnection().setAutoCommit(false);
-//            preparedStatement = getConnection().prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
-//
-//            long start = System.currentTimeMillis();
-//            long totalStart = start;
-//            int currentBatchSize = 0;
-//            int totalSize = params.size();
-//            int remainSize = totalSize;
-//            for (List<Object> param : params) {
-//                for (int i = 0, len = param.size(); i < len; i++) {
-//                    preparedStatement.setObject(i + 1, param.get(i));
-//                }
-//                preparedStatement.addBatch();
-//                currentBatchSize++;
-//
-//                if (currentBatchSize == batchSize) {
-//                    preparedStatement.executeBatch();
-//                    getConnection().commit();
-//                    currentBatchSize = 0;
-//                    remainSize = remainSize - batchSize;
-//                    long end = System.currentTimeMillis();
-//                    log.debug("[总数：" + totalSize + "，剩余：" + remainSize + "]插入" + batchSize + "条数据，耗时：" + ((end - start) / 1000.0) + "s");
-//                    start = end;
-//                }
-//            }
-//
-//            if (currentBatchSize > 0) {
-//                preparedStatement.executeBatch();
-//                getConnection().commit();
-//                remainSize = remainSize - currentBatchSize;
-//                long end = System.currentTimeMillis();
-//                log.debug("[总数：" + totalSize + "，剩余：" + remainSize + "]插入" + batchSize + "条数据，耗时：" + ((end - start) / 1000.0) + "s");
-//            }
-//            log.debug("[总数：" + totalSize + "]插入总耗时：" + ((System.currentTimeMillis() - totalStart) / 1000.0) + "s");
-//        } catch (SQLException e) {
-//            try {
-//                getConnection().rollback();
-//            } catch (SQLException e1) {
-//                throw new RuntimeException(e1);
-//            }
-//            throw new RuntimeException(e);
-//        } finally {
-//            free(null, preparedStatement, null);
-//        }
-
         Object[][] arrParams = new Object[params.size()][];
         for (int i = 0, len = params.size(); i < len; i++) {
             List<Object> param = params.get(i);
@@ -904,6 +869,23 @@ public class JdbcHelper implements Closeable {
         batchUpdate(sql, arrParams, batchSize);
     }
 
+    public void batchUpdate(String table, String columns, Object[][] params) {
+        batchUpdate(table, columns, params, params.length);
+    }
+
+    /**
+     * 批量更新
+     *
+     * @param table
+     * @param columns   使用英文逗号（,）进行分割
+     * @param params
+     * @param batchSize
+     */
+    public void batchUpdate(String table, String columns, Object[][] params, Integer batchSize) {
+        String[] arrColumns = columns.split(",");
+        batchUpdate(table, arrColumns, params, batchSize);
+    }
+
     public void batchUpdate(String table, String[] columns, Object[][] params) {
         batchUpdate(table, columns, params, params.length);
     }
@@ -912,6 +894,10 @@ public class JdbcHelper implements Closeable {
         StringBuilder columnsSb = new StringBuilder();
         StringBuilder placeholdSb = new StringBuilder();
         for (String column : columns) {
+            if (StringUtils.isBlank(column)) {
+                continue;
+            }
+
             columnsSb.append(",").append(column);
             placeholdSb.append(",?");
         }
@@ -924,7 +910,18 @@ public class JdbcHelper implements Closeable {
         batchUpdate(sql, params, params.length);
     }
 
+    /**
+     * 批量进行更新
+     *
+     * @param sql       PreparedStatement 的 SQL 语句
+     * @param params    数据
+     * @param batchSize 单次批处理的数据量
+     */
     public void batchUpdate(String sql, Object[][] params, Integer batchSize) {
+        if (StringUtils.isBlank(sql)) {
+            throw new RuntimeException("SQL不能为空");
+        }
+
         log.debug("batch sql:" + sql);
         log.debug("batch size:" + batchSize);
         if (null == params || params.length == 0) {

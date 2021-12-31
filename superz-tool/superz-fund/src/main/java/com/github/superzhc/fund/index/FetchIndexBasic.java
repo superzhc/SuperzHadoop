@@ -5,7 +5,6 @@ import com.github.superzhc.data.tushare.TusharePro;
 import com.github.superzhc.data.tushare.TushareResponse;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -22,7 +21,7 @@ public class FetchIndexBasic {
     private static final String table = "fund_index_basic";
 
     public static void main(String[] args) {
-        String token = "28dde2684a3cabc952869599c288190f1ac73fc7b8926f650474a6fe";
+        String token = "xxx";
         TusharePro pro = new TusharePro(token);
 
         Integer limit = 1000;

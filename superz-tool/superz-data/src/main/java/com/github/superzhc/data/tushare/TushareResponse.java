@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author superz
  * @create 2021/9/26 10:33
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TushareResponse {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Data {

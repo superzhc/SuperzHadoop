@@ -102,11 +102,11 @@ public class TusharePro {
         });
     }
 
-    public <R> List<R> execute3(String apiName, Map<String, String> params, String[] fields, Class<R> clazz) {
-        return execute3(apiName, params, String.join(",", fields), clazz);
+    public <R> List<R> execute(String apiName, Map<String, String> params, String[] fields, Class<R> clazz) {
+        return execute(apiName, params, String.join(",", fields), clazz);
     }
 
-    public <R> List<R> execute3(String apiName, Map<String, String> params, String fields, Class<R> clazz) {
+    public <R> List<R> execute(String apiName, Map<String, String> params, String fields, Class<R> clazz) {
         return execute0(apiName, params, fields, new Function<TushareResponse.Data, List<R>>() {
             @Override
             public List<R> apply(TushareResponse.Data data) {
@@ -146,6 +146,10 @@ public class TusharePro {
         Map<String, Object> body = new HashMap<>();
         body.put("api_name", apiName);
         body.put("token", token);
+        // 2021年12月31日 params不能为null，不然会报错
+        if (null == params) {
+            params = new HashMap<>();
+        }
         body.put("params", params);
         body.put("fields", fields);
         try {
@@ -173,14 +177,14 @@ public class TusharePro {
         PropertiesUtils.read("application.properties");
         TusharePro pro = new TusharePro(PropertiesUtils.get("tushare.token"));
 
-        Map<String,String> params=new HashMap<>();
-        params.put("ts_code","");
-        params.put("market","");
-        params.put("publicsher","");
-        params.put("category","");
-        params.put("name","");
-        params.put("limit","");
-        params.put("offset","");
+        Map<String, String> params = new HashMap<>();
+        params.put("ts_code", "");
+        params.put("market", "");
+        params.put("publicsher", "");
+        params.put("category", "");
+        params.put("name", "");
+        params.put("limit", "");
+        params.put("offset", "");
 
         List<Map<String, Object>> datas = pro.execute("index_basic", params, new String[]{
                 "ts_code",
