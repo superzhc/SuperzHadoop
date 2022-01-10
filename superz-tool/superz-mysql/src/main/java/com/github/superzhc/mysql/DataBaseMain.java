@@ -4,16 +4,16 @@ import com.github.superzhc.common.jdbc.JdbcHelper;
 
 /**
  * @author superz
- * @create 2021/12/21 17:38
+ * @create 2022/1/10 14:23
  */
-public class TablePreview {
+public class DataBaseMain {
     public static void main(String[] args) {
         String url = "jdbc:mysql://localhost:13306/data_warehouse?useSSL=false&useUnicode=true&characterEncoding=utf-8";
         String username = "root";
         String password = "123456";
 
         try (JdbcHelper jdbc = new JdbcHelper(url, username, password)) {
-            jdbc.preview("fund_index_basic", 500);
+            System.out.println(String.join("\n", jdbc.tables()));
         }
     }
 }

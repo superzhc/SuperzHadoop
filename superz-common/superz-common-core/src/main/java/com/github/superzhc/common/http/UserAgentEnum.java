@@ -4,6 +4,7 @@ package com.github.superzhc.common.http;
  * @author superz
  * @create 2021/8/3 17:44
  */
+@Deprecated
 public enum UserAgentEnum {
 
     WIN10_Chrome("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36")

@@ -72,7 +72,7 @@ public class ProxyFetcher implements PageProcessor {
                 FreeProxy_JiangXianLi.process(page);
                 break;
             default:
-                throw new RuntimeException("上不支持地址" + url);
+                throw new RuntimeException("尚不支持地址" + url);
         }
     }
 

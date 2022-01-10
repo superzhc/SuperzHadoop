@@ -488,6 +488,88 @@ public class JdbcHelper implements Closeable {
         return dmlExecute(sql, params);
     }
 
+    public int update(String table, Map<String, Object> params, Map<String, Object> conditions) {
+        if (null == conditions || conditions.size() == 0) {
+            log.debug("更新表[" + table + "]数据，条件不允许为空");
+            return -1;
+        }
+
+        StringBuilder columnsSb = new StringBuilder();
+        Object[] values = new Object[params.size() + conditions.size()];
+        int i = 0;
+        for (Map.Entry<String, Object> param : params.entrySet()) {
+            columnsSb.append(",").append(param.getKey()).append("=").append("?");
+            values[i] = param.getValue();
+            i++;
+        }
+
+        StringBuilder conditionColumnsSb = new StringBuilder();
+        int j = 0;
+        for (Map.Entry<String, Object> condition : conditions.entrySet()) {
+            conditionColumnsSb.append(" AND ").append(condition.getKey()).append("=").append("?");
+            values[i + j] = condition.getValue();
+            j++;
+        }
+
+        String sql = String.format("UPDATE %s SET %s WHERE 1=1 %s", table, columnsSb.substring(1), conditionColumnsSb);
+        return dmlExecute(sql, values);
+    }
+
+    public int update(String table, String condition, Map<String, Object> params) {
+        if (null == condition || condition.trim().length() == 0) {
+            log.debug("更新表[" + table + "]数据，条件不允许为空");
+            return -1;
+        }
+
+        if (!condition.trim().toLowerCase().startsWith("and")) {
+            condition = "AND " + condition;
+        }
+
+        StringBuilder columnsSb = new StringBuilder();
+        Object[] values = new Object[params.size()];
+        int i = 0;
+        for (Map.Entry<String, Object> param : params.entrySet()) {
+            columnsSb.append(",").append(param.getKey()).append("=").append("?");
+            values[i] = param.getValue();
+        }
+
+        String sql = String.format("UPDATE %s SET %s WHERE 1=1 %s", table, columnsSb.substring(1), condition);
+        return dmlExecute(sql, values);
+    }
+
+    public int delete(String table, Map<String, Object> conditions) {
+        if (null == conditions || conditions.size() == 0) {
+            log.debug("删除表[" + table + "]数据，条件不允许为空");
+            return -1;
+        }
+
+        StringBuilder columnsSb = new StringBuilder();
+        Object[] values = new Object[conditions.size()];
+        int i = 0;
+        for (Map.Entry<String, Object> condition : conditions.entrySet()) {
+            columnsSb.append(" AND ").append(condition.getKey()).append("=").append("?");
+            values[i] = condition.getValue();
+            i++;
+        }
+
+        String sql = String.format("DELETE FROM %s WHERE 1=1 %s", table, columnsSb);
+        return dmlExecute(sql, values);
+    }
+
+    public int delete(String table, String condition) {
+        if (null == condition || condition.trim().length() == 0) {
+            log.debug("删除表[" + table + "]数据，条件不允许为空");
+            return -1;
+        }
+
+        if (!condition.trim().toLowerCase().startsWith("and")) {
+            condition = "AND " + condition;
+        }
+
+        String sql = String.format("DELETE FROM %s WHERE 1=1 %s", table, condition);
+        return dmlExecute(sql);
+    }
+
     /**
      * 新增/更新/删除数据
      *
@@ -590,10 +672,14 @@ public class JdbcHelper implements Closeable {
 
     public void preview(String table, Integer number) {
         Page page = new Page(this, table, number);
-        show(page.sql());
+        show(page.sql(), number);
     }
 
     public void show(String sql, Object... params) {
+        show(sql, DEFAULT_SHOW_NUMBER, params);
+    }
+
+    public void show(String sql, Integer number, Object... params) {
         if (StringUtils.isBlank(sql)) {
             throw new RuntimeException("SQL不能为空");
         }
@@ -610,7 +696,7 @@ public class JdbcHelper implements Closeable {
                 }
             }
             rs = pstmt.executeQuery();
-            ResultSetUtils.print(rs);
+            ResultSetUtils.print(rs, number);
         } catch (SQLException ex) {
             log.error("查询异常", ex);
         } finally {
