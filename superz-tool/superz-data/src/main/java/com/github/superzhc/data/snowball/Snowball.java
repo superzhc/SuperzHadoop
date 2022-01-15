@@ -5,10 +5,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.superzhc.data.common.HttpData;
-import com.github.superzhc.data.common.ResultT;
+import com.github.superzhc.data.utils.ResultT;
 import com.github.superzhc.data.snowball.entity.*;
 
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

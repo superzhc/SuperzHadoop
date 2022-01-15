@@ -50,7 +50,7 @@ public class GeomesaUpsert {
             SimpleFeature simpleFeature = builder.buildFeature(UUID.randomUUID().toString());
             insert(schema, simpleFeature);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("插入异常",e);
         }
     }
 
@@ -88,7 +88,7 @@ public class GeomesaUpsert {
             SimpleFeature simpleFeature = builder.buildFeature(UUID.randomUUID().toString());
             insert(schema, simpleFeature);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("插入异常",e);
         }
     }
 
@@ -102,7 +102,7 @@ public class GeomesaUpsert {
             next.setAttributes(simpleFeature.getAttributes());
             writer.write();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("插入异常",e);
         }
     }
 
@@ -122,7 +122,7 @@ public class GeomesaUpsert {
                 writer.write();
             }
         } catch (IOException | CQLException e) {
-            e.printStackTrace();
+            log.error("更新异常",e);
         }
     }
 
@@ -140,7 +140,7 @@ public class GeomesaUpsert {
                 writer.remove();
             }
         } catch (IOException | CQLException e) {
-            e.printStackTrace();
+            log.error("删除异常",e);
         }
     }
 }

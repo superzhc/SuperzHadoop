@@ -35,7 +35,31 @@ public class FundUtils {
         return amount / (1 + 0.01 * rate);
     }
 
+    public static boolean isOutTheCounterFund(String code) {
+        if (code.contains("OF")) {
+            return true;
+        }
+        //ETF:SH 51;SZ 159
+        else if (code.startsWith("51") || code.startsWith("159")) {
+            return false;
+        }
+        // LOF
+        else if (code.startsWith("510") || code.startsWith("16")) {
+            return false;
+        }
+        //封闭式
+        else if (code.startsWith("505")) {
+            return false;
+        }
+        // 分级
+        else if (code.startsWith("502") || code.startsWith("150")) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     public static void main(String[] args) {
-        System.out.println(netPurchaseAmount(100000.0,0.15));
+        System.out.println(netPurchaseAmount(100000.0, 0.15));
     }
 }

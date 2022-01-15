@@ -1,5 +1,6 @@
 package com.github.superzhc.data.common;
 
+import com.github.superzhc.data.utils.ResultT;
 import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +13,7 @@ import java.util.concurrent.TimeUnit;
  * @author superz
  * @create 2021/12/9 10:49
  */
-public abstract class HttpData {
+public /*abstract*/ class HttpData {
     private static final Logger log = LoggerFactory.getLogger(HttpData.class);
     private static final String HTTP_JSON = "application/json; charset=utf-8";
 
@@ -87,6 +88,7 @@ public abstract class HttpData {
     private ResultT execute(Request request) {
         log.debug(request.toString());
         try (Response response = okHttpClient.newCall(request).execute()) {
+            log.debug(response.toString());
             return dealResponse(response);
         } catch (IOException e) {
             return ResultT.fail(e);

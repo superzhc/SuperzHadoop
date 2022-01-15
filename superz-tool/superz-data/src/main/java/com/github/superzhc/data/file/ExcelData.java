@@ -1,21 +1,18 @@
 package com.github.superzhc.data.file;
 
 import com.github.superzhc.common.jdbc.JdbcHelper;
+import com.github.superzhc.data.common.FileData;
 import com.github.superzhc.data.utils.ExcelUtils;
 import com.github.superzhc.data.utils.PinYinUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -88,6 +85,7 @@ public class ExcelData implements FileData {
         }
     }
 
+    @Override
     public void count() {
         int numberOfSheets = workbook.getNumberOfSheets();
         for (int i = 0; i < numberOfSheets; i++) {
@@ -100,25 +98,25 @@ public class ExcelData implements FileData {
 
     @Deprecated
     protected void ddl() {
-        int numberOfSheets = workbook.getNumberOfSheets();
-        for (int i = 0; i < numberOfSheets; i++) {
-            Sheet sheet = workbook.getSheetAt(i);
-            String sheetName = sheet.getSheetName();
-            int numberOfRows = sheet.getPhysicalNumberOfRows();
-
-            if (numberOfRows < 2) {
-                continue;
-            }
-
-            StringBuilder columnsStr = new StringBuilder();
-            // 通过头行获取所有列
-            Row headerRow = sheet.getRow(0);
-            int headerNumberOfCells = headerRow.getPhysicalNumberOfCells();
-            for (int j = 0; j < headerNumberOfCells; j++) {
-                columnsStr.append(",").append(PinYinUtils.pinyin(headerRow.getCell(j).getStringCellValue())).append(" varchar(255)\n");
-            }
-
-            // region 推测类型不够准确，不怎么好用，后期优化这部分，目前全部设置成varchar
+//        int numberOfSheets = workbook.getNumberOfSheets();
+//        for (int i = 0; i < numberOfSheets; i++) {
+//            Sheet sheet = workbook.getSheetAt(i);
+//            String sheetName = sheet.getSheetName();
+//            int numberOfRows = sheet.getPhysicalNumberOfRows();
+//
+//            if (numberOfRows < 2) {
+//                continue;
+//            }
+//
+//            StringBuilder columnsStr = new StringBuilder();
+//            // 通过头行获取所有列
+//            Row headerRow = sheet.getRow(0);
+//            int headerNumberOfCells = headerRow.getPhysicalNumberOfCells();
+//            for (int j = 0; j < headerNumberOfCells; j++) {
+//                columnsStr.append(",").append(PinYinUtils.pinyin(headerRow.getCell(j).getStringCellValue())).append(" varchar(255)\n");
+//            }
+//
+//            // region 推测类型不够准确，不怎么好用，后期优化这部分，目前全部设置成varchar
 //            String[] columns = new String[headerNumberOfCells];
 //            Integer[] columnsIndex = new Integer[headerNumberOfCells];
 //            for (int j = 0; j < headerNumberOfCells; j++) {
@@ -171,10 +169,10 @@ public class ExcelData implements FileData {
 //                sb.append(",").append(entry.getKey()).append(" ").append(entry.getValue()).append("\n");
 //            }
             // endregion
-            String DDLSql = String.format("create table if not exists %s\n(\nid int auto_increment primary key\n%s)", sheetName, columnsStr);
-            System.out.println(DDLSql);
-            System.out.println();
-        }
+//            String DDLSql = String.format("create table if not exists %s\n(\nid int auto_increment primary key\n%s)", sheetName, columnsStr);
+//            System.out.println(DDLSql);
+//            System.out.println();
+//        }
     }
 
     public int numberOfSheets() {

@@ -1,4 +1,4 @@
-package com.github.superzhc.data.common;
+package com.github.superzhc.data.utils;
 
 import java.text.MessageFormat;
 

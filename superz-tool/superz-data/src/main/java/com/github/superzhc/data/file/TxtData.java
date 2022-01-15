@@ -1,7 +1,7 @@
 package com.github.superzhc.data.file;
 
 import com.github.superzhc.common.jdbc.JdbcHelper;
-import com.github.superzhc.data.utils.ExcelUtils;
+import com.github.superzhc.data.common.FileData;
 import com.github.superzhc.data.utils.PinYinUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -148,6 +148,7 @@ public class TxtData implements FileData {
         });
     }
 
+    @Override
     public void count() {
         final Count c = new Count();
         read(null, 1, new Function<List<String>, Boolean>() {

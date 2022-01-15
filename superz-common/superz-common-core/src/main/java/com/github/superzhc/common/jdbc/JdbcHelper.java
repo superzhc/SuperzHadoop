@@ -606,6 +606,23 @@ public class JdbcHelper implements Closeable {
         }
     }
 
+    public List<Map<String, Object>> select(String table, String... columns) {
+        return select(table, columns, null);
+    }
+
+    public List<Map<String, Object>> select(String table, String[] columns, String conditions) {
+        if (null != conditions && conditions.trim().length() > 0) {
+            if (!conditions.toUpperCase().trim().startsWith("AND")) {
+                conditions = "AND " + conditions;
+            }
+        } else {
+            conditions = "";
+        }
+
+        String sql = String.format("SELECT %s FROM %s WHERE 1=1 %s", String.join(",", columns), table, conditions);
+        return query(sql);
+    }
+
     /**
      * 查询多条记录
      *
@@ -707,6 +724,35 @@ public class JdbcHelper implements Closeable {
     @Deprecated
     public <T> T queryOne(String sql, Object... params) {
         return aggregate(sql, params);
+    }
+
+    public Long count(String table) {
+        return count(table, new HashMap<>());
+    }
+
+    public Long count(String table, String field, Object value) {
+        Map<String, Object> params = new HashMap<>();
+        params.put(field, value);
+        return count(table, params);
+    }
+
+    public Long count(String table, Map<String, Object> params) {
+        String sql_template = "SELECT COUNT(*) FROM %s WHERE 1=1%s";
+
+        StringBuilder conditions = new StringBuilder();
+
+        if (null != params && params.size() > 0) {
+            int cursor = 0;
+            Object[] sqlParams = new Object[params.size()];
+            for (Map.Entry<String, Object> param : params.entrySet()) {
+                conditions.append(" AND ").append(param.getKey()).append("=?");
+                sqlParams[cursor++] = param.getValue();
+            }
+            return aggregate(String.format(sql_template, table, conditions), sqlParams);
+        } else {
+            return aggregate(String.format(sql_template, table, conditions));
+        }
+
     }
 
     /**
@@ -915,6 +961,11 @@ public class JdbcHelper implements Closeable {
     }
 
     public void batchUpdate(String table, String columns, List<List<Object>> params, Integer batchSize) {
+        if (null == params || params.size() == 0) {
+            log.debug("no data");
+            return;
+        }
+
         Object[][] arrParams = new Object[params.size()][];
         for (int i = 0, len = params.size(); i < len; i++) {
             List<Object> param = params.get(i);
@@ -930,6 +981,11 @@ public class JdbcHelper implements Closeable {
     }
 
     public void batchUpdate(String table, String[] columns, List<List<Object>> params, Integer batchSize) {
+        if (null == params || params.size() == 0) {
+            log.debug("no data");
+            return;
+        }
+
         Object[][] arrParams = new Object[params.size()][];
         for (int i = 0, len = params.size(); i < len; i++) {
             List<Object> param = params.get(i);
@@ -945,6 +1001,11 @@ public class JdbcHelper implements Closeable {
     }
 
     public void batchUpdate(String sql, List<List<Object>> params, Integer batchSize) {
+        if (null == params || params.size() == 0) {
+            log.debug("no data");
+            return;
+        }
+
         Object[][] arrParams = new Object[params.size()][];
         for (int i = 0, len = params.size(); i < len; i++) {
             List<Object> param = params.get(i);
@@ -1008,12 +1069,13 @@ public class JdbcHelper implements Closeable {
             throw new RuntimeException("SQL不能为空");
         }
 
-        log.debug("batch sql:" + sql);
-        log.debug("batch size:" + batchSize);
         if (null == params || params.length == 0) {
             log.debug("no data");
             return;
         }
+
+        log.debug("batch sql:" + sql);
+        log.debug("batch size:" + batchSize);
 
         PreparedStatement preparedStatement = null;
         try {

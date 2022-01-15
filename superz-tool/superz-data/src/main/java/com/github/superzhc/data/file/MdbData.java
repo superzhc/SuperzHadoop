@@ -1,6 +1,7 @@
 package com.github.superzhc.data.file;
 
 import com.github.superzhc.common.jdbc.JdbcHelper;
+import com.github.superzhc.data.common.FileData;
 import com.github.superzhc.data.utils.PinYinUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,7 @@ public class MdbData implements FileData {
         }
     }
 
+    @Override
     public void count() {
         String[] tables = jdbc.tables();
         String sqlTemplate = "SELECT count(*) FROM [%s]";

@@ -1,6 +1,7 @@
 package com.github.superzhc.data.file;
 
 import com.github.superzhc.common.jdbc.JdbcHelper;
+import com.github.superzhc.data.common.FileData;
 import com.github.superzhc.data.utils.PinYinUtils;
 import com.opencsv.*;
 import org.slf4j.Logger;
@@ -14,9 +15,11 @@ import java.util.List;
 import java.util.function.Function;
 
 /**
+ * 直接使用TxtData
  * @author superz
  * @create 2021/12/16 16:18
  */
+@Deprecated
 public class CsvData implements FileData {
     private static final Logger log = LoggerFactory.getLogger(CsvData.class);
 
@@ -117,6 +120,7 @@ public class CsvData implements FileData {
         });
     }
 
+    @Override
     public void count() {
         final TxtData.Count c = new TxtData.Count();
         read(null, 10000, new Function<List<String[]>, Boolean>() {

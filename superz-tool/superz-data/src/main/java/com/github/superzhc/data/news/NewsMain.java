@@ -1,7 +1,7 @@
 package com.github.superzhc.data.news;
 
 import com.github.superzhc.data.common.HttpData;
-import com.github.superzhc.data.common.ResultT;
+import com.github.superzhc.data.utils.ResultT;
 
 /**
  * @author superz

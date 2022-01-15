@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.superzhc.common.jdbc.JdbcHelper;
 import com.github.superzhc.data.common.HttpData;
-import com.github.superzhc.data.common.ResultT;
+import com.github.superzhc.data.utils.ResultT;
 import okhttp3.Request;
 import okhttp3.Response;
 

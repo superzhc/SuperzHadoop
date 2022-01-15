@@ -23,10 +23,7 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -115,7 +112,7 @@ public class GeomesaQuery {
 
             return result;
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Geomesa 查询异常", e);
         }
         return null;
     }
@@ -209,19 +206,19 @@ public class GeomesaQuery {
                         }
                         return obj;
                     } catch (Exception e) {
-                        log.error("Geomesa 转实体异常");
+                        log.error("Geomesa 转实体异常", e);
                         return null;
                     }
                 }
             });
             return result;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Geomesa 查询异常", e);
         }
         return null;
     }
 
-    private <T> List<T> query(String schema, String ecql, Integer number, String sortField, String sortOrder, Function<SimpleFeature, T> function) {
+    public <T> List<T> query(String schema, String ecql, Integer number, String sortField, String sortOrder, Function<SimpleFeature, T> function) {
         try {
             Query query;
             if (StringUtils.isBlank(ecql)) {
@@ -273,6 +270,112 @@ public class GeomesaQuery {
             }
         } catch (CQLException | IOException e) {
             log.error("Geomesa 查询异常", e);
+        }
+        return null;
+    }
+
+    public Long count(String schema, String ecql) {
+        try {
+            Query query;
+            if (StringUtils.isBlank(ecql)) {
+                query = new Query(schema);
+            } else {
+                query = new Query(schema, ECQL.toFilter(ecql));
+            }
+
+            /* 2021年9月6日 note org.locationtech.geomesa.utils.audit.AuditLogger$ 打印查询的相关参数 */
+            try (FeatureReader<SimpleFeatureType, SimpleFeature> reader = dataStore.getDataStore().getFeatureReader(query, Transaction.AUTO_COMMIT)) {
+                if (!reader.hasNext()) {
+                    return null;
+                }
+
+                Long count = 0L;
+                while (reader.hasNext()) {
+                    SimpleFeature feature = reader.next();
+
+                    if (null == feature) {
+                        continue;
+                    }
+
+                    count++;
+                }
+                return count;
+            }
+        } catch (CQLException | IOException e) {
+            log.error("Geomesa 查询数据量异常", e);
+        }
+        return null;
+    }
+
+    public List<Object> distinct(String schema, String ecql, String... attributeNames) {
+        try {
+            if (null == attributeNames || attributeNames.length == 0) {
+                throw new RuntimeException("Distinct 属性不允许为空");
+            }
+
+            Query query;
+            if (StringUtils.isBlank(ecql)) {
+                query = new Query(schema);
+            } else {
+                query = new Query(schema, ECQL.toFilter(ecql));
+            }
+
+            try (FeatureReader<SimpleFeatureType, SimpleFeature> reader = dataStore.getDataStore().getFeatureReader(query, Transaction.AUTO_COMMIT)) {
+                if (!reader.hasNext()) {
+                    return null;
+                }
+
+                Set<String> keys = new HashSet<>();
+                List<Object> result = new ArrayList<>();
+
+                Long count = 0L;
+                while (reader.hasNext()) {
+                    count++;
+
+                    SimpleFeature feature = reader.next();
+                    if (null == feature) {
+                        continue;
+                    }
+
+                    String key;
+                    Object val;
+                    if (attributeNames.length > 1) {
+                        StringBuilder transformKey = new StringBuilder();
+                        Map<String, Object> originValue = new HashMap<>();
+                        for (String name : attributeNames) {
+                            Object value = feature.getAttribute(name);
+                            if (value instanceof Geometry) {
+                                // 转换成 WTK 格式数据
+                                value = ((Geometry) value).toText();
+                            }
+
+                            transformKey.append(",").append(value);
+                            originValue.put(name, value);
+                        }
+                        key = transformKey.toString();
+                        val = originValue;
+                    } else {
+                        Object value = feature.getAttribute(attributeNames[0]);
+                        if (value instanceof Geometry) {
+                            // 转换成 WTK 格式数据
+                            value = ((Geometry) value).toText();
+                        }
+
+                        key = String.valueOf(value);
+                        val = value;
+                    }
+
+                    if (!keys.contains(key)) {
+                        keys.add(key);
+                        result.add(val);
+                    }
+
+                }
+                log.info("deal data count:{}", count);
+                return result;
+            }
+        } catch (CQLException | IOException e) {
+            log.error("Geomesa 查询数据量异常", e);
         }
         return null;
     }
