@@ -1,5 +1,6 @@
 package com.github.superzhc.data.common;
 
+import com.github.superzhc.data.file.EasyExcelData;
 import com.github.superzhc.data.file.ExcelData;
 import com.github.superzhc.data.file.MdbData;
 import com.github.superzhc.data.file.TxtData;
@@ -37,13 +38,14 @@ public interface FileData {
             return null;
         }
 
-        log.debug("path:" + path + ";type:" + type);
+        log.debug("path:" + path /*+ ";type:" + type*/);
 
         type = type.toLowerCase();
         switch (type) {
             case "xls":
             case "xlsx":
-                return new ExcelData(path);
+                // return new ExcelData(path);
+                return new EasyExcelData(path);
             case "mdb":
                 return new MdbData(path);
             case "csv":
