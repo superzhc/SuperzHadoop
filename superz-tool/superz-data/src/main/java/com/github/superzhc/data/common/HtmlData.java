@@ -1,7 +1,13 @@
 package com.github.superzhc.data.common;
 
+import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.WebRequest;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.seimicrawler.xpath.JXDocument;
 import org.seimicrawler.xpath.JXNode;
@@ -10,6 +16,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -30,19 +38,19 @@ public class HtmlData {
      */
     public Doc get(String url) {
         try {
-            log.debug("Request{method=GET,url="+url+"}");
+            log.debug("Request{method=GET,url=" + url + "}");
             Document document = Jsoup.connect(url).get();
             //log.debug("Response{code=200,message=OK,url="+url+"}");
             return new Doc(document);
         } catch (IOException e) {
-            log.debug("Response{code=500,message=获取页面异常,url="+url+"}",e);
+            log.debug("Response{code=500,message=获取页面异常,url=" + url + "}", e);
             return null;
         }
     }
 
     public Doc post(String url, Map<String, String> form) {
         try {
-            log.debug("Request{method=POST,url="+url+"}");
+            log.debug("Request{method=POST,url=" + url + "}");
             Document document = Jsoup.connect(url)
                     .data(form)
                     .post();
@@ -55,14 +63,61 @@ public class HtmlData {
 
     public Doc post(String url, String json) {
         try {
-            log.debug("Request{method=POST,url="+url+"}");
+            log.debug("Request{method=POST,url=" + url + "}");
             Document document = Jsoup.connect(url)
                     .requestBody(json)
                     .header("Content-Type", "application/json")
                     .post();
             return new Doc(document);
         } catch (IOException e) {
-            log.debug("Response{code=500,message=获取页面异常,url="+url+"}",e);
+            log.debug("Response{code=500,message=获取页面异常,url=" + url + "}", e);
+            return null;
+        }
+    }
+
+    /**
+     * 模拟浏览器获取渲染后的页面
+     * <p>
+     * 注意：这个会有 3s 的渲染时间
+     *
+     * @param url
+     * @return
+     */
+    public Doc browser(String url) {
+        try (WebClient client = new WebClient(BrowserVersion.CHROME)) {
+            // 启用JS解释器，默认为true
+            client.getOptions().setJavaScriptEnabled(true);
+            // 禁用CSS
+            client.getOptions().setCssEnabled(false);
+            //js运行错误时，是否抛出异常
+            client.getOptions().setThrowExceptionOnScriptError(false);
+            //状态码错误时，是否抛出异常
+            client.getOptions().setThrowExceptionOnFailingStatusCode(false);
+            //是否允许使用ActiveX
+            client.getOptions().setActiveXNative(false);
+            //等待js时间
+            client.waitForBackgroundJavaScript(60 * 1000);
+            //设置Ajax异步处理控制器即启用Ajax支持
+            client.setAjaxController(new NicelyResynchronizingAjaxController());
+            //设置超时时间
+            // client.getOptions().setTimeout(1000 * 30);
+            //不跟踪抓取
+            // client.getOptions().setDoNotTrackEnabled(false);
+
+            WebRequest request = new WebRequest(new URL(url));
+            // 谷歌浏览器的agent，这个固定下来
+            request.setAdditionalHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36");
+            HtmlPage page = client.getPage(request);
+
+            //为了获取js执行的数据 线程开始沉睡等待
+            Thread.sleep(1000 * 3);
+
+            boolean isHttps = url.startsWith("http://");
+            String str = url.substring(isHttps ? 8 : 7);
+            String baseUri = (isHttps ? "https://" : "http://") + str.substring(0, (str.indexOf("/") == -1 ? str.length() : str.indexOf("/")));
+            return text(page.asXml(), baseUri);
+        } catch (Exception e) {
+            log.error("模拟浏览器解析异常", e);
             return null;
         }
     }
@@ -97,17 +152,18 @@ public class HtmlData {
     /**
      * 读取文本内容
      *
-     * @param content
+     * @param html
      * @return
      */
-    public Doc text(String content) {
-        Document document = Jsoup.parse(content);
+    public Doc text(String html) {
+        Document document = Jsoup.parse(html);
         return new Doc(document);
     }
 
-//    public static JXDocument useXpath(Document document) {
-//        return JXDocument.create(document);
-//    }
+    public Doc text(String html, String baseUri) {
+        Document document = Jsoup.parse(html, baseUri);
+        return new Doc(document);
+    }
 
     public static class Doc {
         private Document document;
@@ -172,16 +228,22 @@ public class HtmlData {
          * siblingA ~ siblingX: 查找 A 元素之前的同级 X 元素，比如：h1 \~ p
          * el, el, el:多个选择器组合，查找匹配任一选择器的唯一元素，例如：div.masthead, div.logo
          */
-        public Elements css(String cssQuery) {
+        public List<JXNode> css(String cssQuery) {
             return select(cssQuery);
         }
 
-        public Elements $(String cssQuery) {
+        public List<JXNode> $(String cssQuery) {
             return css(cssQuery);
         }
 
-        public Elements select(String cssQuery) {
-            return document.select(cssQuery);
+        public List<JXNode> select(String cssQuery) {
+            Elements elements = document.select(cssQuery);
+
+            List<JXNode> jxNodes = new ArrayList<>();
+            for (Element element : elements) {
+                jxNodes.add(new JXNode(element));
+            }
+            return jxNodes;
         }
 
         public JXDocument getjXDocument() {
@@ -190,16 +252,15 @@ public class HtmlData {
 
         /**
          * xpath 语法
-         *
+         * <p>
          * 路径表达式：
          * nodename	选取此节点的所有子节点
          * /	从根节点选取
          * //	从匹配选择的当前节点选择文档中的节点，而不考虑它们的位置
          * .	选取当前节点
          * ..	选取当前节点的父节点
-         * @	选取属性
          *
-         * 函数：
+         * @	选取属性 函数：
          * int position() 返回当前节点在其所在上下文中的位置
          * int last() 返回所在上下文的最后那个节点位置
          * int first() 返回所在上下文的的第一个节点位置
@@ -212,7 +273,7 @@ public class HtmlData {
          * string substring-ex(string, number, number) 第一个参数指定字符串，第二个指定起始位置(java里的习惯从0开始)，第三个结束的位置（支持负数），这个是JsoupXpath扩展的函数，方便java习惯的开发者使用。
          * string substring-after(string, string) 在第一个字符串中截取第二个字符串之后的部分
          * string substring-before(string, string) 在第一个字符串中截取第二个字符串之前的部分
-         *
+         * <p>
          * allText()提取节点下全部文本，取代类似 //div/h3//text()这种递归取文本用法
          * html()获取全部节点的内部的html
          * outerHtml()获取全部节点的 包含节点本身在内的全部html
@@ -230,6 +291,11 @@ public class HtmlData {
 
         public JXNode selOne(String path) {
             return jXDocument.selNOne(path);
+        }
+
+        @Override
+        public String toString() {
+            return document.toString();
         }
     }
 }

@@ -96,6 +96,54 @@ public class ExcelData implements FileData {
         }
     }
 
+    @Override
+    public void read(FileReadSetting settings) {
+        Integer sheetNo = 0;
+        if (settings.getExtraSettings().containsKey("sheetNumber")) {
+            sheetNo = (Integer) settings.getExtraSettings().get("sheetNumber");
+        } else if (settings.getExtraSettings().containsKey("sheet_number")) {
+            sheetNo = (Integer) settings.getExtraSettings().get("sheet_number");
+        } else if (settings.getExtraSettings().containsKey("numberOfSheet")) {
+            sheetNo = (Integer) settings.getExtraSettings().get("numberOfSheet");
+        } else {
+            //throw new RuntimeException("请在 FileReadSetting 的 extraSettings 属性中配置读取的 sheet 编号，参数名称支持[sheetNumber,sheet_number,numberOfSheet]");
+        }
+
+        // 组织数据进行插入
+        Sheet sheet = workbook.getSheetAt(sheetNo);
+        int numberOfRows = sheet.getPhysicalNumberOfRows();
+        List<Object> values = new ArrayList<>();
+        Integer cursor = 0;
+        for (int i = 0; i < numberOfRows; i++) {
+            List<Object> value = new ArrayList<>();
+            Row row = sheet.getRow(i);
+            if (null == row) {
+                continue;
+            }
+
+            int numberOfCells = row.getPhysicalNumberOfCells();
+            for (int k = 0; k < numberOfCells; k++) {
+                Cell cell = row.getCell(k);
+                Object obj = ExcelUtils.getCellFormatValue(cell);
+                value.add(obj);
+            }
+            values.add(value);
+            cursor++;
+
+            if (cursor >= settings.getBatchSize()) {
+                settings.getLinesFunction().apply(values);
+                cursor = 0;
+                values.clear();
+            }
+        }
+
+        if (cursor > 0) {
+            settings.getLinesFunction().apply(values);
+            cursor = 0;
+            values.clear();
+        }
+    }
+
     @Deprecated
     protected void ddl() {
 //        int numberOfSheets = workbook.getNumberOfSheets();
@@ -168,7 +216,7 @@ public class ExcelData implements FileData {
 //            for (Map.Entry<String, String> entry : columnInfos.entrySet()) {
 //                sb.append(",").append(entry.getKey()).append(" ").append(entry.getValue()).append("\n");
 //            }
-            // endregion
+        // endregion
 //            String DDLSql = String.format("create table if not exists %s\n(\nid int auto_increment primary key\n%s)", sheetName, columnsStr);
 //            System.out.println(DDLSql);
 //            System.out.println();

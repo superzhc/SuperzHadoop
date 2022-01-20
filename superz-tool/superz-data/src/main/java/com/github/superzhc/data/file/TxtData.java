@@ -58,7 +58,14 @@ public class TxtData implements FileData {
 //            throw new RuntimeException(e);
 //        }
 //    }
-    private void read(Function<List<String>, Void> headersFunction, Integer linesNum, Function<List<String>, Boolean> linesFunction) {
+    @Override
+    public void read(FileReadSetting settings) {
+
+        // 默认settings中配置的头标题行数优先级最高
+        if (0 == settings.getHeaders()) {
+            settings.setHeaders(headers);
+        }
+
         try (InputStream inputStream = new FileInputStream(new File(path))) {
             try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream, Charset.forName(charset))) {
                 try (BufferedReader reader = new BufferedReader(inputStreamReader)) {
@@ -70,8 +77,8 @@ public class TxtData implements FileData {
 
                     Long currentLines = 0L;
                     /* 处理文件头 */
-                    if (headers > 0) {
-                        List<String> headerLines = new ArrayList<>(headers);
+                    if (settings.getHeaders() > 0) {
+                        List<Object> headerLines = new ArrayList<>(headers);
                         Integer headerCursor = headers;
                         while (headerCursor > 0 && (str = reader.readLine()) != null) {
                             currentLines++;
@@ -79,8 +86,8 @@ public class TxtData implements FileData {
                             headerCursor--;
                         }
 
-                        if (null != headersFunction) {
-                            headersFunction.apply(headerLines);
+                        if (null != settings.getHeaderFunction()) {
+                            settings.getHeaderFunction().apply(headerLines);
                         } else {
                             log.debug("untreated header data:" + headerLines);
                         }
@@ -88,8 +95,8 @@ public class TxtData implements FileData {
 
                     /* 处理文件内容 */
                     // 批处理逻辑
-                    if (linesNum > 1) {
-                        List<String> lines = new ArrayList<>(linesNum);
+                    if (settings.getBatchSize() > 1) {
+                        List<Object> lines = new ArrayList<>(settings.getBatchSize());
                         int currentLinesNum = 0;
                         while ((str = reader.readLine()) != null) {
                             currentLines++;
@@ -97,9 +104,9 @@ public class TxtData implements FileData {
                             currentLinesNum++;
                             total++;
 
-                            if (currentLinesNum >= linesNum) {
+                            if (currentLinesNum >= settings.getBatchSize()) {
                                 log.debug("文件处理中，行号：[" + (currentLines - currentLinesNum + 1) + "~" + currentLines + "]");
-                                Boolean flag = linesFunction.apply(lines);
+                                Boolean flag = settings.getLinesFunction().apply(lines);
                                 currentLinesNum = 0;
                                 lines.clear();
 
@@ -111,14 +118,14 @@ public class TxtData implements FileData {
                         }
                         if (currentLinesNum > 0) {
                             log.debug("文件处理中，行号：" + (currentLines - currentLinesNum + 1) + "~" + currentLines);
-                            linesFunction.apply(lines);
+                            settings.getLinesFunction().apply(lines);
                         }
                     }
                     // 逐行处理
                     else {
                         while ((str = reader.readLine()) != null) {
                             total++;
-                            Boolean flag = linesFunction.apply(Collections.singletonList(str));
+                            Boolean flag = settings.getLinesFunction().apply(Collections.singletonList(str));
                             if (!flag) {
                                 total = 0L;
                                 break;
@@ -135,12 +142,17 @@ public class TxtData implements FileData {
         }
     }
 
+    private void read(Function<List<Object>, Void> headersFunction, Integer linesNum, Function<List<Object>, Boolean> linesFunction) {
+        FileReadSetting settings = new FileReadSetting(headers, headersFunction, linesNum, linesFunction);
+        read(settings);
+    }
+
     @Override
     public void preview(final Integer number) {
-        read(null, number, new Function<List<String>, Boolean>() {
+        read(null, number, new Function<List<Object>, Boolean>() {
             @Override
-            public Boolean apply(List<String> strings) {
-                for (String str : strings) {
+            public Boolean apply(List<Object> strings) {
+                for (Object str : strings) {
                     System.out.println(str);
                 }
                 return false;
@@ -151,9 +163,9 @@ public class TxtData implements FileData {
     @Override
     public void count() {
         final Count c = new Count();
-        read(null, 1, new Function<List<String>, Boolean>() {
+        read(null, 1, new Function<List<Object>, Boolean>() {
             @Override
-            public Boolean apply(List<String> strings) {
+            public Boolean apply(List<Object> strings) {
                 c.add(null == strings ? 0 : strings.size());
                 return true;
             }
@@ -189,7 +201,13 @@ public class TxtData implements FileData {
                     if ("id".equalsIgnoreCase(column)) {
                         idFlag = true;
                     }
-                    columnsStr.append(",").append(PinYinUtils.pinyin(column)).append(" varchar(255)");
+
+                    String type = "varchar(255)";
+                    if ("address".equalsIgnoreCase(column) || "addr".equalsIgnoreCase(column)) {
+                        type = "text";
+                    }
+
+                    columnsStr.append(",").append(PinYinUtils.pinyin(column)).append(" ").append(type);
                 }
                 // 自带id列不可用自增
                 String idStr;
@@ -199,7 +217,7 @@ public class TxtData implements FileData {
                     idStr = "uid int auto_increment primary key";
                 }
                 // create table if not exists %s(%s%s)ENGINE=MyISAM
-                String ddl = String.format("create table if not exists %s(%s%s)", schema, idStr, columnsStr);
+                String ddl = String.format("create table if not exists %s(%s%s) ENGINE=MyISAM DEFAULT CHARSET = utf8mb4", schema, idStr, columnsStr);
                 int result = jdbc.ddlExecute(ddl);
                 if (result == -1) {
                     throw new RuntimeException("创建表[" + schema + "]失败");
@@ -207,17 +225,19 @@ public class TxtData implements FileData {
             }
 
             final ErrorData error = new ErrorData(schema);
-            read(null, 10000, new Function<List<String>, Boolean>() {
+            read(null, 10000, new Function<List<Object>, Boolean>() {
                 @Override
-                public Boolean apply(List<String> strings) {
+                public Boolean apply(List<Object> strings) {
                     List<List<Object>> values = new ArrayList<>();
                     int columnsNum = columns.length;
-                    for (String str : strings) {
+                    for (Object obj : strings) {
+                        String str = (String) obj;
                         if (null == str || str.trim().length() == 0) {
                             continue;
                         }
 
-                        String[] arr = str.split(separator);
+                        // str的结尾为空再不设置limit的情况下会被删掉，因此设置-1保证结尾即使为空也不会被删除
+                        String[] arr = str.split(separator, -1);
                         if (arr.length != columnsNum) {
                             error.add(str);
                             //log.debug("error data:" + str);
@@ -226,9 +246,17 @@ public class TxtData implements FileData {
 
                         List<Object> value = new ArrayList<>(columnsNum);
                         for (int i = 0; i < columnsNum; i++) {
-                            value.add(arr[i].trim());
+                            String s = arr[i].trim();
+                            if (s.length() > 255) {
+                                error.add(str);
+                                break;
+                            }
+                            value.add(s);
                         }
-                        values.add(value);
+
+                        if (value.size() == arr.length) {
+                            values.add(value);
+                        }
                     }
                     log.debug("错误数据数：" + error.total());
                     jdbc.batchUpdate(schema, columns, values, 1000);

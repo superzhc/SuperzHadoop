@@ -55,31 +55,74 @@ public class MdbData implements FileData {
         }
     }
 
-    @Deprecated
-    public void ddl() {
+    @Override
+    public void read(FileReadSetting settings) {
+        // 获取mdb中的所有表
         String[] tables = jdbc.tables();
         for (String table : tables) {
-            // 是否自带id列，默认是不带的
-            boolean idFlag = false;
+            long start = System.currentTimeMillis();
+            long middle = start;
+            long end = start;
 
             Map<String, String> columnAndTypes = jdbc.columnAndTypes(table);
-            StringBuilder columnsStr = new StringBuilder();
+            // 设置一个排序列
+            String sortField = null;
+            // 构建一个安全条件
+            StringBuilder conditions = new StringBuilder();
             for (Map.Entry<String, String> columnAndType : columnAndTypes.entrySet()) {
-                if ("id".equalsIgnoreCase(columnAndType.getKey())) {
-                    idFlag = true;
+                if (null == sortField) {
+                    sortField = columnAndType.getKey();
                 }
-                columnsStr.append(",").append(PinYinUtils.pinyin(columnAndType.getKey())).append(" ").append(columnAndType.getValue());
+
+                conditions.append("or [").append(columnAndType.getKey()).append("] IS NOT NULL ");
             }
 
-            // 自带id列不可用自增
-            String idStr;
-            if (!idFlag) {
-                idStr = "id int auto_increment primary key";
-            } else {
-                idStr = "uid int auto_increment primary key";
+            // 一次性将所有数据都给读出来不怎么合理，顾此处要使用分页来处理
+            String countSqlTemplate = "SELECT count(*) FROM [%s] WHERE 1=1 AND (%s)";
+            String countSql = String.format(countSqlTemplate, table, conditions.substring(3));
+            long number = jdbc.aggregate(countSql);
+            log.debug("Table[" + table + "] count:" + number);
+            end = System.currentTimeMillis();
+            log.debug("统计表[" + table + "]的数量耗时：" + (end - middle) / 1000.0 + "s");
+            middle = end;
+
+            long pageSize = 100000;
+            long pages = number / pageSize + (number % pageSize == 0 ? 0 : 1);
+            log.debug("分页查询表[" + table + "]开始，总页码：" + pages + "，每页的数据量：" + pageSize);
+            // 这种分页的效率其实不是很好，通过减少查询的次数会更高效点，此处通过将pageSize设置的比较大
+            String sqlTemplate = "SELECT * FROM (SELECT TOP %d * FROM(SELECT TOP %d * FROM [%s] WHERE 1=1 AND (%s) ORDER BY [%s]) ORDER BY [%s] DESC) ORDER BY [%s]";
+            for (int i = 0; i < pages; i++) {
+                String sql = String.format(sqlTemplate, Math.min((i + 1) * pageSize, number) - (i * pageSize), Math.min((i + 1) * pageSize, number), table, conditions.substring(3), sortField, sortField, sortField);
+                List<Map<String, Object>> datas = jdbc.query(sql);
+                end = System.currentTimeMillis();
+                log.debug("查询第 " + (i + 1) + "/" + pages + " 页获取[" + Math.min(i * pageSize, number) + "~" + (Math.min((i + 1) * pageSize, number)) + "]数据耗时：" + (end - middle) / 1000.0 + "s");
+                middle = end;
+
+                Integer cursor = 0;
+                List<Object> values = new ArrayList<>();
+                for (Map<String, Object> data : datas) {
+                    List<Object> value = new ArrayList<>();
+                    for (Object obj : data.values()) {
+                        value.add(obj);
+                    }
+                    values.add(value);
+                    cursor++;
+
+                    if (cursor >= settings.getBatchSize()) {
+                        settings.getLinesFunction().apply(values);
+                        cursor = 0;
+                        values.clear();
+                    }
+                }
+
+                if (cursor > 0) {
+                    settings.getLinesFunction().apply(values);
+                    cursor = 0;
+                    values.clear();
+                }
             }
-            String ddl = String.format("create table if not exists %s(%s%s)", PinYinUtils.pinyin(table), idStr, columnsStr);
-            System.out.println(ddl);
+            end = System.currentTimeMillis();
+            log.debug("表[" + table + "]处理总耗时：" + (end - start) / 1000.0 + "s");
         }
     }
 

@@ -133,9 +133,9 @@ public class UserAgent {
     public static void main(String[] args) throws Exception {
 //        List<String> userAgents = new UserAgent().get(Browser.Edge);
 //        System.out.println(userAgents.stream().collect(Collectors.joining("\n")));
-        while (true) {
-            System.out.println(UserAgent.IE());
-            Thread.sleep(1000);
-        }
+//        while (true) {
+            System.out.println(UserAgent.Chrome());
+//            Thread.sleep(1000);
+//        }
     }
 }
