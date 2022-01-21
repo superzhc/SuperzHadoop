@@ -90,6 +90,11 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>8.0.21</version>
         </dependency>
+        <dependency>
+            <groupId>com.alibaba.ververica</groupId>
+            <artifactId>flink-connector-mysql-cdc</artifactId>
+            <version>1.3.0</version>
+        </dependency>
 
         <!--s3文件系统-->
         <dependency>

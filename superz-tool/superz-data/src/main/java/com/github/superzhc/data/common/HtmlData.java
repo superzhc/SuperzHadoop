@@ -5,6 +5,7 @@ import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -18,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,10 +39,20 @@ public class HtmlData {
      * @return
      */
     public Doc get(String url) {
+        return get(url, null);
+    }
+
+    public Doc get(String url, Map<String, String> headers) {
         try {
             log.debug("Request{method=GET,url=" + url + "}");
-            Document document = Jsoup.connect(url).get();
-            //log.debug("Response{code=200,message=OK,url="+url+"}");
+
+            Connection connection = Jsoup.connect(url);
+
+            if (null != headers) {
+                connection.headers(headers);
+            }
+
+            Document document = connection.get();
             return new Doc(document);
         } catch (IOException e) {
             log.debug("Response{code=500,message=获取页面异常,url=" + url + "}", e);
@@ -49,11 +61,23 @@ public class HtmlData {
     }
 
     public Doc post(String url, Map<String, String> form) {
+        return post(url, null, form);
+    }
+
+    public Doc post(String url, Map<String, String> headers, Map<String, String> form) {
         try {
             log.debug("Request{method=POST,url=" + url + "}");
-            Document document = Jsoup.connect(url)
-                    .data(form)
-                    .post();
+            Connection connection = Jsoup.connect(url);
+
+            if (null != headers) {
+                connection.headers(headers);
+            }
+
+            if (null != form) {
+                connection.data(form);
+            }
+
+            Document document = connection.post();
             return new Doc(document);
         } catch (IOException e) {
             log.error("获取页面异常", e);
@@ -61,13 +85,21 @@ public class HtmlData {
         }
     }
 
-    public Doc post(String url, String json) {
+    public Doc post(String url, Map<String, String> headers, String json) {
         try {
             log.debug("Request{method=POST,url=" + url + "}");
-            Document document = Jsoup.connect(url)
-                    .requestBody(json)
-                    .header("Content-Type", "application/json")
-                    .post();
+
+            Connection connection = Jsoup.connect(url);
+
+            if (null != headers) {
+                connection.headers(headers);
+            }
+            // 不管是否存在文件头，post json这个是必须的
+            connection.header("Content-Type", "application/json");
+
+            connection.requestBody(json);
+
+            Document document = connection.post();
             return new Doc(document);
         } catch (IOException e) {
             log.debug("Response{code=500,message=获取页面异常,url=" + url + "}", e);
@@ -84,6 +116,10 @@ public class HtmlData {
      * @return
      */
     public Doc browser(String url) {
+        return browser(url, null);
+    }
+
+    public Doc browser(String url, Map<String, String> headers) {
         try (WebClient client = new WebClient(BrowserVersion.CHROME)) {
             // 启用JS解释器，默认为true
             client.getOptions().setJavaScriptEnabled(true);
@@ -107,15 +143,22 @@ public class HtmlData {
             WebRequest request = new WebRequest(new URL(url));
             // 谷歌浏览器的agent，这个固定下来
             request.setAdditionalHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.71 Safari/537.36");
+            if (null != headers) {
+                for (Map.Entry<String, String> header : headers.entrySet()) {
+                    request.setAdditionalHeader(header.getKey(), header.getValue());
+                }
+            }
             HtmlPage page = client.getPage(request);
 
             //为了获取js执行的数据 线程开始沉睡等待
             Thread.sleep(1000 * 3);
 
+            /* 没啥效果
             boolean isHttps = url.startsWith("http://");
             String str = url.substring(isHttps ? 8 : 7);
             String baseUri = (isHttps ? "https://" : "http://") + str.substring(0, (str.indexOf("/") == -1 ? str.length() : str.indexOf("/")));
-            return text(page.asXml(), baseUri);
+            return text(page.asXml(), baseUri);*/
+            return text(page.asXml());
         } catch (Exception e) {
             log.error("模拟浏览器解析异常", e);
             return null;
