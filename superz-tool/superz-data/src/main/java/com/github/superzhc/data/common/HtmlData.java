@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.Proxy;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,10 +40,10 @@ public class HtmlData {
      * @return
      */
     public Doc get(String url) {
-        return get(url, null);
+        return get(url, null, null);
     }
 
-    public Doc get(String url, Map<String, String> headers) {
+    public Doc get(String url, Map<String, String> headers, Proxy proxy) {
         try {
             log.debug("Request{method=GET,url=" + url + "}");
 
@@ -50,6 +51,10 @@ public class HtmlData {
 
             if (null != headers) {
                 connection.headers(headers);
+            }
+
+            if (null != proxy) {
+                connection.proxy(proxy);
             }
 
             Document document = connection.get();
@@ -61,16 +66,20 @@ public class HtmlData {
     }
 
     public Doc post(String url, Map<String, String> form) {
-        return post(url, null, form);
+        return post(url, null,null, form);
     }
 
-    public Doc post(String url, Map<String, String> headers, Map<String, String> form) {
+    public Doc post(String url, Map<String, String> headers,Proxy proxy, Map<String, String> form) {
         try {
             log.debug("Request{method=POST,url=" + url + "}");
             Connection connection = Jsoup.connect(url);
 
             if (null != headers) {
                 connection.headers(headers);
+            }
+
+            if (null != proxy) {
+                connection.proxy(proxy);
             }
 
             if (null != form) {
@@ -85,7 +94,7 @@ public class HtmlData {
         }
     }
 
-    public Doc post(String url, Map<String, String> headers, String json) {
+    public Doc post(String url, Map<String, String> headers,Proxy proxy, String json) {
         try {
             log.debug("Request{method=POST,url=" + url + "}");
 
@@ -96,6 +105,10 @@ public class HtmlData {
             }
             // 不管是否存在文件头，post json这个是必须的
             connection.header("Content-Type", "application/json");
+
+            if (null != proxy) {
+                connection.proxy(proxy);
+            }
 
             connection.requestBody(json);
 
