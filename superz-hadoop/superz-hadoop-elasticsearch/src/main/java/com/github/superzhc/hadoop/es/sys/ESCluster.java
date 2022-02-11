@@ -1,7 +1,7 @@
-package com.github.superzhc.hadoop.es;
+package com.github.superzhc.hadoop.es.sys;
 
+import com.github.superzhc.hadoop.es.ESClient;
 import com.github.superzhc.hadoop.es.util.ResponseUtils;
-import org.apache.http.HttpHost;
 import org.elasticsearch.client.Response;
 
 /**
@@ -13,10 +13,6 @@ public class ESCluster
 
     public ESCluster(ESClient client) {
         this.client = client;
-    }
-
-    public ESCluster(HttpHost... httpHosts) {
-        this.client = new ESClient(httpHosts);
     }
 
     public String info() {

@@ -3,7 +3,9 @@ package com.github.superzhc.hadoop.es;
 import java.io.Closeable;
 import java.io.IOException;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
+import org.apache.http.entity.BasicHttpEntity;
 import org.elasticsearch.client.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,10 +40,12 @@ public class ESClient implements Closeable
 
     @Override
     public void close() throws IOException {
-        if (null != client)
+        if (null != client) {
             client.close();
-        if (null != highLevelClient)
+        }
+        if (null != highLevelClient) {
             highLevelClient.close();
+        }
     }
 
     public void ping() {
@@ -89,8 +93,10 @@ public class ESClient implements Closeable
 
             // 7.1.1 版本
             Request request = new Request(method, url);
-            if (null != json)
+            if (null != json) {
                 request.setJsonEntity(json);
+            }
+
             if (logger.isDebugEnabled()) {
                 logger.debug(request.toString() + (null == json ? "" : ",请求体内容：" + json));
             }

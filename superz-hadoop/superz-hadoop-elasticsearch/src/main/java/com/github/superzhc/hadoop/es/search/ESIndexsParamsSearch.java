@@ -5,6 +5,7 @@ import com.github.superzhc.hadoop.es.ESClient;
 /**
  * 2020年06月22日 superz add
  */
+@Deprecated
 public class ESIndexsParamsSearch extends ESIndexsSearch
 {
     private String params;

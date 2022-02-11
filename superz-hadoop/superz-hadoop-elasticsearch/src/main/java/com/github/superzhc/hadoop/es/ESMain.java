@@ -1,72 +1,118 @@
 package com.github.superzhc.hadoop.es;
 
-import com.github.superzhc.hadoop.es.*;
-import com.github.superzhc.hadoop.es.util.IndexUtils;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.superzhc.hadoop.es.index.ESIndex;
 import com.github.superzhc.hadoop.es.search.ESIndexsSearch;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.builder.SearchSourceBuilder;
-
-import java.util.List;
+import com.github.superzhc.hadoop.es.search.ESNewSearch;
+import com.github.superzhc.hadoop.es.search.ESSearch;
+import com.github.superzhc.hadoop.es.sys.ESCat;
+import com.github.superzhc.hadoop.es.sys.ESCluster;
 
 /**
  * 2020年06月22日 superz add
  */
-public class ESMain
-{
-//    static{
-//        PropertiesUtils.read("./elasticsearch.properties");
-//    }
-
+public class ESMain {
     public static void main(String[] args) {
-        try (ESClient client = ESClient.create("",1234/*PropertiesUtils.get("es.host"), PropertiesUtils.getInt("es.port")*/)) {
-//            ESDocument document = new ESDocument(client,"002", "e0f2dc0c-3dcf-44ab-b0ca-45b64004eb79_002");
-//            String str = document.get();
-//            System.out.println(new JSONFormat().format(str));
-//            ESSearch search = new ESIndexsSearch(client, "002", "003", "004", "005");
-//            System.out.println(search.queryAll());
+        String path = "D:\\downloads\\tg\\";
+        String fileName = "xxx.txt";
+        path += fileName;
 
-            // 获取所有索引
-//            List<String> indices = IndexUtils.indices(client);
-//            for (String index : indices) {
-//                ESIndex esIndex = new ESIndex(client, index);
-//                System.out.println(esIndex.mapping());
+        //FileData fileData = FileData.txt(path, "GB2312");
+        //fileData.preview();
+
+        String url = "jdbc:mysql://localhost:13306/data_warehouse?useSSL=false&useUnicode=true&characterEncoding=utf-8";
+        String username = "root";
+        String password = "123456";
+
+        ObjectMapper mapper = new ObjectMapper();
+
+
+        try (ESClient client = ESClient.create("localhost", 9200)) {
+            String index = "shegong";
+            String result;
+
+//            ESCat esCat=new ESCat(client);
+//            System.out.println(esCat.count());
+//            System.out.println(esCat.allocation());
+//            System.out.println(esCat.fielddata());
+//            System.out.println(esCat.indices());
+//            System.out.println(esCat.shards());
+
+//            ESCluster esCluster = new ESCluster(client);
+//            System.out.println(esCluster.info());
+//            System.out.println(esCluster.health());
+//            System.out.println(esCluster.settings());
+//            System.out.println(esCluster.stats());
+
+
+            ESIndex esIndex = new ESIndex(client);
+//            // result = esIndex.create(index, 10, 1);
+//            //System.out.println(result);
+//            result=esIndex.mapping(index);
+//            System.out.println(result);
+
+//            ESDocument esDocument = new ESDocument(client);
+
+//            try (JdbcHelper jdbc = new JdbcHelper(url, username, password)) {
+//                Long count = jdbc.aggregate("select count(*) from xxx");
+//                int batchSize = 10000;
+//
+//                Long size = count / batchSize;
+//                long remain = count % batchSize;
+//                for (long i = 4676168 / batchSize, len = (remain == 0 ? size : size + 1); i < len; i++) {
+//                    List<Map<String, Object>> datas = jdbc.query("select * from xxx limit " + (i * size) + "," + batchSize);
+//                    for (Map<String, Object> data : datas) {
+//                        String mobile = (String) data.get("mobile");
+//                        String tel = (String) data.get("tel");
+//                        mobile = mobile.replace("/", "");
+//                        tel = tel.replace("/", "");
+//                        String id = null == mobile || mobile.trim().length() == 0 ? (null == tel || tel.trim().length() == 0 ? UUID.randomUUID().toString() : tel) : mobile;
+//                        esDocument.upsert(index, id, mapper.writeValueAsString(data));
+//                    }
+//                }
 //            }
 
-            SearchSourceBuilder builder = new SearchSourceBuilder().query(QueryBuilders.matchAllQuery());
+            //            FileData.FileReadSetting setting = new FileData.FileReadSetting(10000, new Function<List<Object>, Boolean>() {
+//                @Override
+//                public Boolean apply(List<Object> objects) {
+//                    for (Object object : objects) {
+//                        String line = (String) object;
+//                        String[] ss = line.split("----");
+//
+//                        String id, info;
+//                        if (ss.length == 2) {
+//                            id = null == ss[0] || ss[0].trim().length() == 0 ? UUID.randomUUID().toString() : ss[0];
+//                            info = ss[1];
+//                        } else {
+//                            id = UUID.randomUUID().toString();
+//                            info = line;
+//                        }
+//
+//                        if (null != info) {
+//                            info = info.replace("\"", "'");
+//                        }
+//
+//                        esDocument.upsert(index, id, "{\"kuaishou\":\"" + info + "\"}");
+//                    }
+//                    return true;
+//                }
+//            });
+//            fileData.read(setting);
 
-            ESScroll scroll = new ESScroll(client);
-            String ret = scroll.query(builder.toString(), "1m");
-            System.out.println(ret);
-            int count = 10;
-            while (count > 0) {
-                ret = scroll.get("1m");
-                System.out.println(ret);
-                count--;
-            }
-            ret = scroll.clear();
-            System.out.println(ret);
-
-        }
-        catch (Exception ex) {
+            ESNewSearch esSearch = new ESNewSearch(client);
+//            result = esSearch.queryDSL("{\n" +
+//                    "    \"from\":1000,\n" +
+//                    "    \"size\":100,\n" +
+//                    "    \"query\":{\n" +
+//                    "        \"match\":{\n" +
+//                    //"            \"name\":\"\"\n" +
+//                    "        }\n" +
+//                    "    }\n" +
+//                    "}", index);
+            result=esSearch.queryAll(index);
+            System.out.println(result);
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
-//
-//        System.out.println(new SearchSourceBuilder().query(QueryBuilders.matchAllQuery()).toString());
-//
-//        SearchSourceBuilder builder = new SearchSourceBuilder().query(QueryBuilders.matchAllQuery());
-//        builder.from(0);
-//        builder.size(10);
-//        builder.fetchSource(new String[] {"infodate_date", "pubdate_date" }, null);
-//        builder.sort("created_on", SortOrder.ASC);
-//        builder.sort("name",SortOrder.DESC);
-//        System.out.println(builder.toString());
-
-//        // 时间范围
-//        System.out.println(QueryBuilders.rangeQuery("dt").gte("2020-01-01").lte("2020-06-17"));
-//
-//        System.out.println(QueryBuilders.multiMatchQuery("aaa","xxx","yyyy"));
-//
-//        System.out.println(QueryBuilders.queryStringQuery("this AND that OR thus").defaultField("tttt"));
     }
 }

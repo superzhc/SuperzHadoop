@@ -1,19 +1,18 @@
-package com.github.superzhc.hadoop.es;
+package com.github.superzhc.hadoop.es.sys;
 
+import com.github.superzhc.hadoop.es.ESClient;
+import com.github.superzhc.hadoop.es.ESCommon;
+import com.github.superzhc.hadoop.es.util.ResponseUtils;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.Response;
 
 /**
  * 2020年06月17日 superz add
  */
-public class ESTestAPI extends ESCommon
+public class ESAnalyzer extends ESCommon
 {
-    public ESTestAPI(ESClient client){
+    public ESAnalyzer(ESClient client){
         super(client);
-    }
-
-    public ESTestAPI(HttpHost... httpHosts){
-        super(httpHosts);
     }
 
     /**
@@ -24,9 +23,9 @@ public class ESTestAPI extends ESCommon
      * language analyzer（特定的语言的分词器，比如说，english，英语分词器）：set, shape, semi, transpar, call, set_tran, 5
      * @return
      */
-    public Response testAnalyzer(String analyzer, String text) {
+    public String Analyzer(String analyzer, String text) {
         String url = "/_analyze";
         String query = "{\"analyzer\": \"" + analyzer + "\",\"text\": \"" + text + "\"}";
-        return client.get(url, query);
+        return ResponseUtils.getEntity(client.get(url, query));
     }
 }

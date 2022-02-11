@@ -1,5 +1,7 @@
-package com.github.superzhc.hadoop.es;
+package com.github.superzhc.hadoop.es.sys;
 
+import com.github.superzhc.hadoop.es.ESClient;
+import com.github.superzhc.hadoop.es.ESCommon;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.Response;
 

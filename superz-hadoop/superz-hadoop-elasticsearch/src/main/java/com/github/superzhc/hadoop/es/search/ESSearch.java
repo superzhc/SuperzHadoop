@@ -1,6 +1,7 @@
-package com.github.superzhc.hadoop.es;
+package com.github.superzhc.hadoop.es.search;
 
-import org.apache.http.HttpHost;
+import com.github.superzhc.hadoop.es.ESClient;
+import com.github.superzhc.hadoop.es.ESCommon;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -12,6 +13,7 @@ import com.github.superzhc.hadoop.es.util.ResponseUtils;
 /**
  * 2020年06月17日 superz add
  */
+@Deprecated
 public abstract class ESSearch extends ESCommon
 {
     private static final Logger logger = LoggerFactory.getLogger(ESSearch.class);
@@ -38,17 +40,17 @@ public abstract class ESSearch extends ESCommon
     @Deprecated
     public String queryString(String query) {
         String url = String.format(params("%s/_search?q=%s"), index(), query);
-        logger.debug("查询信息：{}", url);
+        //logger.debug("查询信息：{}", url);
         Response response = client.get(url);
-        logger.debug("响应信息：{}", response.toString());
+        //logger.debug("响应信息：{}", response.toString());
         return ResponseUtils.getEntity(response);
     }
 
     public String queryDSL(String query) {
         String url = String.format(params("%s/_search"), index());
-        logger.debug("查询的Url:{};查询的条件：{}", url, query);
+        //logger.debug("查询的Url:{};查询的条件：{}", url, query);
         Response response = client.get(url, query);
-        logger.debug("响应信息：{}", response.toString());
+        //logger.debug("响应信息：{}", response.toString());
         return ResponseUtils.getEntity(response);
     }
 

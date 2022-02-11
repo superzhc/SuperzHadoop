@@ -1,14 +1,16 @@
-package com.github.superzhc.hadoop.es;
+package com.github.superzhc.hadoop.es.search;
 
 //import com.alibaba.fastjson.JSON;
 //import com.alibaba.fastjson.JSONObject;
+import com.github.superzhc.hadoop.es.ESClient;
+import com.github.superzhc.hadoop.es.ESCommon;
 import com.github.superzhc.hadoop.es.search.ESIndexsParamsSearch;
-import com.github.superzhc.hadoop.es.util.ResponseUtils;
-import org.elasticsearch.client.Response;
+import com.github.superzhc.hadoop.es.search.ESSearch;
 
 /**
  * 2020年06月22日 superz add
  */
+@Deprecated
 public class ESScroll extends ESCommon
 {
     private static final String URL = "/_search/scroll";

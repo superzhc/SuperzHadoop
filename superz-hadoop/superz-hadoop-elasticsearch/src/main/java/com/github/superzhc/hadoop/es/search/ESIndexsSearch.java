@@ -1,8 +1,5 @@
 package com.github.superzhc.hadoop.es.search;
 
-import com.github.superzhc.hadoop.es.ESSearch;
-import org.apache.http.HttpHost;
-
 import com.github.superzhc.hadoop.es.ESClient;
 
 /**
@@ -13,8 +10,8 @@ import com.github.superzhc.hadoop.es.ESClient;
  * /*1,*2/_search：按照通配符去匹配多个索引
  * 2020年04月22日 superz add
  */
-public class ESIndexsSearch extends ESSearch
-{
+@Deprecated
+public class ESIndexsSearch extends ESSearch {
     private String[] indices;
 
     public ESIndexsSearch(ESClient client, String... indices) {
@@ -29,12 +26,14 @@ public class ESIndexsSearch extends ESSearch
 
     @Override
     protected String index() {
-        if (null == indices || indices.length == 0)
+        if (null == indices || indices.length == 0) {
             return "";
-        return String.join(",", indices);
+        }
+        return "/" + String.join(",", indices);
     }
 
-    @Override protected String params(String url) {
+    @Override
+    protected String params(String url) {
         return url;
     }
 }
