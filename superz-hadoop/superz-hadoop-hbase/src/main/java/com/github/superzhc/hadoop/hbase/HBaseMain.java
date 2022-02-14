@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 /**
  * 2020年04月29日 superz add
  */
-public class HBaseMain {
+public class  HBaseMain {
     private static final Logger log = LoggerFactory.getLogger(HBaseMain.class);
     private Connection connection = null;
 

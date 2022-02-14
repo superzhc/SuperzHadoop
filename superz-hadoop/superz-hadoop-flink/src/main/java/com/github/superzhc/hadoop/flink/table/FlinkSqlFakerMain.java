@@ -28,7 +28,7 @@ public class FlinkSqlFakerMain {
             'fields.timestamps.expression'='#{date.past ''5'',''SECONDS''}'
         )
         */
-    public static String FLINK_TABLE_SOURCE_DDL = "CREATE TEMPORARY TABLE faker(\n" +
+    public static String FLINK_TABLE_SOURCE_DDL = "CREATE TEMPORARY TABLE superz(\n" +
             "            name STRING,\n" +
             "            age INT,\n" +
             "            sex STRING,\n" +

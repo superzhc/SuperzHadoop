@@ -89,7 +89,7 @@ public class JavaFakerSource extends RichSourceFunction<String> implements Check
             try {
                 faker.expression(expression);
             } catch (Exception e) {
-                throw new IllegalArgumentException("field " + field + " expression must config");
+                throw new IllegalArgumentException("field [" + field + "] expression [" + expression + "] error");
             }
             expressionArr[i] = expression;
             i++;
@@ -153,10 +153,10 @@ public class JavaFakerSource extends RichSourceFunction<String> implements Check
         //fakerConfigs.put("fields..expression",FakerUtils.Expression);
         fakerConfigs.put("fields.name.expression", FakerUtils.Expression.NAME);
         fakerConfigs.put("fields.age.expression", FakerUtils.Expression.age(1, 80));
-        fakerConfigs.put("fields.id_card.expression",FakerUtils.Expression.ID_CARD);
-        fakerConfigs.put("fields.qq.expression",FakerUtils.Expression.QQ);
-        fakerConfigs.put("fields.ip.expression",FakerUtils.Expression.IP);
-        fakerConfigs.put("fields.plate_number.expression",FakerUtils.Expression.Car.LICESE_PLATE);
+        fakerConfigs.put("fields.id_card.expression", FakerUtils.Expression.ID_CARD);
+        fakerConfigs.put("fields.qq.expression", FakerUtils.Expression.QQ);
+        fakerConfigs.put("fields.ip.expression", FakerUtils.Expression.IP);
+        fakerConfigs.put("fields.plate_number.expression", FakerUtils.Expression.Car.LICESE_PLATE);
         fakerConfigs.put("fields.date.expression", FakerUtils.Expression.pastDate(5));
         env.addSource(new JavaFakerSource(fakerConfigs)).print();
         env.execute("javafaker source");

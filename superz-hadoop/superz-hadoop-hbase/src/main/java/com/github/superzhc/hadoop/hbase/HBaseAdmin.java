@@ -34,9 +34,12 @@ public class HBaseAdmin {
         }
     }
 
-    public void list(String tableName) {
+    public void list() {
         try (Admin admin = connection.getAdmin()) {
-
+            List<TableDescriptor> tableDescriptors=admin.listTableDescriptors();
+            for(TableDescriptor tableDescriptor:tableDescriptors){
+                 System.out.println(tableDescriptor.getTableName().getNameAsString());
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -81,7 +84,7 @@ public class HBaseAdmin {
     public static void main(String[] args) {
         try (HBaseConnection hBaseConnection = new HBaseConnection(new Cloud4ControlConfig())) {
             HBaseAdmin hBaseAdmin = new HBaseAdmin(hBaseConnection);
-            //hBaseAdmin.describe("hbase:meta");
+            hBaseAdmin.list();
 
         } catch (IOException e) {
             e.printStackTrace();

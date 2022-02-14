@@ -19,7 +19,7 @@
       ],
       "producerConfig": {
         "mqtt": {
-          "topic": "/device_id /device/helmetPos",
+          "topic": "/taicang/device/helmetPos",
           "qos": 0
         }
       },

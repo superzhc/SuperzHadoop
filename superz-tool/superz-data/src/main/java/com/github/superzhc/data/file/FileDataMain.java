@@ -23,47 +23,45 @@ public class FileDataMain {
 
         path = path + fileName;
 
-        path = "C:\\Users\\superz\\jd_2022_01_20_16_57_21.txt";
-
         FileData fileData = FileData.file(path);
         fileData.preview();
         fileData.count();
 
-        final List<Integer> errorLineNumbers = new ArrayList<>();
-        FileData.FileReadSetting errorLinesSettings = new FileData.FileReadSetting(100000, new Function<List<Object>, Boolean>() {
-            @Override
-            public Boolean apply(List<Object> objects) {
-                for (Object obj : objects) {
-                    String str = (String) obj;
-                    String[] ss = str.split(":");
-                    errorLineNumbers.add(Integer.parseInt(ss[0]));
-                }
-                return true;
-            }
-        });
-        fileData.read(errorLinesSettings);
-
-        try (final JdbcHelper jdbc = new JdbcHelper(url, username, password)) {
-            final ErrorData errorData = new ErrorData("jd");
-
-            String path2 = "D:\\downloads\\tg\\jd.txt";
-            FileData fileData2 = FileData.file(path2);
-            FileData.FileReadSetting originSettings = new FileData.FileReadSetting(100000, new Function<List<Object>, Boolean>() {
-                int cursor = 1;
-
-                @Override
-                public Boolean apply(List<Object> objects) {
-                    for (Object data : objects) {
-                        if (errorLineNumbers.contains(cursor)) {
-                            errorData.add((String) data);
-                        }
-                        cursor++;
-                    }
-                    errorData.write2db(jdbc);
-                    return true;
-                }
-            });
-            fileData2.read(originSettings);
-        }
+//        final List<Integer> errorLineNumbers = new ArrayList<>();
+//        FileData.FileReadSetting errorLinesSettings = new FileData.FileReadSetting(100000, new Function<List<Object>, Boolean>() {
+//            @Override
+//            public Boolean apply(List<Object> objects) {
+//                for (Object obj : objects) {
+//                    String str = (String) obj;
+//                    String[] ss = str.split(":");
+//                    errorLineNumbers.add(Integer.parseInt(ss[0]));
+//                }
+//                return true;
+//            }
+//        });
+//        fileData.read(errorLinesSettings);
+//
+//        try (final JdbcHelper jdbc = new JdbcHelper(url, username, password)) {
+//            final ErrorData errorData = new ErrorData("jd");
+//
+//            String path2 = "D:\\downloads\\tg\\jd.txt";
+//            FileData fileData2 = FileData.file(path2);
+//            FileData.FileReadSetting originSettings = new FileData.FileReadSetting(100000, new Function<List<Object>, Boolean>() {
+//                int cursor = 1;
+//
+//                @Override
+//                public Boolean apply(List<Object> objects) {
+//                    for (Object data : objects) {
+//                        if (errorLineNumbers.contains(cursor)) {
+//                            errorData.add((String) data);
+//                        }
+//                        cursor++;
+//                    }
+//                    errorData.write2db(jdbc);
+//                    return true;
+//                }
+//            });
+//            fileData2.read(originSettings);
+//        }
     }
 }

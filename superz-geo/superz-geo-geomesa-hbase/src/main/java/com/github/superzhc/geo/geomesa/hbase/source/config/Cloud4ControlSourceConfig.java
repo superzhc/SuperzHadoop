@@ -36,8 +36,12 @@ public class Cloud4ControlSourceConfig extends GeomesaSourceConfig {
     }
 
     public static void main(String[] args) {
+//        for(int i=0;i<100;i++){
+//           new Thread(new GeomesaUpsertClient()).start();
+//        }
+
         try (GeomesaDataStore geomesaDataStore = new GeomesaDataStore(new Cloud4ControlSourceConfig())) {
-            String schema = "quay.crane.helmet";
+            String schema = "cloud4control";
 
             // region 查询
             GeomesaQuery geomesaQuery = new GeomesaQuery(geomesaDataStore/*, 1*/);
@@ -48,18 +52,18 @@ public class Cloud4ControlSourceConfig extends GeomesaSourceConfig {
 //            List<Map<String, Object>> lst = geomesaQuery.query("bsm.gps", queryWrapper, 100, "timestamp", "desc");
 //            System.out.println(lst);
 
-            // 无条件查询
-            while (true) {
-                System.out.println(geomesaQuery.scan(schema,100,"timestamp","desc"));
-                Thread.sleep(1000 * 10);
-            }
+//            // 无条件查询
+//            while (true) {
+//                System.out.println(geomesaQuery.scan(schema,100,"timestamp","desc"));
+//                Thread.sleep(1000 * 10);
+//            }
 
             // endregion
 
             // region 表管理
-//            GeomesaAdmin geomesaAdmin = new GeomesaAdmin(geomesaDataStore);
+            GeomesaAdmin geomesaAdmin = new GeomesaAdmin(geomesaDataStore);
 
-//            System.out.println(geomesaAdmin.show());
+            System.out.println(geomesaAdmin.show());
 //            System.out.println(geomesaAdmin.show(schema));
 
 //            String sft=geomesaAdmin.formatSft(schema);
@@ -87,34 +91,68 @@ public class Cloud4ControlSourceConfig extends GeomesaSourceConfig {
 
             // endregion
 
-            // region 增删改查
+//            // region 增删改查
 //            GeomesaUpsert geomesaUpsert = new GeomesaUpsert(geomesaDataStore);
-//            Map<String,Object> map=new HashMap<>();
-//            map.put("ReadTime",new Date());
-//            map.put("CraneName","Q10");
-//            map.put("ControlOn","1");
-//            map.put("WindSpeed","13");
-//            map.put("IsLock","1");
-//            map.put("HTPos","10.52");
-//            map.put("GTPos","15");
-//            map.put("TTPos","5.8");
-//            map.put("PTPos","50");
-//            map.put("HTState","1");
-//            map.put("TTState","1");
-//            map.put("GTState","1");
-//            map.put("PTState","1");
-//            map.put("HTFault_Fault1","0");
-//            map.put("HTFault_Fault2","0");
-//            map.put("GTFault_Fault1","0");
-//            map.put("GTFault_Fault2","0");
-//            map.put("TTFault_Fault1","0");
-//            map.put("TTFault_Fault2","0");
-//            map.put("PTFault_Fault1","0");
-//            map.put("PTFault_Fault2","0");
-//            geomesaUpsert.insert(schema,map);
+//            Map<String, Object> map = new HashMap<>();
+//            map.put("ReadTime", new Date());
+//            map.put("CraneName", "Q10");
+//            map.put("ControlOn", "1");
+//            map.put("WindSpeed", "13");
+//            map.put("IsLock", "1");
+//            map.put("HTPos", "10.52");
+//            map.put("GTPos", "15");
+//            map.put("TTPos", "5.8");
+//            map.put("PTPos", "50");
+//            map.put("HTState", "1");
+//            map.put("TTState", "1");
+//            map.put("GTState", "1");
+//            map.put("PTState", "1");
+//            map.put("HTFault_Fault1", "0");
+//            map.put("HTFault_Fault2", "0");
+//            map.put("GTFault_Fault1", "0");
+//            map.put("GTFault_Fault2", "0");
+//            map.put("TTFault_Fault1", "0");
+//            map.put("TTFault_Fault2", "0");
+//            map.put("PTFault_Fault1", "0");
+//            map.put("PTFault_Fault2", "0");
+//            geomesaUpsert.insert(schema, map);
             //endregion
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public static class GeomesaUpsertClient implements Runnable {
+
+        @Override
+        public void run() {
+            try (GeomesaDataStore geomesaDataStore = new GeomesaDataStore(new Cloud4ControlSourceConfig())) {
+                String schema = "quay.crane.plc";
+
+                GeomesaUpsert geomesaUpsert = new GeomesaUpsert(geomesaDataStore);
+                while (true) {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("timestamp", new Date());
+                    map.put("craneName", /*"Q10"*/Thread.currentThread().getName());
+                    map.put("controlOn", "1");
+                    map.put("windSpeed", "13");
+                    map.put("isLock", "1");
+                    map.put("htPos", "10.52");
+                    map.put("gtPos", "15");
+                    map.put("ttPos", "5.8");
+                    map.put("ptPos", "50");
+                    map.put("htState", "1");
+                    map.put("ttState", "1");
+                    map.put("gtState", "1");
+                    map.put("ptState", "1");
+                    geomesaUpsert.insert(schema, map);
+                    System.out.println("插入成功"+Thread.currentThread().getName());
+
+                    Thread.sleep(1000*3);
+                }
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

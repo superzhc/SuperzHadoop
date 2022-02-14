@@ -29,7 +29,7 @@ public class ESNewSearch extends ESCommon {
         } else {
             indeics = String.format("/%s", String.join(",", indexes));
         }
-        String url = String.format("%s/_search?q=%s", indexes, query);
+        String url = String.format("%s/_search?q=%s", indeics, query);
         Response response = client.get(url);
         return ResponseUtils.getEntity(response);
     }
