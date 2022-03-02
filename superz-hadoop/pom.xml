@@ -22,6 +22,7 @@
         <module>superz-hadoop-elasticsearch</module>
         <module>superz-hadoop-kafka</module>
         <module>superz-hadoop-zookeeper</module>
+        <module>superz-hadoop-install</module>
     </modules>
 
     <properties>

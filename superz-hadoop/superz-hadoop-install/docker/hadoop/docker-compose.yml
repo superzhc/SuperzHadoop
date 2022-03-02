@@ -1,0 +1,64 @@
+version: "3"
+
+services:
+  namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    container_name: namenode
+    ports:
+      - 9870:9870
+      - 20070:50070
+      - 9871:9871
+      - 20470:50470
+      - 9000:9000
+      - 8020:8020
+      - 9820:9820
+      - 8088:8088 # YARN的ResourceManager端口
+    volumes:
+      - hadoop_namenode:/hadoop/dfs/name
+    environment:
+      - CLUSTER_NAME=test
+    env_file:
+      - ./hadoop.env
+
+  datanode1:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: datanode1
+    ports:
+      - 9864:9864
+      - 9865:9865
+      - 9866:9866
+      - 9867:9867
+      - 20020:50020
+      - 20010:50010
+      - 20475:50475
+      - 20075:50075
+    volumes:
+      - hadoop_datanode1:/hadoop/dfs/data
+    depends_on:
+      - namenode
+    env_file:
+      - ./hadoop.env
+
+  datanode2:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: datanode2
+    ports:
+      - 19864:9864
+      - 19865:9865
+      - 19866:9866
+      - 19867:9867
+      - 21020:50020
+      - 21010:50010
+      - 21475:50475
+      - 21075:50075
+    volumes:
+      - hadoop_datanode2:/hadoop/dfs/data
+    depends_on:
+      - namenode
+    env_file:
+      - ./hadoop.env
+
+volumes:
+  hadoop_namenode:
+  hadoop_datanode1:
+  hadoop_datanode2:
