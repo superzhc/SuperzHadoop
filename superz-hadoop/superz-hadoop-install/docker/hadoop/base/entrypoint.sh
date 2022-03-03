@@ -27,7 +27,7 @@ function configure() {
         var="${envPrefix}_${c}"
         value=${!var}
         echo " - Setting $name=$value"
-        addProperty $path $name "$value"
+        addProperty /etc/hadoop/$module-site.xml $name "$value"
     done
 }
 
@@ -52,6 +52,7 @@ if [ "$MULTIHOMED_NETWORK" = "1" ]; then
     # YARN
     addProperty /etc/hadoop/yarn-site.xml yarn.resourcemanager.bind-host 0.0.0.0
     addProperty /etc/hadoop/yarn-site.xml yarn.nodemanager.bind-host 0.0.0.0
+    addProperty /etc/hadoop/yarn-site.xml yarn.nodemanager.bind-host 0.0.0.0
     addProperty /etc/hadoop/yarn-site.xml yarn.timeline-service.bind-host 0.0.0.0
 
     # MAPRED
@@ -67,7 +68,7 @@ if [ -n "$GANGLIA_HOST" ]; then
         echo "$module.period=10"
         echo "$module.servers=$GANGLIA_HOST:8649"
     done > /etc/hadoop/hadoop-metrics.properties
-
+    
     for module in namenode datanode resourcemanager nodemanager mrappmaster jobhistoryserver; do
         echo "$module.sink.ganglia.class=org.apache.hadoop.metrics2.sink.ganglia.GangliaSink31"
         echo "$module.sink.ganglia.period=10"
@@ -78,39 +79,40 @@ if [ -n "$GANGLIA_HOST" ]; then
     done > /etc/hadoop/hadoop-metrics2.properties
 fi
 
-function wait_for_it()
-{
-    local serviceport=$1
-    local service=${serviceport%%:*}
-    local port=${serviceport#*:}
-    local retry_seconds=5
-    local max_try=100
-    let i=1
-
-    nc -z $service $port
-    result=$?
-
-    until [ $result -eq 0 ]; do
-      echo "[$i/$max_try] check for ${service}:${port}..."
-      echo "[$i/$max_try] ${service}:${port} is not available yet"
-      if (( $i == $max_try )); then
-        echo "[$i/$max_try] ${service}:${port} is still not available; giving up after ${max_try} tries. :/"
-        exit 1
-      fi
-      
-      echo "[$i/$max_try] try in ${retry_seconds}s once again ..."
-      let "i++"
-      sleep $retry_seconds
-
-      nc -z $service $port
-      result=$?
-    done
-    echo "[$i/$max_try] $service:${port} is available."
-}
-
-for i in ${SERVICE_PRECONDITION[@]}
-do
-    wait_for_it ${i}
-done
+#通过Docker自带的dependOn实现
+#function wait_for_it()
+#{
+#    local serviceport=$1
+#    local service=${serviceport%%:*}
+#    local port=${serviceport#*:}
+#    local retry_seconds=5
+#    local max_try=100
+#    let i=1
+#
+#    nc -z $service $port
+#    result=$?
+#
+#    until [ $result -eq 0 ]; do
+#      echo "[$i/$max_try] check for ${service}:${port}..."
+#      echo "[$i/$max_try] ${service}:${port} is not available yet"
+#      if (( $i == $max_try )); then
+#        echo "[$i/$max_try] ${service}:${port} is still not available; giving up after ${max_try} tries. :/"
+#        exit 1
+#      fi
+#
+#      echo "[$i/$max_try] try in ${retry_seconds}s once again ..."
+#      let "i++"
+#      sleep $retry_seconds
+#
+#      nc -z $service $port
+#      result=$?
+#    done
+#    echo "[$i/$max_try] $service:${port} is available."
+#}
+#
+#for i in ${SERVICE_PRECONDITION[@]}
+#do
+#    wait_for_it ${i}
+#done
 
 exec $@
