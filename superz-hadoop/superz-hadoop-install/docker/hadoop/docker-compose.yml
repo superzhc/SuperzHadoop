@@ -2,7 +2,7 @@ version: "3"
 
 services:
   namenode:
-    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.1.1-java8
     container_name: namenode
     ports:
       - 9870:9870
@@ -13,6 +13,7 @@ services:
       - 8020:8020
       - 9820:9820
       - 8088:8088 # YARN的ResourceManager端口
+      - 10000:10000 # Hive的端口
     volumes:
       - hadoop_namenode:/hadoop/dfs/name
     environment:
@@ -21,7 +22,7 @@ services:
       - ./hadoop.env
 
   datanode1:
-    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.1.1-java8
     container_name: datanode1
     ports:
       - 9864:9864
@@ -40,7 +41,7 @@ services:
       - ./hadoop.env
 
   datanode2:
-    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.1.1-java8
     container_name: datanode2
     ports:
       - 19864:9864
