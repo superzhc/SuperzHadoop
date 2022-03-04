@@ -22,11 +22,11 @@
             <artifactId>superz-common-core</artifactId>
             <version>0.2.0</version>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>com.github.superzhc</groupId>
             <artifactId>superz-geo-geotool</artifactId>
             <version>0.2.0</version>
-        </dependency>
+        </dependency>-->
 
         <!--guava 冲突，需要使用该版本-->
         <dependency>

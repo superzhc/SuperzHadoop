@@ -23,15 +23,16 @@
         <module>superz-hadoop-kafka</module>
         <module>superz-hadoop-zookeeper</module>
         <module>superz-hadoop-install</module>
+        <module>superz-hadoop-hudi</module>
     </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <log4j.version>2.9.1</log4j.version>
-        <hadoop.version>3.0.0</hadoop.version>
+        <hadoop.version>3.1.1</hadoop.version>
         <zookeeper.version>3.4.10</zookeeper.version>
-        <hive.version>1.2.1</hive.version>
+        <hive.version>3.1.2</hive.version>
         <hbase.version>2.2.3</hbase.version>
         <spark.version>2.3.0</spark.version>
         <flink.version>1.12.2</flink.version>

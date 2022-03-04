@@ -11,7 +11,7 @@ import java.sql.ResultSet;
 public class HiveMain
 {
     private static String JDBC_DRIVER = "org.apache.hive.jdbc.HiveDriver";
-    private static String CONNECTION_URL = "jdbc:hive2://ep-002.hadoop:10000/";
+    private static String CONNECTION_URL = "jdbc:hive2://localhost:10000/";
 
     static {
         try {
@@ -28,7 +28,7 @@ public class HiveMain
         PreparedStatement ps = null;
         try {
             connection = DriverManager.getConnection(CONNECTION_URL);
-            ps = connection.prepareStatement("select * from superz_test");
+            ps = connection.prepareStatement("select * from superz_employees2");
             rs = ps.executeQuery();
             while (rs.next()) {
                 System.out.println(rs.getString(1) + "-------" + rs.getString(2));
