@@ -15,3 +15,6 @@ source /etc/profile
 
 # stand模式启动flink
 $FLINK_HOME/bin/start-cluster.sh
+
+## 启动 sql-client.sh
+#$FLINK_HOME/bin/sql-client.sh embedded
