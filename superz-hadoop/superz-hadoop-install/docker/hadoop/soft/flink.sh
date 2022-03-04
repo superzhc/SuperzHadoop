@@ -12,3 +12,6 @@ if [ $FLINK_HOME ] && [-z $FLINK_HOME ];then
   echo "export FLINK_HOME=/opt/flink" >> /etc/profile
 fi
 source /etc/profile
+
+# stand模式启动flink
+$FLINK_HOME/bin/start-cluster.sh
