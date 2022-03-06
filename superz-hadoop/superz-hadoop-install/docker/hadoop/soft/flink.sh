@@ -8,7 +8,7 @@ curl "$FLINK_URL" -o "/tmp/flink-$FLINK_VERSION-bin-scala_$SCALA_VERSION.tgz"
 tar -zxvf "/tmp/flink-$FLINK_VERSION-bin-scala_$SCALA_VERSION.tgz" -C /opt
 mv "/opt/flink-$FLINK_VERSION" /opt/flink
 
-if [ $FLINK_HOME ] && [-z $FLINK_HOME ];then
+if [ $FLINK_HOME ] && [ -z $FLINK_HOME ];then
   echo "export FLINK_HOME=/opt/flink" >> /etc/profile
 fi
 source /etc/profile

@@ -29,10 +29,13 @@ object ExceptionMain {
    * 捕获异常的语法采用的是模式匹配的语法
    */
   def exceptionCatch() = {
-    try {}
-    catch {
+    try {
+
+    } catch {
       case _: MalformedURLException => println("Bad URL")
       case ex: IOException => ex.printStackTrace()
+    } finally {
+      // finally 语句不一定会有，如果有一定会执行
     }
   }
 }

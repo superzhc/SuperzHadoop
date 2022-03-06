@@ -35,6 +35,9 @@ object ArrayMain {
     // 追加数组
     b ++= Array(6, 7, 8, 9)
     println(b)
+
+    /* 将不可变数组转换成可变数组 */
+    val c: mutable.Buffer[String] = a.toBuffer
   }
 
   /**

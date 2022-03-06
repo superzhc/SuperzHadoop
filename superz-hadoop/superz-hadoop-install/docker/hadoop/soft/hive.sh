@@ -14,7 +14,7 @@ fi
 if [ $HADOOP_CLASSPATH ] && [ -z $HADOOP_CLASSPATH ];then
   echo 'export HADOOP_CLASSPATH=`$HADOOP_HOME/bin/hadoop classpath`' >> /etc/profile
 fi
-if [$HIVE_HOME] && [-z $HIVE_HOME];then
+if [ $HIVE_HOME ] && [ -z $HIVE_HOME ];then
   echo "export HIVE_HOME=/opt/apache-hive-3.1.2-bin" >> /etc/profile
   echo 'export PATH=$HIVE_HOME/bin:$PATH' >> /etc/profile
 fi
@@ -45,7 +45,7 @@ function addProperty(){
 }
 
 file="${HIVE_HOME}/conf/hive-site.xml"
-if [! -f "$file"];then
+if [ ! -f "$file" ];then
   touch $file
 fi
 echo "<configuration>" >> $file
