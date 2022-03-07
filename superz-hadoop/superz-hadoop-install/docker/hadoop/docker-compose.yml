@@ -5,17 +5,19 @@ services:
     image: bde2020/hadoop-namenode:2.0.0-hadoop3.1.1-java8
     container_name: namenode
     ports:
-      - 9870:9870
-      - 20070:50070
+      - 9870:9870   # 3.0 版本后 8020 => 9870
+      - 20070:50070 # NameNode Web UI 端口
       - 9871:9871
-      - 20470:50470
+      - 20470:50470 # NameNode HTTPS 服务器地址和端口
       - 9000:9000
-      - 8020:8020
+      - 8020:8020   # NameNode API 连接默认端口
       - 9820:9820
-      - 8088:8088 # YARN的ResourceManager端口
-      - 10000:10000 # Hive的端口
+      - 8088:8088   # YARN 的 ResourceManager 端口，RM Web应用程序的http地址和端口
+      - 9083:9083   # Hive Metastore 监听器端口
+      - 10000:10000 # Hive Server2 的端口
+      - 8081:8081   # Flink Web UI 默认端口
     volumes:
-      - hadoop_namenode:/hadoop/dfs/name
+      - /f/docker/volumes/hadoop/namenode:/hadoop/dfs/name
     environment:
       - CLUSTER_NAME=test
     env_file:
@@ -29,37 +31,42 @@ services:
       - 9865:9865
       - 9866:9866
       - 9867:9867
-      - 20020:50020
-      - 20010:50010
-      - 20475:50475
-      - 20075:50075
+      - 20020:50020 # DataNode IPC 服务器地址和端口
+      - 20010:50010 # DataNode 初始化时向 Namenode 发送心跳
+      - 20475:50475 # DataNode HTTPS 服务器地址和端口
+      - 20075:50075 # DataNode HTTP 服务器地址和端口
+      # yarn
+      - 8042:8042
     volumes:
-      - hadoop_datanode1:/hadoop/dfs/data
+      - /f/docker/volumes/hadoop/datanode:/hadoop/dfs/data
     depends_on:
       - namenode
     env_file:
       - ./hadoop.env
 
-  datanode2:
-    image: bde2020/hadoop-datanode:2.0.0-hadoop3.1.1-java8
-    container_name: datanode2
-    ports:
-      - 19864:9864
-      - 19865:9865
-      - 19866:9866
-      - 19867:9867
-      - 21020:50020
-      - 21010:50010
-      - 21475:50475
-      - 21075:50075
-    volumes:
-      - hadoop_datanode2:/hadoop/dfs/data
-    depends_on:
-      - namenode
-    env_file:
-      - ./hadoop.env
+# 单机做集群，端口重复，改端口会造成宿主机无法访问内部提供的通信端口
+#  datanode2:
+#    image: bde2020/hadoop-datanode:2.0.0-hadoop3.1.1-java8
+#    container_name: datanode2
+#    ports:
+#      - 19864:9864
+#      - 19865:9865
+#      - 19866:9866
+#      - 19867:9867
+#      - 21020:50020
+#      - 21010:50010
+#      - 21475:50475
+#      - 21075:50075
+#      # yarn
+#      - 18042:8042
+#    volumes:
+#      - hadoop_datanode2:/hadoop/dfs/data
+#    depends_on:
+#      - namenode
+#    env_file:
+#      - ./hadoop.env
 
 volumes:
   hadoop_namenode:
   hadoop_datanode1:
-  hadoop_datanode2:
+#  hadoop_datanode2:

@@ -8,13 +8,13 @@ curl -fkSL "https://mirrors.tuna.tsinghua.edu.cn/apache/hive/hive-3.1.2/apache-h
 tar -xvf /tmp/apache-hive-3.1.2-bin.tar.gz -C /opt
 
 # 配置环境变量
-if [ $HADOOP_HOME ] && [ -z $HADOOP_HOME ];then
+if [ $HADOOP_HOME ] && [ -z $HADOOP_HOME ]; then
   echo "export HADOOP_HOME=$HADOOP_PREFIX" >> /etc/profile
 fi
-if [ $HADOOP_CLASSPATH ] && [ -z $HADOOP_CLASSPATH ];then
+if [ $HADOOP_CLASSPATH ] && [ -z $HADOOP_CLASSPATH ]; then
   echo 'export HADOOP_CLASSPATH=`$HADOOP_HOME/bin/hadoop classpath`' >> /etc/profile
 fi
-if [$HIVE_HOME] && [-z $HIVE_HOME];then
+if [ $HIVE_HOME ] && [-z $HIVE_HOME ]; then
   echo "export HIVE_HOME=/opt/apache-hive-3.1.2-bin" >> /etc/profile
   echo 'export PATH=$HIVE_HOME/bin:$PATH' >> /etc/profile
 fi
@@ -24,12 +24,6 @@ source /etc/profile
 curl -fSL "https://downloads.mysql.com/archives/get/p/3/file/mysql-connector-java-5.1.48.tar.gz" -o /tmp/mysql-connector-java-5.1.48.tar.gz
 tar -xvf /tmp/mysql-connector-java-5.1.48.tar.gz -C /opt
 cp /opt/mysql-connector-java-5.1.48/mysql-connector-java-5.1.48.jar $HIVE_HOME/lib/
-
-# 在 HDFS 上创建相关文件夹
-$HADOOP_HOME/bin/hadoop fs -mkdir       /tmp
-$HADOOP_HOME/bin/hadoop fs -mkdir  -p   /user/hive/warehouse
-$HADOOP_HOME/bin/hadoop fs -chmod g+w   /tmp
-$HADOOP_HOME/bin/hadoop fs -chmod g+w   /user/hive/warehouse
 
 # 写配置
 #echo "<configuration>" >> ${HIVE_HOME}/conf/hive-site.xml
@@ -57,6 +51,12 @@ addProperty $file javax.jdo.option.ConnectionPassword 123456
 ## 指定 hiveserver2 连接的端口
 addProperty $file hive.server2.thrift.port 10000
 echo "</configuration>" >> $file
+
+# 在 HDFS 上创建相关文件夹
+$HADOOP_HOME/bin/hadoop fs -mkdir       /tmp
+$HADOOP_HOME/bin/hadoop fs -mkdir  -p   /user/hive/warehouse
+$HADOOP_HOME/bin/hadoop fs -chmod g+w   /tmp
+$HADOOP_HOME/bin/hadoop fs -chmod g+w   /user/hive/warehouse
 
 # Docker 容器重启后执行如下启动服务，会出现 /etc/profile 不生效，故需要先执行如下命令
 source /etc/profile
