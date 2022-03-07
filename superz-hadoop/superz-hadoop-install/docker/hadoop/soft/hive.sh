@@ -14,7 +14,7 @@ fi
 if [ $HADOOP_CLASSPATH ] && [ -z $HADOOP_CLASSPATH ]; then
   echo 'export HADOOP_CLASSPATH=`$HADOOP_HOME/bin/hadoop classpath`' >> /etc/profile
 fi
-if [ $HIVE_HOME ] && [-z $HIVE_HOME ]; then
+if [ $HIVE_HOME ] && [ -z $HIVE_HOME ]; then
   echo "export HIVE_HOME=/opt/apache-hive-3.1.2-bin" >> /etc/profile
   echo 'export PATH=$HIVE_HOME/bin:$PATH' >> /etc/profile
 fi
@@ -65,9 +65,9 @@ echo "$HIVE_HOME"
 $HIVE_HOME/bin/schematool -initSchema -dbType mysql -verbose
 ## 使用 hiveserver2 需要开启元数据服务
 ## 启动元数据服务[后台启动]
-#nohup $HIVE_HOME/bin/hive --service metastore 2&>1 &
+#nohup $HIVE_HOME/bin/hive --service metastore 2>&1 &
 ## 启动 hiveserver2[后台启动]
-#nohup $HIVE_HOME/bin/hive --service hiveserver2 2&>1 &
+#nohup $HIVE_HOME/bin/hive --service hiveserver2 2>&1 &
 
 ## jdbc连接hive
 #$HIVE_HOME/bin/beeline -u jdbc:hive2://localhost:10000 -n root

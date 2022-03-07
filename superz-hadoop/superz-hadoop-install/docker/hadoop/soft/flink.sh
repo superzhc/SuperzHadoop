@@ -11,7 +11,7 @@ mv "/opt/flink-$FLINK_VERSION" /opt/flink
 if [ $FLINK_HOME ] && [ -z $FLINK_HOME ];then
   echo "export FLINK_HOME=/opt/flink" >> /etc/profile
 fi
-if [ $HADOOP_CLASSPATH ] && [-z $HADOOP_CLASSPATH ];then
+if [ $HADOOP_CLASSPATH ] && [ -z $HADOOP_CLASSPATH ];then
   echo 'export HADOOP_CLASSPATH=`$HADOOP_HOME/bin/hadoop classpath`' >> /etc/profile
 fi
 source /etc/profile
