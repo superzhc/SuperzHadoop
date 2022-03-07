@@ -13,6 +13,7 @@ package com.github.superzhc.scala.basic
  */
 object DataTypes {
   var any: Any = _
+  val s: Short = 1
   val whole: Int = 10
   val fractional: Double = 1.4
   val trueOrFalse: Boolean = true
