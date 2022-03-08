@@ -49,7 +49,7 @@
 
     <build>
         <plugins>
-            <plugin>
+            <!--<plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <executions>
@@ -59,7 +59,7 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin>-->
         </plugins>
     </build>
 

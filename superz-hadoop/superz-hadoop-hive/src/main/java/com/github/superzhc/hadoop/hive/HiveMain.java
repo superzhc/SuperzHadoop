@@ -1,5 +1,7 @@
 package com.github.superzhc.hadoop.hive;
 
+import com.github.superzhc.common.jdbc.JdbcHelper;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -13,41 +15,9 @@ public class HiveMain
     private static String JDBC_DRIVER = "org.apache.hive.jdbc.HiveDriver";
     private static String CONNECTION_URL = "jdbc:hive2://localhost:10000/";
 
-    static {
-        try {
-            Class.forName(JDBC_DRIVER);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     public static void main(String[] args) {
-        Connection connection = null;
-        ResultSet rs = null;
-        PreparedStatement ps = null;
-        try {
-            connection = DriverManager.getConnection(CONNECTION_URL);
-            ps = connection.prepareStatement("select * from superz_employees2");
-            rs = ps.executeQuery();
-            while (rs.next()) {
-                System.out.println(rs.getString(1) + "-------" + rs.getString(2));
-            }
-            if (null != ps)
-                ps.close();
-            if (null != rs)
-                rs.close();
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        finally {
-            try {
-                if (null != connection)
-                    connection.close();
-            }
-            catch (Exception e1) {
-            }
+        try(JdbcHelper jdbc=new JdbcHelper(JDBC_DRIVER,CONNECTION_URL,"root",null)){
+            jdbc.show("show tables");
         }
     }
 }
