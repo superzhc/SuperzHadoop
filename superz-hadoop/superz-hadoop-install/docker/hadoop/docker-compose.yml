@@ -17,7 +17,7 @@ services:
       - 10000:10000 # Hive Server2 的端口
       - 8081:8081   # Flink Web UI 默认端口
     volumes:
-      - /f/docker/volumes/hadoop/namenode:/hadoop/dfs/name
+      - hadoop_namenode:/hadoop/dfs/name
     environment:
       - CLUSTER_NAME=test
     env_file:
@@ -38,35 +38,36 @@ services:
       # yarn
       - 8042:8042
     volumes:
-      - /f/docker/volumes/hadoop/datanode:/hadoop/dfs/data
+      - hadoop_datanode1:/hadoop/dfs/data
     depends_on:
       - namenode
     env_file:
       - ./hadoop.env
 
 # 单机做集群，端口重复，改端口会造成宿主机无法访问内部提供的通信端口
-#  datanode2:
-#    image: bde2020/hadoop-datanode:2.0.0-hadoop3.1.1-java8
-#    container_name: datanode2
-#    ports:
-#      - 19864:9864
-#      - 19865:9865
-#      - 19866:9866
-#      - 19867:9867
-#      - 21020:50020
-#      - 21010:50010
-#      - 21475:50475
-#      - 21075:50075
-#      # yarn
-#      - 18042:8042
-#    volumes:
-#      - hadoop_datanode2:/hadoop/dfs/data
-#    depends_on:
-#      - namenode
-#    env_file:
-#      - ./hadoop.env
+#  2022年3月9日 不使用多节点的话，进行数据插入也会应为无副本可用节点，无法进行数据插入操作
+  datanode2:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.1.1-java8
+    container_name: datanode2
+    ports:
+      - 19864:9864
+      - 19865:9865
+      - 19866:9866
+      - 19867:9867
+      - 21020:50020
+      - 21010:50010
+      - 21475:50475
+      - 21075:50075
+      # yarn
+      - 18042:8042
+    volumes:
+      - hadoop_datanode2:/hadoop/dfs/data
+    depends_on:
+      - namenode
+    env_file:
+      - ./hadoop.env
 
 volumes:
   hadoop_namenode:
   hadoop_datanode1:
-#  hadoop_datanode2:
+  hadoop_datanode2:

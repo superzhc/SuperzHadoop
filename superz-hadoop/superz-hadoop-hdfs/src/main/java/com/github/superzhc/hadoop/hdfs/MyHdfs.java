@@ -10,8 +10,7 @@ import org.apache.hadoop.fs.permission.FsPermission;
 /**
  * 2020年04月26日 superz add
  */
-public class MyHdfs
-{
+public class MyHdfs {
     private String hdfsUrl;
     private FileSystem fileSystem;
 
@@ -21,31 +20,31 @@ public class MyHdfs
         try {
             Configuration conf = new Configuration();
             fileSystem = FileSystem.get(new URI(hdfsUrl), conf);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
         }
     }
 
-    public FileSystem getFileSystem(){
+    public FileSystem getFileSystem() {
         return fileSystem;
     }
 
     /**
      * 创建目录
+     *
      * @param path
      * @return
      */
     public boolean mkdirs(String path) {
         try {
             return fileSystem.mkdirs(new Path(path));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return false;
         }
     }
 
     /**
      * 创建带有权限的目录
+     *
      * @param path
      * @return
      */
@@ -53,28 +52,28 @@ public class MyHdfs
         try {
             return fileSystem.mkdirs(new Path(path),
                     new FsPermission(FsAction.READ_WRITE, FsAction.READ, FsAction.READ));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return false;
         }
     }
 
     /**
      * 判断文件是否存在
+     *
      * @param path
      * @return
      */
     public boolean exists(String path) {
         try {
             return fileSystem.exists(new Path(path));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return false;
         }
     }
 
     /**
      * 重命名
+     *
      * @param oldPath
      * @param newPath
      * @return
@@ -82,14 +81,14 @@ public class MyHdfs
     public boolean rename(String oldPath, String newPath) {
         try {
             return fileSystem.rename(new Path(oldPath), new Path(newPath));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return false;
         }
     }
 
     /**
      * 查看指定目录下所有文件的信息
+     *
      * @param path
      * @return
      */
@@ -97,14 +96,14 @@ public class MyHdfs
         try {
             FileStatus[] statuses = fileSystem.listStatus(new Path(path));
             return statuses;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return null;
         }
     }
 
     /**
      * 删除目录或文件
+     *
      * @param path
      * @return
      */
@@ -117,8 +116,7 @@ public class MyHdfs
              */
             boolean result = fileSystem.delete(new Path(path), true);
             return result;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return false;
         }
     }
@@ -137,6 +135,7 @@ public class MyHdfs
 
     /**
      * 查看文件的块信息
+     *
      * @param path
      * @return
      */
@@ -145,9 +144,24 @@ public class MyHdfs
             FileStatus fileStatus = fileSystem.getFileStatus(new Path(path));
             BlockLocation[] blocks = fileSystem.getFileBlockLocations(fileStatus, 0, fileStatus.getLen());
             return blocks;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return null;
+        }
+    }
+
+    public static void main(String[] args) {
+        System.setProperty("hadoop.home.dir", "F:/soft/hadoop");
+
+        String url = "hdfs://namenode:9000";
+        MyHdfs hdfs = new MyHdfs(url);
+
+        boolean success = hdfs.mkdirsWithPermission("/superz");
+        System.out.println(success ? "创建成功" : "创建失败");
+
+        FileStatus[] fileStatuses = hdfs.listStatus("/");
+        for (FileStatus fileStatus : fileStatuses) {
+            FileStatusHelper fileStatusHelper = new FileStatusHelper(fileStatus);
+            System.out.println(fileStatusHelper.human());
         }
     }
 }
