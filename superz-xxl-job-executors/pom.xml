@@ -13,6 +13,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>superz-flink-executor</module>
+        <module>superz-basic-executor</module>
     </modules>
 
     <properties>

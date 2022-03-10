@@ -8,11 +8,14 @@ curl "$FLINK_URL" -o "/tmp/flink-$FLINK_VERSION-bin-scala_$SCALA_VERSION.tgz"
 tar -zxvf "/tmp/flink-$FLINK_VERSION-bin-scala_$SCALA_VERSION.tgz" -C /opt
 mv "/opt/flink-$FLINK_VERSION" /opt/flink
 
-if [ $FLINK_HOME ] && [ -z $FLINK_HOME ];then
-  echo "export FLINK_HOME=/opt/flink" >> /etc/profile
+if [ $HADOOP_CONF_DIR ] && [ $HADOOP_CONF_DIR ]; then
+  echo "export HADOOP_CONF_DIR=/etc/hadoop/conf" >> /etc/profile
 fi
 if [ $HADOOP_CLASSPATH ] && [ -z $HADOOP_CLASSPATH ];then
   echo 'export HADOOP_CLASSPATH=`$HADOOP_HOME/bin/hadoop classpath`' >> /etc/profile
+fi
+if [ $FLINK_HOME ] && [ -z $FLINK_HOME ];then
+  echo "export FLINK_HOME=/opt/flink" >> /etc/profile
 fi
 source /etc/profile
 
