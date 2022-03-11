@@ -1,5 +1,6 @@
 #!/bin/bash
 
+source /etc/profile
 # https://archive.apache.org/dist/flink/flink-1.12.2/flink-1.12.2-bin-scala_2.11.tgz
 SCALA_VERSION="2.11"
 FLINK_VERSION="1.12.2"
@@ -8,7 +9,7 @@ curl "$FLINK_URL" -o "/tmp/flink-$FLINK_VERSION-bin-scala_$SCALA_VERSION.tgz"
 tar -zxvf "/tmp/flink-$FLINK_VERSION-bin-scala_$SCALA_VERSION.tgz" -C /opt
 mv "/opt/flink-$FLINK_VERSION" /opt/flink
 
-if [ $HADOOP_CONF_DIR ] && [ $HADOOP_CONF_DIR ]; then
+if [ $HADOOP_CONF_DIR ] && [ -z $HADOOP_CONF_DIR ]; then
   echo "export HADOOP_CONF_DIR=/etc/hadoop/conf" >> /etc/profile
 fi
 if [ $HADOOP_CLASSPATH ] && [ -z $HADOOP_CLASSPATH ];then

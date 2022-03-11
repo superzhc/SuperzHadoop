@@ -1,4 +1,4 @@
-package com.github.superzhc.hadoop.flink.streaming.connector.customsource;
+package com.github.superzhc.hadoop.flink.streaming.connector;
 
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.source.RichParallelSourceFunction;
