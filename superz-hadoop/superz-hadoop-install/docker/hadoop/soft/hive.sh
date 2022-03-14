@@ -2,10 +2,12 @@
 
 # 基于已安装的 Hadoop 环境，进行 hive 的安装
 
+HIVE_VERSION=3.1.2
 # 下载 hive 安装包
 #curl "https://downloads.apache.org/hive/hive-3.1.2/apache-hive-3.1.2-bin.tar.gz" -o /tmp/apache-hive-3.1.2-bin.tar.gz
-curl -fkSL "https://mirrors.tuna.tsinghua.edu.cn/apache/hive/hive-3.1.2/apache-hive-3.1.2-bin.tar.gz" -o /tmp/apache-hive-3.1.2-bin.tar.gz
-tar -xvf /tmp/apache-hive-3.1.2-bin.tar.gz -C /opt
+#curl -sL "https://archive.apache.org/dist/hive/hive-$HIVE_VERSION/apache-hive-$HIVE_VERSION-bin.tar.gz"
+curl -sL "https://mirrors.tuna.tsinghua.edu.cn/apache/hive/hive-$HIVE_VERSION/apache-hive-$HIVE_VERSION-bin.tar.gz" -o "/tmp/apache-hive-$HIVE_VERSION-bin.tar.gz"
+tar -xvf /tmp/apache-hive-$HIVE_VERSION-bin.tar.gz -C /opt
 
 # 配置环境变量
 if [ $HADOOP_HOME ] && [ -z $HADOOP_HOME ]; then
@@ -15,7 +17,7 @@ if [ $HADOOP_CLASSPATH ] && [ -z $HADOOP_CLASSPATH ]; then
   echo 'export HADOOP_CLASSPATH=`$HADOOP_HOME/bin/hadoop classpath`' >> /etc/profile
 fi
 if [ $HIVE_HOME ] && [ -z $HIVE_HOME ]; then
-  echo "export HIVE_HOME=/opt/apache-hive-3.1.2-bin" >> /etc/profile
+  echo "export HIVE_HOME=/opt/apache-hive-$HIVE_VERSION-bin" >> /etc/profile
   echo 'export PATH=$HIVE_HOME/bin:$PATH' >> /etc/profile
 fi
 source /etc/profile
@@ -61,13 +63,16 @@ $HADOOP_HOME/bin/hadoop fs -chmod g+w   /user/hive/warehouse
 # Docker 容器重启后执行如下启动服务，会出现 /etc/profile 不生效，故需要先执行如下命令
 source /etc/profile
 echo "$HIVE_HOME"
+
+# 创建日志目录
+mkdir -p /var/log/hive
 # 初始化 MySQL 元数据
 $HIVE_HOME/bin/schematool -initSchema -dbType mysql -verbose
 ## 使用 hiveserver2 需要开启元数据服务
 ## 启动元数据服务[后台启动]
-#nohup $HIVE_HOME/bin/hive --service metastore 2>&1 &
+#nohup $HIVE_HOME/bin/hive --service metastore > /var/log/hive 2>&1 &
 ## 启动 hiveserver2[后台启动]
-#nohup $HIVE_HOME/bin/hive --service hiveserver2 2>&1 &
+#nohup $HIVE_HOME/bin/hive --service hiveserver2 > /var/log/hive 2>&1 &
 
 ## jdbc连接hive
 #$HIVE_HOME/bin/beeline -u jdbc:hive2://localhost:10000 -n root
