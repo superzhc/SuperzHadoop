@@ -1,11 +1,13 @@
 package com.github.superzhc.hadoop.hdfs;
 
+import java.io.IOException;
 import java.net.URI;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.*;
 import org.apache.hadoop.fs.permission.FsAction;
 import org.apache.hadoop.fs.permission.FsPermission;
+import org.apache.hadoop.io.IOUtils;
 
 /**
  * 2020年04月26日 superz add
@@ -26,6 +28,18 @@ public class MyHdfs {
 
     public FileSystem getFileSystem() {
         return fileSystem;
+    }
+
+
+
+    public void open(String path) {
+        try {
+            FSDataInputStream in = fileSystem.open(new Path(path));
+            IOUtils.copyBytes(in, System.out, 1024,false);
+            IOUtils.closeStream(in);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -155,8 +169,8 @@ public class MyHdfs {
         String url = "hdfs://namenode:9000";
         MyHdfs hdfs = new MyHdfs(url);
 
-        boolean success = hdfs.mkdirsWithPermission("/superz");
-        System.out.println(success ? "创建成功" : "创建失败");
+//        boolean success = hdfs.mkdirsWithPermission("/superz");
+//        System.out.println(success ? "创建成功" : "创建失败");
 
         FileStatus[] fileStatuses = hdfs.listStatus("/");
         for (FileStatus fileStatus : fileStatuses) {
