@@ -5,7 +5,7 @@
     <parent>
         <artifactId>superz-hadoop</artifactId>
         <groupId>com.github.superzhc</groupId>
-        <version>0.2.0</version>
+        <version>0.2.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -14,13 +14,14 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <scala.binary.version>2.12</scala.binary.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.github.superzhc</groupId>
             <artifactId>superz-common-core</artifactId>
-            <version>0.2.0</version>
+            <version>0.2.1</version>
         </dependency>
         <!--<dependency>
             <groupId>com.github.superzhc</groupId>
@@ -56,7 +57,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.spark</groupId>
-            <artifactId>spark-streaming-kafka-0-8_${scala.binary.version}</artifactId>
+            <artifactId>spark-streaming-kafka-0-10_${scala.binary.version}</artifactId>
             <version>${spark.version}</version>
         </dependency>
 
@@ -95,7 +96,7 @@
         <!--读取Excel文件-->
         <dependency>
             <groupId>com.crealytics</groupId>
-            <artifactId>spark-excel_${scala.binary.version}</artifactId>
+            <artifactId>spark-excel_2.11</artifactId>
             <version>0.13.7</version>
         </dependency>
     </dependencies>

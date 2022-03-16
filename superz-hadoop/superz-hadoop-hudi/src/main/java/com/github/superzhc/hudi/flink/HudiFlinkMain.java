@@ -19,22 +19,21 @@ public class HudiFlinkMain {
                 .build();
         TableEnvironment tableEnv = StreamTableEnvironment.create(env, envSetting);
 
-        // 不可用~~~
-//        tableEnv.executeSql("CREATE TABLE t1(\n" +
-//                "                   uuid VARCHAR(20),\n" +
-//                "                   name VARCHAR(20),\n" +
-//                "                   age INT,\n" +
-//                "                   ts  TIMESTAMP(3),\n" +
-//                "                   `partition` VARCHAR(20)\n" +
-//                ")\n" +
-//                "    PARTITIONED BY(`partition`)\n" +
-//                "WITH(\n" +
-//                "'connector'='hudi',\n" +
-//                "'path'='hdfs://localhost:9000/user/hudi/t1',\n" +
-//                "'table.type'='MERGE_ON_READ'\n" +
-//                ")");
-//
-//        Table table=tableEnv.sqlQuery("select * from t1");
-//        table.execute().print();
+        tableEnv.executeSql("CREATE TABLE t1(\n" +
+                "                   uuid VARCHAR(20),\n" +
+                "                   name VARCHAR(20),\n" +
+                "                   age INT,\n" +
+                "                   ts  TIMESTAMP(3),\n" +
+                "                   `partition` VARCHAR(20)\n" +
+                ")\n" +
+                "    PARTITIONED BY(`partition`)\n" +
+                "WITH(\n" +
+                "'connector'='hudi',\n" +
+                "'path'='hdfs://10.90.255.78:9000/user/hudi/t1',\n" +
+                "'table.type'='MERGE_ON_READ'\n" +
+                ")");
+
+        Table table=tableEnv.sqlQuery("select * from t1");
+        table.execute().print();
     }
 }

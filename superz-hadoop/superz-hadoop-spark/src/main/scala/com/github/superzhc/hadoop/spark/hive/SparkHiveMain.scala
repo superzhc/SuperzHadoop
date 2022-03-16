@@ -4,7 +4,7 @@ import org.apache.spark.sql.{DataFrame, SparkSession}
 
 object SparkHiveMain {
   val driver: String = "com.mysql.jdbc.Driver"
-  val url: String = "jdbc:mysql://localhost:3306/news_dw?useSSL=false&useUnicode=true&characterEncoding=utf-8"
+  val url: String = "jdbc:mysql://10.90.255.78:3306/news_dw?useSSL=false&useUnicode=true&characterEncoding=utf-8"
   val username = "root"
   val password = "123456"
 
@@ -13,7 +13,7 @@ object SparkHiveMain {
 
     val spark:SparkSession=SparkSession.builder()
       .appName("hive sink")
-      .master("local[*]")
+      //.master("local[*]")
       .config("fs.defaultFS","hdfs://namenode:9000")
       .config("spark.sql.warehouse.dir", "hdfs://namenode:9000/user/hive/warehouse")
       .config("hive.metastore.uris", "thrift://namenode:9083")

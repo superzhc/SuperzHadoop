@@ -6,7 +6,7 @@
 
     <groupId>com.github.superzhc</groupId>
     <artifactId>SuperzHadoop</artifactId>
-    <version>0.2.0</version>
+    <version>0.2.1</version>
     <packaging>pom</packaging>
     <description>jdk、scala版本控制，打包等相关在此处配置</description>
     <modules>
