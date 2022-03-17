@@ -18,6 +18,7 @@
         <module>superz-mysql</module>
         <module>superz-fund</module>
         <module>superz-selenium</module>
+        <module>superz-log</module>
     </modules>
 
     <properties>

@@ -32,16 +32,18 @@
     <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-properties.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-scala.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-markdown.min.js"></script>
+    <!--edit on github-->
+    <script src="//cdn.jsdelivr.net/npm/docsify-edit-on-github"></script>
     <script>
         window.$docsify = {
             name: 'Superz 的博客',
-            nameLink: '/SuperzHadoop/docs/',
+            nameLink: '/SuperzHadoop/',
             auto2top: true,
             loadNavbar: true,
             loadSidebar: true,
-            // subMaxLevel: 3,
+            // 外链打开方式
+            externalLinkTarget: '_blank',
             noEmoji: true,
-            // disqus: 'superzblog',
             alias: {
                 '/.*/_navbar.md': '/_navbar.md'
             },
@@ -96,20 +98,22 @@
                             return pdf_renderer(code, lang, false);
                         }
                         /* SECTION START: Put other custom code rendering functions here
-                            i.e. If the language of the code block is LaTex, 
-                            put the code below to replace original code block with the text: 
+                            i.e. If the language of the code block is LaTex,
+                            put the code below to replace original code block with the text:
                             'Using LaTex is much better than handwriting!' inside a div container.
-                    
+
                             if (lang == "latex") {
                                 return ('<div class="container">Using LaTex is much better than handwriting!</div>');
                             }
-                    
+
                         SECTION END */
                         return (base ? base : this.origin.code.apply(this, arguments));
                     }
                 }
             },
-            plugins: []
+            plugins: [
+                EditOnGithubPlugin.create("https://github.com/superzhc/SuperzHadoop/blob/master/docs/", null, "edit on github")
+            ]
         }
     </script>
     <!--图片缩放-->
