@@ -1,23 +1,16 @@
-<!--
- * @Github       : https://github.com/superzhc/BigData-A-Question
- * @Author       : SUPERZHC
- * @CreateDate   : 2020-03-08 12:42:47
- * @LastEditTime : 2021-02-05 15:54:04
- * @Copyright 2021 SUPERZHC
--->
 # Kafka
 
 ## 简介
 
 Apache Kafka 是一个 ==**分布式发布-订阅（pub-sub）消息系统**==。
 
-[Kafka概述](Kafka/Kafka概述.md) 
+[Kafka概述](hadoop/kafka/Kafka概述.md) 
 
-[术语解释](Kafka/Kafka术语.md)
+[术语解释](hadoop/kafka/Kafka术语.md)
 
 ## 安装配置
 
-[Kafka的安装配置](Kafka/Kafka安装配置.md)
+[Kafka的安装配置](hadoop/kafka/Kafka安装配置.md)
 
 **验证 Kafka 是否启动成功**，使用 jps 命令来查看，如下所示：
 
@@ -46,7 +39,7 @@ find ./libs/ -name \*kafka_\* | head -1 | grep -o '\kafka[^\n]*'
 
 ## 基本操作
 
-[Kafka工具使用](Kafka/Kafka工具使用.md) 
+[Kafka工具使用](hadoop/kafka/Kafka工具使用.md) 
 
 ## Broker
 
@@ -54,11 +47,11 @@ find ./libs/ -name \*kafka_\* | head -1 | grep -o '\kafka[^\n]*'
 
 ## 生产者
 
-[Producer](Kafka/Kafka之Producer.md) 
+[Producer](hadoop/kafka/Kafka之Producer.md) 
 
-[Producer配置](Kafka/Kafka配置\Producer配置.md) 
+[Producer配置](hadoop/kafka/Kafka配置/Producer配置.md) 
 
-[Kafka工具kafka-console-producer](Kafka/Kafka工具/Kafka工具kafka-console-producer.md)
+[Kafka工具kafka-console-producer](hadoop/kafka/Kafka工具/Kafka工具kafka-console-producer.md)
 
 ## 消费者
 
@@ -66,10 +59,10 @@ find ./libs/ -name \*kafka_\* | head -1 | grep -o '\kafka[^\n]*'
 
 ## 实战
 
-- [Kafka 示例代码](Kafka/Kafka示例代码.md)
+- [Kafka 示例代码](hadoop/kafka/Kafka示例代码.md)
 
 ## Kafka 如何保证数据的可靠性和一致性
 
-- [Kafka 的高可靠性是怎么实现的？](Kafka/Kafka是如何保证数据的可靠性和一致性.md)
-- [Kafka 在什么情况下会出现消息丢失？](Kafka/Kafka是如何保证数据的可靠性和一致性.md)
-- [怎么尽可能保证 Kafka 的可靠性？](Kafka/Kafka是如何保证数据的可靠性和一致性.md)
+- [Kafka 的高可靠性是怎么实现的？](hadoop/kafka/Kafka是如何保证数据的可靠性和一致性.md)
+- [Kafka 在什么情况下会出现消息丢失？](hadoop/kafka/Kafka是如何保证数据的可靠性和一致性.md)
+- [怎么尽可能保证 Kafka 的可靠性？](hadoop/kafka/Kafka是如何保证数据的可靠性和一致性.md)

@@ -10,7 +10,7 @@ HDFS 被设计为可以运行在通用硬件上、提供流式数据操作、能
 
 HDFS 是一个主/从（Master/Slave）体系结构的分布式系统，HDFS 集群拥有一个 NameNode 和多个 DataNode，用户可以通过 HDFS 客户端同 NameNode 和 DataNode 交互以访问文件系统。
 
-## [HDFS 基本概念](Hadoop/HDFS/HDFS核心概念.md)
+## [HDFS 基本概念](hadoop/hdfs/HDFS核心概念.md)
 
 ## HDFS 主要流程
 
@@ -20,9 +20,9 @@ Hadoop 的默认布局策略是在运行客户端的节点上放第1个复本（
 
 ![img](images/169066e2c4d6d824.png)
 
-### [HDFS 客户端读流程](Hadoop/HDFS/HDFS的存储原理.md)
+### [HDFS 客户端读流程](hadoop/hdfs/HDFS的存储原理.md)
 
-### [HDFS 客户端写流程](Hadoop/HDFS/HDFS的存储原理.md)
+### [HDFS 客户端写流程](hadoop/hdfs/HDFS的存储原理.md)
 
 ### HDFS 客户端追加写流程
 

@@ -1,11 +1,3 @@
-<!--
- * @Github       : https://github.com/superzhc/BigData-A-Question
- * @Author       : SUPERZHC
- * @CreateDate   : 2020-05-15 08:44:55
- * @LastEditTime : 2020-12-07 13:59:39
- * @Copyright 2020 SUPERZHC
--->
-
 # HBase
 
 ## 简介

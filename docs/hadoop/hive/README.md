@@ -29,7 +29,7 @@ Hive 框架如下图：
 7. 获取执行的结果
 8. 取得并返回执行结果
 
-详细见：[Hive 架构](Hive/Hive架构.md)
+详细见：[Hive 架构](hadoop/hive/Hive架构.md)
 
 ## 元数据
 
@@ -77,7 +77,7 @@ Hive中的表分区比较简单，就是将同一组数据放到同一个HDFS目
 
 ## 安装配置
 
-[Hive的安装配置](Hive/Hive的安装配置.md)
+[Hive的安装配置](hadoop/hive/Hive的安装配置.md)
 
 ## 配置参数
 
@@ -87,7 +87,7 @@ Hive的配置文件一般有如下文件：
 2. `hive-site.xml`
 3. `hive-log4j.properties`
 
-[配置参数](Hive/Hive配置参数.md)：
+[配置参数](hadoop/hive/Hive配置参数.md)：
 
 - Hive在HDFS中的存储路径配置
 - 配置连接元数据存储库
@@ -128,4 +128,4 @@ Debug help:  ./hive --debug --help
 | metastore   |              | 启动一个扩展的Hive 元数据服务，可以供多客户端使用                                                      |
 | rcfilecat   |              | 一个可以打印出RCFile格式文件内容的工具                                                                 |
 
-[Hive命令行(CLI)](Hive/Hive命令行.md) 
+[Hive命令行(CLI)](hadoop/hive/Hive命令行.md) 
