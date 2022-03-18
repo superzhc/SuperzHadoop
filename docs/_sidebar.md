@@ -8,8 +8,9 @@
     - [HDFS Shell](hadoop/hdfs/HDFS的Shell命令.md)
   - [Yarn](hadoop/yarn/README.md)
     - [Web UI](hadoop/yarn/UI页面解析.md)
+    - [日志](hadoop/yarn/Yarn日志.md)
   - [Hive](hadoop/hive/README.md)
-  - HBase
+  - [HBase](hadoop/hbase/README.md)
   - [Kafka](hadoop/kafka/README.md)
   - [Spark](hadoop/spark/README.md)
   - [Flink](hadoop/flink/README.md)

@@ -1,11 +1,3 @@
-<!--
- * @Github       : https://github.com/superzhc/BigData-A-Question
- * @Author       : SUPERZHC
- * @CreateDate   : 2020-11-18 08:57:20
- * @LastEditTime : 2020-11-26 14:32:10
- * @Copyright 2020 SUPERZHC
--->
-
 # Flink
 
 ## 概述
@@ -38,7 +30,7 @@
 
 ![](images/README-20211009095650.png)
 
-## [安装部署](../Flink/安装部署/README.md)
+## [安装部署](hadoop/flink/安装部署/README.md)
 
 Apache Flink 是一个分布式系统，它需要计算资源来执行应用程序。Flink 集成了所有常见的集群资源管理器，例如 Hadoop YARN、 Apache Mesos 和 Kubernetes，但同时也可以作为独立集群运行。
 
@@ -105,12 +97,12 @@ Flink 以固定的缓存块为单位进行网络数据传输，用户可以通�
 
 缓存块的超时值也可以设置为 0 到无限大之间的任意值，缓存块的超时阈值越小，Flink 流处理执行引擎的数据处理延迟就越低，但吞吐量也会降低，反之亦然。通过调整缓存块的超时阈值，用户可根据需求灵活地权衡系统延迟和吞吐量。
 
-## [程序开发示例](../Flink/开发程序示例.md)
+## [程序开发示例](hadoop/flink/开发程序示例.md)
 
-## [重启策略](../Flink/重启策略.md)
+## [重启策略](../../hadoop/flink/重启策略.md)
 
-## [分布式缓存](../Flink/分布式缓存.md)
+## [分布式缓存](../../hadoop/flink/分布式缓存.md)
 
-## [时间](../Flink/时间_Time/README.md)
+## [时间](../../hadoop/flink/时间_Time/README.md)
 
-## [窗口](../Flink/窗口_Window/README.md)
+## [窗口](../../hadoop/flink/窗口_Window/README.md)
