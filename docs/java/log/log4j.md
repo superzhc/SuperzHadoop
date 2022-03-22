@@ -156,8 +156,8 @@ log4j:configuration
 配置代码的格式如下：
 
 ```properties
-log4j.appender.appenderName = fully.qualified.name.of.appender.class  
-log4j.appender.appenderName.option1 = value1  
+log4j.appender.appenderName = fully.qualified.name.of.appender.class
+log4j.appender.appenderName.option1 = value1
 # …  
 log4j.appender.appenderName.option = valueN
 ```
@@ -175,8 +175,8 @@ log4j.appender.appenderName.option = valueN
 其语法为：
 
 ```properties
-log4j.appender.appenderName.layout = fully.qualified.name.of.layout.class  
-log4j.appender.appenderName.layout.option1 = value1  
+log4j.appender.appenderName.layout = fully.qualified.name.of.layout.class
+log4j.appender.appenderName.layout.option1 = value1
 # …  
 log4j.appender.appenderName.layout.option = valueN
 ```
