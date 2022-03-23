@@ -14,6 +14,8 @@
   - [Kafka](hadoop/kafka/README.md)
   - [Spark](hadoop/spark/README.md)
   - [Flink](hadoop/flink/README.md)
+    - [任务提交](hadoop/flink/Flink任务提交.md)
+    - [日志配置](hadoop/flink/日志配置.md)
 - [Docker](docker/README.md)
   - [Docker 安装（Windows 版本）](docker/安装部署/Windows版本Docker安装.md)
 - 其他
