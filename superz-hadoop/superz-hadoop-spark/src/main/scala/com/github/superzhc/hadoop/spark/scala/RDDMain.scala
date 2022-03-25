@@ -1,8 +1,8 @@
-package com.github.superzhc.hadoop.spark
+package com.github.superzhc.hadoop.spark.scala
 
 import org.apache.spark.rdd.RDD
-import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.sql.SparkSession
+import org.apache.spark.{SparkConf, SparkContext}
 
 /**
  * RDD
@@ -75,7 +75,7 @@ object RDDMain {
     val sc: SparkContext = spark.sparkContext
     sc.setLogLevel("debug")
 
-    var rdd: RDD[String] = sc.textFile("D:\\downloads\\baidu\\8e.txt", 8)
+    var rdd: RDD[String] = sc.textFile("xxx.txt", 8)
     val rdd2 = rdd.map(d => {
       val arr = d.split("----")
       if (arr.length == 1) {
@@ -96,14 +96,14 @@ object RDDMain {
       }
     })
 
-//    rdd2.foreach(d => {
-//      // 打印出异常数据
-//      if (null == d._2 || d._2.length > 11) {
-//        println(d)
-//      }
-//    })
-        val str = rdd2.take(10).mkString("\n")
-        println(str)
+    //    rdd2.foreach(d => {
+    //      // 打印出异常数据
+    //      if (null == d._2 || d._2.length > 11) {
+    //        println(d)
+    //      }
+    //    })
+    val str = rdd2.take(10).mkString("\n")
+    println(str)
 
     spark.stop()
   }

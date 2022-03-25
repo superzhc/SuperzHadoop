@@ -1,9 +1,9 @@
-package com.github.superzhc.hadoop.spark
+package com.github.superzhc.hadoop.spark.scala
 
+import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
-import org.apache.spark.{SparkConf, SparkContext}
 
-object wordcount_scala {
+object WordCount {
   def main(args: Array[String]): Unit = {
     val conf = new SparkConf().setAppName("word count").setMaster("local")
     val spark = SparkSession.builder().config(conf).getOrCreate()

@@ -15,6 +15,7 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <scala.binary.version>2.12</scala.binary.version>
+        <scala.version>2.12.10</scala.version>
     </properties>
 
     <dependencies>
@@ -23,18 +24,19 @@
             <artifactId>superz-common-core</artifactId>
             <version>0.2.1</version>
         </dependency>
-        <!--<dependency>
-            <groupId>com.github.superzhc</groupId>
-            <artifactId>superz-geo-geotool</artifactId>
-            <version>0.2.0</version>
-        </dependency>-->
+
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-client</artifactId>
+            <version>${hadoop.version}</version>
+        </dependency>
 
         <!--guava 冲突，需要使用该版本-->
-        <dependency>
+        <!--<dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>11.0.2</version>
-        </dependency>
+            <version>16.0.1</version>
+        </dependency>-->
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-core_${scala.binary.version}</artifactId>
@@ -80,12 +82,13 @@
             <version>${scala.version}</version>
             <!--<scope>provided</scope>-->
         </dependency>
+        <!-- 已被废弃
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-actors</artifactId>
             <version>${scala.version}</version>
-            <!--<scope>provided</scope>-->
-        </dependency>
+            &lt;!&ndash;<scope>provided</scope>&ndash;&gt;
+        </dependency>-->
         <!--endregion-->
 
         <dependency>
@@ -94,11 +97,11 @@
             <version>5.1.47</version>
         </dependency>
         <!--读取Excel文件-->
-        <dependency>
+        <!--<dependency>
             <groupId>com.crealytics</groupId>
             <artifactId>spark-excel_2.11</artifactId>
             <version>0.13.7</version>
-        </dependency>
+        </dependency>-->
     </dependencies>
 
     <build>

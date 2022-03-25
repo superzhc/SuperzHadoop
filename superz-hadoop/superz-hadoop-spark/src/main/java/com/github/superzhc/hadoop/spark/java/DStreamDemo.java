@@ -1,18 +1,11 @@
-package com.github.superzhc.hadoop.spark;
+package com.github.superzhc.hadoop.spark.java;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.function.FlatMapFunction;
 import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.streaming.Durations;
 import org.apache.spark.streaming.api.java.JavaDStream;
-import org.apache.spark.streaming.api.java.JavaPairDStream;
 import org.apache.spark.streaming.api.java.JavaStreamingContext;
-import org.bouncycastle.util.Strings;
-import scala.Tuple2;
-
-import java.util.Arrays;
-import java.util.Iterator;
 
 /**
  * 2020年07月21日 superz add
