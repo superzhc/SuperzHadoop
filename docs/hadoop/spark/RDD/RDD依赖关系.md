@@ -2,7 +2,7 @@
 
 在 RDD 中将依赖划分成了两种类型：**窄依赖**（Narrow Dependency）和**宽依赖**（Wide Dependency），如下图所示：
 
-<img src="images/%E5%9B%BE9-10-%E7%AA%84%E4%BE%9D%E8%B5%96%E4%B8%8E%E5%AE%BD%E4%BE%9D%E8%B5%96%E7%9A%84%E5%8C%BA%E5%88%AB.jpg" alt="图9-10 窄依赖与宽依赖的区别" style="zoom: 70%;" />
+<img src="./images/%E5%9B%BE9-10-%E7%AA%84%E4%BE%9D%E8%B5%96%E4%B8%8E%E5%AE%BD%E4%BE%9D%E8%B5%96%E7%9A%84%E5%8C%BA%E5%88%AB.jpg" alt="图9-10 窄依赖与宽依赖的区别" style="zoom: 70%;" />
 
 *窄依赖表现为一个父 RDD 的分区对应于一个子 RDD 的分区，或多个父 RDD 的分区对应于一个子 RDD 的分区*。如上图(a)中，RDD1 是RDD2 的父 RDD，RDD2 是子 RDD，RDD1 的分区 1，对应于 RDD2 的一个分区（即分区 4）；再比如 RDD6 和 RDD7 都是 RDD8 的父RDD，RDD6 中的分区（分区15）和 RDD7 中的分区（分区18），两者都对应于 RDD8 中的一个分区（分区 21）。
 

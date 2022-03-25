@@ -2,11 +2,11 @@
 
 top 命令输出会显示系统的很多信息。在默认运行时，top 命令会显示如下输出：
 
-![image-20200407092625451](D:\superz\BigData-A-Question\Linux\images\image-20200407092625451.png)
+![image-20200407092625451](./images/image-20200407092625451.png)
 
 **系统运行时间和平均负载**
 
-![image-20200407092745572](D:\superz\BigData-A-Question\Linux\images\image-20200407092745572.png)
+![image-20200407092745572](./images/image-20200407092745572.png)
 
 这些字段显示：
 
@@ -17,13 +17,13 @@ top 命令输出会显示系统的很多信息。在默认运行时，top 命令
 
 **任务**
 
-![image-20200407093406610](D:\superz\BigData-A-Question\Linux\images\image-20200407093406610.png)
+![image-20200407093406610](./images/image-20200407093406610.png)
 
 第二行显示的是任务或者进程的总结。进程可以处于不同的状态。这里显示了全部进程的数量，除此之外，还有正在运行、睡眠、停止、僵尸进程的数量
 
 **CPU 状态**
 
-![image-20200407094049766](D:\superz\BigData-A-Question\Linux\images\image-20200407094049766.png)
+![image-20200407094049766](./images/image-20200407094049766.png)
 
 下一行显示的是 CPU 状态。这里显示了不同模式下的所占 CPU 时间的百分比，这些不同的 CPU 时间表示：
 
@@ -38,7 +38,7 @@ top 命令输出会显示系统的很多信息。在默认运行时，top 命令
 
 **内存使用**
 
-![image-20200407094822319](D:\superz\BigData-A-Question\Linux\images\image-20200407094822319.png)
+![image-20200407094822319](./images/image-20200407094822319.png)
 
 接下来两行显示内存使用率，第一行是物理内存使用，第二行是虚拟内存使用
 
@@ -48,7 +48,7 @@ top 命令输出会显示系统的很多信息。在默认运行时，top 命令
 
 **进程信息**
 
-![image-20200407095227491](D:\superz\BigData-A-Question\Linux\images\image-20200407095227491.png)
+![image-20200407095227491](./images/image-20200407095227491.png)
 
 该部分是显示的进程。
 
@@ -119,38 +119,3 @@ $ top -n 3
 ```
 
 将会在刷新输出 3 次后退出。
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

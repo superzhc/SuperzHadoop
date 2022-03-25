@@ -1,10 +1,3 @@
-<!--
- * @Github       : https://github.com/superzhc/BigData-A-Question
- * @Author       : SUPERZHC
- * @CreateDate   : 2019-10-08 17:26:38
- * @LastEditTime : 2021-02-05 16:46:21
- * @Copyright 2021 SUPERZHC
--->
 # RDD 操作
 
 RDD支持两种操作：

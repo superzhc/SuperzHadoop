@@ -75,36 +75,14 @@ object RDDMain {
     val sc: SparkContext = spark.sparkContext
     sc.setLogLevel("debug")
 
-    var rdd: RDD[String] = sc.textFile("xxx.txt", 8)
-    val rdd2 = rdd.map(d => {
-      val arr = d.split("----")
-      if (arr.length == 1) {
-        (arr(0), STRING_EMPTY)
-      } else if (arr.length == 2) {
-        (arr(0), arr(1))
-      } else if (arr.length == 3) {
-        if (arr(1) == arr(2)) {
-          (arr(0), arr(1))
-        } else {
-          // slice 实现数组的切片
-          (arr(0), arr.slice(1, arr.length).mkString("----"))
-        }
-      } else if (arr.length > 3) {
-        (arr(0), arr.slice(1, arr.length).mkString("----"))
-      } else {
-        (STRING_EMPTY, STRING_EMPTY)
-      }
-    })
-
-    //    rdd2.foreach(d => {
-    //      // 打印出异常数据
-    //      if (null == d._2 || d._2.length > 11) {
-    //        println(d)
-    //      }
-    //    })
-    val str = rdd2.take(10).mkString("\n")
-    println(str)
+    collection(sc).foreach(println)
 
     spark.stop()
+  }
+
+  def collection(sc: SparkContext): RDD[Int] = {
+    val data = Array(1, 2, 3, 4, 5)
+    val distData = sc.parallelize(data)
+    distData
   }
 }

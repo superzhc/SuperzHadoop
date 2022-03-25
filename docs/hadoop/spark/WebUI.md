@@ -1,10 +1,3 @@
-<!--
- * @Github       : https://github.com/superzhc/BigData-A-Question
- * @Author       : SUPERZHC
- * @CreateDate   : 2020-05-14 10:34:52
- * @LastEditTime : 2021-02-05 16:01:09
- * @Copyright 2021 SUPERZHC
--->
 # Web UI
 
 ## 界面的基本介绍

@@ -1,3 +1,9 @@
+- Java
+  - [字符串格式化](java/字符串格式化.md)
+  - [枚举](java/枚举.md)
+  - [集合](java/collection/README.md)
+  - [PatternLayout参数](java/log/PatternLayout参数含义.md)
+  - [JUnit](java/test/junit.md)
 <!--
 - Linux
   - [Linux 文件目录结构](linux/文件目录结构.md)
@@ -13,6 +19,7 @@
   - [HBase](hadoop/hbase/README.md)
   - [Kafka](hadoop/kafka/README.md)
   - [Spark](hadoop/spark/README.md)
+    - [RDD](hadoop/spark/RDD/README.md)
   - [Flink](hadoop/flink/README.md)
     - [任务提交](hadoop/flink/Flink任务提交.md)
     - [日志配置](hadoop/flink/日志配置.md)
