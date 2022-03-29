@@ -1,4 +1,4 @@
-# spark-submit
+# `spark-submit`
 
 > `spark-submit` 脚本用于在集群上启动应用程序，它位于 Spark 的 bin 目录中。这种启动方式可以通过统一的界面使用所有的 Spark 支持的集群管理功能，因此不必为每个应用程序专门配置应用程序。
 
@@ -8,7 +8,7 @@
 - Mesos：通用的集群管理，可以在其上运行 Hadoop MapReduce 和一些服务应用
 - Yarn：Hadoop2.0 中的资源管理器
 
-## spark-submit 详细参数说明
+## `spark-submit` 详细参数说明
 
 | 参数名                   | 参数说明                                                                               |
 |-----------------------|------------------------------------------------------------------------------------|
@@ -74,7 +74,7 @@
 
 请注意，JAR 和文件将复制到执行程序节点上每个 SparkContext 的工作目录。这可能会随着时间的推移占用大量空间，并需要清理。使用 YARN，清理将自动进行处理，并且通过 Spark standalone，可以使用 `spark.worker.cleanup.appDataTtl` 属性配置自动清理。
 
-## spark-submit 提交应用程序示例
+## `spark-submit` 提交应用程序示例
 
 ```sh
 # 在本地运行(本地模式8核)
@@ -132,3 +132,18 @@ export HADOOP_CONF_DIR=XXX
   examples/src/main/python/pi.py \
   1000
 ```
+
+## `run-example` 命令
+
+> 该命令提供了运行官方示例的快捷方式，本质上也是运行 `spark-submit` 命令
+
+```shell
+# ./bin/run-example [options] example-class [example args]
+# options 同 spark-submit 参数
+./bin/run-example \
+  --master yarn \
+  --deploy-mode cluster \
+  SparkPi \
+  100
+```
+
