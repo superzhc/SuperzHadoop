@@ -4,6 +4,10 @@
   - [集合](java/collection/README.md)
   - [PatternLayout参数](java/log/PatternLayout参数含义.md)
   - [JUnit](java/test/junit.md)
+- Scala
+  - [集合](scala/Scala集合.md)
+  - [模式匹配](scala/Scala模式匹配.md)
+  - [隐式转换](scala/implicit关键字.md)
 <!--
 - Linux
   - [Linux 文件目录结构](linux/文件目录结构.md)

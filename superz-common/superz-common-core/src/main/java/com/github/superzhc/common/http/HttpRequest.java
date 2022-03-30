@@ -763,6 +763,11 @@ public class HttpRequest {
         return new HttpRequest(url, METHOD_GET);
     }
 
+    public static HttpRequest get(final CharSequence baseUrl,
+                                  final Map<?, ?> params) {
+        return get(baseUrl, params, true);
+    }
+
     /**
      * Start a 'GET' request to the given URL along with the query params
      *

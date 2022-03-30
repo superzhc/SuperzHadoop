@@ -1,28 +1,32 @@
 package com.github.superzhc.fund
 
 import com.github.superzhc.fund.akshare.EastMoney
-import org.apache.spark.sql.SparkSession
-
-import scala.collection.mutable.ArrayBuffer
+import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.{Row, SparkSession}
 
 object FundMain {
   def main(args: Array[String]): Unit = {
     val spark: SparkSession = SparkSession.builder()
       .appName("fund main")
-      .master("local[2]")
+      .master("local[*]")
+      .config("spark.sql.datetime.java8API.enabled", true)
       .getOrCreate()
 
-    val table: tech.tablesaw.api.Table = EastMoney.e()
+    val table: tech.tablesaw.api.Table = EastMoney.estimation()
 
-    // tech.tablesaw.api.Row 不能序列化，待解决
-    var datas: ArrayBuffer[tech.tablesaw.api.Row] = ArrayBuffer[tech.tablesaw.api.Row]()
-    import scala.collection.JavaConverters._
-    val tableIterator=table.iterator()
-    while(tableIterator.hasNext) {
-      datas += tableIterator.next()
-    }
+    import com.github.superzhc.fund.tablesaw.TableUtils._
+    // val rdd: RDD[Row] = spark.sparkContext.parallelize(table)
+    // val df=spark.createDataFrame(rdd, table.structType)
+    val df = spark.createDataFrame(table.convert2Row(), table.structType)
+    // df.printSchema()
+    // df.show()
+    // 13931
+    // println("数据量：" + df.count())
 
-    val rdd = spark.sparkContext.parallelize(datas)
-    rdd.foreach(r => println(r.toString))
+    val rdd=df.rdd
+    val ps=rdd.partitions.size
+    println(ps)
+
+    rdd.glom().foreach(d=>println(d.length))
   }
 }

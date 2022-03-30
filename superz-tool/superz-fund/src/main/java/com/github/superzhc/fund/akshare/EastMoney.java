@@ -6,19 +6,20 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.superzhc.common.http.HttpRequest;
+import com.github.superzhc.common.tablesaw.read.EmptyReadOptions;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tech.tablesaw.api.ColumnType;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.io.TableBuildingUtils;
-import tech.tablesaw.io.html.HtmlReadOptions;
-import tech.tablesaw.io.json.JsonReadOptions;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * @author superz
@@ -35,6 +36,18 @@ public class EastMoney {
         //允许使用单引号
         mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
+
+    public static class ColumnTypeSetting implements Function<String, Optional<ColumnType>> {
+
+        @Override
+        public Optional<ColumnType> apply(String s) {
+            ColumnType ct = null;
+            if (s.contains("基金代码")) {
+                ct = ColumnType.STRING;
+            }
+            return Optional.ofNullable(ct);
+        }
     }
 
     public static Table funds() {
@@ -59,7 +72,7 @@ public class EastMoney {
                 dataRows.add(row);
             }
 
-            Table table = TableBuildingUtils.build(columnNames, dataRows, JsonReadOptions.builderFromString(json).build());
+            Table table = TableBuildingUtils.build(columnNames, dataRows, EmptyReadOptions.builder().build());
             return table;
         } catch (IOException e) {
             log.error("解析失败", e);
@@ -129,7 +142,7 @@ public class EastMoney {
                 dataRows.add(row);
             }
 
-            Table table = TableBuildingUtils.build(columnNames, dataRows, JsonReadOptions.builderFromString(json).build());
+            Table table = TableBuildingUtils.build(columnNames, dataRows, EmptyReadOptions.builder().build());
             table.removeColumns("d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9", "d10");
             return table;
         } catch (JsonProcessingException e) {
@@ -151,7 +164,7 @@ public class EastMoney {
 //        return Table.create();
 //    }
 
-    public static Table e() {
+    public static Table etf() {
         String url = "http://fund.eastmoney.com/cnjy_dwjz.html";
 
         Map<String, String> headers = new HashMap<>();
@@ -169,7 +182,9 @@ public class EastMoney {
             Elements rows = table.select("tr");
 
             // header
-            columnNames.add(rows.get(0).select("td").get(3).text());
+            /* 这个自动类型推到列存在问题，手动指明此列的类型 */
+            String codeColumnName = rows.get(0).select("td").get(3).text();
+            columnNames.add(codeColumnName);
             columnNames.add(rows.get(0).select("td").get(4).text());
             columnNames.add(rows.get(0).select("td").get(5).text());
             String today = rows.get(0).select("td").get(6).text();
@@ -199,7 +214,9 @@ public class EastMoney {
                 cursor++;
             }
 
-            Table t = TableBuildingUtils.build(columnNames, dataRows, HtmlReadOptions.builderFromUrl(url).build());
+            Map<String, ColumnType> columnTypeByName = new HashMap<>();
+            columnTypeByName.put(codeColumnName, ColumnType.STRING);
+            Table t = TableBuildingUtils.build(columnNames, dataRows, EmptyReadOptions.builder().columnTypesPartial(columnTypeByName).build());
             return t;
         } catch (IOException e) {
             log.error("解析异常", e);
@@ -207,8 +224,106 @@ public class EastMoney {
         }
     }
 
+    // 估值
+    public static Table estimation() {
+        String url = "http://api.fund.eastmoney.com/FundGuZhi/GetFundGZList";
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36");
+        headers.put("Referer", "http://fund.eastmoney.com/");
+
+//        Map<String, Integer> symbolMap = new HashMap<>();
+//        symbolMap.put("全部", 1);
+//        symbolMap.put("股票型", 2);
+//        symbolMap.put("混合型", 3);
+//        symbolMap.put("债券型", 4);
+//        symbolMap.put("指数型", 5);
+//        symbolMap.put("QDII", 6);
+//        symbolMap.put("ETF联接", 7);
+//        symbolMap.put("LOF", 8);
+//        symbolMap.put("场内交易基金", 9);
+
+        Map<String, String> params = new HashMap<>();
+        params.put("type", "1");
+        params.put("sort", "3");
+        params.put("orderType", "desc");
+        params.put("canbuy", "0");
+        params.put("pageIndex", "1");
+        params.put("pageSize", "20000");
+        params.put("_", String.valueOf(System.currentTimeMillis()));
+
+        try {
+            String result = HttpRequest.get(url, params).headers(headers).body();
+            JsonNode json = mapper.readTree(result);
+
+            String valueDay = json.get("Data").get("gzrq").asText();
+            String calDay = json.get("Data").get("gxrq").asText();
+
+            JsonNode data = json.get("Data").get("list");
+            List<String[]> dataRows = new ArrayList<>();
+            for (JsonNode item : data) {
+                String[] row = new String[item.size()];
+
+                if (item.isArray()) {
+                    for (int i = 0, len = item.size(); i < len; i++) {
+                        JsonNode e = item.get(i);
+                        row[i] = null == e ? null : e.asText();
+                    }
+                } else {
+                    int cursor = 0;
+                    Iterator<JsonNode> iterator = item.elements();
+                    while (iterator.hasNext()) {
+                        JsonNode e = iterator.next();
+                        row[cursor++] = null == e ? null : e.asText();
+                    }
+                }
+                dataRows.add(row);
+            }
+
+            List<String> columnNames = Arrays.asList(
+                    "基金代码",
+                    "c1",
+                    "c2",
+                    "c3",
+                    "c4",
+                    "c5",
+                    "基金类型",
+                    "c6",
+                    "c7",
+                    "c8",
+                    "c9",
+                    "估算日期",
+                    "c10",
+                    "c11",
+                    "c12",
+                    "c13",
+                    "c14",
+                    "c15",
+                    "c16",
+                    "估算偏差",
+                    calDay + "-估算数据-估算值",
+                    calDay + "-估算数据-估算增长率",
+                    calDay + "-公布数据-日增长率",
+                    valueDay + "-单位净值",
+                    calDay + "-公布数据-单位净值",
+                    "c17",
+                    "基金名称",
+                    "c18",
+                    "c19",
+                    "c20"
+            );
+
+            Table table = TableBuildingUtils.build(columnNames, dataRows, EmptyReadOptions.builder().columnTypesPartial(new ColumnTypeSetting()).build());
+            table.removeColumns("c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "c10", "c11", "c12", "c13", "c14", "c15", "c16", "c17", "c18", "c19", "c20");
+            return table;
+        } catch (JsonProcessingException e) {
+            log.error("解析失败", e);
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void main(String[] args) {
-        Table table = e();
+        Table table = estimation();
         System.out.println(table.print());
     }
 }
