@@ -1,4 +1,4 @@
-package com.github.superzhc.hadoop.spark;
+package com.github.superzhc.hadoop.spark.java;
 
 import org.apache.spark.sql.Encoder;
 import org.apache.spark.sql.SparkSession;

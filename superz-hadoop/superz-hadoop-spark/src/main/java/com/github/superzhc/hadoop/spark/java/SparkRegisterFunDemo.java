@@ -1,4 +1,4 @@
-package com.github.superzhc.hadoop.spark;
+package com.github.superzhc.hadoop.spark.java;
 
 import com.github.superzhc.hadoop.spark.udaf.AverageUdafDemo;
 import org.apache.spark.SparkConf;

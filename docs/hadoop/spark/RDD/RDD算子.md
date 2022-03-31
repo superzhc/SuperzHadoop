@@ -365,7 +365,7 @@ rdd.mapPartitions(x => {
   }
   //执行SQL语句  批量插入
   list.iterator
-})foreach(println)
+}).foreach(println)
 
 // 结果：
 // 创建数据库

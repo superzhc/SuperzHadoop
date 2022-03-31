@@ -21,6 +21,9 @@
  */
 package com.github.superzhc.common.http;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 import static java.net.HttpURLConnection.HTTP_CREATED;
 import static java.net.HttpURLConnection.HTTP_INTERNAL_ERROR;
@@ -96,6 +99,8 @@ import javax.net.ssl.X509TrustManager;
  * further requests.
  */
 public class HttpRequest {
+
+    private static final Logger log = LoggerFactory.getLogger(HttpRequest.class);
 
     /**
      * 'UTF-8' charset name
@@ -1273,6 +1278,7 @@ public class HttpRequest {
 
     private HttpURLConnection createConnection() {
         try {
+            log.debug("[{}] {}", requestMethod, url.toString());
             final HttpURLConnection connection;
             if (httpProxyHost != null)
                 connection = CONNECTION_FACTORY.create(url, createProxy());
