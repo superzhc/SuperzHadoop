@@ -21,6 +21,16 @@ public class YarnRestApi {
         this.port = port;
     }
 
+    /**
+     * 获取单个应用相关信息的访问地址
+     *
+     * @param applicationId
+     * @return
+     */
+    public String application(String applicationId) {
+        return uri(String.format("/cluster/apps/%s", applicationId));
+    }
+
     public String uri(String resourcepath) {
         if (resourcepath.trim().startsWith("/")) {
             resourcepath = resourcepath.substring(1);
@@ -34,6 +44,7 @@ public class YarnRestApi {
         int port = 8088;
 
         YarnRestApi api = new YarnRestApi(host, port);
+        String applicationId = "application_1648187566782_0014";
 
         String uri = null;
 //        /* 集群信息，下面两个都可以 GET */
@@ -52,9 +63,6 @@ public class YarnRestApi {
 //        /* 集群应用程序统计数据 */
 //        uri = api.uri("/cluster/appstatistics");
 //
-        /* 单个应用程序 */
-        uri = api.uri(String.format("/cluster/apps/%s", "application_1647426438639_0022"));
-//
 //        /* 单个应用程序 Attempts */
 //        uri = api.uri(String.format("/cluster/apps/%s/appattempts", "application_1644398887576_0057"));
 //
@@ -66,14 +74,9 @@ public class YarnRestApi {
 //        /* 单个节点信息 */
 //        uri = api.uri(String.format("/cluster/nodes/%s", "log-platform02:45540"));
 //
+        uri = api.application(applicationId);
         String result = HttpRequest.get(uri).body();
         System.out.println(JSONUtils.format(result));
-//
-//        /* 创建一个新的 application */
-//        uri = api.uri("/cluster/apps/new-application");
-
-//        String result2 = HttpRequest.post(uri).body();
-//        System.out.println(JSONUtils.format(result2));
 
     }
 }

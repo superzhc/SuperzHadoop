@@ -19,14 +19,19 @@ object FundMain {
     // val df=spark.createDataFrame(rdd, table.structType)
     val df = spark.createDataFrame(table.convert2Row(), table.structType)
     // df.printSchema()
-    // df.show()
+    df.show()
     // 13931
-    // println("数据量：" + df.count())
+    println("数据量：" + df.count())
 
-    val rdd=df.rdd
-    val ps=rdd.partitions.size
-    println(ps)
-
-    rdd.glom().foreach(d=>println(d.length))
+    val rdd: RDD[Row] = df.rdd
+    // val ps=rdd.partitions.size
+    // println(ps)
+    // rdd.glom().foreach(d=>println(d.length))
+    rdd.foreachPartition(rows => {
+      for (row <- rows) {
+        println(row)
+        Thread.sleep(1000 * 30)
+      }
+    })
   }
 }

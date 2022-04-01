@@ -267,14 +267,22 @@ public class EastMoney {
                 if (item.isArray()) {
                     for (int i = 0, len = item.size(); i < len; i++) {
                         JsonNode e = item.get(i);
-                        row[i] = null == e ? null : e.asText();
+                        String value = null;
+                        if (e != null && !"---".equals(e.asText())) {
+                            value = e.asText();
+                        }
+                        row[i] = value;
                     }
                 } else {
                     int cursor = 0;
                     Iterator<JsonNode> iterator = item.elements();
                     while (iterator.hasNext()) {
                         JsonNode e = iterator.next();
-                        row[cursor++] = null == e ? null : e.asText();
+                        String value = null;
+                        if (e != null && !"---".equals(e.asText())) {
+                            value = e.asText();
+                        }
+                        row[cursor++] = value;
                     }
                 }
                 dataRows.add(row);
@@ -322,8 +330,12 @@ public class EastMoney {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         Table table = estimation();
         System.out.println(table.print());
+
+        System.out.println(table.structure().printAll());
+
+        table.write().csv("E:\\data\\2022-04-22_fund_estimation.csv");
     }
 }
