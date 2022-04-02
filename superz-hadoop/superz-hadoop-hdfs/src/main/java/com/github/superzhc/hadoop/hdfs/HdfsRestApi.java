@@ -13,8 +13,8 @@ import java.util.Map;
  * @author superz
  * @create 2022/3/15 15:49
  **/
-public class RestApiHDFS {
-    private final static String REST_API_TEMPLATOR_URL = "http://%s:%d/webhdfs/v1/%s?op=%s%s";
+public class HdfsRestApi {
+    private final static String REST_API_TEMPLATOR_URL = "http://%s:%d/webhdfs/v1/%s?%s";
 
     public final static String GET = "GET";
     public final static String POST = "POST";
@@ -24,7 +24,7 @@ public class RestApiHDFS {
     private String host;
     private int port;
 
-    public RestApiHDFS(String host, int port) {
+    public HdfsRestApi(String host, int port) {
         this.host = host;
         this.port = port;
     }
@@ -53,12 +53,15 @@ public class RestApiHDFS {
 
     private void execute(String method, String path, String operator, Map<String, String> params) {
         StringBuilder sb = new StringBuilder("");
+
+        sb.append("op").append("=").append(operator);
+
         if (null != params) {
             for (Map.Entry<String, String> param : params.entrySet()) {
                 sb.append("&").append(param.getKey()).append("=").append(param.getValue());
             }
         }
 
-        String url = String.format(REST_API_TEMPLATOR_URL, host, port, path, operator, sb.toString());
+        String url = String.format(REST_API_TEMPLATOR_URL, host, port, path, sb.toString());
     }
 }

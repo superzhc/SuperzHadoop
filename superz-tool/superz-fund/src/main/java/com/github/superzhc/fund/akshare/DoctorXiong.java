@@ -12,6 +12,8 @@ import tech.tablesaw.io.TableBuildingUtils;
 
 import java.util.*;
 
+import static tech.tablesaw.aggregate.AggregateFunctions.*;
+
 /**
  * @author superz
  * @create 2022/4/1 17:16
@@ -32,6 +34,14 @@ public class DoctorXiong {
         try {
             String result = HttpRequest.get(url, params).body();
             JsonNode json = mapper.readTree(result);
+
+            String tableName = String.format("%s[code=%s,type=%s,manager=%s](%s)"
+                    , json.get("data").get("name").asText()
+                    , json.get("data").get("code").asText()
+                    , json.get("data").get("type").asText()
+                    , json.get("data").get("manager").asText()
+                    , json.get("data").get("netWorthDate").asText()
+            );
 
             EmptyReadOptions options = EmptyReadOptions.builder().build();
 
@@ -64,6 +74,7 @@ public class DoctorXiong {
 
             Table table = netWorthTable.joinOn("day").inner(totalNetWorthTable);
             table = table.reorderColumns("day", "net_worth", "total_net_worth", "increase", "note");
+            table.setName(tableName);
             return table;
         } catch (JsonProcessingException e) {
             e.printStackTrace();
@@ -77,12 +88,22 @@ public class DoctorXiong {
     }
 
     public static void main(String[] args) {
-        Table table = detail("000001");
-
-        System.out.println(table.structure().printAll());
-
-        table=table.where(table.column("note").isNotMissing());
-
+        Table table = detail("501009");
         System.out.println(table.print());
+        System.out.println(table.structure().printAll());
+        System.out.println(table.summarize("net_worth", min, max, median, mean).apply().print());
+        System.out.println(table.doubleColumn("total_net_worth").max());
+
+        //table = table.where(table.column("note").isNotMissing());
+        //System.out.println(table.print());
+
+        //Table maxValueTable = table.where(table.doubleColumn("total_net_worth").isEqualTo(4.367));
+        //System.out.println(maxValueTable.printAll());
+
+        //Table top10PercentTable = table.where(table.doubleColumn("total_net_worth").isGreaterThan(4.367 * 0.9));
+        //System.out.println(top10PercentTable.printAll());
+
+        //Table aggTable = table.summarize("total_net_worth", max, min).apply();
+        //System.out.println(aggTable.printAll());
     }
 }

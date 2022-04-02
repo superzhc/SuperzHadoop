@@ -7,6 +7,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.superzhc.common.http.HttpRequest;
 import com.github.superzhc.common.tablesaw.read.EmptyReadOptions;
+import com.github.superzhc.fund.tablesaw.utils.ColumnUtils;
+import com.github.superzhc.fund.tablesaw.utils.JsonUtils;
+import com.github.superzhc.fund.tablesaw.utils.ReadOptionsUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -113,7 +116,7 @@ public class EastMoney {
             List<String> columnNames = Arrays.asList(
                     "基金代码",
                     "基金简称",
-                    "d1",
+                    "c1",
                     showDay.get(0).asText() + "-单位净值",
                     showDay.get(0).asText() + "-累计净值",
                     showDay.get(1).asText() + "-单位净值",
@@ -122,16 +125,16 @@ public class EastMoney {
                     "日增长率",
                     "申购状态",
                     "赎回状态",
-                    "d2",
-                    "d3",
-                    "d4",
-                    "d5",
-                    "d6",
-                    "d7",
+                    "c2",
+                    "c3",
+                    "c4",
+                    "c5",
+                    "c6",
+                    "c7",
                     "手续费",
-                    "d8",
-                    "d9",
-                    "d10");
+                    "c8",
+                    "c9",
+                    "c10");
 
             List<String[]> dataRows = new ArrayList<>();
             for (JsonNode node : datas) {
@@ -143,7 +146,19 @@ public class EastMoney {
             }
 
             Table table = TableBuildingUtils.build(columnNames, dataRows, EmptyReadOptions.builder().build());
-            table.removeColumns("d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9", "d10");
+            table = table.select(
+                    "基金代码",
+                    "基金简称",
+                    showDay.get(0).asText() + "-单位净值",
+                    showDay.get(0).asText() + "-累计净值",
+                    showDay.get(1).asText() + "-单位净值",
+                    showDay.get(1).asText() + "-累计净值",
+                    "日增长值",
+                    "日增长率",
+                    "申购状态",
+                    "赎回状态",
+                    "手续费"
+            );
             return table;
         } catch (JsonProcessingException e) {
             log.error("解析失败", e);
@@ -322,7 +337,18 @@ public class EastMoney {
             );
 
             Table table = TableBuildingUtils.build(columnNames, dataRows, EmptyReadOptions.builder().columnTypesPartial(new ColumnTypeSetting()).build());
-            table.removeColumns("c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "c10", "c11", "c12", "c13", "c14", "c15", "c16", "c17", "c18", "c19", "c20");
+            table = table.select(
+                    "基金代码",
+                    "基金类型",
+                    "估算日期",
+                    "估算偏差",
+                    calDay + "-估算数据-估算值",
+                    calDay + "-估算数据-估算增长率",
+                    calDay + "-公布数据-日增长率",
+                    valueDay + "-单位净值",
+                    calDay + "-公布数据-单位净值",
+                    "基金名称"
+            );
             return table;
         } catch (JsonProcessingException e) {
             log.error("解析失败", e);
@@ -330,12 +356,37 @@ public class EastMoney {
         }
     }
 
+    public static Table companies() {
+        String url = "http://fund.eastmoney.com/Data/FundRankScale.aspx";
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("_", String.valueOf(System.currentTimeMillis()));
+
+        try {
+            String result = HttpRequest.get(url, params).headers(headers).body();
+            String json = result.substring("var json=".length());
+
+            List<String> columnNames = ColumnUtils.transform(
+                    "uid,company_name,company_fund_date,manager_crew_num,company_boss_name,company_pinyin,others1,manage_scale,company_rank,company_short_name,others2,update_time".split(",")
+            );
+
+            JsonNode node = JsonUtils.json(json, "datas");
+            List<String[]> dataRows = JsonUtils.extractArrayData(node);
+
+            Table table = TableBuildingUtils.build(columnNames, dataRows, ReadOptionsUtils.empty());
+            return table;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void main(String[] args) throws Exception {
-        Table table = estimation();
+        Table table = companies();
         System.out.println(table.print());
 
         System.out.println(table.structure().printAll());
-
-        table.write().csv("E:\\data\\2022-04-22_fund_estimation.csv");
     }
 }

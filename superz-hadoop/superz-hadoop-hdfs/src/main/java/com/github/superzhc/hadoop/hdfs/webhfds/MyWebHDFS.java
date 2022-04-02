@@ -1,6 +1,6 @@
 package com.github.superzhc.hadoop.hdfs.webhfds;
 
-import com.github.superzhc.hadoop.hdfs.RestApiHDFS;
+import com.github.superzhc.hadoop.hdfs.HdfsRestApi;
 
 /**
  * WebHDFS
@@ -16,7 +16,7 @@ import com.github.superzhc.hadoop.hdfs.RestApiHDFS;
  * @author superz
  * @create 2022/3/14 17:48
  **/
-public class MyWebHDFS extends RestApiHDFS {
+public class MyWebHDFS extends HdfsRestApi {
 
     public MyWebHDFS(String host, int port) {
         super(host, port);
