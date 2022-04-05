@@ -16,11 +16,18 @@ public class IndicatorCalculator {
 
     /**
      * The annual standard deviation.
+     * <p>
+     * 年化波动率
+     * <p>
+     * 年化波动率=收益率标准差*(n^0.5)
+     * 其中：计算周期为日，对应 n为 250；计算周期为周，对应 n 为 52；计算周期为月，对应 n 为 12；计算周期为年，对应 n 为 1。
      *
-     * @param datas
+     * @param datas 每日收益率
+     *
      * @return
      */
     public static double annualChemicalFluctuationRate(DoubleColumn datas) {
+        // 日益标准差
         double dailyStd = datas.standardDeviation();
         double annualStd = dailyStd * Math.sqrt(250);
         return annualStd;
@@ -42,6 +49,7 @@ public class IndicatorCalculator {
      * Sharpe ratio
      *
      * @param datas
+     *
      * @return
      */
     public static double sharpeRatio(DoubleColumn datas) {
@@ -53,14 +61,17 @@ public class IndicatorCalculator {
 
     /**
      * Max drawdown of the financial series
+     * <p>
+     * 最大回撤率
      *
      * @param datas
+     *
      * @return
      */
     public static double maxDrawdown(DoubleColumn datas) {
-        double rollMax = datas.cumSum().max();
-        double maxDrawdown = -1 * datas.divide(rollMax).add(-1).min();
-        return maxDrawdown;
+        DoubleColumn max = datas.cumMax();
+        DoubleColumn drawdown = max.subtract(datas).divide(max);
+        return drawdown.max();
     }
 
     public static double calmarRatio(DoubleColumn datas) {
@@ -102,9 +113,10 @@ public class IndicatorCalculator {
 //    }
 
     public static void main(String[] args) {
-        DoubleColumn datas = DoubleColumn.create("data", new Integer[]{0, -3, 2, null, 2});
+        DoubleColumn datas = DoubleColumn.create("data", new double[]{0, 0.01, -0.02, 0.01, -0.02, 0.03});
+        System.out.println(datas.cumSum().print());
 //        System.out.println(maxDrawdown(datas));
-//        DoubleColumn dd = datas.cumSum();
+        DoubleColumn dd = datas.cumSum();
 //        System.out.println(dd.print());
 //        int num=datas.where(datas.isLessThan(0)).size();
 //        System.out.println(num);
