@@ -383,8 +383,45 @@ public class EastMoney {
         }
     }
 
+    /**
+     * 不可用
+     *
+     * @param symbol
+     * @return
+     */
+    @Deprecated
+    public static Table historyIndex(String symbol) {
+        String url = "http://push2his.eastmoney.com/api/qt/stock/kline/get";
+
+        String symbol2;
+        if (symbol.startsWith("sz")) {
+            symbol2 = "0" + symbol.substring(2);
+        } else if (symbol.startsWith("sh")) {
+            symbol2 = "1" + symbol.substring(2);
+        } else {
+            symbol2 = "1" + symbol;
+        }
+
+        Map<String, String> params = new HashMap<>();
+        params.put("cb", "jQuery1124033485574041163946_1596700547000");
+        params.put("secid", symbol2);
+        params.put("ut", "fa5fd1943c7b386f172d6893dbfba10b");
+        params.put("fields1", "f1,f2,f3,f4,f5");
+        params.put("fields2", "f51,f52,f53,f54,f55,f56,f57,f58");
+        params.put("klt", "101");
+        params.put("fqt", "0");
+        params.put("beg", "19900101");
+        params.put("end", "20991231");
+        params.put("_", "1596700547039"/*String.valueOf(System.currentTimeMillis())*/);
+
+        String result = HttpRequest.get(url, params).body();
+        System.out.println(result);
+
+        return Table.create();
+    }
+
     public static void main(String[] args) throws Exception {
-        Table table = companies();
+        Table table = historyIndex("sh000001");
         System.out.println(table.print());
 
         System.out.println(table.structure().printAll());
