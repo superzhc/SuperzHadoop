@@ -1,6 +1,7 @@
 package com.github.superzhc.fund.tablesaw.utils;
 
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,6 +25,22 @@ public class JsonUtils {
         //允许使用单引号
         mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
+
+    public static String string(JsonNode json) {
+        try {
+            return mapper.writeValueAsString(json);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String string(Map<?, ?> map) {
+        try {
+            return mapper.writeValueAsString(map);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static JsonNode json(String json, String... paths) {
