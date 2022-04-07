@@ -2938,6 +2938,7 @@ public class HttpRequest {
             output.write('=');
             if (value != null)
                 output.write(URLEncoder.encode(value.toString(), charset));
+            log.debug("[{}] form: {}={}", requestMethod, URLEncoder.encode(name.toString(), charset), URLEncoder.encode(value.toString(), charset));
         } catch (IOException e) {
             throw new HttpRequestException(e);
         }
@@ -2957,6 +2958,57 @@ public class HttpRequest {
         if (!values.isEmpty())
             for (Entry<?, ?> entry : values.entrySet())
                 form(entry, charset);
+        return this;
+    }
+
+    public HttpRequest json(Map<?, ?> params) {
+        return json(params, CHARSET_UTF8);
+    }
+
+    public HttpRequest json(Map<?, ?> params, final String charset) {
+        StringBuilder sb = new StringBuilder();
+        if (null != params && !params.isEmpty()) {
+            for (Entry<?, ?> entry : params.entrySet()) {
+                if (null == entry.getValue()) {
+                    continue;
+                }
+                sb.append(",");
+                sb.append("\"").append(entry.getKey()).append("\"");
+                sb.append(":");
+                if (entry.getValue().getClass().isPrimitive()) {
+                    sb.append(entry.getValue());
+                } else if (
+                        entry.getValue().getClass() == Boolean.class
+                                || entry.getValue().getClass() == Byte.class
+                                || entry.getValue().getClass() == Short.class
+                                || entry.getValue().getClass() == Integer.class
+                                || entry.getValue().getClass() == Long.class
+                                || entry.getValue().getClass() == Float.class
+                                || entry.getValue().getClass() == Double.class
+                ) {
+                    sb.append(entry.getValue());
+                } else {
+                    sb.append("\"").append(entry.getValue()).append("\"");
+                }
+            }
+        }
+        String str = "{" + (sb.length() == 0 ? "" : sb.substring(1)) + "}";
+        return json(str, charset);
+    }
+
+    public HttpRequest json(String json) {
+        return json(json, CHARSET_UTF8);
+    }
+
+    public HttpRequest json(String json, final String charset) {
+        contentType(CONTENT_TYPE_JSON, charset);
+        try {
+            openOutput();
+            output.write(json);
+            log.debug("[{}] json:{}", requestMethod, json);
+        } catch (IOException e) {
+            throw new HttpRequestException(e);
+        }
         return this;
     }
 

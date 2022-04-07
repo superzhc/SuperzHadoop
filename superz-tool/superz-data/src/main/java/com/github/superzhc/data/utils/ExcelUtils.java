@@ -75,8 +75,7 @@ public class ExcelUtils {
                     value = cell.getDateCellValue();
                 } else {
                     Double doubleValue = cell.getNumericCellValue();
-                    // 格式化科学计数法，取一位整数
-                    DecimalFormat df = new DecimalFormat("0");
+                    DecimalFormat df = new DecimalFormat("0.00");
                     value = df.format(doubleValue);
                 }
                 break;

@@ -1,5 +1,8 @@
 package com.github.superzhc.fund.tablesaw.utils;
 
+import tech.tablesaw.api.Table;
+import tech.tablesaw.columns.Column;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,6 +42,15 @@ public class ColumnUtils {
         String[] columnNameArr = new String[columnNames.size()];
         columnNameArr = columnNames.toArray(columnNameArr);
         return columnNameArr;
+    }
+
+    public static void rename(Table table, String columnName, String newColumnName) {
+        Column column = table.column(columnName);
+        rename(column, newColumnName);
+    }
+
+    public static void rename(Column<?> column, String newColumnName) {
+        column.setName(newColumnName);
     }
 
     public static void main(String[] args) {

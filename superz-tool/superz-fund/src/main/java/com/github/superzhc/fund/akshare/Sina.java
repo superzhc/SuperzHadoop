@@ -64,7 +64,7 @@ public class Sina {
         }
     }
 
-    public static Table historyIndex(String symbol) {
+    public static Table indexValues(String symbol) {
         String url = String.format("https://finance.sina.com.cn/realstock/company/%s/hisdata/klc_kl.js", symbol);
 
         try {
@@ -107,7 +107,7 @@ public class Sina {
     }
 
     public static void main(String[] args) throws Exception {
-        Table table = indics();//historyIndex("sh000001");
+        Table table = indexValues("sh000028");
 
         System.out.println(table.print());
         System.out.println(table.structure().printAll());
