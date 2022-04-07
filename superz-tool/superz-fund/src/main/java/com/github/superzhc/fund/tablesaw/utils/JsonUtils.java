@@ -84,7 +84,7 @@ public class JsonUtils {
         return new ArrayList<>(columnNames);
     }
 
-    public static List<String[]> extractObjcetData(JsonNode datas) {
+    public static List<String[]> extractObjectData(JsonNode datas) {
         List<String> columnNames = extractObjectColumnName(datas);
         return extractObjectData(datas, columnNames);
     }
