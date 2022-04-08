@@ -1,8 +1,11 @@
 package com.github.superzhc.fund.akshare;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.http.HttpRequest;
 import com.github.superzhc.fund.tablesaw.utils.ColumnUtils;
+import com.github.superzhc.fund.tablesaw.utils.JsonUtils;
 import com.github.superzhc.fund.tablesaw.utils.ReadOptionsUtils;
+import com.github.superzhc.fund.tablesaw.utils.TableUtils;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import tech.tablesaw.api.ColumnType;
 import tech.tablesaw.api.Table;
@@ -106,8 +109,41 @@ public class Sina {
         }
     }
 
+    public static Table colsedFund(){
+        return innerFund("close_fund");
+    }
+
+    public static Table etf() {
+        return innerFund("etf_hq_fund");
+    }
+
+    public static Table lof(){
+        return innerFund("lof_hq_fund");
+    }
+
+    private static Table innerFund(String type) {
+        String url = "http://vip.stock.finance.sina.com.cn/quotes_service/api/jsonp.php/IO.XSRV2.CallbackList['da_yPT46_Ll7K6WD']/Market_Center.getHQNodeDataSimple";
+
+        Map<String, String> params = new HashMap<>();
+        params.put("page", "1");
+        params.put("num", "1000");
+        params.put("sort", "symbol");
+        params.put("asc", "0");
+        params.put("node", type);
+        params.put("[object HTMLDivElement]", "qvvne");
+
+        String result = HttpRequest.get(url, params).body();
+        result = result.substring(result.indexOf("([") + 1, result.length() - 2);
+
+        JsonNode json = JsonUtils.json(result);
+        List<String> columnNames = JsonUtils.extractObjectColumnName(json);
+        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
+
+        return TableUtils.build(columnNames, dataRows);
+    }
+
     public static void main(String[] args) throws Exception {
-        Table table = indexValues("sh000028");
+        Table table = lof();
 
         System.out.println(table.print());
         System.out.println(table.structure().printAll());
