@@ -7,7 +7,10 @@ import com.github.superzhc.fund.tablesaw.utils.JsonUtils;
 import com.github.superzhc.fund.tablesaw.utils.ReadOptionsUtils;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.io.TableBuildingUtils;
+import tech.tablesaw.plotly.Plot;
+import tech.tablesaw.plotly.api.TimeSeriesPlot;
 
+import java.time.LocalDate;
 import java.util.*;
 
 import static tech.tablesaw.aggregate.AggregateFunctions.max;
@@ -35,6 +38,10 @@ public class MarcoCN {
 
     /**
      * 获取居民消费价格指数数据（CPI）
+     * <p>
+     * 包括食品烟酒、衣着、生活永平和服务、医疗保健及个人用品、交通和通讯、娱乐和文化和居住等8大类262个子项目，但不包括股票、房产投资
+     * <p>
+     * CPI 上涨说明物价上涨，购买力下降
      *
      * @return
      */
@@ -51,6 +58,8 @@ public class MarcoCN {
 
     /**
      * 获取工业品出厂价格指数数据
+     * <p>
+     * PPI反映的是生产环节的价格水平
      *
      * @return
      */
@@ -231,8 +240,23 @@ public class MarcoCN {
     }
 
     public static void main(String[] args) {
-        Table table = fdiData();
+        Table table = PPI();
         System.out.println(table.print());
-        System.out.println(table.summarize(table.column(1), max).apply().print());
+
+        Table cpi=CPI();
+        System.out.println(cpi.print());
+
+        LocalDate d20090101=LocalDate.of(2009,01,01);
+        table=table.where(table.dateColumn(0).isAfter(d20090101));
+        cpi=cpi.where(table.dateColumn(0).isAfter(d20090101));
+
+        Table ppi_cpi=Table.create("PPI-CPI");
+        ppi_cpi.addColumns(table.dateColumn(0));
+        ppi_cpi.addColumns(table.doubleColumn(2).copy().setName("PPI（当月同比）"));
+        ppi_cpi.addColumns(cpi.doubleColumn(2).copy().setName("CPI（当月同比）"));
+        ppi_cpi.addColumns(table.doubleColumn(2).subtract(cpi.doubleColumn(2)));
+        System.out.println(ppi_cpi.printAll());
+
+        //Plot.show(TimeSeriesPlot.create("1",table,"月份","全国当月"));
     }
 }

@@ -562,7 +562,8 @@ public class JdbcHelper implements Closeable {
             return -1;
         }
 
-        if (!condition.trim().toLowerCase().startsWith("and")) {
+        String str = condition.trim().substring(0, 3);
+        if (!"AND".equals(str.toUpperCase())) {
             condition = "AND " + condition;
         }
 
@@ -612,7 +613,8 @@ public class JdbcHelper implements Closeable {
 
     public List<Map<String, Object>> select(String table, String[] columns, String conditions) {
         if (null != conditions && conditions.trim().length() > 0) {
-            if (!conditions.toUpperCase().trim().startsWith("AND")) {
+            String str = conditions.trim().substring(0, 3);
+            if (!"AND".equals(str.toUpperCase())) {
                 conditions = "AND " + conditions;
             }
         } else {
@@ -1038,6 +1040,14 @@ public class JdbcHelper implements Closeable {
     }
 
     public void batchUpdate(String table, String[] columns, Object[][] params, Integer batchSize) {
+        batchUpdate(table, Arrays.asList(columns), params, batchSize);
+    }
+
+    public void batchUpdate(String table, List<String> columns, Object[][] params) {
+        batchUpdate(table, columns, params, params.length);
+    }
+
+    public void batchUpdate(String table, List<String> columns, Object[][] params, Integer batchSize) {
         StringBuilder columnsSb = new StringBuilder();
         StringBuilder placeholdSb = new StringBuilder();
         for (String column : columns) {
