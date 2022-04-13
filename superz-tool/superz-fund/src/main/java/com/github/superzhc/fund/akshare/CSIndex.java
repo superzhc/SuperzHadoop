@@ -1,5 +1,6 @@
 package com.github.superzhc.fund.akshare;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.http.HttpRequest;
 import com.github.superzhc.data.utils.ExcelUtils;
 import com.github.superzhc.fund.tablesaw.utils.ColumnUtils;
@@ -14,12 +15,111 @@ import java.io.InputStream;
 import java.util.*;
 
 /**
+ * 官网：https://www.csindex.com.cn
  * 参考：https://github.com/akfamily/akshare/blob/master/akshare/index/zh_stock_index_csindex.py
  *
  * @author superz
  * @create 2022/4/6 17:59
  **/
 public class CSIndex {
+
+    public static Table indics() {
+        String url = "https://www.csindex.com.cn/csindex-home/index-list/query-index-item";
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/537.36");
+        headers.put("Content-Type", "application/json;charset=UTF-8");
+
+        Map<String, Object> params = new HashMap<>();
+        Map<String, Object> indexFilter = new HashMap<>();
+        indexFilter.put("ifCustomized", null);
+        indexFilter.put("ifTracked", null);
+        indexFilter.put("ifWeightCapped", null);
+        indexFilter.put("indexCompliance", null);
+        indexFilter.put("hotSpot", null);
+        indexFilter.put("indexClassify", null);
+        indexFilter.put("currency", null);
+        indexFilter.put("region", null);
+        indexFilter.put("indexSeries", null);
+        indexFilter.put("undefined", null);
+
+        // Map<String, Object> pager = new HashMap<>();
+        // pager.put("pageNum", 1);
+        // pager.put("pageSize", 10);
+
+        Map<String, String> sorter = new HashMap<>();
+        sorter.put("sortField", "null");
+        sorter.put("sortOrder", null);
+
+        params.put("indexFilter", indexFilter);
+        params.put("sorter", sorter);
+
+        List<String> columnNames = Arrays.asList(
+                "indexCompliance",
+                "indexComplianceEn",
+                "ifTracked",
+                "ifTrackedEn",
+                "indexSeries",
+                "indexSeriesEn",
+                "key",
+                "indexCode",
+                "indexName",
+                "indexNameEn",
+                "consNumber",
+                "latestClose",
+                "monthlyReturn",
+                "indexType",
+                "assetsClassify",
+                "assetsClassifyEn",
+                "hotSpot",
+                "hotSpotEn",
+                "region",
+                "regionEn",
+                "currency",
+                "currencyEn",
+                "ifCustomized",
+                "ifCustomizedEn",
+                "indexClassify",
+                "indexClassifyEn",
+                "ifWeightCapped",
+                "ifWeightCappedEn",
+                "publishDate"
+        );
+
+        Map<String, ColumnType> columnTypeMap = new HashMap<>();
+        columnTypeMap.put("key", ColumnType.STRING);
+        columnTypeMap.put("indexCode", ColumnType.STRING);
+        columnTypeMap.put("hotSpot", ColumnType.STRING);
+        columnTypeMap.put("hotSpotEn", ColumnType.STRING);
+
+        Table table = null;
+
+        Integer size = null;
+        Integer currentPage = 1;
+        Integer pageSize = 10;
+        while (null == size || currentPage <= size) {
+            Map<String, Object> pager = new HashMap<>();
+            pager.put("pageNum", currentPage);
+            pager.put("pageSize", pageSize);
+            params.put("pager", pager);
+
+            String result = HttpRequest.post(url).headers(headers).json(params).body();
+            JsonNode json = JsonUtils.json(result);
+            size = json.get("size").asInt();
+
+            List<String[]> dataRows = JsonUtils.extractObjectData(json.get("data"), columnNames);
+            Table t = TableBuildingUtils.build(columnNames, dataRows, ReadOptionsUtils.columnTypeByName(columnTypeMap));
+            if (null == table) {
+                table = t;
+            } else {
+                table.append(t);
+            }
+
+            currentPage++;
+        }
+
+        return table;
+    }
 
     public static Table historyIndex(String symbol) {
         String url = "https://www.csindex.com.cn/csindex-home/perf/index-perf";
@@ -111,7 +211,7 @@ public class CSIndex {
     }
 
     public static void main(String[] args) {
-        Table table = historyIndex("000300");
+        Table table = indics();//historyIndex("000300");
         System.out.println(table.print());
         System.out.println(table.structure().print());
     }

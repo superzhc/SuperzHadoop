@@ -25,6 +25,7 @@ public class TableUtils {
                 case "fund_code":
                 case "fundCode":
                 case "fund.code":
+                case "indexCode":
                 case "代码":
                     ct = ColumnType.STRING;
                     break;
