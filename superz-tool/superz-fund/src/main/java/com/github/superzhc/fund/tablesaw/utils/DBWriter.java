@@ -1,6 +1,7 @@
 package com.github.superzhc.fund.tablesaw.utils;
 
 import com.github.superzhc.common.jdbc.JdbcHelper;
+import com.github.superzhc.fund.akshare.CSIndex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.tablesaw.api.*;
@@ -115,7 +116,17 @@ public class DBWriter {
             }
 
             jdbc.batchUpdate(tableName, columnNames, datas, 1000);
-
         }
+    }
+
+    public static void main(String[] args) {
+        String url = "jdbc:mysql://localhost:3306/news_dw?useSSL=false&useUnicode=true&characterEncoding=utf-8";
+        String username = "root";
+        String password = "123456";
+
+        DBWriter writer=new DBWriter(url,username,password);
+
+        Table table= CSIndex.indics();
+        writer.db(table,"csindex");
     }
 }

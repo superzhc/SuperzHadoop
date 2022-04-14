@@ -1,12 +1,15 @@
 package com.github.superzhc.fund.akshare;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.superzhc.common.http.HttpRequest;
 import com.github.superzhc.data.utils.ExcelUtils;
 import com.github.superzhc.fund.tablesaw.utils.ColumnUtils;
 import com.github.superzhc.fund.tablesaw.utils.JsonUtils;
 import com.github.superzhc.fund.tablesaw.utils.ReadOptionsUtils;
 import org.apache.poi.ss.usermodel.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tech.tablesaw.api.ColumnType;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.io.TableBuildingUtils;
@@ -22,6 +25,9 @@ import java.util.*;
  * @create 2022/4/6 17:59
  **/
 public class CSIndex {
+
+    private static final Logger log = LoggerFactory.getLogger(CSIndex.class);
+    private static ObjectMapper mapper = new ObjectMapper();
 
     public static Table indics() {
         String url = "https://www.csindex.com.cn/csindex-home/index-list/query-index-item";
@@ -96,14 +102,22 @@ public class CSIndex {
 
         Integer size = null;
         Integer currentPage = 1;
-        Integer pageSize = 10;
+        Integer pageSize = 2300;
         while (null == size || currentPage <= size) {
             Map<String, Object> pager = new HashMap<>();
             pager.put("pageNum", currentPage);
             pager.put("pageSize", pageSize);
             params.put("pager", pager);
 
-            String result = HttpRequest.post(url).headers(headers).json(params).body();
+            String jsonParams = null;
+            try {
+                jsonParams = mapper.writeValueAsString(params);
+            } catch (Exception e) {
+                log.error("错误", e);
+                throw new RuntimeException(e);
+            }
+            String result = HttpRequest.post(url).headers(headers).json(jsonParams).body();
+            //log.debug(result);
             JsonNode json = JsonUtils.json(result);
             size = json.get("size").asInt();
 
@@ -118,10 +132,34 @@ public class CSIndex {
             currentPage++;
         }
 
+        table.removeColumns("key");
         return table;
     }
 
-    public static Table historyIndex(String symbol) {
+    /**
+     * 获取指数的历史数据
+     *
+     * @param symbol
+     * @return Table
+     * Index  |  Column Name  |  Column Type  |
+     * -----------------------------------------
+     * 0  |           日期  |   LOCAL_DATE  |
+     * 1  |         指数代码  |       STRING  |
+     * 2  |       指数中文全称  |       STRING  |
+     * 3  |       指数中文简称  |       STRING  |
+     * 4  |       指数英文全称  |       STRING  |
+     * 5  |       指数英文简称  |       STRING  |
+     * 6  |           开盘  |       DOUBLE  |
+     * 7  |           最高  |       DOUBLE  |
+     * 8  |           最低  |       DOUBLE  |
+     * 9  |           收盘  |       DOUBLE  |
+     * 10  |           涨跌  |       DOUBLE  |
+     * 11  |          涨跌幅  |       DOUBLE  |
+     * 12  |          成交量  |       DOUBLE  |
+     * 13  |         成交金额  |       DOUBLE  |
+     * 14  |         样本数量  |      INTEGER  |
+     */
+    public static Table indexHistory(String symbol) {
         String url = "https://www.csindex.com.cn/csindex-home/perf/index-perf";
 
         Map<String, String> params = new HashMap<>();
@@ -212,7 +250,11 @@ public class CSIndex {
 
     public static void main(String[] args) {
         Table table = indics();//historyIndex("000300");
-        System.out.println(table.print());
-        System.out.println(table.structure().print());
+        //table.stringColumn("indexClassify").setMissingTo("空");
+        //System.out.println(table.print());
+        //System.out.println(table.structure().print());
+
+//        Table t2 = table.summarize("indexCode", count).by("indexClassify");
+//        System.out.println(t2.printAll());
     }
 }
