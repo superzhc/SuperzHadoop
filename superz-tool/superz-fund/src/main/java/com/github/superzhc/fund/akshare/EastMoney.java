@@ -10,13 +10,17 @@ import com.github.superzhc.common.tablesaw.read.EmptyReadOptions;
 import com.github.superzhc.fund.tablesaw.utils.ColumnUtils;
 import com.github.superzhc.fund.tablesaw.utils.JsonUtils;
 import com.github.superzhc.fund.tablesaw.utils.ReadOptionsUtils;
+import com.github.superzhc.fund.tablesaw.utils.TableUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.seimicrawler.xpath.JXDocument;
+import org.seimicrawler.xpath.JXNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.tablesaw.api.ColumnType;
+import tech.tablesaw.api.StringColumn;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.io.TableBuildingUtils;
 
@@ -31,6 +35,8 @@ import java.util.function.Function;
 public class EastMoney {
     private static final Logger log = LoggerFactory.getLogger(EastMoney.class);
 
+    private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36";
+
     private static final ObjectMapper mapper = new ObjectMapper();
 
     static {
@@ -41,23 +47,11 @@ public class EastMoney {
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
-    public static class ColumnTypeSetting implements Function<String, Optional<ColumnType>> {
-
-        @Override
-        public Optional<ColumnType> apply(String s) {
-            ColumnType ct = null;
-            if (s.contains("基金代码")) {
-                ct = ColumnType.STRING;
-            }
-            return Optional.ofNullable(ct);
-        }
-    }
-
     public static Table funds() {
         String url = "http://fund.eastmoney.com/js/fundcode_search.js";
 
         Map<String, String> headers = new HashMap<>();
-        headers.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36");
+        headers.put("User-Agent", USER_AGENT);
 
         try {
             String result = HttpRequest.get(url).headers(headers).body();
@@ -87,7 +81,7 @@ public class EastMoney {
         String url = "http://fund.eastmoney.com/Data/Fund_JJJZ_Data.aspx";
 
         Map<String, String> headers = new HashMap<>();
-        headers.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36");
+        headers.put("User-Agent", USER_AGENT);
 
         Map<String, String> params = new HashMap<>();
         params.put("t", "1");
@@ -179,11 +173,83 @@ public class EastMoney {
 //        return Table.create();
 //    }
 
+    public static Table fund(String symbol) {
+        String url = String.format("http://fundf10.eastmoney.com/jbgk_%s.html", symbol);
+
+        try {
+            Document doc = Jsoup.connect(url).get();
+            JXDocument jxDoc = JXDocument.create(doc);
+
+            // 名称
+            String fullName = jxDoc.selNOne("//div/div/table/tbody/tr[1]/td[1]/text()").asString();
+            // 简称
+            String simpleName = jxDoc.selNOne("//div/div/table/tbody/tr[1]/td[2]/text()").asString();
+            // 代码
+            String code = jxDoc.selNOne("//div/div/table/tbody/tr[2]/td[1]/text()").asString();
+            // 类型
+            String type = jxDoc.selNOne("//div/div/table/tbody/tr[2]/td[2]/text()").asString();
+            // 发行时间
+            String issueDate = jxDoc.selNOne("//div/div/table/tbody/tr[3]/td[1]/text()").asString();
+            // 成立日期
+            String foundDate = jxDoc.selNOne("//div/div/table/tbody/tr[3]/td[2]/text()").asString();
+            // 资产规模
+            String assetSize = jxDoc.selNOne("//div/div/table/tbody/tr[4]/td[1]/text()").asString();
+            // 份额规模
+            String shareSize = jxDoc.selNOne("//div/div/table/tbody/tr[4]/td[2]/allText()").asString();
+            // 管理人
+            String keeper = jxDoc.selNOne("//div/div/table/tbody/tr[5]/td[1]/a/text()").asString();
+            // 托管人
+            String custodian = jxDoc.selNOne("//div/div/table/tbody/tr[5]/td[2]/a/text()").asString();
+            // 经理人
+            String manager = jxDoc.selNOne("//div/div/table/tbody/tr[6]/td[1]/a/text()").asString();
+            // 分红
+            String dividend = jxDoc.selNOne("//div/div/table/tbody/tr[6]/td[2]/a/text()").asString();
+            // 追踪指数
+            String trackIndex = jxDoc.selNOne("//div/div/table/tbody/tr[10]/td[2]/text()").asString();
+            // 目标
+            JXNode investmentObjective = jxDoc.selNOne("//*[@id=\"bodydiv\"]/div[8]/div[3]/div[2]/div[3]/div/div[2]/div/p/text()");
+            // 理念
+            String investmentConcept = jxDoc.selNOne("//*[@id=\"bodydiv\"]/div[8]/div[3]/div[2]/div[3]/div/div[3]/div/p/text()").asString();
+            // 范围
+            String investmentScope = jxDoc.selNOne("//*[@id=\"bodydiv\"]/div[8]/div[3]/div[2]/div[3]/div/div[4]/div/p/text()").asString();
+            // 策略
+            String investmentTatics = jxDoc.selNOne("//*[@id=\"bodydiv\"]/div[8]/div[3]/div[2]/div[3]/div/div[5]/div/p/text()").asString();
+            // 分红策略
+            String dividendPolicy = jxDoc.selNOne("//*[@id=\"bodydiv\"]/div[8]/div[3]/div[2]/div[3]/div/div[6]/div/p/text()").asString();
+            // 风险收益特征
+            String riskIncomeCharacteristics = jxDoc.selNOne("//*[@id=\"bodydiv\"]/div[8]/div[3]/div[2]/div[3]/div/div[7]/div/p/text()").asString();
+
+            Map<String, String> map = new LinkedHashMap<>();
+            map.put("code", code);
+            map.put("full_name", fullName);
+            map.put("name", simpleName);
+            map.put("type", type);
+            map.put("issue_date", issueDate);
+            map.put("found_date", foundDate);
+            map.put("asset_size", assetSize);
+            map.put("share_size", shareSize);
+            map.put("manager", manager);
+            map.put("dividend", dividend);
+            map.put("track_index", trackIndex);
+            map.put("investment_objective", null == investmentObjective ? null : investmentObjective.asString());
+            map.put("investment_concept", investmentConcept);
+            map.put("investment_scope", investmentScope);
+            map.put("investment_tatics", investmentTatics);
+            map.put("dividend_policy", dividendPolicy);
+            map.put("risk_income_characteristics", riskIncomeCharacteristics);
+
+            return TableUtils.map2Table(map);
+        } catch (IOException e) {
+            log.error("解析失败", e);
+            throw new RuntimeException(e);
+        }
+    }
+
     public static Table etf() {
         String url = "http://fund.eastmoney.com/cnjy_dwjz.html";
 
         Map<String, String> headers = new HashMap<>();
-        headers.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36");
+        headers.put("User-Agent", USER_AGENT);
 
         try {
             Document doc = Jsoup.connect(url).headers(headers).get();
@@ -244,7 +310,7 @@ public class EastMoney {
         String url = "http://api.fund.eastmoney.com/FundGuZhi/GetFundGZList";
 
         Map<String, String> headers = new HashMap<>();
-        headers.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36");
+        headers.put("User-Agent", USER_AGENT);
         headers.put("Referer", "http://fund.eastmoney.com/");
 
 //        Map<String, Integer> symbolMap = new HashMap<>();
@@ -336,7 +402,7 @@ public class EastMoney {
                     "c20"
             );
 
-            Table table = TableBuildingUtils.build(columnNames, dataRows, EmptyReadOptions.builder().columnTypesPartial(new ColumnTypeSetting()).build());
+            Table table = TableBuildingUtils.build(columnNames, dataRows, EmptyReadOptions.builder().columnTypesPartial(new TableUtils.FundColumnType()).build());
             table = table.select(
                     "基金代码",
                     "基金类型",
@@ -360,7 +426,7 @@ public class EastMoney {
         String url = "http://fund.eastmoney.com/Data/FundRankScale.aspx";
 
         Map<String, String> headers = new HashMap<>();
-        headers.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36");
+        headers.put("User-Agent", USER_AGENT);
 
         Map<String, String> params = new HashMap<>();
         params.put("_", String.valueOf(System.currentTimeMillis()));
@@ -383,45 +449,45 @@ public class EastMoney {
         }
     }
 
-    /**
-     * 不可用
-     *
-     * @param symbol
-     * @return
-     */
-    @Deprecated
-    public static Table historyIndex(String symbol) {
-        String url = "http://push2his.eastmoney.com/api/qt/stock/kline/get";
-
-        String symbol2;
-        if (symbol.startsWith("sz")) {
-            symbol2 = "0" + symbol.substring(2);
-        } else if (symbol.startsWith("sh")) {
-            symbol2 = "1" + symbol.substring(2);
-        } else {
-            symbol2 = "1" + symbol;
-        }
-
-        Map<String, String> params = new HashMap<>();
-        params.put("cb", "jQuery1124033485574041163946_1596700547000");
-        params.put("secid", symbol2);
-        params.put("ut", "fa5fd1943c7b386f172d6893dbfba10b");
-        params.put("fields1", "f1,f2,f3,f4,f5");
-        params.put("fields2", "f51,f52,f53,f54,f55,f56,f57,f58");
-        params.put("klt", "101");
-        params.put("fqt", "0");
-        params.put("beg", "19900101");
-        params.put("end", "20991231");
-        params.put("_", "1596700547039"/*String.valueOf(System.currentTimeMillis())*/);
-
-        String result = HttpRequest.get(url, params).body();
-        System.out.println(result);
-
-        return Table.create();
-    }
+//    /**
+//     * 不可用
+//     *
+//     * @param symbol
+//     * @return
+//     */
+//    @Deprecated
+//    public static Table historyIndex(String symbol) {
+//        String url = "http://push2his.eastmoney.com/api/qt/stock/kline/get";
+//
+//        String symbol2;
+//        if (symbol.startsWith("sz")) {
+//            symbol2 = "0" + symbol.substring(2);
+//        } else if (symbol.startsWith("sh")) {
+//            symbol2 = "1" + symbol.substring(2);
+//        } else {
+//            symbol2 = "1" + symbol;
+//        }
+//
+//        Map<String, String> params = new HashMap<>();
+//        params.put("cb", "jQuery1124033485574041163946_1596700547000");
+//        params.put("secid", symbol2);
+//        params.put("ut", "fa5fd1943c7b386f172d6893dbfba10b");
+//        params.put("fields1", "f1,f2,f3,f4,f5");
+//        params.put("fields2", "f51,f52,f53,f54,f55,f56,f57,f58");
+//        params.put("klt", "101");
+//        params.put("fqt", "0");
+//        params.put("beg", "19900101");
+//        params.put("end", "20991231");
+//        params.put("_", "1596700547039"/*String.valueOf(System.currentTimeMillis())*/);
+//
+//        String result = HttpRequest.get(url, params).body();
+//        System.out.println(result);
+//
+//        return Table.create();
+//    }
 
     public static void main(String[] args) throws Exception {
-        Table table = historyIndex("sh000001");
+        Table table = fund("000001");//companies();
         System.out.println(table.print());
 
         System.out.println(table.structure().printAll());

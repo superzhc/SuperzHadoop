@@ -67,7 +67,7 @@ public class Sina {
         }
     }
 
-    public static Table indexValues(String symbol) {
+    public static Table indexHistory(String symbol) {
         String url = String.format("https://finance.sina.com.cn/realstock/company/%s/hisdata/klc_kl.js", symbol);
 
         try {
@@ -143,11 +143,11 @@ public class Sina {
     }
 
     public static void main(String[] args) throws Exception {
-        Table table = lof();
+        Table table = indexHistory("sh000001"/*"sz399986"*/);//lof();
 
         System.out.println(table.print());
-        System.out.println(table.structure().printAll());
-        System.out.println(table.shape());
+        //System.out.println(table.structure().printAll());
+        //System.out.println(table.shape());
         //System.out.println(table.summarize("close", max).apply().printAll());
     }
 }

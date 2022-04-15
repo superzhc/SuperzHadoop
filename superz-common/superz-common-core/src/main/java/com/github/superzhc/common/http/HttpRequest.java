@@ -2926,6 +2926,10 @@ public class HttpRequest {
     }
 
     private static String json2string(Map<?, ?> json) {
+        if (null == json) {
+            return null;
+        }
+
         StringBuilder sb = new StringBuilder();
         if (null != json && !json.isEmpty()) {
             for (Entry<?, ?> entry : json.entrySet()) {

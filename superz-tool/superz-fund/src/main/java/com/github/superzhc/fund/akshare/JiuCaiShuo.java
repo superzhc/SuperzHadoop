@@ -4,15 +4,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.http.HttpRequest;
 import com.github.superzhc.fund.tablesaw.utils.JsonUtils;
 import com.github.superzhc.fund.tablesaw.utils.ReadOptionsUtils;
+import com.github.superzhc.fund.tablesaw.utils.TableUtils;
 import tech.tablesaw.api.DateTimeColumn;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.io.TableBuildingUtils;
 
 import java.time.ZoneOffset;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author superz
@@ -20,6 +18,11 @@ import java.util.Map;
  **/
 public class JiuCaiShuo {
 
+    /**
+     * 指数估值列表
+     *
+     * @return
+     */
     public static Table indexValuation() {
         String url = "https://api.jiucaishuo.com/v2/guzhi/showcategory";
 
@@ -51,6 +54,100 @@ public class JiuCaiShuo {
         List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
         Table table = TableBuildingUtils.build(columnNames, dataRows, ReadOptionsUtils.empty());
         return table;
+    }
+
+    /**
+     * 追踪指数
+     *
+     * @param symbol
+     * @return
+     */
+    public static Table indexTrack(String symbol) {
+        String indexBasic = indexBasic(symbol);
+        JsonNode funds = JsonUtils.json(indexBasic, "data", "fund_info");
+
+        List<String> columnNames = Arrays.asList(
+                "gu_code",
+                "gu_name",
+                "gu_fund_year_income"
+        );
+
+        List<String[]> dataRows = JsonUtils.extractObjectData(funds, columnNames);
+        Table table = TableUtils.build(columnNames, dataRows);
+        return table;
+    }
+
+    public static Table indexInfo(String symbol) {
+        String indexBasic = indexBasic(symbol);
+        JsonNode json = JsonUtils.json(indexBasic, "data");
+
+        Map<String, String> map = new LinkedHashMap<>();
+
+        String name = json.get("gu_name").asText();
+        map.put("名称", name);
+
+        String startDate = json.get("start_time").asText();
+        map.put("起始时间", startDate);
+
+        String description = json.get("synopsis").asText();
+        map.put("描述", description);
+
+        String updateTime = json.get("update_time").asText();
+        for (JsonNode attr : json.get("top_data")) {
+            String attrNameEn = attr.get("attribute").asText();
+            String attrName = attr.get("name").asText();
+
+            String newValue = attr.get("new_value").get("value").asText();
+            map.put(String.format("%s %s[%s]", updateTime, attrName, attrNameEn.toUpperCase())
+                    , newValue);
+
+            // 存疑，释义感觉有点问题
+//            String newPercentValue = attr.get("new_percent_value").get("value").asText();
+//            keyColumn.append(String.format("%s %s[%s]涨跌幅", updateTime, attrName, attrNameEn.toUpperCase()));
+//            valueColumn.append(newPercentValue);
+//
+//            String newAvg = attr.get("new_avg").get("value").asText();
+//            keyColumn.append(String.format("%s %s[%s]平均值", updateTime, attrName, attrNameEn.toUpperCase()));
+//            valueColumn.append(newAvg);
+        }
+
+        Table table = TableUtils.map2Table(map);
+        return table;
+    }
+
+    /**
+     * 主要组成
+     *
+     * @param symbol
+     * @return
+     */
+    public static Table indexComponent(String symbol) {
+        String indexBasic = indexBasic(symbol);
+        JsonNode json = JsonUtils.json(indexBasic, "data", "cl_many_info");
+
+        List<String> columnNames = Arrays.asList(
+                "name",
+                "code",
+                "market_value",
+                "weight"
+        );
+
+        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
+
+        Table table = TableUtils.build(columnNames, dataRows);
+        return table;
+    }
+
+    private static String indexBasic(String symbol) {
+        String url = "https://api.jiucaishuo.com/v2/guzhi/newtubiaodata";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("gu_code", symbol);
+        params.put("year", -1);
+        params.put("ver", "new");
+
+        String result = HttpRequest.post(url).json(params).body();
+        return result;
     }
 
     /**
@@ -99,13 +196,20 @@ public class JiuCaiShuo {
     }
 
     public static void main(String[] args) {
-        String symbol = "000028.SH";
+        String symbol = "000300.SH";
 
-        Table table = indexValuation(symbol, "pb");
+//        Table table = indexValuation(symbol, "pb");
 
 //        Table table = indexValuation();
-        System.out.println(table.print());
-        System.out.println(table.structure().print());
+
+        Table table = indexInfo(symbol);
+
+        //Table table = indexComponent(symbol);
+
+        System.out.println(table.printAll());
+//        System.out.println(table.structure().print());
         System.out.println(table.shape());
+
+
     }
 }

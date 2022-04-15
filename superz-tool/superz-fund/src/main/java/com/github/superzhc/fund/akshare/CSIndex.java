@@ -109,14 +109,14 @@ public class CSIndex {
             pager.put("pageSize", pageSize);
             params.put("pager", pager);
 
-            String jsonParams = null;
-            try {
-                jsonParams = mapper.writeValueAsString(params);
-            } catch (Exception e) {
-                log.error("错误", e);
-                throw new RuntimeException(e);
-            }
-            String result = HttpRequest.post(url).headers(headers).json(jsonParams).body();
+//            String jsonParams = null;
+//            try {
+//                jsonParams = mapper.writeValueAsString(params);
+//            } catch (Exception e) {
+//                log.error("错误", e);
+//                throw new RuntimeException(e);
+//            }
+            String result = HttpRequest.post(url).headers(headers).json(params).body();
             //log.debug(result);
             JsonNode json = JsonUtils.json(result);
             size = json.get("size").asInt();
@@ -138,6 +138,8 @@ public class CSIndex {
 
     /**
      * 获取指数的历史数据
+     *
+     * 不推荐使用该接口，获取的数据不够全
      *
      * @param symbol
      * @return Table
@@ -249,12 +251,16 @@ public class CSIndex {
     }
 
     public static void main(String[] args) {
-        Table table = indics();//historyIndex("000300");
+//        Table table = indexHistory("399986");
         //table.stringColumn("indexClassify").setMissingTo("空");
-        //System.out.println(table.print());
+//        System.out.println(table.print());
         //System.out.println(table.structure().print());
 
 //        Table t2 = table.summarize("indexCode", count).by("indexClassify");
 //        System.out.println(t2.printAll());
+
+        String url="http://www.cnindex.com.cn/zh_indices/sese/index.html?act_menu=1&index_type=-1";
+        String result=HttpRequest.get(url).body();
+        System.out.println(result);
     }
 }

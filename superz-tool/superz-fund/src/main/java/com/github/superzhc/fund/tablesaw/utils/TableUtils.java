@@ -1,12 +1,11 @@
 package com.github.superzhc.fund.tablesaw.utils;
 
-import tech.tablesaw.api.ColumnType;
-import tech.tablesaw.api.DateColumn;
-import tech.tablesaw.api.Table;
+import tech.tablesaw.api.*;
 import tech.tablesaw.io.TableBuildingUtils;
 
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -26,6 +25,7 @@ public class TableUtils {
                 case "fundCode":
                 case "fund.code":
                 case "indexCode":
+                case "gu_code":
                 case "代码":
                     ct = ColumnType.STRING;
                     break;
@@ -36,6 +36,23 @@ public class TableUtils {
 
     public static Table build(List<String> columnNames, List<String[]> dataRows) {
         return TableBuildingUtils.build(columnNames, dataRows, ReadOptionsUtils.columnTypeByFunction(new FundColumnType()));
+    }
+
+    public static Table map2Table(Map<String, ?> map) {
+        return map2Table(null, map);
+    }
+
+    public static Table map2Table(String tableName, Map<String, ?> map) {
+        StringColumn keyColumn = StringColumn.create("KEY");
+        StringColumn valueColumn = StringColumn.create("VALUE");
+
+        for (Map.Entry<String, ?> entry : map.entrySet()) {
+            keyColumn.append(entry.getKey());
+            valueColumn.append(null == entry.getValue() ? null : entry.getValue().toString());
+        }
+
+        Table table = Table.create(tableName, keyColumn, valueColumn);
+        return table;
     }
 
     public static Table timestamp2Date(Table table, String columnName) {
