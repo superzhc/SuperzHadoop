@@ -177,7 +177,8 @@ public class EastMoney {
         String url = String.format("http://fundf10.eastmoney.com/jbgk_%s.html", symbol);
 
         try {
-            Document doc = Jsoup.connect(url).get();
+            String result = HttpRequest.get(url).body();
+            Document doc = Jsoup.parse(result);
             JXDocument jxDoc = JXDocument.create(doc);
 
             // 名称
@@ -239,7 +240,7 @@ public class EastMoney {
             map.put("risk_income_characteristics", riskIncomeCharacteristics);
 
             return TableUtils.map2Table(map);
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("解析失败", e);
             throw new RuntimeException(e);
         }
@@ -488,6 +489,7 @@ public class EastMoney {
 
     /**
      * @param symbols 例如：1.000300
+     *
      * @return
      */
     public static Table test(String... symbols) {
@@ -553,6 +555,7 @@ public class EastMoney {
 
     /**
      * @param symbol 示例：000300
+     *
      * @return
      */
     public static Table test3(String symbol) {

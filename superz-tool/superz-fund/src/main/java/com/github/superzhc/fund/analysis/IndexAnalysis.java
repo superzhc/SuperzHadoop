@@ -12,12 +12,51 @@ import static tech.tablesaw.aggregate.AggregateFunctions.*;
  * @create 2022/4/8 10:36
  **/
 public class IndexAnalysis {
+    /**
+     * 市盈率
+     * <p>
+     * 市盈率的定义是：公司市值/公司盈利（即 PE=P/E，其中 P 代表公司市值，E 代表公司盈利）
+     * <p>
+     * 市盈率细分为 静态市盈率、滚动市盈率和动态市盈率。
+     * - 静态市盈率是取用公司上一个年度的净利润
+     * - 滚动市盈率是取用最近 4 个季度财报的净利润
+     * - 动态市盈率是取用预估的公司下一个年度的净利润
+     * <p>
+     * 市盈率适用的范围：流通性好、盈利稳定的品种
+     *
+     * @param marketValue
+     * @param netProfit
+     *
+     * @return
+     */
     public static double pe(double marketValue, double netProfit) {
         return marketValue / netProfit;
     }
 
+    public static double ep(double netProfit, double marketValue) {
+        return netProfit / marketValue;
+    }
+
+    /**
+     * 市净率
+     * <p>
+     * 市净率指的是每股股价与每股净资产的比率。
+     * <p>
+     * 市净率的定义是：PB=P/B（其中 P 代表公司市值，B 代表公司净资产）
+     *
+     * @param marketValue
+     * @param netWorth
+     *
+     * @return
+     */
     public static double pb(double marketValue, double netWorth) {
         return marketValue / netWorth;
+    }
+
+    /**
+     * 企业运作资产的效率：ROE
+     */
+    public static void roe() {
     }
 
     public static double peg(double pe, double netProfitGrowth) {
