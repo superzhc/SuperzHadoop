@@ -37,15 +37,15 @@ public class EastMoney {
 
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36";
 
-    private static final ObjectMapper mapper = new ObjectMapper();
-
-    static {
-        //允许使用未带引号的字段名
-        mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
-        //允许使用单引号
-        mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    }
+//    private static final ObjectMapper mapper = new ObjectMapper();
+//
+//    static {
+//        //允许使用未带引号的字段名
+//        mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
+//        //允许使用单引号
+//        mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+//        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+//    }
 
     public static Table funds() {
         String url = "http://fund.eastmoney.com/js/fundcode_search.js";
@@ -56,7 +56,7 @@ public class EastMoney {
         try {
             String result = HttpRequest.get(url).headers(headers).body();
             String json = result.substring("var r = ".length(), result.length() - 1);
-            JsonNode nodes = mapper.readTree(json);
+            JsonNode nodes = JsonUtils.json(json);//mapper.readTree(json);
 
             List<String> columnNames = Arrays.asList("基金代码", "拼音缩写", "基金简称", "基金类型", "拼音全称");
 
@@ -71,7 +71,7 @@ public class EastMoney {
 
             Table table = TableBuildingUtils.build(columnNames, dataRows, EmptyReadOptions.builder().build());
             return table;
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("解析失败", e);
             throw new RuntimeException(e);
         }
@@ -103,7 +103,7 @@ public class EastMoney {
                     .replace("[ ,", "[ \"\",").replace("[,", "[ \"\",")
                     .replace(",,", ",\"\",").replace(", ,", ", \"\",")
                     .replace(", ]", "]").replace(",]", "]");
-            JsonNode jsonNode = mapper.readTree(json);
+            JsonNode jsonNode = JsonUtils.json(json);//mapper.readTree(json);
             JsonNode datas = jsonNode.get("datas");
             JsonNode showDay = jsonNode.get("showday");
 
@@ -154,7 +154,7 @@ public class EastMoney {
                     "手续费"
             );
             return table;
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             log.error("解析失败", e);
             throw new RuntimeException(e);
         }
@@ -335,7 +335,7 @@ public class EastMoney {
 
         try {
             String result = HttpRequest.get(url, params).headers(headers).body();
-            JsonNode json = mapper.readTree(result);
+            JsonNode json = JsonUtils.json(result);//mapper.readTree(result);
 
             String valueDay = json.get("Data").get("gzrq").asText();
             String calDay = json.get("Data").get("gxrq").asText();
@@ -416,7 +416,7 @@ public class EastMoney {
                     "基金名称"
             );
             return table;
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             log.error("解析失败", e);
             throw new RuntimeException(e);
         }
@@ -486,10 +486,172 @@ public class EastMoney {
 //        return Table.create();
 //    }
 
-    public static void main(String[] args) throws Exception {
-        Table table = fund("000001");//companies();
-        System.out.println(table.print());
+    /**
+     * @param symbols 例如：1.000300
+     * @return
+     */
+    public static Table test(String... symbols) {
+        String url = "https://push2.eastmoney.com/api/qt/ulist.np/get";
 
+        Map<String, String> params = new HashMap<>();
+        params.put("fltt", "2");
+        // 指定字段
+        // params.put("fields","f3");
+        params.put("secids", String.join(",", symbols));
+        params.put("_", String.valueOf(System.currentTimeMillis()));
+
+        String result = HttpRequest.get(url, params).body();
+        JsonNode json = JsonUtils.json(result, "data", "diff");
+
+        List<String> columnNames = JsonUtils.extractObjectColumnName(json);
+        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
+
+        columnNames.set(columnNames.indexOf("f12"), "code");
+
+        Table table = TableUtils.build(columnNames, dataRows);
+        return table;
+    }
+
+    public static Table test2(String... symbols) {
+        String url = "https://fundmobapi.eastmoney.com/FundMNewApi/FundMNFInfo";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("pageIndex", 1);
+        params.put("pageSize", 200);
+        params.put("plat", "Android");
+        params.put("appType", "ttjj");
+        params.put("product", "EFund");
+        params.put("Version", "1");
+        params.put("deviceid", generator("xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"));
+        params.put("Fcodes", String.join(",", symbols));
+
+        String result = HttpRequest.get(url, params).body();
+        JsonNode json = JsonUtils.json(result, "Datas");
+        List<String> columnNames = JsonUtils.extractObjectColumnName(json);
+        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
+
+        Table table = TableUtils.build(columnNames, dataRows);
+        return table;
+    }
+
+    private static String generator(String str) {
+        StringBuilder sb = new StringBuilder();
+        for (char c : str.toCharArray()) {
+            int r = ((int) (Math.random() * 16)) | 0;
+            if (c == 'x') {
+                sb.append(Integer.toHexString(r));
+            } else if (c == 'y') {
+                int r2 = (r & 0x3) | 0x8;
+                sb.append(Integer.toHexString(r2));
+            } else {
+                sb.append(c);
+            }
+        }
+
+        return sb.toString();
+    }
+
+    /**
+     * @param symbol 示例：000300
+     * @return
+     */
+    public static Table test3(String symbol) {
+        String url = "https://fundmobapi.eastmoney.com/FundMApi/FundYieldDiagramNew.ashx";
+
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("FCODE", symbol);
+        // y：月；3y：季；6y：半年；n：一年；3n：三年；5n：五年
+        params.put("RANGE", "5n");
+        params.put("deviceid", "Wap");
+        params.put("plat", "Wap");
+        params.put("product", "EFund");
+        params.put("version", "2.0.0");
+        params.put("_", System.currentTimeMillis());
+
+        String result = HttpRequest.get(url, params).body();
+        JsonNode json = JsonUtils.json(result, "Datas");
+
+        List<String> columnNames = JsonUtils.extractObjectColumnName(json);
+        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
+
+        Table table = TableUtils.build(columnNames, dataRows);
+        return table;
+    }
+
+    public static Table test4(String symbol) {
+        String url = "https://fundmobapi.eastmoney.com/FundMApi/FundNetDiagram.ashx";
+
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("FCODE", symbol);
+        // y：月；3y：季；6y：半年；n：一年；3n：三年；5n：五年
+        params.put("RANGE", "5n");
+        params.put("deviceid", "Wap");
+        params.put("plat", "Wap");
+        params.put("product", "EFund");
+        params.put("version", "2.0.0");
+        params.put("_", System.currentTimeMillis());
+
+        String result = HttpRequest.get(url, params).body();
+        JsonNode json = JsonUtils.json(result, "Datas");
+
+        List<String> columnNames = JsonUtils.extractObjectColumnName(json);
+        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
+
+        Table table = TableUtils.build(columnNames, dataRows);
+        return table;
+    }
+
+    public static Table test5(String symbol) {
+        String url = "https://fundmobapi.eastmoney.com/FundMApi/FundBaseTypeInformation.ashx";
+
+        Map<String, Object> params = new LinkedHashMap<>();
+        params.put("FCODE", symbol);
+        params.put("deviceid", "Wap");
+        params.put("plat", "Wap");
+        params.put("product", "EFund");
+        params.put("version", "2.0.0");
+        params.put("_", System.currentTimeMillis());
+
+        String result = HttpRequest.get(url, params).body();
+        JsonNode json = JsonUtils.json(result, "Datas");
+
+        Map<String, ?> map = JsonUtils.map(json);
+        Table table = TableUtils.map2Table(map);
+        return table;
+    }
+
+    public static Table test6(String symbol) {
+        String url = "https://push2.eastmoney.com/api/qt/stock/trends2/get";
+
+        Map<String, Object> params = new HashMap<>();
+        // 1.000300
+        params.put("secid", symbol);
+        params.put("fields1", "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f11,f12,f13");
+        params.put("fields2", "f51,f53,f56,f58");
+        params.put("iscr", 0);
+        params.put("iscca", 0);
+        params.put("ndays", 1);
+        params.put("forcect", 1);
+
+        String result = HttpRequest.get(url, params).body();
+        System.out.println(result);
+
+        return Table.create();
+    }
+
+    public static void main(String[] args) throws Exception {
+//        Table table = fund("000001");//companies();
+
+//        Table table = test("1.000300");
+
+//        Table table=test2("000300","000905");
+
+        Table table = Table.create();
+
+        table = test6("1.000300");
+
+        System.out.println(table.print());
         System.out.println(table.structure().printAll());
+
     }
 }

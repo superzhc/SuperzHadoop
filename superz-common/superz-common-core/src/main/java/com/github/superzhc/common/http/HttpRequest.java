@@ -1300,7 +1300,9 @@ public class HttpRequest {
     public int code() throws HttpRequestException {
         try {
             closeOutput();
-            return getConnection().getResponseCode();
+            int respCode = getConnection().getResponseCode();
+            log.debug("[{}] code:{}", requestMethod, respCode);
+            return respCode;
         } catch (IOException e) {
             throw new HttpRequestException(e);
         }
@@ -1399,7 +1401,9 @@ public class HttpRequest {
     public String message() throws HttpRequestException {
         try {
             closeOutput();
-            return getConnection().getResponseMessage();
+            String respMessage = getConnection().getResponseMessage();
+            log.debug("[{}] message:{}", requestMethod, message());
+            return respMessage;
         } catch (IOException e) {
             throw new HttpRequestException(e);
         }
@@ -1505,7 +1509,21 @@ public class HttpRequest {
         final ByteArrayOutputStream output = byteStream();
         try {
             copy(buffer(), output);
-            return output.toString(getValidCharset(charset));
+            String resp = output.toString(getValidCharset(charset));
+            if (log.isDebugEnabled()) {
+                String str = resp
+                        // 去掉换行
+                        .replaceAll("\r\n|\r|\n", "")
+                        // 将tab、空格去掉
+                        .replaceAll("\t", "")
+                        .replaceAll(" ", "")
+                        //.replaceAll("  ", "")
+                        //.replaceAll("    ", "")
+                        //.replaceAll("        ", "")
+                        ;
+                log.debug("[{}] response:{}", requestMethod, str.length() > 1024 ? str.substring(0, 1024) + "..." : str);
+            }
+            return resp;
         } catch (IOException e) {
             throw new HttpRequestException(e);
         }

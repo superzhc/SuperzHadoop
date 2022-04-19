@@ -43,6 +43,15 @@ public class JsonUtils {
         }
     }
 
+    public static Map<String, ?> map(String json, String... path) {
+        JsonNode node = json(json, path);
+        return map(node);
+    }
+
+    public static Map<String, ?> map(JsonNode json) {
+        return mapper.convertValue(json, Map.class);
+    }
+
     public static JsonNode json(String json, String... paths) {
         try {
             JsonNode node = mapper.readTree(json);
@@ -91,7 +100,8 @@ public class JsonUtils {
     }
 
     public static List<String> extractObjectColumnName(JsonNode datas) {
-        Set<String> columnNames = new HashSet<>();
+        // 保证列的顺序
+        Set<String> columnNames = new LinkedHashSet<>();
         for (JsonNode data : datas) {
             Iterator<String> fieldNames = data.fieldNames();
             while (fieldNames.hasNext()) {

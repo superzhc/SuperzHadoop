@@ -5,6 +5,8 @@ import com.github.superzhc.common.http.HttpRequest;
 import com.github.superzhc.fund.tablesaw.utils.JsonUtils;
 import com.github.superzhc.fund.tablesaw.utils.ReadOptionsUtils;
 import com.github.superzhc.fund.tablesaw.utils.TableUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tech.tablesaw.api.DateTimeColumn;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.io.TableBuildingUtils;
@@ -18,10 +20,26 @@ import java.util.*;
  **/
 public class JiuCaiShuo {
 
+    private static final Logger log= LoggerFactory.getLogger(JiuCaiShuo.class);
+
     /**
      * 指数估值列表
      *
-     * @return
+     * @return Structure of
+     * Index  |       Column Name        |  Column Type  |
+     * ----------------------------------------------------
+     * 0  |                      id  |      INTEGER  |
+     * 1  |                 gu_date  |   LOCAL_DATE  |
+     * 2  |                 gu_name  |       STRING  |
+     * 3  |                 gu_code  |       STRING  |
+     * 4  |                   gu_pe  |       DOUBLE  |
+     * 5  |    gu_pe_current_perent  |       DOUBLE  |
+     * 6  |                   gu_pb  |       DOUBLE  |
+     * 7  |    gu_pb_current_perent  |       DOUBLE  |
+     * 8  |                 gu_xilv  |       DOUBLE  |
+     * 9  |  gu_xilv_current_perent  |       DOUBLE  |
+     * 10  |           gu_up_down_fu  |       DOUBLE  |
+     * 11  |         gu_up_down_year  |       DOUBLE  |
      */
     public static Table indexValuation() {
         String url = "https://api.jiucaishuo.com/v2/guzhi/showcategory";

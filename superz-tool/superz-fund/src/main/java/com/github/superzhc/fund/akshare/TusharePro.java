@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.superzhc.common.http.HttpRequest;
+import com.github.superzhc.fund.tablesaw.utils.DBWriter;
 import com.github.superzhc.fund.tablesaw.utils.JsonUtils;
 import com.github.superzhc.fund.tablesaw.utils.TableUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -34,12 +35,11 @@ public class TusharePro {
     /**
      * 获取指数基础信息
      *
-     * @param tsCode 指数代码
-     * @param name 指数简称
-     * @param market 交易所或服务商 MSCI-MSCI指数;CSI-中证指数;SSE-上交所指数;SZSE-深交所指数;CICC-中金指数;SW-申万指数;OTH-其他指数
+     * @param tsCode    指数代码
+     * @param name      指数简称
+     * @param market    交易所或服务商 MSCI-MSCI指数;CSI-中证指数;SSE-上交所指数;SZSE-深交所指数;CICC-中金指数;SW-申万指数;OTH-其他指数
      * @param publisher 发布商
-     * @param category 指数类别
-     *
+     * @param category  指数类别
      * @return
      */
     public Table indexBasic(String tsCode, String name, String market, String publisher, String category) {
@@ -105,8 +105,17 @@ public class TusharePro {
     }
 
     public static void main(String[] args) {
-        TusharePro pro = new TusharePro("xxx");
-        Table table = pro.indexBasic();
-        System.out.println(table.print());
+        TusharePro pro = new TusharePro(System.getenv("TUSHARE_TOKEN"));
+//        Table table = pro.indexBasic();
+//        table.setName("index_basic");
+//        table.column("desc").setName("description");
+//
+//        String url = "jdbc:mysql://localhost:3306/news_dw?useSSL=false&useUnicode=true&characterEncoding=utf-8";
+//        String username = "root";
+//        String password = "123456";
+//        new DBWriter(url, username, password).db(table);
+
+        Table table = pro.indexBasic(null, null, null, null, null);
+        System.out.println(table.printAll());
     }
 }

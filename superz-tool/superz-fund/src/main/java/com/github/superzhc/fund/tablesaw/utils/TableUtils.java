@@ -19,16 +19,19 @@ public class TableUtils {
         @Override
         public Optional<ColumnType> apply(String s) {
             ColumnType ct = null;
-            switch (s) {
-                case "code":
-                case "fund_code":
-                case "fundCode":
-                case "fund.code":
-                case "indexCode":
-                case "gu_code":
-                case "代码":
-                    ct = ColumnType.STRING;
-                    break;
+            if (null != s) {
+                switch (s.toLowerCase()) {
+                    case "code":
+                    case "fund_code":
+                    case "fundCode":
+                    case "fund.code":
+                    case "indexCode":
+                    case "gu_code":
+                    case "fcode":
+                    case "代码":
+                        ct = ColumnType.STRING;
+                        break;
+                }
             }
             return Optional.ofNullable(ct);
         }
@@ -43,15 +46,21 @@ public class TableUtils {
     }
 
     public static Table map2Table(String tableName, Map<String, ?> map) {
-        StringColumn keyColumn = StringColumn.create("KEY");
-        StringColumn valueColumn = StringColumn.create("VALUE");
+//        StringColumn keyColumn = StringColumn.create("KEY");
+//        StringColumn valueColumn = StringColumn.create("VALUE");
+//
+//        for (Map.Entry<String, ?> entry : map.entrySet()) {
+//            keyColumn.append(entry.getKey());
+//            valueColumn.append(null == entry.getValue() ? null : entry.getValue().toString());
+//        }
+//
+//        Table table = Table.create(tableName, keyColumn, valueColumn);
 
+        Table table = Table.create(tableName);
         for (Map.Entry<String, ?> entry : map.entrySet()) {
-            keyColumn.append(entry.getKey());
-            valueColumn.append(null == entry.getValue() ? null : entry.getValue().toString());
+            table.addColumns(StringColumn.create(entry.getKey(), null == entry.getValue() ? null : entry.getValue().toString()));
         }
 
-        Table table = Table.create(tableName, keyColumn, valueColumn);
         return table;
     }
 
