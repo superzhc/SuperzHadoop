@@ -1,6 +1,7 @@
 package com.github.superzhc.fund.tablesaw.utils;
 
 import tech.tablesaw.api.*;
+import tech.tablesaw.columns.Column;
 import tech.tablesaw.io.TableBuildingUtils;
 
 import java.time.ZoneOffset;
@@ -67,6 +68,35 @@ public class TableUtils {
     public static Table timestamp2Date(Table table, String columnName) {
         DateColumn dc = table.longColumn(columnName).asDateTimes(ZoneOffset.ofHours(+8)).date().setName(columnName);
         return table.replaceColumn(columnName, dc);
+    }
+
+    public static Table addConstantColumn(Table table, String columnName, int value) {
+        IntColumn intColumn = IntColumn.create(columnName);
+        return addConstantColumn(table, intColumn, value);
+    }
+
+    public static Table addConstantColumn(Table table, String columnName, long value) {
+        LongColumn longColumn = LongColumn.create(columnName);
+        return addConstantColumn(table, longColumn, value);
+    }
+
+    public static Table addConstantColumn(Table table, String columnName, double value) {
+        DoubleColumn doubleColumn = DoubleColumn.create(columnName);
+        return addConstantColumn(table, doubleColumn, value);
+    }
+
+    public static Table addConstantColumn(Table table, String columnName, String value) {
+        StringColumn stringColumn = StringColumn.create(columnName);
+        return addConstantColumn(table, stringColumn, value);
+    }
+
+    public static <T> Table addConstantColumn(Table table, Column<T> column, T value) {
+        int count = table.rowCount();
+        for (int i = 0; i < count; i++) {
+            column.append(value);
+        }
+        table.addColumns(column);
+        return table;
     }
 
     public static Table rename(Table table, String columnName, String newColumnName) {

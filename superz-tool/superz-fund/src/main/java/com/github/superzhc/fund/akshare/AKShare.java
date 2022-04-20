@@ -34,7 +34,6 @@ public class AKShare {
 
     /**
      * @param name
-     *
      * @return Structure of
      * Index  |  Column Name  |  Column Type  |
      * -----------------------------------------
@@ -78,7 +77,6 @@ public class AKShare {
 
     /**
      * @param symbol
-     *
      * @return
      */
     public static Table index(String symbol) {
@@ -92,10 +90,7 @@ public class AKShare {
     }
 
     /**
-     * 基金信息
-     *
      * @param symbol
-     *
      * @return Structure of null
      * Index  |          Column Name          |  Column Type  |
      * ---------------------------------------------------------
@@ -122,18 +117,63 @@ public class AKShare {
         return table;
     }
 
+    /**
+     * @return Structure of
+     * Index  |   Column Name   |  Column Type  |
+     * -------------------------------------------
+     * 0  |         symbol  |       STRING  |
+     * 1  |           name  |       STRING  |
+     * 2  |          trade  |       DOUBLE  |
+     * 3  |    pricechange  |      INTEGER  |
+     * 4  |  changepercent  |      INTEGER  |
+     * 5  |            buy  |       DOUBLE  |
+     * 6  |           sell  |       DOUBLE  |
+     * 7  |     settlement  |       DOUBLE  |
+     * 8  |           open  |      INTEGER  |
+     * 9  |           high  |      INTEGER  |
+     * 10  |            low  |      INTEGER  |
+     * 11  |         volume  |      INTEGER  |
+     * 12  |         amount  |      INTEGER  |
+     * 13  |           code  |       STRING  |
+     * 14  |       ticktime  |   LOCAL_TIME  |
+     * 15  |          state  |      INTEGER  |
+     * 16  |       statetxt  |       STRING  |
+     */
+    public static Table etf() {
+        Table table = Sina.etf();
+        // 直接使用 code列
+//        table.replaceColumn("symbol",
+//                table.stringColumn("symbol").substring(2).setName("symbol")
+//        );
+        return table;
+    }
+
+    public static Table lof() {
+        Table table = Sina.lof();
+        // 直接使用 code 列
+//        table.replaceColumn("symbol",
+//                table.stringColumn("symbol").substring(2).setName("symbol")
+//        );
+        return table;
+    }
+
     public static void main(String[] args) {
-        Table table = fund("501009");
+//        Table table = fund("159999");
+//        System.out.println(table.print());
+//
+//        String indexName = table.getString(0, "track_index");
+//
+//        Table t2 = indics(indexName);
+//        System.out.println(t2.print());
+//
+//        String symbol = t2.getString(0, "ts_code");
+//
+//        Table t3 = index(symbol);
+//        System.out.println(t3.print());
+
+        Table table = Sina.indics();
         System.out.println(table.print());
-
-        String indexName = table.getString(0, "track_index");
-
-        Table t2 = indics(indexName);
-        System.out.println(t2.print());
-
-        String symbol = t2.getString(0, "ts_code");
-
-        Table t3 = index(symbol);
-        System.out.println(t3.print());
+        System.out.println(table.shape());
+        System.out.println(table.structure().printAll());
     }
 }

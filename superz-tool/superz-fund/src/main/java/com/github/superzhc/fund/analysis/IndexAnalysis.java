@@ -26,13 +26,19 @@ public class IndexAnalysis {
      *
      * @param marketValue
      * @param netProfit
-     *
      * @return
      */
     public static double pe(double marketValue, double netProfit) {
         return marketValue / netProfit;
     }
 
+    /**
+     * 盈利收益率
+     *
+     * @param netProfit
+     * @param marketValue
+     * @return
+     */
     public static double ep(double netProfit, double marketValue) {
         return netProfit / marketValue;
     }
@@ -46,7 +52,6 @@ public class IndexAnalysis {
      *
      * @param marketValue
      * @param netWorth
-     *
      * @return
      */
     public static double pb(double marketValue, double netWorth) {

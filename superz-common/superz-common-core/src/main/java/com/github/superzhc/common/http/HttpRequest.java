@@ -70,13 +70,7 @@ import java.security.GeneralSecurityException;
 import java.security.PrivilegedAction;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -1956,6 +1950,29 @@ public class HttpRequest {
             return values.toArray(new String[values.size()]);
         else
             return EMPTY_STRINGS;
+    }
+
+    public Map<String, String> cookies() {
+        String[] cookies = headers("Set-Cookie");
+        // log.debug(String.join(",",cookies));
+
+        Map<String, String> map = new HashMap<>();
+        for (String cookie : cookies) {
+            String[] items = cookie.split(";");
+            for (String item : items) {
+                String str = item.trim();
+                if (str.indexOf("=") > 0) {
+                    int pos = str.indexOf("=");
+                    String key = str.substring(0, pos);
+                    if ("path".equals(key) || "expires".equals(key) || "domain".equals(key)) {
+                        continue;
+                    }
+                    String value = str.substring(pos + 1);
+                    map.put(key, value);
+                }
+            }
+        }
+        return map;
     }
 
     /**

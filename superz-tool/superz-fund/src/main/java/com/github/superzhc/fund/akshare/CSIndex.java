@@ -259,7 +259,10 @@ public class CSIndex {
 //        Table t2 = table.summarize("indexCode", count).by("indexClassify");
 //        System.out.println(t2.printAll());
 
-        String url="http://www.cnindex.com.cn/zh_indices/sese/index.html?act_menu=1&index_type=-1";
+        String url=
+                "http://www.csindex.com.cn/zh-CN/indices/index-detail/000001.SH"
+                //"http://www.cnindex.com.cn/zh_indices/sese/index.html?act_menu=1&index_type=-1"
+                ;
         String result=HttpRequest.get(url).body();
         System.out.println(result);
     }
