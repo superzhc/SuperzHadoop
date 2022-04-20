@@ -1952,6 +1952,19 @@ public class HttpRequest {
             return EMPTY_STRINGS;
     }
 
+    public HttpRequest cookies(String value) {
+        return header("Cookie", value);
+    }
+
+    public HttpRequest cookies(Map<String, Object> map) {
+        StringBuilder sb = new StringBuilder();
+        for (Entry<String, Object> entry : map.entrySet()) {
+            sb.append(";");
+            sb.append(entry.getKey()).append("=").append(entry.getValue());
+        }
+        return cookies(sb.substring(1));
+    }
+
     public Map<String, String> cookies() {
         String[] cookies = headers("Set-Cookie");
         // log.debug(String.join(",",cookies));
@@ -1964,7 +1977,14 @@ public class HttpRequest {
                 if (str.indexOf("=") > 0) {
                     int pos = str.indexOf("=");
                     String key = str.substring(0, pos);
-                    if ("path".equals(key) || "expires".equals(key) || "domain".equals(key)) {
+                    if ("path".equals(key)
+                            //|| "maxAge".equals(key)
+                            || "expires".equals(key)
+                            || "domain".equals(key)
+                            || "secure".equals(key)
+                            || "httpOnly".equals(key)
+                            || "overwrite".equals(key)
+                    ) {
                         continue;
                     }
                     String value = str.substring(pos + 1);
