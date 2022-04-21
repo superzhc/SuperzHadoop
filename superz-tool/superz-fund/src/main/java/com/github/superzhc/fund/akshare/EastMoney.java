@@ -167,6 +167,7 @@ public class EastMoney {
      * 推荐使用 fundNew 方法
      *
      * @param symbol
+     *
      * @return
      */
     @Deprecated
@@ -337,6 +338,64 @@ public class EastMoney {
         return table;
     }
 
+    public static Table fundSummarize2(String symbol) {
+        JsonNode json = fundBasic(symbol);
+        JsonNode tssj = json.get("TSSJ").get("Datas");
+
+        Map<String, String> fields = new LinkedHashMap<>();
+        fields.put("SHARP1", "近1年夏普比率");
+        fields.put("SHARP_1NRANK", "近1年夏普比率排名");
+        fields.put("SHARP_1NFSC", "近1年夏普比率排名总数");
+        fields.put("SHARP3", "近3年夏普比率");
+        fields.put("SHARP_3NRANK", "近3年夏普比率排名");
+        fields.put("SHARP_3NFSC", "近3年夏普比率排名总数");
+        fields.put("SHARP5", "近5年夏普比率");
+        fields.put("SHARP_5NRANK", "近5年夏普比率排名");
+        fields.put("SHARP_5NFSC", "近5年夏普比率排名总数");
+        fields.put("SYL_1N", "近1年收益率");
+        fields.put("SYL_LN", "成立来收益率");
+        fields.put("MAXRETRA1", "近1年最大回撤（%）");
+        fields.put("MAXRETRA_1NRANK", "近1年最大回撤（%）排名");
+        fields.put("MAXRETRA_1NFSC", "近1年最大回撤（%）排名总数");
+        fields.put("MAXRETRA3", "近3年最大回撤（%）");
+        fields.put("MAXRETRA_3NRANK", "近3年最大回撤（%）排名");
+        fields.put("MAXRETRA_3NFSC", "近3年最大回撤（%）排名总数");
+        fields.put("MAXRETRA5", "近5年最大回撤（%）");
+        fields.put("MAXRETRA_5NRANK", "近5年最大回撤（%）排名");
+        fields.put("MAXRETRA_5NFSC", "近5年最大回撤（%）排名总数");
+        fields.put("STDDEV1", "近1年波动率（%）");
+        fields.put("STDDEV_1NRANK", "近1年波动率（%）排名");
+        fields.put("STDDEV_1NFSC", "近1年波动率（%）排名总数");
+        fields.put("STDDEV3", "近3年波动率（%）");
+        fields.put("STDDEV_3NRANK", "近3年波动率（%）排名");
+        fields.put("STDDEV_3NFSC", "近3年波动率（%）排名总数");
+        fields.put("STDDEV5", "近5年波动率（%）");
+        fields.put("STDDEV_5NRANK", "近5年波动率（%）排名");
+        fields.put("STDDEV_5NFSC", "近5年波动率（%）排名总数");
+        fields.put("PROFIT_Z", "持有1周盈利概率");
+        fields.put("PROFIT_Y", "持有1月盈利概率");
+        fields.put("PROFIT_3Y", "持有3月盈利概率");
+        fields.put("PROFIT_6Y", "持有6月盈利概率");
+        fields.put("PROFIT_1N", "持有1年盈利概率");
+        fields.put("PV_Y", "近1月访问量");
+        fields.put("DTCOUNT_Y", "近1月定投人数");
+        fields.put("FFAVORCOUNT", "加自选人数");
+        fields.put("EARN_1N", "EARN_1N");
+        fields.put("AVGHOLD", "用户平均持有时长（天）");
+        fields.put("BROKENTIMES", "BROKENTIMES");
+        fields.put("ISEXCHG", "ISEXCHG");
+
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("code", symbol);
+        for (Map.Entry<String, String> entry : fields.entrySet()) {
+            map.put(entry.getValue(), tssj.get(entry.getKey()).asText());
+        }
+
+        Table table = TableUtils.map2Table(map);
+
+        return table;
+    }
+
     public static Table fundManager(String symbol) {
         JsonNode json = fundBasic(symbol);
         JsonNode jjjl = json.get("JJJLNEW").get("Datas").get(0).get("MANGER");
@@ -413,16 +472,16 @@ public class EastMoney {
         JsonNode stocks = jjcc.get("InverstPosition").get("fundStocks");
 
         List<String> columnNames = Arrays.asList(
-                "GPDM",
-                "GPJC",
-                "JZBL",
+                "GPDM",// 股票代码
+                "GPJC",// 股票名称
+                "JZBL",// 持仓占比(%)
                 "TEXCH",
                 "ISINVISBL",
-                "PCTNVCHGTYPE",
-                "PCTNVCHG",
+                "PCTNVCHGTYPE",// 增持｜减持｜新增
+                "PCTNVCHG",// 较上期增减比例（%）
                 "NEWTEXCH",
                 "INDEXCODE",
-                "INDEXNAME"
+                "INDEXNAME"// 股票行业
         );
 
         List<String[]> dataRows = JsonUtils.extractObjectData(stocks, columnNames);
@@ -438,9 +497,9 @@ public class EastMoney {
         JsonNode boods = jjcc.get("InverstPosition").get("fundboods");
 
         List<String> columnNames = Arrays.asList(
-                "ZQDM",
-                "ZQMC",
-                "ZJZBL",
+                "ZQDM",// 债券代码
+                "ZQMC",// 债券名称
+                "ZJZBL",// 持仓占比（%）
                 "ISBROKEN"
         );
 
@@ -456,15 +515,18 @@ public class EastMoney {
         JsonNode jjcc = json.get("JJCC").get("Datas");
         JsonNode fofs = jjcc.get("InverstPosition").get("fundfofs");
 
-        List<String> columnNames = Arrays.asList(
+        System.out.println(JsonUtils.format(fofs));
 
-        );
-
-        List<String[]> dataRows = JsonUtils.extractObjectData(fofs, columnNames);
-
-        Table table = TableUtils.build(columnNames, dataRows);
-
-        return table;
+        // List<String> columnNames = Arrays.asList(
+        //
+        // );
+        //
+        // List<String[]> dataRows = JsonUtils.extractObjectData(fofs, columnNames);
+        //
+        // Table table = TableUtils.build(columnNames, dataRows);
+        //
+        // return table;
+        return Table.create();
     }
 
     public static Table fundETF(String symbol) {
@@ -488,13 +550,13 @@ public class EastMoney {
         System.out.println(JsonUtils.format(assetAllocation));
 
         List<String> columnNames = Arrays.asList(
-                "FSRQ",
-                "JJ",
-                "GP",
-                "ZQ",
-                "HB",
-                "QT",
-                "JZC"
+                "FSRQ",//日期
+                "JJ",//基金
+                "GP",//股票占比（%）
+                "ZQ",//债券占比（%）
+                "HB",//现金占比（%）
+                "QT",//其他
+                "JZC"//净资产（亿）
         );
 
         Table table = null;
@@ -523,10 +585,10 @@ public class EastMoney {
         JsonNode sectorAllocation = jjcc.get("SectorAllocation");
 
         List<String> columnNames = Arrays.asList(
-                "HYMC",
+                "HYMC",//行业名称
                 "SZ",
-                "ZJZBL",
-                "FSRQ"
+                "ZJZBL",//占比（%）
+                "FSRQ"//日期
         );
 
         Table table = null;
@@ -803,6 +865,7 @@ public class EastMoney {
 
     /**
      * @param symbols 例如：1.000300
+     *
      * @return
      */
     public static Table test(String... symbols) {
@@ -868,6 +931,7 @@ public class EastMoney {
 
     /**
      * @param symbol 示例：000300
+     *
      * @return
      */
     public static Table test3(String symbol) {
