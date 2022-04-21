@@ -33,37 +33,6 @@ public class DanJuanFunds {
     }
 
     public static void main(String[] args) {
-        String url = //"https://danjuanfunds.com/djapi/fund/nav/history/" + "501009"
-                //"https://danjuanfunds.com/djapi/index_eva/dj"
-                "http://www.csindex.com.cn/zh-CN/indices/index-detail/SH.000001"
-//                        +
-//                        "?earnings_performance="+
-//                        "1%E4%B8%AA%E6%9C%88"+"&data_type=json"
-                //
-                ;
-
-//        Map<String, Object> params = new HashMap<>();
-//        params.put("earnings_performance", "1%E4%B8%AA%E6%9C%88");
-//        params.put("data_type", "json");
-//
-//        String result = HttpRequest.get(url,params)
-//                .header("X-Requested-With","XMLHttpRequest")
-//                .userAgent(UA)
-//                .acceptJson()
-//                .body();
-//        System.out.println(JSONUtils.format(result));
-
-//        String str=HttpRequest.get("https://xueqiu.com").userAgent(UA).header("User-Agent");
-//        System.out.println( str);
-
-        //System.out.println(HttpRequest.get("https://xueqiu.com").userAgent(UA).headers());
-        System.out.println("-------------------------");
-        System.out.println(Arrays.asList(HttpRequest.get("https://xueqiu.com").userAgent(UA).cookies()));
-
-        // Set-Cookie
-        // xq_id_token
-//        System.out.println(HttpRequest.get("https://xueqiu.com").userAgent(UA).parameter("Set-Cookie","xq_id_token"));
-
 //        Table table=indexEva();
 //        System.out.println(table.structure().printAll());
 //        System.out.println(table.print());

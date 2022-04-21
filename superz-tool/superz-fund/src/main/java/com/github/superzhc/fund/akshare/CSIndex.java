@@ -172,23 +172,23 @@ public class CSIndex {
 
         String result = HttpRequest.get(url, params).body();
 
-        List<String> columnNames = ColumnUtils.transform(
-                "日期",
-                "指数代码",
-                "指数中文全称",
-                "指数中文简称",
-                "指数英文全称",
-                "指数英文简称",
-                "开盘",
-                "最高",
-                "最低",
-                "收盘",
-                "涨跌",
-                "涨跌幅",
-                "成交量",
-                "成交金额",
-                "样本数量"
-        );
+//        List<String> columnNames = ColumnUtils.transform(
+//                "日期",
+//                "指数代码",
+//                "指数中文全称",
+//                "指数中文简称",
+//                "指数英文全称",
+//                "指数英文简称",
+//                "开盘",
+//                "最高",
+//                "最低",
+//                "收盘",
+//                "涨跌",
+//                "涨跌幅",
+//                "成交量",
+//                "成交金额",
+//                "样本数量"
+//        );
         List<String> originColumnNames = Arrays.asList(
                 "tradeDate",
                 "indexCode",
@@ -210,7 +210,8 @@ public class CSIndex {
 
         Map<String, ColumnType> columnTypeMap = new HashMap<>();
         columnTypeMap.put("指数代码", ColumnType.STRING);
-        Table table = TableBuildingUtils.build(columnNames, dataRows, ReadOptionsUtils.columnTypeByName(columnTypeMap));
+        columnTypeMap.put("indexCode",ColumnType.STRING);
+        Table table = TableBuildingUtils.build(originColumnNames/*columnNames*/, dataRows, ReadOptionsUtils.columnTypeByName(columnTypeMap));
         return table;
     }
 

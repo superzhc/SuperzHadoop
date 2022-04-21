@@ -37,16 +37,6 @@ public class EastMoney {
 
     private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36";
 
-//    private static final ObjectMapper mapper = new ObjectMapper();
-//
-//    static {
-//        //允许使用未带引号的字段名
-//        mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
-//        //允许使用单引号
-//        mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
-//        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-//    }
-
     public static Table funds() {
         String url = "http://fund.eastmoney.com/js/fundcode_search.js";
 
@@ -173,6 +163,13 @@ public class EastMoney {
 //        return Table.create();
 //    }
 
+    /**
+     * 推荐使用 fundNew 方法
+     *
+     * @param symbol
+     * @return
+     */
+    @Deprecated
     public static Table fund(String symbol) {
         String url = String.format("http://fundf10.eastmoney.com/jbgk_%s.html", symbol);
 
@@ -244,6 +241,323 @@ public class EastMoney {
             log.error("解析失败", e);
             throw new RuntimeException(e);
         }
+    }
+
+    public static Table fundNew(String symbol) {
+        Map<String, Object> map = new LinkedHashMap<>();
+
+        JsonNode json = fundBasic(symbol);
+
+        JsonNode jjxq = json.get("JJXQ").get("Datas");
+        map.put("code", jjxq.get("FCODE").asText());
+        map.put("name", jjxq.get("SHORTNAME").asText());
+        map.put("type", jjxq.get("FTYPE").asText());
+        map.put("established", jjxq.get("ESTABDATE").asText());
+        map.put("index_code", jjxq.get("INDEXCODE").asText());
+        map.put("index_name", jjxq.get("INDEXNAME").asText());
+        map.put("rate", jjxq.get("RLEVEL_SZ").asText());
+        map.put("risk_level", jjxq.get("RISKLEVEL").asText());
+        map.put("bench", jjxq.get("BENCH").asText());
+        map.put("资产规模（元）", jjxq.get("ENDNAV").asText());
+        map.put("规模截止日期", jjxq.get("FEGMRQ").asText());
+//        map.put("日涨幅 (%)", jjxq.get("RZDF").asText());
+        map.put("单位净值", jjxq.get("DWJZ").asText());
+        map.put("累计净值", jjxq.get("LJJZ").asText());
+//        map.put("当日确认份额时间点", jjxq.get("CURRENTDAYMARK").asText());
+//        map.put("购买起点（元）", jjxq.get("MINSG").asText());
+//        map.put("首次购买（元）", jjxq.get("MINSBRG").asText());
+//        map.put("追加购买（元）", jjxq.get("MINSBSG").asText());
+//        map.put("定投起点（元）", jjxq.get("MINDT").asText());
+//        map.put("单日累计购买上限（元）", jjxq.get("MAXSG").asText());
+        map.put("申购状态", jjxq.get("SGZT").asText());
+//        map.put("卖出状态", jjxq.get("SHZT").asText());
+//        map.put("定投状态", jjxq.get("DTZT").asText());
+//        map.put("原始购买费率", jjxq.get("SOURCERATE").asText());
+//        map.put("实际购买费率", jjxq.get("RATE").asText());
+//        map.put("近1年波动率", jjxq.get("STDDEV1").asText());
+//        map.put("近2年波动率", jjxq.get("STDDEV2").asText());
+//        map.put("近3年波动率", jjxq.get("STDDEV3").asText());
+//        map.put("近1年夏普比率", jjxq.get("SHARP1").asText());
+//        map.put("近2年夏普比率", jjxq.get("SHARP2").asText());
+//        map.put("近3年夏普比率", jjxq.get("SHARP3").asText());
+//        map.put("近1年最大回撤", jjxq.get("MAXRETRA1").asText());
+//        map.put("买入确认日", jjxq.get("SSBCFDAY").asText());
+
+        Table table = TableUtils.map2Table(map);
+
+        return table;
+    }
+
+    public static Table fundSummarize(String symbol) {
+        JsonNode json = fundBasic(symbol);
+        JsonNode jdzf = json.get("JDZF").get("Datas");
+
+        List<String> columnNames = Arrays.asList(
+                "title",
+                "syl",// 收益率
+                "avg",// 涨跌幅
+                "hs300",// 同类平均
+                "rank",// 同类排名
+                "sc",// 排名总数
+                "diff"
+        );
+
+        List<String[]> dataRows = JsonUtils.extractObjectData(jdzf, columnNames);
+
+        Table table = TableUtils.build(columnNames, dataRows);
+
+        StringColumn titleColumn = table.stringColumn("title").map(d -> {
+            switch (d) {
+                case "Z":
+                    return "近1周";
+                case "Y":
+                    return "近1月";
+                case "3Y":
+                    return "近3月";
+                case "6Y":
+                    return "近6月";
+                case "1N":
+                    return "近1年";
+                case "2N":
+                    return "近2年";
+                case "3N":
+                    return "近3年";
+                case "5N":
+                    return "近5年";
+                case "JN":
+                    return "今年";
+                case "LN":
+                    return "成立以来";
+                default:
+                    return d;
+            }
+        });
+        table.replaceColumn("title", titleColumn);
+
+        return table;
+    }
+
+    public static Table fundManager(String symbol) {
+        JsonNode json = fundBasic(symbol);
+        JsonNode jjjl = json.get("JJJLNEW").get("Datas").get(0).get("MANGER");
+
+        List<String> columnNames = Arrays.asList(
+                "MGRID",
+                "NEWPHOTOURL",
+                "ISINOFFICE",
+                "YIELDSE",//年均回报（%）
+                "TOTALDAYS",// 从业天数
+                "INVESTMENTIDEAR",
+                "HJ_JN",// 金牛奖获奖次数
+                "DAYS",// 任职该基金天数
+                "FEMPDATE",// 任职该基金开始时间
+                "LEMPDATE",
+                "PENAVGROWTH",// 任职回报（%）
+                "MGRNAME"
+        );
+
+        List<String[]> dataRows = JsonUtils.extractObjectData(jjjl, columnNames);
+
+        Table table = TableUtils.build(columnNames, dataRows);
+
+        return table;
+    }
+
+    public static Table fundScale(String symbol) {
+        JsonNode json = fundBasic(symbol);
+        JsonNode jjgm = json.get("JJGM").get("Datas");
+
+        List<String> columnNames = Arrays.asList(
+                "FSRQ",// 日期
+                "NETNAV",// 净资产（元）
+                "CHANGE",// 净资产变动率（%）
+                "ISSUM"
+        );
+
+        List<String[]> dataRows = JsonUtils.extractObjectData(jjgm, columnNames);
+
+        Table table = TableUtils.build(columnNames, dataRows);
+        table.column("FSRQ").setName("date");
+
+        return table;
+
+    }
+
+    public static Table fundFenHong(String symbol) {
+        JsonNode json = fundBasic(symbol);
+        JsonNode fhsp = json.get("FHSP").get("Datas").get("FHINFO");
+
+        List<String> columnNames = Arrays.asList(
+                "FSRQ",
+                "DJR",// 权益登记日
+                "FHFCZ",// 每份分红（元）
+                "CFBL",
+                "FHFCBZ",
+                "CFLX",
+                "FFR",// 分红发放日
+                "FH",
+                "DTYPE"
+        );
+
+        List<String[]> dataRows = JsonUtils.extractObjectData(fhsp, columnNames);
+
+        Table table = TableUtils.build(columnNames, dataRows);
+        table.column("FSRQ").setName("date");
+
+        return table;
+    }
+
+    public static Table fundStocks(String symbol) {
+        JsonNode json = fundBasic(symbol);
+        JsonNode jjcc = json.get("JJCC").get("Datas");
+        JsonNode stocks = jjcc.get("InverstPosition").get("fundStocks");
+
+        List<String> columnNames = Arrays.asList(
+                "GPDM",
+                "GPJC",
+                "JZBL",
+                "TEXCH",
+                "ISINVISBL",
+                "PCTNVCHGTYPE",
+                "PCTNVCHG",
+                "NEWTEXCH",
+                "INDEXCODE",
+                "INDEXNAME"
+        );
+
+        List<String[]> dataRows = JsonUtils.extractObjectData(stocks, columnNames);
+
+        Table table = TableUtils.build(columnNames, dataRows);
+
+        return table;
+    }
+
+    public static Table fundBoods(String symbol) {
+        JsonNode json = fundBasic(symbol);
+        JsonNode jjcc = json.get("JJCC").get("Datas");
+        JsonNode boods = jjcc.get("InverstPosition").get("fundboods");
+
+        List<String> columnNames = Arrays.asList(
+                "ZQDM",
+                "ZQMC",
+                "ZJZBL",
+                "ISBROKEN"
+        );
+
+        List<String[]> dataRows = JsonUtils.extractObjectData(boods, columnNames);
+
+        Table table = TableUtils.build(columnNames, dataRows);
+
+        return table;
+    }
+
+    public static Table fundFofs(String symbol) {
+        JsonNode json = fundBasic(symbol);
+        JsonNode jjcc = json.get("JJCC").get("Datas");
+        JsonNode fofs = jjcc.get("InverstPosition").get("fundfofs");
+
+        List<String> columnNames = Arrays.asList(
+
+        );
+
+        List<String[]> dataRows = JsonUtils.extractObjectData(fofs, columnNames);
+
+        Table table = TableUtils.build(columnNames, dataRows);
+
+        return table;
+    }
+
+    public static Table fundETF(String symbol) {
+        JsonNode json = fundBasic(symbol);
+        JsonNode jjcc = json.get("JJCC").get("Datas");
+        JsonNode inverstPosition = jjcc.get("InverstPosition");
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("etf_code", inverstPosition.get("ETFCODE").asText());
+        map.put("etf_name", inverstPosition.get("ETFSHORTNAME").asText());
+
+        Table table = TableUtils.map2Table(map);
+        return table;
+    }
+
+    public static Table fundPositionRatio(String symbol) {
+        JsonNode json = fundBasic(symbol);
+        JsonNode jjcc = json.get("JJCC").get("Datas");
+        JsonNode assetAllocation = jjcc.get("AssetAllocation");
+
+        System.out.println(JsonUtils.format(assetAllocation));
+
+        List<String> columnNames = Arrays.asList(
+                "FSRQ",
+                "JJ",
+                "GP",
+                "ZQ",
+                "HB",
+                "QT",
+                "JZC"
+        );
+
+        Table table = null;
+
+        Iterator<String> ss = assetAllocation.fieldNames();
+        while (ss.hasNext()) {
+            String s = ss.next();
+            JsonNode node = assetAllocation.get(s);
+
+            List<String[]> dataRows = JsonUtils.extractObjectData(node, columnNames);
+
+            Table t = TableUtils.build(columnNames, dataRows);
+            if (null == table) {
+                table = t;
+            } else {
+                table = table.append(t);
+            }
+        }
+
+        return table;
+    }
+
+    public static Table fundIndustryComponent(String symbol) {
+        JsonNode json = fundBasic(symbol);
+        JsonNode jjcc = json.get("JJCC").get("Datas");
+        JsonNode sectorAllocation = jjcc.get("SectorAllocation");
+
+        List<String> columnNames = Arrays.asList(
+                "HYMC",
+                "SZ",
+                "ZJZBL",
+                "FSRQ"
+        );
+
+        Table table = null;
+
+        Iterator<String> ss = sectorAllocation.fieldNames();
+        while (ss.hasNext()) {
+            String s = ss.next();
+            JsonNode node = sectorAllocation.get(s);
+
+            List<String[]> dataRows = JsonUtils.extractObjectData(node, columnNames);
+
+            Table t = TableUtils.build(columnNames, dataRows);
+            if (null == table) {
+                table = t;
+            } else {
+                table = table.append(t);
+            }
+        }
+
+        return table;
+    }
+
+    private static JsonNode fundBasic(String symbol) {
+        String url = String.format("http://j5.dfcfw.com/sc/tfs/qt/v2.0.1/%s.json", symbol);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("_", System.currentTimeMillis());
+
+        String result = HttpRequest.get(url, params).userAgent(USER_AGENT).body();
+        JsonNode json = JsonUtils.json(result);
+        return json;
     }
 
     public static Table etf() {
@@ -489,7 +803,6 @@ public class EastMoney {
 
     /**
      * @param symbols 例如：1.000300
-     *
      * @return
      */
     public static Table test(String... symbols) {
@@ -555,7 +868,6 @@ public class EastMoney {
 
     /**
      * @param symbol 示例：000300
-     *
      * @return
      */
     public static Table test3(String symbol) {
@@ -649,12 +961,16 @@ public class EastMoney {
 
 //        Table table=test2("000300","000905");
 
-        Table table = Table.create();
+//        Table table = Table.create();
+//
+//        table = test6("1.000300");
+//
+//        System.out.println(table.print());
+//        System.out.println(table.structure().printAll());
 
-        table = test6("1.000300");
-
-        System.out.println(table.print());
-        System.out.println(table.structure().printAll());
+        Table t = fundETF("160119");
+        System.out.println(t.printAll());
+        System.out.println(t.shape());
 
     }
 }

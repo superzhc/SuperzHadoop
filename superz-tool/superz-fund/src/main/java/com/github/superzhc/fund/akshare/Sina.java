@@ -8,6 +8,7 @@ import com.github.superzhc.fund.tablesaw.utils.ReadOptionsUtils;
 import com.github.superzhc.fund.tablesaw.utils.TableUtils;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import tech.tablesaw.api.ColumnType;
+import tech.tablesaw.api.StringColumn;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.io.TableBuildingUtils;
 import tech.tablesaw.io.json.JsonReadOptions;
@@ -50,17 +51,28 @@ public class Sina {
             JsonReadOptions options = JsonReadOptions.builderFromString(result).columnTypesPartial(name -> Optional.ofNullable("code".equals(name) ? ColumnType.STRING : null)).build();
             Table table = Table.read().usingOptions(options);
             table = table.select("symbol", "name", "trade", "pricechange", "changepercent", "settlement", "open", "high", "low", "volume", "amount");
-            table.column("symbol").setName("代码");
-            table.column("name").setName("名称");
-            table.column("trade").setName("最新价");
-            table.column("pricechange").setName("涨跌额");
-            table.column("changepercent").setName("涨跌幅");
-            table.column("settlement").setName("昨开");
-            table.column("open").setName("今开");
-            table.column("high").setName("最高");
-            table.column("low").setName("最低");
-            table.column("volume").setName("成交量");
-            table.column("amount").setName("成交额");
+//            table.column("symbol").setName("代码");
+//            table.column("name").setName("名称");
+//            table.column("trade").setName("最新价");
+//            table.column("pricechange").setName("涨跌额");
+//            table.column("changepercent").setName("涨跌幅");
+//            table.column("settlement").setName("昨开");
+//            table.column("open").setName("今开");
+//            table.column("high").setName("最高");
+//            table.column("low").setName("最低");
+//            table.column("volume").setName("成交量");
+//            table.column("amount").setName("成交额");
+
+            // 统一编码的规则
+            StringColumn column = table.stringColumn("symbol").map(d -> {
+                int length = d.length();
+                String market = d.substring(0, length - 6).toUpperCase();
+                String code = d.substring(length - 6);
+                return String.format("%s.%s", code, market);
+            });
+
+            table.replaceColumn("symbol", column);
+
             return table;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -68,7 +80,10 @@ public class Sina {
     }
 
     public static Table indexHistory(String symbol) {
-        String url = String.format("https://finance.sina.com.cn/realstock/company/%s/hisdata/klc_kl.js", symbol);
+        String[] ss = symbol.split("\\.");
+        String sinaCode = ss[1].toLowerCase() + ss[0];
+
+        String url = String.format("https://finance.sina.com.cn/realstock/company/%s/hisdata/klc_kl.js", sinaCode);
 
         try {
             String result = HttpRequest.get(url).body();
@@ -109,7 +124,7 @@ public class Sina {
         }
     }
 
-    public static Table colsedFund(){
+    public static Table colsedFund() {
         return innerFund("close_fund");
     }
 
@@ -117,7 +132,7 @@ public class Sina {
         return innerFund("etf_hq_fund");
     }
 
-    public static Table lof(){
+    public static Table lof() {
         return innerFund("lof_hq_fund");
     }
 
@@ -139,11 +154,23 @@ public class Sina {
         List<String> columnNames = JsonUtils.extractObjectColumnName(json);
         List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
 
-        return TableUtils.build(columnNames, dataRows);
+        Table table = TableUtils.build(columnNames, dataRows);
+
+        // 统一编码的规则
+        StringColumn column = table.stringColumn("symbol").map(d -> {
+            int length = d.length();
+            String market = d.substring(0, length - 6).toUpperCase();
+            String code = d.substring(length - 6);
+            return String.format("%s.%s", code, market);
+        });
+
+        table.replaceColumn("symbol", column);
+
+        return table;
     }
 
     public static void main(String[] args) throws Exception {
-        Table table = indexHistory("sh000001"/*"sz399986"*/);//lof();
+        Table table = etf();
 
         System.out.println(table.print());
         //System.out.println(table.structure().printAll());

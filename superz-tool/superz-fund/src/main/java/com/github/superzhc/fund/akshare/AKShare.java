@@ -80,13 +80,37 @@ public class AKShare {
      * @return
      */
     public static Table index(String symbol) {
-        Table table = JiuCaiShuo.indexInfo(symbol);
+        // 某些指数获取不到，不好用
+        // Table table = JiuCaiShuo.indexInfo(symbol);
+
+        String token = System.getProperty(TUSHARE_TOKEN_PARAM_NAME);
+        if (null == token || token.trim().length() == 0) {
+            token = System.getenv(TUSHARE_TOKEN_PARAM_NAME);
+        }
+        if (null == token || token.trim().length() == 0) {
+            throw new RuntimeException("环境变量 " + TUSHARE_TOKEN_PARAM_NAME + " 未配置");
+        }
+
+        TusharePro ts = new TusharePro(token);
+        Table table = ts.indexBasic(symbol, null, null, null, null);
         return table;
     }
 
-    public static Table trackIndex(String symbol) {
+    /**
+     * @param symbol 示例 000001.SH
+     * @return
+     */
+    public static Table indexTrack(String symbol) {
         Table table = JiuCaiShuo.indexTrack(symbol);
         return table;
+    }
+
+    /**
+     * @param symbol 示例 000001.SH
+     * @return
+     */
+    public static Table indexHistroy(String symbol) {
+        return Sina.indexHistory(symbol);
     }
 
     /**
@@ -113,7 +137,7 @@ public class AKShare {
      * 16  |  risk_income_characteristics  |       STRING  |
      */
     public static Table fund(String symbol) {
-        Table table = EastMoney.fund(symbol);
+        Table table = EastMoney.fundNew(symbol);//EastMoney.fund(symbol);
         return table;
     }
 
@@ -141,33 +165,25 @@ public class AKShare {
      */
     public static Table etf() {
         Table table = Sina.etf();
-        // 直接使用 code列
-//        table.replaceColumn("symbol",
-//                table.stringColumn("symbol").substring(2).setName("symbol")
-//        );
         return table;
     }
 
     public static Table lof() {
         Table table = Sina.lof();
-        // 直接使用 code 列
-//        table.replaceColumn("symbol",
-//                table.stringColumn("symbol").substring(2).setName("symbol")
-//        );
         return table;
     }
 
     public static void main(String[] args) {
-//        Table table = fund("159999");
+//        Table table = fund("012820");
 //        System.out.println(table.print());
 //
 //        String indexName = table.getString(0, "track_index");
 //
 //        Table t2 = indics(indexName);
 //        System.out.println(t2.print());
-//
+
 //        String symbol = t2.getString(0, "ts_code");
-//
+//        String symbol="000300.SH";
 //        Table t3 = index(symbol);
 //        System.out.println(t3.print());
 

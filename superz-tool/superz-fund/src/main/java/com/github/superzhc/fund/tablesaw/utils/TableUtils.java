@@ -24,12 +24,16 @@ public class TableUtils {
                 switch (s.toLowerCase()) {
                     case "code":
                     case "fund_code":
-                    case "fundCode":
+                    case "fundcode":
                     case "fund.code":
-                    case "indexCode":
+                    case "indexcode":
                     case "gu_code":
                     case "fcode":
                     case "代码":
+                    case "指数代码":
+                    case "gpdm":
+                    case "zqdm":
+                    case "etfcode":
                         ct = ColumnType.STRING;
                         break;
                 }

@@ -1508,12 +1508,16 @@ public class HttpRequest {
                 String str = resp
                         // 去掉换行
                         .replaceAll("\r\n|\r|\n", "")
-                        // 将tab、空格去掉
-                        .replaceAll("\t", "")
-                        .replaceAll(" ", "")
-                        //.replaceAll("  ", "")
-                        //.replaceAll("    ", "")
-                        //.replaceAll("        ", "")
+                        // 将tab、空格进行折叠
+                        .replaceAll("\t", " ")
+                        .replaceAll("            ", " ")
+                        .replaceAll("           ", " ")
+                        .replaceAll("          ", " ")
+                        .replaceAll("         ", " ")
+                        .replaceAll("        ", " ")
+                        .replaceAll("    ", " ")
+                        .replaceAll("  ", " ")
+                        .replaceAll(" ", " ")
                         ;
                 log.debug("[{}] response:{}", requestMethod, str.length() > 1024 ? str.substring(0, 1024) + "..." : str);
             }
@@ -1953,12 +1957,13 @@ public class HttpRequest {
     }
 
     public HttpRequest cookies(String value) {
+        log.debug("[{}] Cookie:{}", requestMethod, value);
         return header("Cookie", value);
     }
 
-    public HttpRequest cookies(Map<String, Object> map) {
+    public HttpRequest cookies(Map<String, String> map) {
         StringBuilder sb = new StringBuilder();
-        for (Entry<String, Object> entry : map.entrySet()) {
+        for (Entry<String, String> entry : map.entrySet()) {
             sb.append(";");
             sb.append(entry.getKey()).append("=").append(entry.getValue());
         }

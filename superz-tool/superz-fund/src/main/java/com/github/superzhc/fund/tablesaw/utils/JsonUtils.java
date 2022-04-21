@@ -43,6 +43,22 @@ public class JsonUtils {
         }
     }
 
+    public static String format(JsonNode json) {
+        try {
+            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String format(Map<?, ?> map) {
+        try {
+            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(map);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static Map<String, ?> map(String json, String... path) {
         JsonNode node = json(json, path);
         return map(node);
