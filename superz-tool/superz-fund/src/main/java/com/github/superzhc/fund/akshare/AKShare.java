@@ -3,13 +3,13 @@ package com.github.superzhc.fund.akshare;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.selection.Selection;
 
+import static com.github.superzhc.fund.akshare.TusharePro.TUSHARE_TOKEN_PARAM_NAME;
+
 /**
  * @author superz
  * @create 2022/3/29 9:31
  **/
 public class AKShare {
-    private static final String TUSHARE_TOKEN_PARAM_NAME = "TUSHARE_TOKEN";
-
     /**
      * @return Structure of
      * Index  |  Column Name  |  Column Type  |
@@ -33,7 +33,7 @@ public class AKShare {
     }
 
     /**
-     * @param name
+     * @param text 目前支持名称、代码的模糊查询
      * @return Structure of
      * Index  |  Column Name  |  Column Type  |
      * -----------------------------------------
@@ -51,7 +51,7 @@ public class AKShare {
      * 11  |         desc  |       STRING  |
      * 12  |     exp_date  |   LOCAL_DATE  |
      */
-    public static Table indics(String name) {
+    public static Table indics(String text) {
         String token = System.getProperty(TUSHARE_TOKEN_PARAM_NAME);
         if (null == token || token.trim().length() == 0) {
             token = System.getenv(TUSHARE_TOKEN_PARAM_NAME);
@@ -66,8 +66,14 @@ public class AKShare {
                 //.isNotIn("OTH", "MSCI", "CICC", "SW", "NH", "CNI")
                 .isIn("SSE", "SZSE", "CSI");
 
-        if (null != name && name.trim().length() > 0) {
-            where.and(table.stringColumn("fullname").containsString(name));
+        if (null != text && text.trim().length() > 0) {
+            // 名称模糊查询
+            Selection childCondition = table.stringColumn("fullname").containsString(text);
+            childCondition.or(table.stringColumn("name").containsString(text));
+
+            // 代码模糊查询
+            childCondition.or(table.stringColumn("ts_code").containsString(text));
+            where.and(childCondition);
         }
 
         table = table.where(where);

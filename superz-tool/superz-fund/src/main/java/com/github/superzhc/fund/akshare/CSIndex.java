@@ -1,10 +1,9 @@
 package com.github.superzhc.fund.akshare;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.superzhc.common.http.HttpRequest;
 import com.github.superzhc.data.utils.ExcelUtils;
-import com.github.superzhc.fund.tablesaw.utils.ColumnUtils;
+import com.github.superzhc.fund.common.HttpConstant;
 import com.github.superzhc.fund.tablesaw.utils.JsonUtils;
 import com.github.superzhc.fund.tablesaw.utils.ReadOptionsUtils;
 import org.apache.poi.ss.usermodel.*;
@@ -27,14 +26,13 @@ import java.util.*;
 public class CSIndex {
 
     private static final Logger log = LoggerFactory.getLogger(CSIndex.class);
-    private static ObjectMapper mapper = new ObjectMapper();
 
     public static Table indics() {
         String url = "https://www.csindex.com.cn/csindex-home/index-list/query-index-item";
 
         Map<String, String> headers = new HashMap<>();
-        headers.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/537.36");
-        headers.put("Content-Type", "application/json;charset=UTF-8");
+        headers.put("User-Agent", HttpConstant.UA);
+        headers.put("Content-Type", HttpConstant.JSON_CONTENT_TYPE);
 
         Map<String, Object> params = new HashMap<>();
         Map<String, Object> indexFilter = new HashMap<>();
@@ -92,6 +90,7 @@ public class CSIndex {
                 "publishDate"
         );
 
+        /* 字段类型映射，消除自动判断映射的错误 */
         Map<String, ColumnType> columnTypeMap = new HashMap<>();
         columnTypeMap.put("key", ColumnType.STRING);
         columnTypeMap.put("indexCode", ColumnType.STRING);
@@ -109,15 +108,7 @@ public class CSIndex {
             pager.put("pageSize", pageSize);
             params.put("pager", pager);
 
-//            String jsonParams = null;
-//            try {
-//                jsonParams = mapper.writeValueAsString(params);
-//            } catch (Exception e) {
-//                log.error("错误", e);
-//                throw new RuntimeException(e);
-//            }
             String result = HttpRequest.post(url).headers(headers).json(params).body();
-            //log.debug(result);
             JsonNode json = JsonUtils.json(result);
             size = json.get("size").asInt();
 
@@ -138,7 +129,7 @@ public class CSIndex {
 
     /**
      * 获取指数的历史数据
-     *
+     * <p>
      * 不推荐使用该接口，获取的数据不够全
      *
      * @param symbol
@@ -210,7 +201,7 @@ public class CSIndex {
 
         Map<String, ColumnType> columnTypeMap = new HashMap<>();
         columnTypeMap.put("指数代码", ColumnType.STRING);
-        columnTypeMap.put("indexCode",ColumnType.STRING);
+        columnTypeMap.put("indexCode", ColumnType.STRING);
         Table table = TableBuildingUtils.build(originColumnNames/*columnNames*/, dataRows, ReadOptionsUtils.columnTypeByName(columnTypeMap));
         return table;
     }
@@ -260,11 +251,11 @@ public class CSIndex {
 //        Table t2 = table.summarize("indexCode", count).by("indexClassify");
 //        System.out.println(t2.printAll());
 
-        String url=
+        String url =
                 "http://www.csindex.com.cn/zh-CN/indices/index-detail/000001.SH"
                 //"http://www.cnindex.com.cn/zh_indices/sese/index.html?act_menu=1&index_type=-1"
                 ;
-        String result=HttpRequest.get(url).body();
+        String result = HttpRequest.get(url).body();
         System.out.println(result);
     }
 }

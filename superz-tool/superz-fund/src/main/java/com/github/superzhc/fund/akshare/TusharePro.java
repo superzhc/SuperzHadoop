@@ -20,6 +20,7 @@ import java.util.Map;
  * @create 2022/4/8 0:36
  */
 public class TusharePro {
+    public static final String TUSHARE_TOKEN_PARAM_NAME = "TUSHARE_TOKEN";
     private static final String URL = "http://api.tushare.pro";
 
     private String token;
@@ -105,7 +106,7 @@ public class TusharePro {
     }
 
     public static void main(String[] args) {
-        TusharePro pro = new TusharePro(System.getenv("TUSHARE_TOKEN"));
+        TusharePro pro = new TusharePro(System.getenv(TUSHARE_TOKEN_PARAM_NAME));
 //        Table table = pro.indexBasic();
 //        table.setName("index_basic");
 //        table.column("desc").setName("description");
