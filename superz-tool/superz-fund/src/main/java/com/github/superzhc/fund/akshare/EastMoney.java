@@ -285,8 +285,8 @@ public class EastMoney {
         map.put("资产规模（元）", jjxq.get("ENDNAV").asText());
         map.put("规模截止日期", jjxq.get("FEGMRQ").asText());
 //        map.put("日涨幅 (%)", jjxq.get("RZDF").asText());
-        map.put("单位净值", jjxq.get("DWJZ").asText());
-        map.put("累计净值", jjxq.get("LJJZ").asText());
+        map.put("net_worth"/*"单位净值"*/, jjxq.get("DWJZ").asText());
+        map.put("accumulated_net_worth"/*"累计净值"*/, jjxq.get("LJJZ").asText());
 //        map.put("当日确认份额时间点", jjxq.get("CURRENTDAYMARK").asText());
 //        map.put("购买起点（元）", jjxq.get("MINSG").asText());
 //        map.put("首次购买（元）", jjxq.get("MINSBRG").asText());
@@ -296,8 +296,8 @@ public class EastMoney {
         map.put("申购状态", jjxq.get("SGZT").asText());
 //        map.put("卖出状态", jjxq.get("SHZT").asText());
 //        map.put("定投状态", jjxq.get("DTZT").asText());
-//        map.put("原始购买费率", jjxq.get("SOURCERATE").asText());
-//        map.put("实际购买费率", jjxq.get("RATE").asText());
+        map.put("origin_rate"/*"原始购买费率"*/, jjxq.get("SOURCERATE").asText());
+        map.put("real_rate"/*"实际购买费率"*/, jjxq.get("RATE").asText());
 //        map.put("近1年波动率", jjxq.get("STDDEV1").asText());
 //        map.put("近2年波动率", jjxq.get("STDDEV2").asText());
 //        map.put("近3年波动率", jjxq.get("STDDEV3").asText());
