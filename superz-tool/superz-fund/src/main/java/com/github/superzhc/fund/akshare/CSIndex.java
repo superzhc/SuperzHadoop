@@ -6,6 +6,7 @@ import com.github.superzhc.data.utils.ExcelUtils;
 import com.github.superzhc.fund.common.HttpConstant;
 import com.github.superzhc.fund.tablesaw.utils.JsonUtils;
 import com.github.superzhc.fund.tablesaw.utils.ReadOptionsUtils;
+import com.github.superzhc.fund.tablesaw.utils.TableUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -127,12 +128,39 @@ public class CSIndex {
         return table;
     }
 
+    public static Table index(String symbol) {
+        String url = String.format("https://www.csindex.com.cn/csindex-home/indexInfo/index-basic-info/%s", symbol);
+
+        String result = HttpRequest.get(url).body();
+        JsonNode json = JsonUtils.json(result, "data");
+
+        Map<String, ?> map = JsonUtils.map(json);
+
+        Table table = TableUtils.map2Table(map);
+
+        return table;
+    }
+
+    public static Table trackIndex(String symbol) {
+        String url = String.format("https://www.csindex.com.cn/csindex-home/index-list/queryByIndexCode/%s?indexCode=%s", symbol, symbol);
+
+        String result = HttpRequest.get(url).body();
+        JsonNode json = JsonUtils.json(result, "data");
+
+        List<String> columnNames = JsonUtils.extractObjectColumnName(json);
+        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
+
+        Table table = TableUtils.build(columnNames, dataRows);
+        return table;
+    }
+
     /**
      * 获取指数的历史数据
      * <p>
      * 不推荐使用该接口，获取的数据不够全
      *
      * @param symbol
+     *
      * @return Table
      * Index  |  Column Name  |  Column Type  |
      * -----------------------------------------
