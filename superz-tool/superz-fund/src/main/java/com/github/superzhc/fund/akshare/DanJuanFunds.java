@@ -130,7 +130,7 @@ public class DanJuanFunds {
     }
 
     public static Table pbHistory10Y(String indexCode) {
-        return peHistory(indexCode, "all");
+        return pbHistory(indexCode, "all");
     }
 
     public static Table pbHistory(String indexCode, String type) {

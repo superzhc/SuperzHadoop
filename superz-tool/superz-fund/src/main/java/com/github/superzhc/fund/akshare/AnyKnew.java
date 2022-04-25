@@ -98,7 +98,7 @@ public class AnyKnew {
     public static void main(String[] args) {
         Table table = all();
         System.out.println(table.structure().printAll());
-        System.out.println(table.print());
+        System.out.println(table.printAll());
         System.out.println(table.shape());
     }
 }

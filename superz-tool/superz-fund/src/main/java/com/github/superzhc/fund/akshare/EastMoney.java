@@ -631,8 +631,8 @@ public class EastMoney {
         params.put("version", "6.3.8");
         params.put("_", System.currentTimeMillis());
 
-        String result=HttpRequest.get(url,params).userAgent(UA).body();
-        JsonNode assetAllocation=JsonUtils.json(result,"Datas");
+        String result = HttpRequest.get(url, params).userAgent(UA).body();
+        JsonNode assetAllocation = JsonUtils.json(result, "Datas");
 
         List<String> columnNames = Arrays.asList(
                 "FSRQ",//日期
@@ -646,9 +646,9 @@ public class EastMoney {
 
         Table table = null;
 
-        List<String[]> dataRows=JsonUtils.extractObjectData(assetAllocation,columnNames);
+        List<String[]> dataRows = JsonUtils.extractObjectData(assetAllocation, columnNames);
 
-        table=TableUtils.build(columnNames,dataRows);
+        table = TableUtils.build(columnNames, dataRows);
 
         return table;
     }
@@ -664,8 +664,8 @@ public class EastMoney {
         params.put("version", "6.3.8");
         params.put("_", System.currentTimeMillis());
 
-        String result=HttpRequest.get(url,params).userAgent(UA).body();
-        JsonNode sectorAllocation=JsonUtils.json(result,"Datas");
+        String result = HttpRequest.get(url, params).userAgent(UA).body();
+        JsonNode sectorAllocation = JsonUtils.json(result, "Datas");
 
         List<String> columnNames = Arrays.asList(
                 "HYMC",//行业名称
@@ -676,9 +676,9 @@ public class EastMoney {
 
         Table table = null;
 
-        List<String[]> dataRows=JsonUtils.extractObjectData(sectorAllocation,columnNames);
+        List<String[]> dataRows = JsonUtils.extractObjectData(sectorAllocation, columnNames);
 
-        table=TableUtils.build(columnNames,dataRows);
+        table = TableUtils.build(columnNames, dataRows);
 
         return table;
     }
@@ -1067,6 +1067,16 @@ public class EastMoney {
         return Table.create();
     }
 
+    /**
+     * @param symbol
+     * @return Structure of
+     * Index  |       Column Name       |  Column Type  |
+     * ---------------------------------------------------
+     * 0  |                   date  |   LOCAL_DATE  |
+     * 1  |              net_worth  |       DOUBLE  |
+     * 2  |  accumulated_net_worth  |       DOUBLE  |
+     * 3  |                 change  |       STRING  |
+     */
     public static Table fundNetHistory(String symbol) {
         String url = "https://fundmobapi.eastmoney.com/FundMNewApi/FundMNHisNetList";
 
