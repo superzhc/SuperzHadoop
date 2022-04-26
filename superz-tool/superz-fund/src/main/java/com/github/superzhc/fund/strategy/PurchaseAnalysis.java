@@ -24,11 +24,11 @@ public class PurchaseAnalysis {
 
     /**
      * @param table Structure of
-     *              Index  |  Column Name  |  Column Type  |
-     *              -----------------------------------------
-     *              0  |         date  |       STRING  |
-     *              1  |         code  |       STRING  |
-     *              2  |         amount  |      DOUBLE  |
+     * Index  |  Column Name  |  Column Type  |
+     * -----------------------------------------
+     * 0  |         date  |       STRING  |
+     * 1  |         code  |       STRING  |
+     * 2  |         amount  |      DOUBLE  |
      */
     public PurchaseAnalysis(Table table) {
         // table 处理
@@ -162,7 +162,8 @@ public class PurchaseAnalysis {
             Row row = t2.row(i);
             Table recordsByCode = getRecords().where(getRecords().stringColumn("code").isEqualTo(row.getString("code")));
             DateColumn dates = recordsByCode.dateColumn("date");
-            dates.append(LocalDate.now());
+            // fix：当天 15:00 以后可能获取到相关估值，若直接使用在会报错
+            dates.append(LocalDate.now().plusDays(1));
             DoubleColumn amountes = recordsByCode.doubleColumn("amount").multiply(-1);
             amountes.append(row.getDouble("total_value"));
             annualized.append(IndexTool.syl(dates, amountes));
