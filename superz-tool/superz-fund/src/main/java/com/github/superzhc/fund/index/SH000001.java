@@ -17,6 +17,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * 上证指数
+ *
  * @author superz
  * @create 2022/4/21 9:18
  **/
@@ -54,17 +56,17 @@ public class SH000001 {
         );
     }
 
-    public Table component(){
-        Table table=JiuCaiShuo.indexComponent(CODE);
+    public Table component() {
+        Table table = JiuCaiShuo.indexComponent(CODE);
         return table;
     }
 
-    public void componentPlot(){
-        Table table=component();
+    public void componentPlot() {
+        Table table = component();
 
         Plot.show(
-                PiePlot.create(CODE,table,"name","weight")
-                ,PlotUtils.index(CODE, "Component")
+                PiePlot.create(CODE, table, "name", "weight")
+                , PlotUtils.index(CODE, "Component")
         );
     }
 
@@ -76,7 +78,7 @@ public class SH000001 {
 //        System.out.println(table.printAll());
 //        System.out.println(table.shape());
         Plot.show(
-                Histogram.create("",table,"volume")
+                Histogram.create("", table, "volume")
         );
 
 //        index.historyPlot();

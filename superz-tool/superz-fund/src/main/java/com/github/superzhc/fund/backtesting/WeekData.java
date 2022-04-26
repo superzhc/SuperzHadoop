@@ -67,11 +67,11 @@ public class WeekData {
         System.out.println(analysis.getRecords().print());
         Table purchaseSummarize = analysis.summarize();
         System.out.println(purchaseSummarize.print());
-        Table t=purchaseSummarize.where(purchaseSummarize.stringColumn("code").isEqualTo(code));
-
-        Row row=t.row(0);
-
-        double increase=(0.85*row.getDouble("total_input")-row.getDouble("total_value"))/0.15;
-        System.out.println(increase);
+//        Table t=purchaseSummarize.where(purchaseSummarize.stringColumn("code").isEqualTo(code));
+//
+//        Row row=t.row(0);
+//
+//        double increase=(0.85*row.getDouble("total_input")-row.getDouble("total_value"))/0.15;
+//        System.out.println(increase);
     }
 }

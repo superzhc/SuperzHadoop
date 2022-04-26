@@ -1,6 +1,8 @@
 package com.github.superzhc.fund.index;
 
 /**
+ * 中证500
+ *
  * @author superz
  * @create 2022/4/25 16:13
  **/

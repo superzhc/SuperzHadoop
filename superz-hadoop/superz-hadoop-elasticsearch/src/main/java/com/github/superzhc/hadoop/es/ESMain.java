@@ -1,12 +1,7 @@
 package com.github.superzhc.hadoop.es;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.superzhc.hadoop.es.index.ESIndex;
-import com.github.superzhc.hadoop.es.search.ESIndexsSearch;
 import com.github.superzhc.hadoop.es.search.ESNewSearch;
-import com.github.superzhc.hadoop.es.search.ESSearch;
-import com.github.superzhc.hadoop.es.sys.ESCat;
-import com.github.superzhc.hadoop.es.sys.ESCluster;
 
 /**
  * 2020年06月22日 superz add
@@ -23,8 +18,6 @@ public class ESMain {
         String url = "jdbc:mysql://localhost:13306/data_warehouse?useSSL=false&useUnicode=true&characterEncoding=utf-8";
         String username = "root";
         String password = "123456";
-
-        ObjectMapper mapper = new ObjectMapper();
 
 
         try (ESClient client = ESClient.create("localhost", 9200)) {

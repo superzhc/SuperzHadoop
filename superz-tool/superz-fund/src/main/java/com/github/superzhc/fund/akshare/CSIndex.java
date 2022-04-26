@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import tech.tablesaw.api.ColumnType;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.io.TableBuildingUtils;
+import tech.tablesaw.selection.Selection;
 
 import java.io.InputStream;
 import java.util.*;
@@ -128,8 +129,21 @@ public class CSIndex {
         return table;
     }
 
-    public static Table index(String symbol) {
-        String url = String.format("https://www.csindex.com.cn/csindex-home/indexInfo/index-basic-info/%s", symbol);
+    public static Table indics(String str) {
+        Table table = indics();
+
+        if (null != str && str.trim().length() > 0) {
+            Selection condition = table.stringColumn("indexName").containsString(str)
+                    .or(table.stringColumn("indexCode").containsString(str));
+
+            table = table.where(condition);
+        }
+
+        return table;
+    }
+
+    public static Table index(String indexCode) {
+        String url = String.format("https://www.csindex.com.cn/csindex-home/indexInfo/index-basic-info/%s", transform(indexCode));
 
         String result = HttpRequest.get(url).body();
         JsonNode json = JsonUtils.json(result, "data");
@@ -141,11 +155,51 @@ public class CSIndex {
         return table;
     }
 
-    public static Table trackIndex(String symbol) {
+    public static Table trackIndex(String indexCode) {
+        String symbol = transform(indexCode);
         String url = String.format("https://www.csindex.com.cn/csindex-home/index-list/queryByIndexCode/%s?indexCode=%s", symbol, symbol);
 
         String result = HttpRequest.get(url).body();
         JsonNode json = JsonUtils.json(result, "data");
+
+        List<String> columnNames = JsonUtils.extractObjectColumnName(json);
+        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
+
+        Table table = TableUtils.build(columnNames, dataRows);
+        return table;
+    }
+
+    public static Table indexMainStock(String indexCode) {
+        String url = String.format("https://www.csindex.com.cn/csindex-home/index/weight/top10/%s", transform(indexCode));
+
+        String result = HttpRequest.get(url).body();
+        JsonNode json = JsonUtils.json(result, "data", "weightList");
+
+        List<String> columnNames = JsonUtils.extractObjectColumnName(json);
+        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
+
+        Table table = TableUtils.build(columnNames, dataRows);
+        return table;
+    }
+
+    public static Table indexIndustry(String indexCode) {
+        String url = String.format("https://www.csindex.com.cn/csindex-home/index/weight/industry-weight/%s", transform(indexCode));
+
+        String result = HttpRequest.get(url).body();
+        JsonNode json = JsonUtils.json(result, "data", "industryWeightList");
+
+        List<String> columnNames = JsonUtils.extractObjectColumnName(json);
+        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
+
+        Table table = TableUtils.build(columnNames, dataRows);
+        return table;
+    }
+
+    public static Table indexMarkets(String indexCode) {
+        String url = String.format("https://www.csindex.com.cn/csindex-home/index/weight/market-weight/%s", transform(indexCode));
+
+        String result = HttpRequest.get(url).body();
+        JsonNode json = JsonUtils.json(result, "data", "marketWeightList");
 
         List<String> columnNames = JsonUtils.extractObjectColumnName(json);
         List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
@@ -159,8 +213,7 @@ public class CSIndex {
      * <p>
      * 不推荐使用该接口，获取的数据不够全
      *
-     * @param symbol
-     *
+     * @param indexCode
      * @return Table
      * Index  |  Column Name  |  Column Type  |
      * -----------------------------------------
@@ -180,11 +233,11 @@ public class CSIndex {
      * 13  |         成交金额  |       DOUBLE  |
      * 14  |         样本数量  |      INTEGER  |
      */
-    public static Table indexHistory(String symbol) {
+    public static Table indexHistory(String indexCode) {
         String url = "https://www.csindex.com.cn/csindex-home/perf/index-perf";
 
         Map<String, String> params = new HashMap<>();
-        params.put("indexCode", symbol/*"H30374"*/);
+        params.put("indexCode", transform(indexCode)/*"H30374"*/);
         // 时间必须要有
         params.put("startDate", "19900101");
         params.put("endDate", "20991231");
@@ -234,8 +287,8 @@ public class CSIndex {
         return table;
     }
 
-    public static Table indexValue(String symbol) {
-        String url = String.format("https://csi-web-dev.oss-cn-shanghai-finance-1-pub.aliyuncs.com/static/html/csindex/public/uploads/file/autofile/indicator/%sindicator.xls", symbol);
+    public static Table indexValue(String indexCode) {
+        String url = String.format("https://csi-web-dev.oss-cn-shanghai-finance-1-pub.aliyuncs.com/static/html/csindex/public/uploads/file/autofile/indicator/%sindicator.xls", transform(indexCode));
 
         try {
             InputStream in = HttpRequest.get(url).stream();
@@ -268,6 +321,11 @@ public class CSIndex {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static String transform(String indexCode) {
+        String[] ss = indexCode.split("\\.");
+        return ss[0];
     }
 
     public static void main(String[] args) {

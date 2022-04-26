@@ -1,20 +1,24 @@
 package com.github.superzhc.hadoop.es;
 
-import java.io.Closeable;
-import java.io.IOException;
-
-import org.apache.http.HttpEntity;
+import com.github.superzhc.hadoop.es.util.ResponseUtils;
 import org.apache.http.HttpHost;
-import org.apache.http.entity.BasicHttpEntity;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.elasticsearch.client.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.Closeable;
+import java.io.IOException;
+
 /**
  * 2020年04月21日 superz add
+ * 2022年04月26日 superz modify 基于 7.13.3 版本的 Elasticsearch 新增 user/password 验证方式
  */
-public class ESClient implements Closeable
-{
+public class ESClient implements Closeable {
     private static final Logger logger = LoggerFactory.getLogger(ESClient.class);
     private static final String DEFAULT_PROTOCOL = "http";
 
@@ -24,16 +28,38 @@ public class ESClient implements Closeable
     private RestHighLevelClient highLevelClient;
 
     public static ESClient create(String protocol, String host, Integer port) {
-        return new ESClient(new HttpHost[] {new HttpHost(host, port, protocol) });
+        return create(protocol, host, port, null, null);
+    }
+
+    public static ESClient create(String protocol, String host, Integer port, String username, String password) {
+        return new ESClient(username, password, new HttpHost[]{new HttpHost(host, port, protocol)});
+    }
+
+    public static ESClient create(String host, Integer port, String username, String password) {
+        return create(DEFAULT_PROTOCOL, host, port, username, password);
     }
 
     public static ESClient create(String host, Integer port) {
         return create(DEFAULT_PROTOCOL, host, port);
     }
 
-    public ESClient(HttpHost... httpHost) {
+    public ESClient(HttpHost... httpHosts) {
+        this(null, null, httpHosts);
+    }
+
+    public ESClient(String username, String password, HttpHost... httpHost) {
         this.httpHosts = httpHost;
         RestClientBuilder builder = RestClient.builder(httpHost);
+        if (null != username && username.trim().length() > 0) {
+            final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+            credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
+            builder.setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
+                @Override
+                public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpAsyncClientBuilder) {
+                    return httpAsyncClientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+                }
+            });
+        }
         this.highLevelClient = new RestHighLevelClient(builder);
         this.client = highLevelClient.getLowLevelClient();
     }
@@ -48,8 +74,9 @@ public class ESClient implements Closeable
         }
     }
 
-    public void ping() {
+    public String ping() {
         Response response = get("/");
+        return ResponseUtils.getEntity(response);
     }
 
     public Response get(String url) {
@@ -101,8 +128,7 @@ public class ESClient implements Closeable
                 logger.debug(request.toString() + (null == json ? "" : ",请求体内容：" + json));
             }
             return client.performRequest(request);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.error("执行Elasticsearch的请求异常！", e);
             throw new RuntimeException(e);
         }

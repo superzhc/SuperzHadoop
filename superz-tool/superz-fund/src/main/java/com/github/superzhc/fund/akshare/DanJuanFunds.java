@@ -116,7 +116,7 @@ public class DanJuanFunds {
         List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
 
         Table table = TableUtils.build(columnNames, dataRows);
-        table.replaceColumn("ts", table.longColumn("ts").asDateTimes(ZoneOffset.ofHours(+8)).date().setName("ts"));
+        table.replaceColumn("ts", table.longColumn("ts").asDateTimes(ZoneOffset.ofHours(+8)).date().setName("date"));
 
         return table;
     }
@@ -147,7 +147,7 @@ public class DanJuanFunds {
         List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
 
         Table table = TableUtils.build(columnNames, dataRows);
-        table.replaceColumn("ts", table.longColumn("ts").asDateTimes(ZoneOffset.ofHours(+8)).date().setName("ts"));
+        table.replaceColumn("ts", table.longColumn("ts").asDateTimes(ZoneOffset.ofHours(+8)).date().setName("date"));
 
         return table;
     }
@@ -178,7 +178,7 @@ public class DanJuanFunds {
         List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
 
         Table table = TableUtils.build(columnNames, dataRows);
-        table.replaceColumn("ts", table.longColumn("ts").asDateTimes(ZoneOffset.ofHours(+8)).date().setName("ts"));
+        table.replaceColumn("ts", table.longColumn("ts").asDateTimes(ZoneOffset.ofHours(+8)).date().setName("date"));
 
         return table;
     }
