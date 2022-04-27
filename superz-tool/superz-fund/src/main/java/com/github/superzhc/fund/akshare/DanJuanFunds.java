@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.http.HttpRequest;
 import com.github.superzhc.fund.tablesaw.utils.JsonUtils;
 import com.github.superzhc.fund.tablesaw.utils.TableUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tech.tablesaw.api.Table;
 
 import java.time.ZoneOffset;
@@ -16,6 +18,8 @@ import java.util.Map;
  * @create 2022/4/20 14:01
  **/
 public class DanJuanFunds {
+
+    private static final Logger log = LoggerFactory.getLogger(DanJuanFunds.class);
 
     /**
      * 指数估值
@@ -45,7 +49,6 @@ public class DanJuanFunds {
      * 单个指数估值
      *
      * @param indexCode 示例：000905.SH
-     *
      * @return
      */
     public static Table indexEva(String indexCode) {
@@ -66,8 +69,7 @@ public class DanJuanFunds {
      * 指数历史
      *
      * @param indexCode
-     * @param type 数据量，可选值：1y,3y,5y,10y
-     *
+     * @param type      数据量，可选值：1y,3y,5y,10y
      * @return
      */
     public static Table indexHistory(String indexCode, String type) {
@@ -86,6 +88,21 @@ public class DanJuanFunds {
 
         Table table = TableUtils.build(columnNames, dataRows);
 
+        return table;
+    }
+
+    public static Table indexValue(String indexCode, String type) {
+        Table peT = peHistory(indexCode, type);
+        Table pbT = pbHistory(indexCode, type);
+        // Table roeT = roeHistory(indexCode, type);
+
+        if (peT.rowCount() != pbT.rowCount()
+                // || peT.rowCount() != roeT.rowCount()
+        ) {
+            log.warn("pb:{},pe:{},roe:{}", pbT.rowCount(), peT.rowCount()/*, roeT.rowCount()*/);
+        }
+
+        Table table = peT.joinOn("date").inner(pbT/*, roeT*/);
         return table;
     }
 
@@ -187,7 +204,6 @@ public class DanJuanFunds {
      * 转换成蛋卷的指数表示方式
      *
      * @param indexCode 示例 000905.SH
-     *
      * @return
      */
     private static String transform(String indexCode) {
