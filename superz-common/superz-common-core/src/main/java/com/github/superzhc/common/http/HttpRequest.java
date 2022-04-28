@@ -823,6 +823,11 @@ public class HttpRequest {
         return new HttpRequest(url, METHOD_POST);
     }
 
+    public static HttpRequest post(final CharSequence baseUrl,
+                                  final Map<?, ?> params) {
+        return post(baseUrl, params, true);
+    }
+
     /**
      * Start a 'POST' request to the given URL along with the query params
      *
@@ -3010,6 +3015,8 @@ public class HttpRequest {
                                 || entry.getValue().getClass() == Double.class
                 ) {
                     sb.append(entry.getValue());
+                } else if (entry.getValue().getClass().isArray()) {
+                    sb.append(json2string(arrayToList(entry.getValue())));
                 } else if (entry.getValue() instanceof List) {
                     sb.append(json2string((List<?>) entry.getValue()));
                 } else if (entry.getValue() instanceof Map) {
@@ -3030,6 +3037,7 @@ public class HttpRequest {
 
         StringBuilder sb = new StringBuilder();
         for (Object obj : json) {
+            sb.append(",");
             if (null == obj) {
                 sb.append((String) null);
             } else if (obj.getClass().isPrimitive()) {
@@ -3044,6 +3052,8 @@ public class HttpRequest {
                             || obj.getClass() == Double.class
             ) {
                 sb.append(obj);
+            } else if (obj.getClass().isArray()) {
+                sb.append(json2string(arrayToList(obj)));
             } else if (obj instanceof List) {
                 sb.append(json2string((List<?>) obj));
             } else if (obj instanceof Map) {

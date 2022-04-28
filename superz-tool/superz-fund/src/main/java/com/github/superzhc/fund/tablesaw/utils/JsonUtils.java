@@ -115,11 +115,15 @@ public class JsonUtils {
         return arr;
     }
 
-    public static List<String> extractObjectColumnName(JsonNode datas) {
+    public static List<String> extractObjectColumnName(JsonNode datas, String... paths) {
         // 保证列的顺序
         Set<String> columnNames = new LinkedHashSet<>();
         for (JsonNode data : datas) {
-            Iterator<String> fieldNames = data.fieldNames();
+            JsonNode item = data;
+            for (String path : paths) {
+                item = item.get(path);
+            }
+            Iterator<String> fieldNames = item.fieldNames();
             while (fieldNames.hasNext()) {
                 columnNames.add(fieldNames.next());
             }
@@ -127,20 +131,37 @@ public class JsonUtils {
         return new ArrayList<>(columnNames);
     }
 
-    public static List<String[]> extractObjectData(JsonNode datas) {
-        List<String> columnNames = extractObjectColumnName(datas);
-        return extractObjectData(datas, columnNames);
+    public static List<String[]> extractObjectData(JsonNode datas, String... paths) {
+        List<String> columnNames = extractObjectColumnName(datas, paths);
+        return extractObjectData(datas, columnNames, paths);
     }
 
-    public static List<String[]> extractObjectData(JsonNode datas, List<String> columnNames) {
+    public static List<String[]> extractObjectData(JsonNode datas, List<String> columnNames, String... paths) {
         List<String[]> rows = new ArrayList<>();
-        for (JsonNode data : datas) {
-            String[] row = new String[columnNames.size()];
-            for (int i = 0, len = columnNames.size(); i < len; i++) {
-                String columnName = columnNames.get(i);
-                row[i] = data.has(columnName) ? data.get(columnName).asText() : null;
+        try {
+            for (JsonNode data : datas) {
+                JsonNode item = data;
+                for (String path : paths) {
+                    item = item.get(path);
+                }
+
+                String[] row = new String[columnNames.size()];
+                for (int i = 0, len = columnNames.size(); i < len; i++) {
+                    String columnName = columnNames.get(i);
+                    if (!item.has(columnName)) {
+                        row[i] = null;
+                    } else if (null == item.get(columnName)) {
+                        row[i] = null;
+                    } else if (item.get(columnName).isObject()) {
+                        row[i] = mapper.writeValueAsString(item.get(columnName));
+                    } else {
+                        row[i] = item.get(columnName).asText();
+                    }
+                }
+                rows.add(row);
             }
-            rows.add(row);
+        } catch (Exception e) {
+            log.error("抽取数据异常", e);
         }
         return rows;
     }
