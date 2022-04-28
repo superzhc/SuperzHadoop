@@ -69,6 +69,72 @@ public class JiSiLu {
         return table;
     }
 
+    public static Table convertibleBondToIssue() {
+        String url = String.format("https://www.jisilu.cn/data/cbnew/pre_list/");
+
+        Map<String, String> params = new HashMap<>();
+        params.put("___jsl", String.format("LST___t=%s", System.currentTimeMillis()));
+
+        Map<String, Object> form = new HashMap<>();
+        form.put("progress", "");
+        form.put("rp", 22);
+
+        String result = HttpRequest.post(url, params).userAgent(HttpConstant.UA).form(form).body();
+        JsonNode json = JsonUtils.json(result, "rows");
+
+        List<String> columnNames = JsonUtils.extractObjectColumnName(json, "cell");
+
+        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames, "cell");
+
+        Table table = TableUtils.build(columnNames, dataRows);
+
+        return table;
+    }
+
+    public static Table convertibleBondRedeem(){
+        String url="https://www.jisilu.cn/data/cbnew/redeem_list/";
+
+        Map<String, String> params = new HashMap<>();
+        params.put("___jsl", String.format("LST___t=%s", System.currentTimeMillis()));
+
+        Map<String, Object> form = new HashMap<>();
+        form.put("page", 1);
+        form.put("rp", 50);
+
+        String result = HttpRequest.post(url, params).userAgent(HttpConstant.UA).form(form).body();
+        JsonNode json = JsonUtils.json(result, "rows");
+
+        List<String> columnNames = JsonUtils.extractObjectColumnName(json, "cell");
+
+        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames, "cell");
+
+        Table table = TableUtils.build(columnNames, dataRows);
+
+        return table;
+    }
+
+    public static Table convertibleBondBack(){
+        String url="https://www.jisilu.cn/data/cbnew/huishou_list/";
+
+        Map<String, String> params = new HashMap<>();
+        params.put("___jsl", String.format("LST___t=%s", System.currentTimeMillis()));
+
+        Map<String, Object> form = new HashMap<>();
+        form.put("page", 1);
+        form.put("rp", 50);
+
+        String result = HttpRequest.post(url, params).userAgent(HttpConstant.UA).form(form).body();
+        JsonNode json = JsonUtils.json(result, "rows");
+
+        List<String> columnNames = JsonUtils.extractObjectColumnName(json, "cell");
+
+        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames, "cell");
+
+        Table table = TableUtils.build(columnNames, dataRows);
+
+        return table;
+    }
+
     public static Table convertibleBondAdjustment(String symbol) {
         String url = String.format("https://www.jisilu.cn/data/cbnew/adj_logs/?bond_id=%s", symbol);
         String result = HttpRequest.get(url).userAgent(HttpConstant.UA).body();
@@ -95,32 +161,7 @@ public class JiSiLu {
     }
 
     public static void main(String[] args) {
-//        Table table = convertibleBond();
-
-        String symbol = "128013";
-        String url = String.format("https://www.jisilu.cn/data/cbnew/adj_logs/?bond_id=%s", symbol);
-        String result = HttpRequest.get(url).userAgent(HttpConstant.UA).body();
-
-        Table table;
-        try {
-            /**
-             * 返回值：
-             * 1. 该可转债没有转股价调整记录，服务端返回文本 '暂无数据'
-             * 2. 无效可转债代码，服务端返回 {"timestamp":1639565628,"isError":1,"msg":"无效代码格式"}
-             * 以上两种情况，返回空的 DataFrame
-             */
-            if (!result.contains("</table>")) {
-                table = Table.create();
-            } else {
-                HtmlReadOptions options = HtmlReadOptions.builderFromString(result).tableIndex(0).build();
-                table = Table.read().usingOptions(options);
-            }
-        } catch (Exception e) {
-            log.error("解析失败", e);
-            table = Table.create();
-        }
-
-        System.out.println(result);
+        Table table = convertibleBondAdjustment("110059");
 
         System.out.println(table.printAll());
         System.out.println(table.structure().printAll());
