@@ -65,7 +65,7 @@ public class JsonUtils {
     }
 
     public static Map<String, ?> map(JsonNode json) {
-        return mapper.convertValue(json, Map.class);
+        return mapper.convertValue(json, LinkedHashMap.class);
     }
 
     public static JsonNode json(String json, String... paths) {

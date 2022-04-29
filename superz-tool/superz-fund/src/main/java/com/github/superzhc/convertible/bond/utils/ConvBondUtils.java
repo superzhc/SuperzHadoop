@@ -4,7 +4,7 @@ package com.github.superzhc.convertible.bond.utils;
  * @author superz
  * @create 2022/4/28 20:21
  */
-public class ConvertibleBondUtils {
+public class ConvBondUtils {
     /**
      * 可转债所属的市场
      * <p>

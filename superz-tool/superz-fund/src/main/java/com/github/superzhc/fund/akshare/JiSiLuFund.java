@@ -12,7 +12,7 @@ import java.util.*;
  * @author superz
  * @create 2022/4/27 0:45
  */
-public class JiSiLu {
+public class JiSiLuFund {
     public static Table etf() {
         String url = "https://www.jisilu.cn/data/etf/etf_list/?___jsl=LST___t=1650991707906&volume=&unit_total=&rp=25";
 

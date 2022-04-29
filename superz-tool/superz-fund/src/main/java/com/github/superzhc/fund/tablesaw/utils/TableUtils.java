@@ -1,13 +1,18 @@
 package com.github.superzhc.fund.tablesaw.utils;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tech.tablesaw.api.*;
 import tech.tablesaw.columns.Column;
 import tech.tablesaw.io.TableBuildingUtils;
+import tech.tablesaw.io.html.HtmlWriteOptions;
+import tech.tablesaw.io.html.HtmlWriter;
 
+import java.time.LocalDate;
 import java.time.ZoneOffset;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -15,6 +20,8 @@ import java.util.function.Function;
  * @create 2022/4/7 9:07
  **/
 public class TableUtils {
+    private static final Logger log = LoggerFactory.getLogger(TableUtils.class);
+
     public static class FundColumnType implements Function<String, Optional<ColumnType>> {
 
         @Override
@@ -46,6 +53,14 @@ public class TableUtils {
         return TableBuildingUtils.build(columnNames, dataRows, ReadOptionsUtils.columnTypeByFunction(new FundColumnType()));
     }
 
+    public static Table json2Table(JsonNode json) {
+        return json2Table(null, json);
+    }
+
+    public static Table json2Table(String tableName, JsonNode json) {
+        return map2Table(tableName, JsonUtils.map(json));
+    }
+
     public static Table map2Table(Map<String, ?> map) {
         return map2Table(null, map);
     }
@@ -61,10 +76,23 @@ public class TableUtils {
 //
 //        Table table = Table.create(tableName, keyColumn, valueColumn);
 
-        Table table = Table.create(tableName);
-        for (Map.Entry<String, ?> entry : map.entrySet()) {
-            table.addColumns(StringColumn.create(entry.getKey(), null == entry.getValue() ? null : entry.getValue().toString()));
+//        Table table = Table.create(tableName);
+//        for (Map.Entry<String, ?> entry : map.entrySet()) {
+//            table.addColumns(StringColumn.create(entry.getKey(), null == entry.getValue() ? null : entry.getValue().toString()));
+//        }
+
+        List<String> columnNames = new ArrayList<>(map.keySet());
+        String[] row = new String[columnNames.size()];
+        for (int i = 0, len = columnNames.size(); i < len; i++) {
+            String columnName = columnNames.get(i);
+            Object value = map.get(columnName);
+            row[i] = null == value ? null : value.toString();
         }
+
+        List<String[]> dataRows = new ArrayList<>();
+        dataRows.add(row);
+
+        Table table = build(columnNames, dataRows);
 
         return table;
     }
@@ -106,5 +134,16 @@ public class TableUtils {
     public static Table rename(Table table, String columnName, String newColumnName) {
         table.column(columnName).setName(newColumnName);
         return table;
+    }
+
+    public static void write2Html(Table table) {
+        try {
+            // 原生太丑了
+            String fileName = String.format("table%s_%s.html", (null == table.name() || table.name().trim().length() == 0) ? "" : ("_" + table.name()), LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
+            HtmlWriteOptions options = HtmlWriteOptions.builder(PlotUtils.file(fileName)).build();
+            table.write().usingOptions(options);
+        } catch (Exception e) {
+            log.error("Write Html error .", e);
+        }
     }
 }

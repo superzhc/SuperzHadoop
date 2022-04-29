@@ -91,8 +91,8 @@ public class JiSiLu {
         return table;
     }
 
-    public static Table convertibleBondRedeem(){
-        String url="https://www.jisilu.cn/data/cbnew/redeem_list/";
+    public static Table convertibleBondRedeem() {
+        String url = "https://www.jisilu.cn/data/cbnew/redeem_list/";
 
         Map<String, String> params = new HashMap<>();
         params.put("___jsl", String.format("LST___t=%s", System.currentTimeMillis()));
@@ -113,8 +113,36 @@ public class JiSiLu {
         return table;
     }
 
-    public static Table convertibleBondBack(){
-        String url="https://www.jisilu.cn/data/cbnew/huishou_list/";
+    /**
+     * 回售
+     *
+     * @return Structure of
+     * Index  |        Column Name        |  Column Type  |
+     * -----------------------------------------------------
+     * 0  |                  bond_id  |      INTEGER  |
+     * 1  |                  bond_nm  |       STRING  |
+     * 2  |               full_price  |       DOUBLE  |
+     * 3  |                    price  |       DOUBLE  |
+     * 4  |                  last_dt  |   LOCAL_DATE  |
+     * 5  |                last_time  |   LOCAL_TIME  |
+     * 6  |                 stock_id  |      INTEGER  |
+     * 7  |                 stock_nm  |       STRING  |
+     * 8  |               margin_flg  |       STRING  |
+     * 9  |             orig_iss_amt  |       DOUBLE  |
+     * 10  |                    btype  |       STRING  |
+     * 11  |             curr_iss_amt  |       DOUBLE  |
+     * 12  |              next_put_dt  |       STRING  |
+     * 13  |            convert_price  |       DOUBLE  |
+     * 14  |  put_convert_price_ratio  |       STRING  |
+     * 15  |                put_price  |       STRING  |
+     * 16  |                   put_tc  |       STRING  |
+     * 17  |                     time  |       STRING  |
+     * 18  |                   sprice  |       DOUBLE  |
+     * 19  |               price_tips  |       STRING  |
+     * 20  |        put_convert_price  |       STRING  |
+     */
+    public static Table convertibleBondBack() {
+        String url = "https://www.jisilu.cn/data/cbnew/huishou_list/";
 
         Map<String, String> params = new HashMap<>();
         params.put("___jsl", String.format("LST___t=%s", System.currentTimeMillis()));
@@ -162,6 +190,8 @@ public class JiSiLu {
 
     public static void main(String[] args) {
         Table table = convertibleBondAdjustment("110059");
+
+
 
         System.out.println(table.printAll());
         System.out.println(table.structure().printAll());

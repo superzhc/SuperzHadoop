@@ -10,13 +10,12 @@ import tech.tablesaw.api.Table;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 
 /**
  * @author superz
  * @create 2022/4/28 17:52
  **/
-public class Sina {
+public class SinaConvBond {
     public static Table convertibleBond() {
         String countUrl = "http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeStockCountSimple";
         Map<String, String> countParams = new HashMap<>();

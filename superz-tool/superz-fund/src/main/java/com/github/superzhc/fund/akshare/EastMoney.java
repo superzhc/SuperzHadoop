@@ -1179,9 +1179,39 @@ public class EastMoney {
         return table;
     }
 
+    public static Table industry(){
+        String url="http://push2.eastmoney.com/api/qt/clist/get";
+
+        Map<String,Object> params=new LinkedHashMap<>();
+        params.put("pn",1);
+        params.put("pz",500);
+        params.put("po",1);
+        params.put("np",1);
+        params.put("fields","f12,f13,f14,f62");
+        params.put("fid","f62");
+        params.put("fs","m:90+t:2");
+        params.put("_",System.currentTimeMillis());
+
+        String result=HttpRequest.get(url,params).userAgent(UA).body();
+        JsonNode json=JsonUtils.json(result,"data","diff");
+
+        List<String> columnNames=JsonUtils.extractObjectColumnName(json);
+
+        List<String[]> dataRows=JsonUtils.extractObjectData(json,columnNames);
+
+        Table table=TableUtils.build(columnNames,dataRows);
+
+        return table;
+    }
+
+    public static Table test10(){
+        return Table.create();
+    }
+
     public static void main(String[] args) throws Exception {
-        Table t = fundNew("160119");
-        System.out.println(t.printAll());
+        Table t = industry();
+        System.out.println(t.print());
+        System.out.println(t.structure().printAll());
         System.out.println(t.shape());
 
     }
