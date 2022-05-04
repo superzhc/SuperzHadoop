@@ -15,6 +15,7 @@ import tech.tablesaw.api.Table;
 import tech.tablesaw.io.TableBuildingUtils;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -35,9 +36,9 @@ public class EastMoneyConvBond {
         Document doc = Jsoup.parse(result);
         /**
          * soup = BeautifulSoup(r.text, "lxml")
-         *         data_text = soup.find("script").string.strip()
-         *         data_json = json.loads(re.findall("var info= (.*)", data_text)[0][:-1])
-         *         temp_df = pd.json_normalize(data_json)
+         * data_text = soup.find("script").string.strip()
+         * data_json = json.loads(re.findall("var info= (.*)", data_text)[0][:-1])
+         * temp_df = pd.json_normalize(data_json)
          */
         String text = doc.select("script").html().trim();
         Pattern pattern = Pattern.compile("var info= (.*);");
@@ -46,6 +47,13 @@ public class EastMoneyConvBond {
             String data = matcher.group(1);
             JsonNode json = JsonUtils.json(data);
             Table table = TableUtils.json2Table(json);
+            table.setName(String.format("%s[%s]", table.column("SECURITY_CODE").get(0), table.column("SECURITY_NAME_ABBR").get(0)));
+
+            // table.column("SECURITY_CODE").setName("债券代码");
+            // table.column("SECURITY_NAME_ABBR").setName("债券名称");
+            // table.column("BOND_EXPIRE").setName("期限");
+            // table.column("RATING").setName("评级");
+
             return table;
         }
 
@@ -101,11 +109,11 @@ public class EastMoneyConvBond {
     }
 
     public static Table convertibleBondsComparison() {
-        String url = "http://16.push2.eastmoney.com/api/qt/clist/get";
+        String url = "http://push2.eastmoney.com/api/qt/clist/get";//"http://16.push2.eastmoney.com/api/qt/clist/get";
 
         Map<String, Object> params = new HashMap<>();
         params.put("pn", "1");
-        params.put("pz", "5000");
+        params.put("pz", "1000000");
         params.put("po", "1");
         params.put("np", "1");
         params.put("ut", "bd1d9ddb04089700cf9c27f6f7426281");
@@ -124,6 +132,28 @@ public class EastMoneyConvBond {
         List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
 
         Table table = TableUtils.build(columnNames, dataRows);
+
+        Map<String, String> names = new LinkedHashMap<>();
+        names.put("f12", "代码");
+        names.put("f14", "名称");
+        names.put("f3", "涨跌幅");
+        names.put("f2", "最新价");
+        names.put("f15", "最高");
+        names.put("f16", "最低");
+        names.put("f17", "今开");
+        names.put("f4", "涨跌额");
+        names.put("f8", "换手率");
+        names.put("f10", "量比");
+        names.put("f9", "动态市盈率");
+        names.put("f5", "成交量");
+        names.put("f6", "成交额");
+        names.put("f18", "昨日收盘");
+        names.put("f20", "总市值");
+        names.put("f21", "流通市值");
+        names.put("f13", "市场编号");
+
+        table = TableUtils.rename(table, names);
+
         return table;
     }
 
@@ -132,9 +162,9 @@ public class EastMoneyConvBond {
 
 //        table = convertibleBonds();
 
-//        table = convertibleBondsComparison();
+        table = convertibleBondsComparison();
 
-        table = convertibleBond("110059");
+        // table = convertibleBond("110059");
 
         System.out.println(table.print());
         System.out.println(table.structure().printAll());
