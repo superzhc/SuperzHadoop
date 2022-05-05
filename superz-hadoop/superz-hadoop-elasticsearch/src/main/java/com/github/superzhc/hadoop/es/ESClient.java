@@ -5,14 +5,24 @@ import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.ssl.SSLContexts;
+import org.bouncycastle.util.io.pem.PemReader;
 import org.elasticsearch.client.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.Closeable;
-import java.io.IOException;
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.security.KeyStore;
 
 /**
  * 2020年04月21日 superz add
@@ -47,12 +57,13 @@ public class ESClient implements Closeable {
         this(null, null, httpHosts);
     }
 
-    public ESClient(String username, String password, HttpHost... httpHost) {
-        this.httpHosts = httpHost;
-        RestClientBuilder builder = RestClient.builder(httpHost);
+    public ESClient(String username, String password, HttpHost... httpHosts) {
+        this.httpHosts = httpHosts;
+        RestClientBuilder builder = RestClient.builder(httpHosts);
         if (null != username && username.trim().length() > 0) {
             final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
             credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(username, password));
+
             builder.setHttpClientConfigCallback(new RestClientBuilder.HttpClientConfigCallback() {
                 @Override
                 public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpAsyncClientBuilder) {
@@ -60,6 +71,64 @@ public class ESClient implements Closeable {
                 }
             });
         }
+        this.highLevelClient = new RestHighLevelClient(builder);
+        this.client = highLevelClient.getLowLevelClient();
+    }
+
+    public ESClient(HttpHost[] httpHosts, String pemPath) {
+        this.httpHosts = httpHosts;
+        RestClientBuilder builder = RestClient.builder(httpHosts);
+
+        builder.setHttpClientConfigCallback(
+                new RestClientBuilder.HttpClientConfigCallback() {
+                    @Override
+                    public HttpAsyncClientBuilder customizeHttpClient(HttpAsyncClientBuilder httpAsyncClientBuilder) {
+                        try {
+//                            KeyStore truststore = KeyStore.getInstance("PKCS12");
+//
+//                            // String path = "C:\\certs\\elastic-certificates.p12";
+//                            String path = pemPath;
+//                            InputStream in =
+//                                    new FileInputStream(path);
+//                            //this.getClass().getResourceAsStream(pemPath);
+//                            //Files.newInputStream(Paths.get(path));
+//                            truststore.load(in, "".toCharArray()/*密码，此处设置的是无密码*/);
+//
+//                            SSLContextBuilder sslBuilder = SSLContexts.custom()
+//                                    .loadTrustMaterial(truststore, new TrustSelfSignedStrategy());
+//
+//                            // 获取证书
+//                            SSLContext sslcontext = sslBuilder.build();
+
+                            // Load the self-certificate that is bundled with the JAR (see pom.xml)
+//                            InputStream ksStream = this.getClass().getResourceAsStream(pemPath);//Files.newInputStream(Paths.get(pemPath))
+//                            truststore.load(ksStream, "".toCharArray()); // Exception here
+//
+//                            // Rest of the code (only for context purpose)
+//
+//                            // setup the key manager factory
+//                            String defaultKeyManagerAlgorithm = KeyManagerFactory.getDefaultAlgorithm();
+//                            KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(defaultKeyManagerAlgorithm);
+//                            keyManagerFactory.init(truststore, "".toCharArray());
+//
+//                            // setup the trust manager factory
+//                            String defaultTrustManagerAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
+//                            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(defaultTrustManagerAlgorithm);
+//                            trustManagerFactory.init(truststore);
+//
+//                            // setup the HTTPS context and parameters
+//                            SSLContext sslcontext = SSLContext.getInstance("TLS");
+//                            sslcontext.init(keyManagerFactory.getKeyManagers(), trustManagerFactory.getTrustManagers(), null);
+
+//                            httpAsyncClientBuilder.setSSLContext(sslcontext);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        return httpAsyncClientBuilder;
+                    }
+                }
+        );
+
         this.highLevelClient = new RestHighLevelClient(builder);
         this.client = highLevelClient.getLowLevelClient();
     }
@@ -127,7 +196,14 @@ public class ESClient implements Closeable {
             if (logger.isDebugEnabled()) {
                 logger.debug(request.toString() + (null == json ? "" : ",请求体内容：" + json));
             }
-            return client.performRequest(request);
+
+            Response response = client.performRequest(request);
+
+            if (logger.isDebugEnabled()) {
+                logger.debug(response.toString());
+            }
+
+            return response;
         } catch (Exception e) {
             logger.error("执行Elasticsearch的请求异常！", e);
             throw new RuntimeException(e);

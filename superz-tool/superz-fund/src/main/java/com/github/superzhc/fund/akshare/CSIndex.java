@@ -29,7 +29,7 @@ public class CSIndex {
 
     private static final Logger log = LoggerFactory.getLogger(CSIndex.class);
 
-    public static Table indics() {
+    public static Table indices() {
         String url = "https://www.csindex.com.cn/csindex-home/index-list/query-index-item";
 
         Map<String, String> headers = new HashMap<>();
@@ -129,8 +129,8 @@ public class CSIndex {
         return table;
     }
 
-    public static Table indics(String str) {
-        Table table = indics();
+    public static Table indices(String str) {
+        Table table = indices();
 
         if (null != str && str.trim().length() > 0) {
             Selection condition = table.stringColumn("indexName").containsString(str)

@@ -16,6 +16,11 @@ public class ESIndex extends ESCommon {
         super(client);
     }
 
+    public String indices(){
+        Response response = client.get(formatJson("/_cat/indices"));
+        return ResponseUtils.getEntity(response);
+    }
+
     public String create(String index) {
         return create(index, null, null);
     }
