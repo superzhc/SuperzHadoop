@@ -1,4 +1,4 @@
-package com.github.superzhc.fund.tablesaw.utils;
+package com.github.superzhc.tablesaw.utils;
 
 import tech.tablesaw.plotly.Plot;
 

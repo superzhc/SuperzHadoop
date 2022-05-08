@@ -1,4 +1,4 @@
-package com.github.superzhc.fund.common;
+package com.github.superzhc.common;
 
 import com.github.superzhc.common.http.HttpRequest;
 

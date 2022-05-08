@@ -25,7 +25,7 @@ public class DoctorXiong {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    public static Table detail(String code) {
+    public static Table fundWorth(String code) {
         String url = url("/v1/fund/detail");
 
         Map<String, String> params = new HashMap<>();
@@ -88,7 +88,7 @@ public class DoctorXiong {
     }
 
     public static void main(String[] args) {
-        Table table = detail("501009");
+        Table table = fundWorth("501009");
         System.out.println(table.print());
         System.out.println(table.structure().printAll());
         System.out.println(table.summarize("net_worth", min, max, median, mean).apply().print());

@@ -2,9 +2,9 @@ package com.github.superzhc.convertible.bond.data;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.http.HttpRequest;
-import com.github.superzhc.fund.common.HttpConstant;
-import com.github.superzhc.fund.tablesaw.utils.JsonUtils;
-import com.github.superzhc.fund.tablesaw.utils.TableUtils;
+import com.github.superzhc.common.HttpConstant;
+import com.github.superzhc.tablesaw.utils.JsonUtils;
+import com.github.superzhc.tablesaw.utils.TableUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.tablesaw.api.Table;
@@ -69,6 +69,59 @@ public class JiSiLu {
         return table;
     }
 
+    /**
+     * @return Structure of
+     * Index  |     Column Name      |  Column Type  |
+     * ------------------------------------------------
+     * 0  |               price  |       DOUBLE  |
+     * 1  |         increase_rt  |       DOUBLE  |
+     * 2  |              pma_rt  |       DOUBLE  |
+     * 3  |                  pb  |       DOUBLE  |
+     * 4  |          margin_flg  |       STRING  |
+     * 5  |                 rid  |      INTEGER  |
+     * 6  |            stock_id  |      INTEGER  |
+     * 7  |            stock_nm  |       STRING  |
+     * 8  |             bond_id  |      INTEGER  |
+     * 9  |             bond_nm  |       STRING  |
+     * 10  |              amount  |       DOUBLE  |
+     * 11  |            b_shares  |      INTEGER  |
+     * 12  |           pg_shares  |         TEXT  |
+     * 13  |           cb_amount  |       DOUBLE  |
+     * 14  |          ma20_price  |       DOUBLE  |
+     * 15  |                naps  |       DOUBLE  |
+     * 16  |       convert_price  |       DOUBLE  |
+     * 17  |          apply_date  |   LOCAL_DATE  |
+     * 18  |            apply_cd  |      INTEGER  |
+     * 19  |           ration_cd  |      INTEGER  |
+     * 20  |           record_dt  |   LOCAL_DATE  |
+     * 21  |        record_price  |       DOUBLE  |
+     * 22  |              ration  |       DOUBLE  |
+     * 23  |           list_date  |   LOCAL_DATE  |
+     * 24  |          list_price  |         TEXT  |
+     * 25  |           status_cd  |       STRING  |
+     * 26  |           ration_rt  |       DOUBLE  |
+     * 27  |       online_amount  |       DOUBLE  |
+     * 28  |       lucky_draw_rt  |       DOUBLE  |
+     * 29  |    individual_limit  |      INTEGER  |
+     * 30  |      underwriter_rt  |       DOUBLE  |
+     * 31  |           rating_cd  |       STRING  |
+     * 32  |       offline_limit  |         TEXT  |
+     * 33  |    offline_accounts  |         TEXT  |
+     * 34  |        offline_draw  |         TEXT  |
+     * 35  |     valid_apply_raw  |         TEXT  |
+     * 36  |     jsl_advise_text  |         TEXT  |
+     * 37  |             apply10  |      INTEGER  |
+     * 38  |         progress_nm  |       STRING  |
+     * 39  |             cb_type  |       STRING  |
+     * 40  |         progress_dt  |   LOCAL_DATE  |
+     * 41  |       progress_full  |       STRING  |
+     * 42  |             cp_flag  |      BOOLEAN  |
+     * 43  |  convert_price_tips  |         TEXT  |
+     * 44  |          apply_tips  |       STRING  |
+     * 45  |             ap_flag  |       STRING  |
+     * 46  |         single_draw  |       DOUBLE  |
+     * 47  |         valid_apply  |       DOUBLE  |
+     */
     public static Table convertibleBondToIssue() {
         String url = String.format("https://www.jisilu.cn/data/cbnew/pre_list/");
 
@@ -190,7 +243,6 @@ public class JiSiLu {
 
     public static void main(String[] args) {
         Table table = convertibleBondAdjustment("110059");
-
 
 
         System.out.println(table.printAll());

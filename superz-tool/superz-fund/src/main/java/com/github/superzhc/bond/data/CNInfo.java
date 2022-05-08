@@ -1,4 +1,4 @@
-package com.github.superzhc.convertible.bond.data;
+package com.github.superzhc.bond.data;
 
 import com.github.superzhc.common.http.HttpRequest;
 import com.github.superzhc.common.HttpConstant;
@@ -14,23 +14,21 @@ import java.util.Map;
 
 /**
  * @author superz
- * @create 2022/4/28 19:20
+ * @create 2022/5/6 19:46
  **/
 public class CNInfo {
     private static final Logger log = LoggerFactory.getLogger(CNInfo.class);
 
-    public static void convertibleBond() {
-        // 无授权访问
+    public static void main(String[] args) {
         try {
+            String url = "http://webapi.cninfo.com.cn/api/sysapi/p_sysapi1120";
+
             ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
             engine.eval(new FileReader(CNInfo.class.getClassLoader().getResource("js/cninfo_bond.js").getPath()));
             // 将引擎转换为Invocable，这样才可以调用js的方法
             Invocable invocable = (Invocable) engine;
             // 用 invocable.invokeFunction调用js脚本里的方法，第一個参数为方法名，后面的参数为被调用的js方法的入参
-            String mcode = (String) invocable.invokeFunction("mcode", "1651138848.431632"/*System.currentTimeMillis() / 1000.0+""*/);
-            System.out.println(mcode);
-
-            String url = "http://webapi.cninfo.com.cn/api/sysapi/p_sysapi1123";
+            String mcode = (String) invocable.invokeFunction("mcode", System.currentTimeMillis() / 1000.0 + "");
 
             Map<String, String> headers = new HashMap<>();
             headers.put("Accept", "*/*");
@@ -47,18 +45,16 @@ public class CNInfo {
             headers.put("User-Agent", HttpConstant.UA);
             headers.put("X-Requested-With", "XMLHttpRequest");
 
-            Map<String, String> params = new HashMap<>();
-            params.put("sdate", "2022-01-01");
-            params.put("edate", "2022-04-28");
+            Map<String,Object> params=new HashMap<>();
+            params.put("sdate","2022-01-01");
+            params.put("edate","2022-05-06");
 
-            String result = HttpRequest.post(url, params).headers(headers).body();
+            String result= HttpRequest.post(url,params).headers(headers).body();
             System.out.println(result);
-        } catch (Exception e) {
-            log.error("获取数据异常", e);
-        }
-    }
 
-    public static void main(String[] args) throws Exception {
-        convertibleBond();
+        } catch (Exception e) {
+            log.error("CNINFO ERROR", e);
+            throw new RuntimeException(e);
+        }
     }
 }

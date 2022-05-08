@@ -3,28 +3,30 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>SuperzHadoop</artifactId>
+        <artifactId>superz-common</artifactId>
         <groupId>com.github.superzhc</groupId>
         <version>0.2.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>superz-common</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>superz-common-core</module>
-        <module>superz-common-okhttp3</module>
-        <module>superz-common-faker</module>
-        <module>superz-common-tablesaw</module>
-        <module>superz-common-file</module>
-        <module>superz-common-ssh</module>
-        <module>superz-common-httpclient</module>
-        <module>superz-common-pdfbox</module>
-    </modules>
+    <artifactId>superz-common-pdfbox</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>pdfbox</artifactId>
+            <version>2.0.26</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.pdfbox</groupId>
+            <artifactId>fontbox</artifactId>
+            <version>2.0.26</version>
+        </dependency>
+    </dependencies>
 
 </project>

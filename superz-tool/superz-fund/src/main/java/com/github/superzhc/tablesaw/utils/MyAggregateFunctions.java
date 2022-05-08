@@ -1,6 +1,6 @@
-package com.github.superzhc.fund.tablesaw.utils;
+package com.github.superzhc.tablesaw.utils;
 
-import com.github.superzhc.fund.akshare.DanJuanFunds;
+import com.github.superzhc.fund.data.index.DanJuanIndex;
 import tech.tablesaw.api.DoubleColumn;
 import tech.tablesaw.api.NumericColumn;
 import tech.tablesaw.api.Table;
@@ -59,7 +59,7 @@ public class MyAggregateFunctions {
 //        Table table = DanJuanFunds.peHistory3Y(indexCode);
 //        DoubleColumn positionColumn = position(table.doubleColumn("pe"));
 
-        Table table = DanJuanFunds.pbHistory10Y(indexCode);
+        Table table = DanJuanIndex.pbHistory10Y(indexCode);
         DoubleColumn positionColumn = position(table.doubleColumn("pb"));
 
         table.addColumns(positionColumn);

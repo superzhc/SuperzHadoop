@@ -1,6 +1,6 @@
 package com.github.superzhc.fund.index;
 
-import com.github.superzhc.fund.akshare.CSIndex;
+import com.github.superzhc.fund.data.index.CSIndex;
 import tech.tablesaw.api.Table;
 
 /**

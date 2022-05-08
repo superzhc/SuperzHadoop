@@ -1,12 +1,12 @@
-package com.github.superzhc.fund.akshare;
+package com.github.superzhc.fund.data.index;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.http.HttpRequest;
 import com.github.superzhc.data.utils.ExcelUtils;
-import com.github.superzhc.fund.common.HttpConstant;
-import com.github.superzhc.fund.tablesaw.utils.JsonUtils;
-import com.github.superzhc.fund.tablesaw.utils.ReadOptionsUtils;
-import com.github.superzhc.fund.tablesaw.utils.TableUtils;
+import com.github.superzhc.common.HttpConstant;
+import com.github.superzhc.tablesaw.utils.JsonUtils;
+import com.github.superzhc.tablesaw.utils.ReadOptionsUtils;
+import com.github.superzhc.tablesaw.utils.TableUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -169,7 +169,7 @@ public class CSIndex {
         return table;
     }
 
-    public static Table indexMainStock(String indexCode) {
+    public static Table mainStock(String indexCode) {
         String url = String.format("https://www.csindex.com.cn/csindex-home/index/weight/top10/%s", transform(indexCode));
 
         String result = HttpRequest.get(url).body();
@@ -182,7 +182,13 @@ public class CSIndex {
         return table;
     }
 
-    public static Table indexIndustry(String indexCode) {
+    /**
+     * 行业分布
+     *
+     * @param indexCode
+     * @return
+     */
+    public static Table industry(String indexCode) {
         String url = String.format("https://www.csindex.com.cn/csindex-home/index/weight/industry-weight/%s", transform(indexCode));
 
         String result = HttpRequest.get(url).body();
@@ -195,7 +201,7 @@ public class CSIndex {
         return table;
     }
 
-    public static Table indexMarkets(String indexCode) {
+    public static Table markets(String indexCode) {
         String url = String.format("https://www.csindex.com.cn/csindex-home/index/weight/market-weight/%s", transform(indexCode));
 
         String result = HttpRequest.get(url).body();
@@ -233,7 +239,7 @@ public class CSIndex {
      * 13  |         成交金额  |       DOUBLE  |
      * 14  |         样本数量  |      INTEGER  |
      */
-    public static Table indexHistory(String indexCode) {
+    public static Table history(String indexCode) {
         String url = "https://www.csindex.com.cn/csindex-home/perf/index-perf";
 
         Map<String, String> params = new HashMap<>();
@@ -287,6 +293,7 @@ public class CSIndex {
         return table;
     }
 
+    @Deprecated
     public static Table indexValue(String indexCode) {
         String url = String.format("https://csi-web-dev.oss-cn-shanghai-finance-1-pub.aliyuncs.com/static/html/csindex/public/uploads/file/autofile/indicator/%sindicator.xls", transform(indexCode));
 

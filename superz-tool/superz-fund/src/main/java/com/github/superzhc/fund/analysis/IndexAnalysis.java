@@ -1,6 +1,6 @@
 package com.github.superzhc.fund.analysis;
 
-import com.github.superzhc.fund.akshare.CSIndex;
+import com.github.superzhc.fund.data.index.CSIndex;
 import tech.tablesaw.aggregate.NumericAggregateFunction;
 import tech.tablesaw.api.NumericColumn;
 import tech.tablesaw.api.Table;
@@ -69,7 +69,7 @@ public class IndexAnalysis {
     }
 
     public static void main(String[] args) {
-        Table table = CSIndex.indexHistory("000905");
+        Table table = CSIndex.history("000905");
         System.out.println(table.print());
         Table t2 = table.summarize("收盘", "涨跌幅",
                 count,//不为空的个数

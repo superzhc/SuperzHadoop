@@ -1,8 +1,8 @@
-package com.github.superzhc.fund.akshare;
+package com.github.superzhc.fund.data.index;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.http.HttpRequest;
-import com.github.superzhc.fund.tablesaw.utils.JsonUtils;
+import com.github.superzhc.tablesaw.utils.JsonUtils;
 import tech.tablesaw.api.DateColumn;
 import tech.tablesaw.api.DoubleColumn;
 import tech.tablesaw.api.Table;
@@ -13,25 +13,25 @@ import java.time.LocalDate;
  * @author superz
  * @create 2022/4/26 1:15
  */
-public class ENiu {
-    public static Table indexHistory3M(String indexCode) {
-        return indexHistory(indexCode, "3");
+public class ENiuIndex {
+    public static Table history3M(String indexCode) {
+        return history(indexCode, "3");
     }
 
-    public static Table indexHistory6M(String indexCode) {
-        return indexHistory(indexCode, "6");
+    public static Table history6M(String indexCode) {
+        return history(indexCode, "6");
     }
 
-    public static Table indexHistory1Y(String indexCode) {
-        return indexHistory(indexCode, "12");
+    public static Table history1Y(String indexCode) {
+        return history(indexCode, "12");
     }
 
-    public static Table indexHistory5Y(String indexCode) {
-        return indexHistory(indexCode, "60");
+    public static Table history5Y(String indexCode) {
+        return history(indexCode, "60");
     }
 
-    public static Table indexHistory10Y(String indexCode) {
-        return indexHistory(indexCode, "120");
+    public static Table history10Y(String indexCode) {
+        return history(indexCode, "120");
     }
 
     /**
@@ -39,11 +39,11 @@ public class ENiu {
      *
      * @return
      */
-    public static Table indexHistory(String indexCode) {
-        return indexHistory(indexCode, "all");
+    public static Table history(String indexCode) {
+        return history(indexCode, "all");
     }
 
-    private static Table indexHistory(String indexCode, String type) {
+    private static Table history(String indexCode, String type) {
         String url = String.format("https://eniu.com/chart/peindex/%s/t/%s", transform(indexCode), type);
         String result = HttpRequest.get(url).body();
 

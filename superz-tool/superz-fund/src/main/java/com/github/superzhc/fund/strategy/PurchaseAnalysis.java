@@ -1,7 +1,7 @@
 package com.github.superzhc.fund.strategy;
 
 import com.github.superzhc.fund.MyAccount;
-import com.github.superzhc.fund.akshare.EastMoney;
+import com.github.superzhc.fund.data.fund.EastMoneyFund;
 import com.github.superzhc.fund.index.IndexTool;
 import tech.tablesaw.api.*;
 
@@ -61,14 +61,14 @@ public class PurchaseAnalysis {
                     .addColumns(DoubleColumn.create("share"));
 
             for (String code : getCodes()) {
-                Table info = EastMoney.fundNew(code);
+                Table info = EastMoneyFund.fundNew(code);
 
                 // 获取费率
                 String realRate = info.row(0).getString("real_rate");
                 double rr = Double.parseDouble(realRate.substring(0, realRate.length() - 1)) / 100.0;
 
                 // 获取历史值
-                Table history = EastMoney.fundNetHistory(code);
+                Table history = EastMoneyFund.fundNetHistory(code);
 
                 Table subTable = table.where(table.stringColumn("code").isEqualTo(code))
                         .joinOn("date")
@@ -97,7 +97,7 @@ public class PurchaseAnalysis {
     }
 
     public Table realNetWorth() {
-        Table t = EastMoney.fundRealNet(codes);
+        Table t = EastMoneyFund.fundRealNet(codes);
 
         DoubleColumn currentNetWorth = DoubleColumn.create("current_net_worth");
         for (int i = 0, count = t.rowCount(); i < count; i++) {

@@ -1,7 +1,7 @@
 package com.github.superzhc.fund.akshare;
 
 import com.github.superzhc.common.http.HttpRequest;
-import com.github.superzhc.fund.common.HttpConstant;
+import com.github.superzhc.common.HttpConstant;
 
 import java.util.HashMap;
 import java.util.Map;

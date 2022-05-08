@@ -1,10 +1,9 @@
 package com.github.superzhc.fund.backtesting;
 
-import com.github.superzhc.fund.akshare.DanJuanFunds;
-import com.github.superzhc.fund.akshare.ENiu;
+import com.github.superzhc.fund.data.index.DanJuanIndex;
 import com.github.superzhc.fund.strategy.PurchaseAnalysis;
-import com.github.superzhc.fund.tablesaw.utils.MyAggregateFunctions;
-import com.github.superzhc.fund.tablesaw.utils.TableUtils;
+import com.github.superzhc.tablesaw.utils.MyAggregateFunctions;
+import com.github.superzhc.tablesaw.utils.TableUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.tablesaw.api.Table;
@@ -32,7 +31,7 @@ public class PEData {
         LocalDate start = end.minusDays(days);
         log.debug("Start Day:{}", start);
 
-        Table table = DanJuanFunds.peHistory10Y(indexCode);//ENiu.indexHistory(indexCode);
+        Table table = DanJuanIndex.peHistory10Y(indexCode);//ENiu.indexHistory(indexCode);
         table = table.where(table.dateColumn("date").isAfter(start));
 
         table.addColumns(MyAggregateFunctions.position(table.doubleColumn("pe")).setName("position"));

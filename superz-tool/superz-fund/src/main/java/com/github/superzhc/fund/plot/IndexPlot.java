@@ -1,6 +1,6 @@
 package com.github.superzhc.fund.plot;
 
-import com.github.superzhc.fund.akshare.CSIndex;
+import com.github.superzhc.fund.data.index.CSIndex;
 import com.github.superzhc.fund.akshare.Sina;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.plotly.Plot;
@@ -22,7 +22,7 @@ import java.time.format.DateTimeFormatter;
 public class IndexPlot {
 
     public static void csIndexHistory(String symbol) {
-        Table table = CSIndex.indexHistory(symbol);
+        Table table = CSIndex.history(symbol);
         if (!table.isEmpty()) {
             String indexName = table.row(0).getString("指数中文简称");
 
@@ -44,7 +44,7 @@ public class IndexPlot {
     }
 
     public static void sinaIndexHistory(String indexName,String symbol) {
-        Table table = Sina.indexHistory(symbol);
+        Table table = Table.create();
         if (!table.isEmpty()) {
             Path path = Paths.get("testoutput",
                     String.format("index_%s_%s_%s.html", symbol, indexName, LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")))

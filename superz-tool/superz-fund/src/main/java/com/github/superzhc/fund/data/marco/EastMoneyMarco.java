@@ -1,10 +1,10 @@
-package com.github.superzhc.fund.akshare;
+package com.github.superzhc.fund.data.marco;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.http.HttpRequest;
-import com.github.superzhc.fund.tablesaw.utils.ColumnUtils;
-import com.github.superzhc.fund.tablesaw.utils.JsonUtils;
-import com.github.superzhc.fund.tablesaw.utils.ReadOptionsUtils;
+import com.github.superzhc.tablesaw.utils.ColumnUtils;
+import com.github.superzhc.tablesaw.utils.JsonUtils;
+import com.github.superzhc.tablesaw.utils.ReadOptionsUtils;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.io.TableBuildingUtils;
 
@@ -17,7 +17,7 @@ import java.util.Map;
  * @author superz
  * @create 2022/4/2 16:59
  **/
-public class MarcoCN {
+public class EastMoneyMarco {
     /**
      * 获取季度国内生产总值数据
      *

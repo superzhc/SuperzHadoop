@@ -1,5 +1,6 @@
 package com.github.superzhc.fund.akshare;
 
+import com.github.superzhc.fund.data.fund.EastMoneyFund;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.selection.Selection;
 
@@ -116,7 +117,7 @@ public class AKShare {
      * @return
      */
     public static Table indexHistroy(String symbol) {
-        return Sina.indexHistory(symbol);
+        return Table.create();
     }
 
     /**
@@ -143,7 +144,7 @@ public class AKShare {
      * 16  |  risk_income_characteristics  |       STRING  |
      */
     public static Table fund(String symbol) {
-        Table table = EastMoney.fundNew(symbol);//EastMoney.fund(symbol);
+        Table table = EastMoneyFund.fundNew(symbol);//EastMoney.fund(symbol);
         return table;
     }
 
@@ -193,7 +194,7 @@ public class AKShare {
 //        Table t3 = index(symbol);
 //        System.out.println(t3.print());
 
-        Table table = Sina.indics();
+        Table table = Table.create();
         System.out.println(table.print());
         System.out.println(table.shape());
         System.out.println(table.structure().printAll());

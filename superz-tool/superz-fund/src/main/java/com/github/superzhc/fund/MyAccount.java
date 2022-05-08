@@ -1,6 +1,6 @@
 package com.github.superzhc.fund;
 
-import com.github.superzhc.fund.akshare.EastMoney;
+import com.github.superzhc.fund.data.fund.EastMoneyFund;
 import tech.tablesaw.api.DateColumn;
 import tech.tablesaw.api.DoubleColumn;
 import tech.tablesaw.api.StringColumn;
@@ -41,7 +41,7 @@ public class MyAccount {
         Set<String> codes = table.stringColumn("code").asSet();
         for (String code : codes) {
             //String code = "160119";
-            Table info = EastMoney.fundNew(code);
+            Table info = EastMoneyFund.fundNew(code);
 
             // 获取费率
             String realRate = info.row(0).getString("real_rate");
@@ -49,7 +49,7 @@ public class MyAccount {
 //            System.out.println("real_rate:" + rr);
 
             // 获取历史值
-            Table history = EastMoney.fundNetHistory(code);
+            Table history = EastMoneyFund.fundNetHistory(code);
 
             Table t3 = table.where(table.stringColumn("code").isEqualTo(code))
                     .joinOn("date")
@@ -79,7 +79,7 @@ public class MyAccount {
         );
         for (String code : codes) {
             // 获取实时净值
-            Table realNetWorth = EastMoney.fundRealNet(code);
+            Table realNetWorth = EastMoneyFund.fundRealNet(code);
             double currentNetWorth;
             if (LocalDate.now().isEqual(realNetWorth.row(0).getDate("latest_date"))) {
                 currentNetWorth = realNetWorth.row(0).getDouble("latest_net_worth");

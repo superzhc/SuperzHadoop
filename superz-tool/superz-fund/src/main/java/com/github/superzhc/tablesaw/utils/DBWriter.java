@@ -1,8 +1,6 @@
-package com.github.superzhc.fund.tablesaw.utils;
+package com.github.superzhc.tablesaw.utils;
 
 import com.github.superzhc.common.jdbc.JdbcHelper;
-import com.github.superzhc.fund.akshare.CSIndex;
-import com.github.superzhc.fund.akshare.Sina;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.tablesaw.api.*;
@@ -126,8 +124,5 @@ public class DBWriter {
         String password = "123456";
 
         DBWriter writer=new DBWriter(url,username,password);
-
-        Table table= Sina.indics();
-        writer.db(table,"sina_index");
     }
 }

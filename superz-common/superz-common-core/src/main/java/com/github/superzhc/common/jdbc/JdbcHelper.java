@@ -586,11 +586,12 @@ public class JdbcHelper implements Closeable {
 
         PreparedStatement pstmt = null;
         try {
-            log.debug("DML 语句：{}", sql);
+            long start = System.currentTimeMillis();
+            log.debug("DML语句：{}", sql);
             pstmt = getConnection().prepareStatement(sql);
             // 填充sql语句中的占位符
             if (null != params && params.length != 0) {
-                log.debug("DML 参数个数：{}", params.length);
+                log.debug("DML参数个数：{}", params.length);
                 for (int i = 0, len = params.length; i < len; i++) {
                     pstmt.setObject(i + 1, params[i]);
                 }
@@ -598,6 +599,7 @@ public class JdbcHelper implements Closeable {
 
             // 影响行数
             int result = pstmt.executeUpdate();
+            log.debug("DML耗时：{}s", (System.currentTimeMillis() - start) / 1000.0);
             return result;
         } catch (SQLException ex) {
             log.error("DML异常", ex);
@@ -641,6 +643,7 @@ public class JdbcHelper implements Closeable {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
+            long start = System.currentTimeMillis();
             log.debug("查询语句：{}", sql);
             pstmt = getConnection().prepareStatement(sql);
             if (null != params && params.length != 0) {
@@ -650,6 +653,7 @@ public class JdbcHelper implements Closeable {
                 }
             }
             rs = pstmt.executeQuery();
+            log.debug("查询耗时：{}s", (System.currentTimeMillis() - start) / 1000.0);
             return ResultSetUtils.Result2ListMap(rs);
         } catch (SQLException ex) {
             log.error("查询异常", ex);
@@ -667,6 +671,7 @@ public class JdbcHelper implements Closeable {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
+            long start = System.currentTimeMillis();
             log.debug("查询语句：{}", sql);
             pstmt = getConnection().prepareStatement(sql);
             if (null != params && params.length != 0) {
@@ -676,6 +681,7 @@ public class JdbcHelper implements Closeable {
                 }
             }
             rs = pstmt.executeQuery();
+            log.debug("查询耗时：{}s", (System.currentTimeMillis() - start) / 1000.0);
             return ResultSetUtils.Result2ListBean(rs, beanClass);
         } catch (SQLException ex) {
             log.error("查询异常", ex);
@@ -706,6 +712,7 @@ public class JdbcHelper implements Closeable {
         PreparedStatement pstmt = null;
         ResultSet rs = null;
         try {
+            long start = System.currentTimeMillis();
             log.debug("查询语句：{}", sql);
             pstmt = getConnection().prepareStatement(sql);
             if (null != params && params.length != 0) {
@@ -715,6 +722,7 @@ public class JdbcHelper implements Closeable {
                 }
             }
             rs = pstmt.executeQuery();
+            log.debug("查询耗时：{}s", (System.currentTimeMillis() - start) / 1000.0);
             ResultSetUtils.print(rs, number);
         } catch (SQLException ex) {
             log.error("查询异常", ex);
@@ -774,6 +782,7 @@ public class JdbcHelper implements Closeable {
         ResultSet rs = null;
         Object result = null;
         try {
+            long start = System.currentTimeMillis();
             log.debug("查询语句：{}", sql);
             pstmt = getConnection().prepareStatement(sql);
             if (null != params && params.length != 0) {
@@ -783,6 +792,7 @@ public class JdbcHelper implements Closeable {
                 }
             }
             rs = pstmt.executeQuery();
+            log.debug("查询耗时：{}s", (System.currentTimeMillis() - start) / 1000.0);
             while (rs.next()) {
                 result = rs.getObject(1);
                 break;// 获取到第一行数据就不再获取其他行

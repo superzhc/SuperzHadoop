@@ -1,12 +1,12 @@
-package com.github.superzhc.fund.akshare;
+package com.github.superzhc.fund.data.fund;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.http.HttpRequest;
 import com.github.superzhc.common.tablesaw.read.EmptyReadOptions;
-import com.github.superzhc.fund.tablesaw.utils.ColumnUtils;
-import com.github.superzhc.fund.tablesaw.utils.JsonUtils;
-import com.github.superzhc.fund.tablesaw.utils.ReadOptionsUtils;
-import com.github.superzhc.fund.tablesaw.utils.TableUtils;
+import com.github.superzhc.tablesaw.utils.ColumnUtils;
+import com.github.superzhc.tablesaw.utils.JsonUtils;
+import com.github.superzhc.tablesaw.utils.ReadOptionsUtils;
+import com.github.superzhc.tablesaw.utils.TableUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -25,14 +25,14 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-import static com.github.superzhc.fund.common.HttpConstant.UA;
+import static com.github.superzhc.common.HttpConstant.UA;
 
 /**
  * @author superz
  * @create 2022/3/29 10:04
  **/
-public class EastMoney {
-    private static final Logger log = LoggerFactory.getLogger(EastMoney.class);
+public class EastMoneyFund {
+    private static final Logger log = LoggerFactory.getLogger(EastMoneyFund.class);
 
     public static Table funds() {
         String url = "http://fund.eastmoney.com/js/fundcode_search.js";

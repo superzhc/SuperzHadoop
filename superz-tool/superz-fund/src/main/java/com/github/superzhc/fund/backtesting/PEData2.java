@@ -1,9 +1,9 @@
 package com.github.superzhc.fund.backtesting;
 
-import com.github.superzhc.fund.akshare.ENiu;
+import com.github.superzhc.fund.data.index.ENiuIndex;
 import com.github.superzhc.fund.strategy.PurchaseAnalysis;
-import com.github.superzhc.fund.tablesaw.utils.MyAggregateFunctions;
-import com.github.superzhc.fund.tablesaw.utils.TableUtils;
+import com.github.superzhc.tablesaw.utils.MyAggregateFunctions;
+import com.github.superzhc.tablesaw.utils.TableUtils;
 import tech.tablesaw.aggregate.AggregateFunctions;
 import tech.tablesaw.api.DateColumn;
 import tech.tablesaw.api.DoubleColumn;
@@ -20,7 +20,7 @@ public class PEData2 {
     public static void main(String[] args) {
         String indexCode = "000905.SH";
 
-        Table table = ENiu.indexHistory10Y(indexCode);
+        Table table = ENiuIndex.history10Y(indexCode);
 
         // 开始投资时间
         int start = table.where(table.dateColumn("date").isBefore(LocalDate.parse("2021-04-26"))).rowCount();

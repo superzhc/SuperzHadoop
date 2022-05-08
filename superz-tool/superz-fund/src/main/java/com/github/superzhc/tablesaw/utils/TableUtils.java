@@ -1,4 +1,4 @@
-package com.github.superzhc.fund.tablesaw.utils;
+package com.github.superzhc.tablesaw.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -8,8 +8,6 @@ import org.slf4j.LoggerFactory;
 import tech.tablesaw.api.*;
 import tech.tablesaw.columns.Column;
 import tech.tablesaw.io.TableBuildingUtils;
-import tech.tablesaw.io.html.HtmlWriteOptions;
-import tech.tablesaw.io.html.HtmlWriter;
 import tech.tablesaw.plotly.Plot;
 
 import java.time.LocalDate;
@@ -145,6 +143,20 @@ public class TableUtils {
             if (columnNames.contains(entry.getKey())) {
                 table.column(entry.getKey()).setName(entry.getValue());
             }
+        }
+        return table;
+    }
+
+    public static Table rename(Table table, List<String> newNames) {
+        for (int i = 0, len = newNames.size(); i < len; i++) {
+            String newName = newNames.get(i);
+
+            // 支持占位符 _、-不做重命名
+            if ("_".equals(newName) || "-".equals(newName)) {
+                continue;
+            }
+
+            table.column(i).setName(newName);
         }
         return table;
     }

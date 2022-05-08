@@ -1,14 +1,11 @@
 package com.github.superzhc.fund.index;
 
-import com.github.superzhc.fund.akshare.CSIndex;
 import com.github.superzhc.fund.akshare.JiuCaiShuo;
-import com.github.superzhc.fund.akshare.Sina;
-import com.github.superzhc.fund.tablesaw.utils.PlotUtils;
+import com.github.superzhc.tablesaw.utils.PlotUtils;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.plotly.Plot;
 import tech.tablesaw.plotly.api.Histogram;
 import tech.tablesaw.plotly.api.PiePlot;
-import tech.tablesaw.plotly.api.TimeSeriesPlot;
 import tech.tablesaw.plotly.components.Figure;
 import tech.tablesaw.plotly.components.Layout;
 import tech.tablesaw.plotly.traces.ScatterTrace;
@@ -28,7 +25,7 @@ public class SH000001 {
     public Table history() {
 //        String code=CODE.substring(0,6);
 //        return CSIndex.indexHistory(code);
-        return Sina.indexHistory(CODE);
+        return Table.create();
     }
 
     public void historyPlot() {

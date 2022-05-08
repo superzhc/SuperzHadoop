@@ -2,8 +2,8 @@ package com.github.superzhc.fund.akshare;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.http.HttpRequest;
-import com.github.superzhc.fund.tablesaw.utils.JsonUtils;
-import com.github.superzhc.fund.tablesaw.utils.TableUtils;
+import com.github.superzhc.tablesaw.utils.JsonUtils;
+import com.github.superzhc.tablesaw.utils.TableUtils;
 import tech.tablesaw.api.Table;
 
 import java.util.Arrays;
