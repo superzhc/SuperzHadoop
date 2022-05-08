@@ -1,13 +1,12 @@
 package com.github.superzhc.fund.data.index;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.superzhc.common.ExcelUtils;
 import com.github.superzhc.common.http.HttpRequest;
-import com.github.superzhc.data.utils.ExcelUtils;
 import com.github.superzhc.common.HttpConstant;
 import com.github.superzhc.tablesaw.utils.JsonUtils;
 import com.github.superzhc.tablesaw.utils.ReadOptionsUtils;
 import com.github.superzhc.tablesaw.utils.TableUtils;
-import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.tablesaw.api.ColumnType;
@@ -143,8 +142,31 @@ public class CSIndex {
     }
 
     public static Table index(String indexCode) {
-        String url = String.format("https://www.csindex.com.cn/csindex-home/indexInfo/index-basic-info/%s", transform(indexCode));
+        String symbol = transform(indexCode);
+        // 指数基本信息
+        String basicUrl = String.format("https://www.csindex.com.cn/csindex-home/indexInfo/index-basic-info/%s", symbol);
 
+        String basicResult = HttpRequest.get(basicUrl).body();
+        Map<String, ?> basicMap = JsonUtils.map(basicResult, "data");
+
+        // 指数特征
+        String featureUrl = String.format("https://www.csindex.com.cn/csindex-home/indexInfo/index-feature/%s", symbol);
+        String featureResult = HttpRequest.get(featureUrl).body();
+        Map<String, ?> featureMap = JsonUtils.map(featureResult, "data");
+
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.putAll(basicMap);
+        map.putAll(featureMap);
+
+        Table table = TableUtils.map2Table(map);
+
+        return table;
+    }
+
+    /*public static Table feature(String indexCode){
+        String symbol=transform(indexCode);
+
+        String url=String.format("https://www.csindex.com.cn/csindex-home/indexInfo/index-feature/%s",symbol);
         String result = HttpRequest.get(url).body();
         JsonNode json = JsonUtils.json(result, "data");
 
@@ -153,7 +175,8 @@ public class CSIndex {
         Table table = TableUtils.map2Table(map);
 
         return table;
-    }
+
+    }*/
 
     public static Table trackIndex(String indexCode) {
         String symbol = transform(indexCode);
@@ -169,7 +192,7 @@ public class CSIndex {
         return table;
     }
 
-    public static Table mainStock(String indexCode) {
+    public static Table mainStocks(String indexCode) {
         String url = String.format("https://www.csindex.com.cn/csindex-home/index/weight/top10/%s", transform(indexCode));
 
         String result = HttpRequest.get(url).body();
@@ -186,6 +209,7 @@ public class CSIndex {
      * 行业分布
      *
      * @param indexCode
+     *
      * @return
      */
     public static Table industry(String indexCode) {
@@ -220,6 +244,7 @@ public class CSIndex {
      * 不推荐使用该接口，获取的数据不够全
      *
      * @param indexCode
+     *
      * @return Table
      * Index  |  Column Name  |  Column Type  |
      * -----------------------------------------
@@ -239,6 +264,7 @@ public class CSIndex {
      * 13  |         成交金额  |       DOUBLE  |
      * 14  |         样本数量  |      INTEGER  |
      */
+    @Deprecated
     public static Table history(String indexCode) {
         String url = "https://www.csindex.com.cn/csindex-home/perf/index-perf";
 
@@ -293,41 +319,26 @@ public class CSIndex {
         return table;
     }
 
-    @Deprecated
-    public static Table indexValue(String indexCode) {
-        String url = String.format("https://csi-web-dev.oss-cn-shanghai-finance-1-pub.aliyuncs.com/static/html/csindex/public/uploads/file/autofile/indicator/%sindicator.xls", transform(indexCode));
+    public static Table stocks(String indexCode) {
+        String symbol = transform(indexCode);
+        String url = String.format("https://csi-web-dev.oss-cn-shanghai-finance-1-pub.aliyuncs.com/static/html/csindex/public/uploads/file/autofile/cons/%scons.xls", symbol);
+        InputStream in = HttpRequest.get(url).stream();
+        return ExcelUtils.read(in);
+    }
 
-        try {
-            InputStream in = HttpRequest.get(url).stream();
-            Workbook workbook = WorkbookFactory.create(in);
-            Sheet sheet = workbook.getSheetAt(0);
-            int numberOfRows = sheet.getPhysicalNumberOfRows();
+    public static Table stocksWeight(String indexCode) {
+        String symbol = transform(indexCode);
+        String url = String.format("https://csi-web-dev.oss-cn-shanghai-finance-1-pub.aliyuncs.com/static/html/csindex/public/uploads/file/autofile/closeweight/%scloseweight.xls", symbol);
+        InputStream in = HttpRequest.get(url).stream();
+        return ExcelUtils.read(in);
+    }
 
-            List<String> columnNames = new ArrayList<>();
-            Row header = sheet.getRow(0);
-            int headerNumberOfCells = header.getPhysicalNumberOfCells();
-            for (int h = 0; h < headerNumberOfCells; h++) {
-                columnNames.add(String.valueOf(ExcelUtils.getCellFormatValue(header.getCell(h))));
-            }
+    public static Table valuation(String indexCode) {
+        String symbol = transform(indexCode);
+        String url = String.format("https://csi-web-dev.oss-cn-shanghai-finance-1-pub.aliyuncs.com/static/html/csindex/public/uploads/file/autofile/indicator/%sindicator.xls", symbol);
 
-            List<String[]> dataRows = new ArrayList<>();
-            for (int i = 1; i < numberOfRows; i++) {
-                Row row = sheet.getRow(i);
-                int numberOfCells = row.getPhysicalNumberOfCells();
-                String[] dataRow = new String[numberOfCells];
-                for (int j = 0; j < numberOfCells; j++) {
-                    Cell cell = row.getCell(j);
-                    Object value = ExcelUtils.getCellFormatValue(cell);
-                    dataRow[j] = null == value ? null : String.valueOf(value);
-                }
-                dataRows.add(dataRow);
-            }
-
-            Table table = TableBuildingUtils.build(columnNames, dataRows, ReadOptionsUtils.empty());
-            return table;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        InputStream in = HttpRequest.get(url).stream();
+        return ExcelUtils.read(in);
     }
 
     private static String transform(String indexCode) {

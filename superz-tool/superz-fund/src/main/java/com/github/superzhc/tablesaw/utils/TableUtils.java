@@ -42,6 +42,7 @@ public class TableUtils {
                     case "gpdm":
                     case "zqdm":
                     case "etfcode":
+                    case "指数代码 index code":
                         ct = ColumnType.STRING;
                         break;
                 }
@@ -174,7 +175,8 @@ public class TableUtils {
             htmlSb.append("<html>\n");
             htmlSb.append("<head>\n");
             htmlSb.append(" <title>" + ((null == table.name() || table.name().trim().length() == 0) ? "Tablesaw" : table.name()) + "</title>\n");
-            htmlSb.append(" <link rel=\"stylesheet\" href=\"https://layui.itze.cn/layui-v2.6.8/layui/css/layui.css\">\n");
+            //htmlSb.append(" <link rel=\"stylesheet\" href=\"https://layui.itze.cn/layui-v2.6.8/layui/css/layui.css\">\n");
+            htmlSb.append(" <link rel=\"stylesheet\" href=\"https://unpkg.com/layui@2.6.8/dist/css/layui.css\">\n");
             htmlSb.append("</head>\n");
 
             List<String> columnNames = table.columnNames();
@@ -182,6 +184,13 @@ public class TableUtils {
             boolean isMulti = table.rowCount() > 1;
             if (isMulti) {
                 ArrayNode cols = JsonUtils.mapper().createArrayNode();
+
+                // 序号列
+                ObjectNode idCol = JsonUtils.mapper().createObjectNode();
+                idCol.put("type", "numbers");
+                idCol.put("width", 80);
+                cols.add(idCol);
+
                 for (String columnName : columnNames) {
                     ObjectNode col = JsonUtils.mapper().createObjectNode();
                     col.put("field", columnName);
@@ -205,13 +214,17 @@ public class TableUtils {
 
                 htmlSb.append("<body>\n");
                 htmlSb.append("<table id=\"tablesaw\" lay-filter=\"tablesaw\"></table>\n");
-                htmlSb.append("<script src=\"https://layui.itze.cn/layui-v2.6.8/layui/layui.js\"></script>\n");
+                //htmlSb.append("<script src=\"https://layui.itze.cn/layui-v2.6.8/layui/layui.js\"></script>\n");
+                htmlSb.append("<script src=\"https://unpkg.com/layui@2.6.8/dist/layui.js\"></script>\n");
                 htmlSb.append("<script>\n");
+                htmlSb.append("var dh = window.screen.availHeight;\n");
                 htmlSb.append("layui.use('table', function(){\n");
                 htmlSb.append("var table = layui.table;\n");
                 htmlSb.append("table.render({\n");
                 htmlSb.append("elem: '#tablesaw'\n");
-                htmlSb.append(",height: 312\n");
+                htmlSb.append(",height: (dh-130)\n");
+                htmlSb.append(",page: true\n");
+                htmlSb.append(",limit: 11\n");
                 htmlSb.append(",cols: [" + JsonUtils.string(cols) + "]\n");
                 htmlSb.append(",data:" + JsonUtils.string(data));
                 htmlSb.append("\n});\n");
@@ -244,7 +257,8 @@ public class TableUtils {
                 htmlSb.append("<form class=\"layui-form layui-form-pane\">");
                 htmlSb.append(sb);
                 htmlSb.append("</form>");
-                htmlSb.append("<script src=\"https://layui.itze.cn/layui-v2.6.8/layui/layui.js\"></script>\n");
+                //htmlSb.append("<script src=\"https://layui.itze.cn/layui-v2.6.8/layui/layui.js\"></script>\n");
+                htmlSb.append("<script src=\"https://unpkg.com/layui@2.6.8/dist/layui.js\"></script>\n");
                 htmlSb.append("<script>\n");
                 htmlSb.append("layui.use('form', function(){\n");
                 htmlSb.append("var form = layui.form;\n");

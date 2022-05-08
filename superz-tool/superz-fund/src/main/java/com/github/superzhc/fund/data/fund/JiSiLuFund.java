@@ -1,4 +1,4 @@
-package com.github.superzhc.fund.akshare;
+package com.github.superzhc.fund.data.fund;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.http.HttpRequest;
@@ -14,7 +14,7 @@ import java.util.*;
  */
 public class JiSiLuFund {
     public static Table etf() {
-        String url = "https://www.jisilu.cn/data/etf/etf_list/?___jsl=LST___t=1650991707906&volume=&unit_total=&rp=25";
+        String url = "https://www.jisilu.cn/data/etf/etf_list/";
 
         Map<String, Object> params = new HashMap<>();
         params.put("___jsl", String.format("LST___t=%d", System.currentTimeMillis()));
@@ -22,7 +22,7 @@ public class JiSiLuFund {
         params.put("unit_total", "");
         params.put("rp", 25);
 
-        String result = HttpRequest.get(url).body();
+        String result = HttpRequest.get(url, params).body();
         JsonNode json = JsonUtils.json(result, "rows");
 
         List<String> columnNames = Arrays.asList(
