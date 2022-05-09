@@ -26,7 +26,11 @@ public class AnyKnew {
         return execute("zhihu");
     }
 
-    public static Table all() {
+    public static Table smzdm() {
+        return execute("smzdm");
+    }
+
+    public static Table finance() {
         Table table = xueqiu()
                 .append(investing())
                 .append(wallstreetcn())
@@ -96,9 +100,10 @@ public class AnyKnew {
     }
 
     public static void main(String[] args) {
-        Table table = all();
-        System.out.println(table.structure().printAll());
+        Table table = smzdm();
+
         System.out.println(table.printAll());
         System.out.println(table.shape());
+        System.out.println(table.structure().printAll());
     }
 }

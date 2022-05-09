@@ -16,6 +16,27 @@ import java.util.*;
  **/
 public class EastMoneyIndex {
 
+    public static Table index(String symbol) {
+        String url = "https://push2.eastmoney.com/api/qt/ulist.np/get";
+
+        String fields = "f1,f2,f3,f4,f6,f12,f13,f104,f105,f106";
+        Map<String, Object> params = new HashMap<>();
+        params.put("fltt", 2);
+        params.put("secids", transformC(symbol));
+        params.put("fields", fields);
+        params.put("_", System.currentTimeMillis());
+
+        String result = HttpRequest.get(url, params).body();
+        JsonNode json = JsonUtils.json(result, "data", "diff");
+
+        List<String> columnNames = Arrays.asList(fields.split(","));
+        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
+
+        List<String> columnNames2=Arrays.asList("f1","f2","f3","f4","成交额","code","f13","上涨数","下跌数","平盘");
+        Table table = TableUtils.build(columnNames2, dataRows);
+        return table;
+    }
+
     public static Table dailyHistory(String symbol) {
         return history(symbol, "daily");
     }

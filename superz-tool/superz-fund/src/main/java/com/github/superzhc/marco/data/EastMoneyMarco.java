@@ -1,4 +1,4 @@
-package com.github.superzhc.fund.data.marco;
+package com.github.superzhc.marco.data;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.http.HttpRequest;

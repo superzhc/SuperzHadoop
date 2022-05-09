@@ -1,8 +1,8 @@
-package com.github.superzhc.fund.akshare;
+package com.github.superzhc.common;
 
 import com.github.superzhc.common.http.HttpRequest;
-import com.github.superzhc.common.HttpConstant;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,16 +10,23 @@ import java.util.Map;
  * @author superz
  * @create 2022/4/21 15:07
  **/
-public class XueQiu {
+public class XueQiuUtils {
+    private static volatile String COOKIES = null;
+    private static volatile LocalDateTime EXPIRED = null;
+
     /**
      * 建议多次复用获取的 cookies，不要每次都去调用这个方法
      *
      * @return
      */
-    public static String cookies() {
-        Map<String, String> map = HttpRequest.get("https://xueqiu.com").userAgent(HttpConstant.UA).cookies();
-        String xqAToken = map.get("xq_a_token");
-        return String.format("xq_a_token=%s", xqAToken);
+    public static synchronized String cookies() {
+        if (null == COOKIES || EXPIRED.isBefore(LocalDateTime.now())) {
+            Map<String, String> map = HttpRequest.get("https://xueqiu.com").userAgent(HttpConstant.UA).cookies();
+            String xqAToken = map.get("xq_a_token");
+            COOKIES = String.format("xq_a_token=%s", xqAToken);
+            EXPIRED = LocalDateTime.now().plusMinutes(10);
+        }
+        return COOKIES;
     }
 
     public static void main(String[] args) {

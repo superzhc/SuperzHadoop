@@ -154,9 +154,16 @@ public class CSIndex {
         String featureResult = HttpRequest.get(featureUrl).body();
         Map<String, ?> featureMap = JsonUtils.map(featureResult, "data");
 
+        // other
+        String otherUrl = String.format("https://www.csindex.com.cn/csindex-home/indexInfo/index-details-data?fileLang=2&indexCode=%s", symbol);
+        String otherResult = HttpRequest.get(otherUrl).body();
+        JsonNode other = JsonUtils.json(otherResult, "data");
+
         Map<String, Object> map = new LinkedHashMap<>();
         map.putAll(basicMap);
         map.putAll(featureMap);
+
+        map.put("preparation", other.get("编制方案").get(0).get("filePath").asText());
 
         Table table = TableUtils.map2Table(map);
 
@@ -209,7 +216,6 @@ public class CSIndex {
      * 行业分布
      *
      * @param indexCode
-     *
      * @return
      */
     public static Table industry(String indexCode) {
@@ -244,7 +250,6 @@ public class CSIndex {
      * 不推荐使用该接口，获取的数据不够全
      *
      * @param indexCode
-     *
      * @return Table
      * Index  |  Column Name  |  Column Type  |
      * -----------------------------------------
@@ -339,6 +344,27 @@ public class CSIndex {
 
         InputStream in = HttpRequest.get(url).stream();
         return ExcelUtils.read(in);
+    }
+
+    // 衍生品
+    public static Table derivative(String indexCode) {
+        String symbol = transform(indexCode);
+        String url = "https://www.csindex.com.cn/csindex-home/perf/get-derivative-index";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("indexCode", symbol);
+
+        String result = HttpRequest.get(url, params).body();
+        JsonNode json = JsonUtils.json(result, "data");
+
+        if (null == json || json.size() == 0) {
+            return Table.create();
+        }
+
+        List<String> columnNames = JsonUtils.extractObjectColumnName(json);
+        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
+        Table table = TableUtils.build(columnNames, dataRows);
+        return table;
     }
 
     private static String transform(String indexCode) {

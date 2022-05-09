@@ -156,7 +156,7 @@ public class JsonUtils {
                         row[i] = null;
                     } else if (null == item.get(columnName)) {
                         row[i] = null;
-                    } else if (item.get(columnName).isObject()) {
+                    } else if (item.get(columnName).isObject() || item.get(columnName).isArray()) {
                         row[i] = mapper.writeValueAsString(item.get(columnName));
                     } else {
                         row[i] = item.get(columnName).asText();
