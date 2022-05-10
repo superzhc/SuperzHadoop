@@ -26,4 +26,8 @@ public class SuperzIndex {
     public static Table industry(String symbol) {
         return CSIndex.industry(symbol);
     }
+
+    public static Table history(String symbol) {
+        return SinaIndex.history(symbol);
+    }
 }

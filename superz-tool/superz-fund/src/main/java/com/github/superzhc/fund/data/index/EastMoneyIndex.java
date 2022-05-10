@@ -32,7 +32,7 @@ public class EastMoneyIndex {
         List<String> columnNames = Arrays.asList(fields.split(","));
         List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
 
-        List<String> columnNames2=Arrays.asList("f1","f2","f3","f4","成交额","code","f13","上涨数","下跌数","平盘");
+        List<String> columnNames2 = Arrays.asList("f1", "f2", "f3", "f4", "成交额", "code", "f13", "上涨数", "下跌数", "平盘");
         Table table = TableUtils.build(columnNames2, dataRows);
         return table;
     }
@@ -52,6 +52,7 @@ public class EastMoneyIndex {
     /**
      * @param symbol
      * @param period 周期，choice of {'daily', 'weekly', 'monthly'}
+     *
      * @return
      */
     public static Table history(String symbol, String period) {
@@ -83,11 +84,12 @@ public class EastMoneyIndex {
                 "high",//"最高"
                 "low",//"最低"
                 "volume",//"成交量"
-                "成交额",
-                "振幅",
-                "涨跌幅",
-                "涨跌额",
-                "换手率");
+                "turnover",//"成交额"
+                "amplitude",//"振幅"
+                "quote_change",//"涨跌幅"
+                "quote_change_amount",//"涨跌额"
+                "turnover_rate"//"换手率"
+        );
 
         List<String[]> dataRows = new ArrayList<>();
         for (JsonNode item : json) {
