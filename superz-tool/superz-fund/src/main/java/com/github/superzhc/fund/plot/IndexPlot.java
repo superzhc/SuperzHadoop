@@ -1,7 +1,6 @@
 package com.github.superzhc.fund.plot;
 
 import com.github.superzhc.fund.data.index.CSIndex;
-import com.github.superzhc.fund.akshare.Sina;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.plotly.Plot;
 import tech.tablesaw.plotly.api.TimeSeriesPlot;

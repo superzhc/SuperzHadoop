@@ -14,7 +14,8 @@ public class FundConstant {
     public static final String INDEX_CODE = "index_code";
     public static final String INDEX_NAME = "index_name";
     public static final String INDEX_FULL_NAME = "index_full_name";
-    public static final String INDEX_SAMPLE = "样本";
+    public static final String INDEX_SAMPLE = "index_stocks";
+    public static final String INDEX_SAMPLE_NUMBER="index_stocks_number";
     //endregion==================================INDEX==========================================
 
     //region=====================================FUND===========================================

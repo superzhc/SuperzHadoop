@@ -1,14 +1,13 @@
 package com.github.superzhc.fund.data.fund;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.superzhc.common.ScriptEngineUtils;
+import com.github.superzhc.common.ScriptUtils;
 import com.github.superzhc.common.http.HttpRequest;
 import com.github.superzhc.common.tablesaw.read.EmptyReadOptions;
 import com.github.superzhc.tablesaw.utils.ColumnUtils;
 import com.github.superzhc.tablesaw.utils.JsonUtils;
 import com.github.superzhc.tablesaw.utils.ReadOptionsUtils;
 import com.github.superzhc.tablesaw.utils.TableUtils;
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -169,7 +168,6 @@ public class EastMoneyFund {
      * 推荐使用 fundNew 方法
      *
      * @param symbol
-     *
      * @return
      */
     @Deprecated
@@ -248,7 +246,6 @@ public class EastMoneyFund {
 
     /**
      * @param symbol
-     *
      * @return Structure of null
      * Index  |  Column Name  |  Column Type  |
      * -----------------------------------------
@@ -789,7 +786,7 @@ public class EastMoneyFund {
 
         try {
             String result = HttpRequest.get(url, params).headers(headers).body();
-            JsonNode json = JsonUtils.json(result);//mapper.readTree(result);
+            JsonNode json = JsonUtils.json(result);
 
             String valueDay = json.get("Data").get("gzrq").asText();
             String calDay = json.get("Data").get("gxrq").asText();
@@ -942,7 +939,6 @@ public class EastMoneyFund {
 
     /**
      * @param symbols 例如：1.000300
-     *
      * @return
      */
     public static Table test(String... symbols) {
@@ -1031,7 +1027,6 @@ public class EastMoneyFund {
      * 未完全解析，推荐使用 fundNew
      *
      * @param symbol
-     *
      * @return
      */
     public static Table fundInfo(String symbol) {
@@ -1076,7 +1071,6 @@ public class EastMoneyFund {
 
     /**
      * @param symbol
-     *
      * @return Structure of
      * Index  |       Column Name       |  Column Type  |
      * ---------------------------------------------------
@@ -1238,6 +1232,206 @@ public class EastMoneyFund {
             // map.put("var",ScriptEngineUtils.getObject(var2));
 
             return TableUtils.map2Table(map);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Table fundsFenHong() {
+        ScriptEngine engine = ScriptUtils.JSEngine();
+
+        List<String> columnNames = Arrays.asList(
+                "code",
+                "name",
+                "quanyidengjiri",
+                "chuxiriqi",
+                "fenhong",
+                "fenhongfafangri",
+                "c1"
+        );
+
+        try {
+            String url = "http://fund.eastmoney.com/Data/funddataIndex_Interface.aspx";
+
+            Map<String, Object> params = new HashMap<>();
+            params.put("dt", "8");
+            params.put("page", "1");
+            params.put("rank", "DJR");
+            params.put("sort", "desc");
+            params.put("gs", "");
+            params.put("ftype", "");
+            params.put("year", "");
+
+            String result = HttpRequest.get(url, params).body();
+            engine.eval(result);
+
+            List pageinfo = ScriptUtils.array(engine.get("pageinfo"));
+            int totalPage = (int) pageinfo.get(0);
+
+            Table table = null;
+            for (int j = 1; j < totalPage; j++) {
+                params.put("page", j);
+
+                result = HttpRequest.get(url, params).body();
+                engine.eval(result);
+
+                List<String[]> dataRows = new ArrayList<>();
+                List jjfh = ScriptUtils.array(engine.get("jjfh_data"));
+                for (Object item : jjfh) {
+                    List lst = (List) item;
+                    String[] row = new String[lst.size()];
+                    for (int i = 0, len = lst.size(); i < len; i++) {
+                        row[i] = (String) lst.get(i);
+                    }
+                    dataRows.add(row);
+                }
+                Table t2 = TableUtils.build(columnNames, dataRows);
+
+                if (null == table) {
+                    table = t2;
+                } else {
+                    table = table.append(t2);
+                }
+            }
+            return table;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Table test13() {
+        ScriptEngine engine = ScriptUtils.JSEngine();
+
+        List<String> columnNames = ColumnUtils.transform(
+                "code",
+                "name",
+                "chaifenzhesuanri",
+                "chaifenleixing",
+                "chaifenzhesuan",
+                "_"
+        );
+
+        Map<String, ColumnType> columnTypeMap = new HashMap<>();
+        columnTypeMap.put("code", ColumnType.STRING);
+        columnTypeMap.put("name", ColumnType.STRING);
+        columnTypeMap.put("chaifenzhesuanri", ColumnType.LOCAL_DATE);
+        columnTypeMap.put("chaifenleixing", ColumnType.STRING);
+        columnTypeMap.put("chaifenzhesuan", ColumnType.STRING);
+
+        try {
+            String url = "http://fund.eastmoney.com/Data/funddataIndex_Interface.aspx";
+
+            Map<String, Object> params = new HashMap<>();
+            params.put("dt", "9");
+            params.put("page", "1");
+            params.put("rank", "FSRQ");
+            params.put("sort", "desc");
+            params.put("gs", "");
+            params.put("ftype", "");
+            params.put("year", "");
+
+            String result = HttpRequest.get(url, params).body();
+            engine.eval(result);
+
+            List pageinfo = ScriptUtils.array(engine.get("pageinfo"));
+            int totalPage = (int) pageinfo.get(0);
+
+            Table table = null;
+            for (int j = 1; j < totalPage; j++) {
+                params.put("page", j);
+
+                result = HttpRequest.get(url, params).body();
+                engine.eval(result);
+
+                List<String[]> dataRows = new ArrayList<>();
+                List jjfh = ScriptUtils.array(engine.get("jjcf_data"));
+                for (Object item : jjfh) {
+                    List lst = (List) item;
+                    String[] row = new String[lst.size()];
+                    for (int i = 0, len = lst.size(); i < len; i++) {
+                        row[i] = String.valueOf(lst.get(i));
+                    }
+                    dataRows.add(row);
+                }
+
+                Table t2 = TableBuildingUtils.build(columnNames, dataRows, ReadOptionsUtils.columnTypeByName(columnTypeMap));
+
+                if (null == table) {
+                    table = t2;
+                } else {
+                    table = table.append(t2);
+                }
+            }
+            return table;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Table test14() {
+        ScriptEngine engine = ScriptUtils.JSEngine();
+
+        List<String> columnNames = ColumnUtils.transform(
+                "code",
+                "name",
+                "leijifenhong",
+                "leijicishu",
+                "chengliriqi",
+                "_"
+        );
+
+        Map<String, ColumnType> columnTypeMap = new HashMap<>();
+        columnTypeMap.put("code", ColumnType.STRING);
+        columnTypeMap.put("name", ColumnType.STRING);
+//        columnTypeMap.put("chaifenzhesuanri", ColumnType.LOCAL_DATE);
+//        columnTypeMap.put("chaifenleixing", ColumnType.STRING);
+//        columnTypeMap.put("chaifenzhesuan", ColumnType.STRING);
+
+        try {
+            String url = "http://fund.eastmoney.com/Data/funddataIndex_Interface.aspx";
+
+            Map<String, Object> params = new HashMap<>();
+            params.put("dt", "10");
+            params.put("page", "1");
+            params.put("rank", "FHFCZ");
+            params.put("sort", "desc");
+            params.put("gs", "");
+            params.put("ftype", "");
+            params.put("year", "");
+
+            String result = HttpRequest.get(url, params).body();
+            engine.eval(result);
+
+            List pageinfo = ScriptUtils.array(engine.get("pageinfo"));
+            int totalPage = (int) pageinfo.get(0);
+
+            Table table = null;
+            for (int j = 1; j < totalPage; j++) {
+                params.put("page", j);
+
+                result = HttpRequest.get(url, params).body();
+                engine.eval(result);
+
+                List<String[]> dataRows = new ArrayList<>();
+                List jjfh = ScriptUtils.array(engine.get("fhph_data"));
+                for (Object item : jjfh) {
+                    List lst = (List) item;
+                    String[] row = new String[lst.size()];
+                    for (int i = 0, len = lst.size(); i < len; i++) {
+                        row[i] = String.valueOf(lst.get(i));
+                    }
+                    dataRows.add(row);
+                }
+
+                Table t2 = TableBuildingUtils.build(columnNames, dataRows, ReadOptionsUtils.columnTypeByName(columnTypeMap));
+
+                if (null == table) {
+                    table = t2;
+                } else {
+                    table = table.append(t2);
+                }
+            }
+            return table;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

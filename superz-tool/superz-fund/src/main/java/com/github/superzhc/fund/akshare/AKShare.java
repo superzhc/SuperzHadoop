@@ -1,6 +1,7 @@
 package com.github.superzhc.fund.akshare;
 
 import com.github.superzhc.fund.data.fund.EastMoneyFund;
+import com.github.superzhc.fund.data.fund.SinaFund;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.selection.Selection;
 
@@ -171,12 +172,12 @@ public class AKShare {
      * 16  |       statetxt  |       STRING  |
      */
     public static Table etf() {
-        Table table = Sina.etf();
+        Table table = SinaFund.etf();
         return table;
     }
 
     public static Table lof() {
-        Table table = Sina.lof();
+        Table table = SinaFund.lof();
         return table;
     }
 

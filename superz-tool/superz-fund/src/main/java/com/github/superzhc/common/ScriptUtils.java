@@ -1,21 +1,45 @@
 package com.github.superzhc.common;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import java.util.*;
 
 /**
  * @author superz
  * @create 2022/5/10 0:41
  */
-public class ScriptEngineUtils {
+public class ScriptUtils {
+    private static final Logger log = LoggerFactory.getLogger(ScriptUtils.class);
+
+    private static final ScriptEngineManager SCRIPT_ENGINE_MANAGER = new ScriptEngineManager();
+
+    public static ScriptEngine JSEngine() {
+        return SCRIPT_ENGINE_MANAGER.getEngineByName("nashorn");
+    }
+
+    public static Object function(ScriptEngine engine, String func, String funcName, Object... params) {
+        try {
+            engine.eval(func);
+            Invocable invocable = (Invocable) engine;
+            Object value = invocable.invokeFunction(funcName, params);
+            return value;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static String string(Object obj) {
         String value = (String) obj;
         return value;
     }
 
-    public static Object object(Object value) {
-        if (value instanceof ScriptObjectMirror) {
+    public static Map<String, Object> object(Object value) {
+        /*if (value instanceof ScriptObjectMirror) {
             ScriptObjectMirror v2 = (ScriptObjectMirror) value;
             if (v2.isArray()) {
                 return getArray(v2);
@@ -24,7 +48,14 @@ public class ScriptEngineUtils {
             }
         } else {
             return value;
-        }
+        }*/
+        ScriptObjectMirror v2 = (ScriptObjectMirror) value;
+        return getObject(v2);
+    }
+
+    public static List array(Object value) {
+        ScriptObjectMirror v2 = (ScriptObjectMirror) value;
+        return getArray(v2);
     }
 
     public static List getArray(ScriptObjectMirror array) {

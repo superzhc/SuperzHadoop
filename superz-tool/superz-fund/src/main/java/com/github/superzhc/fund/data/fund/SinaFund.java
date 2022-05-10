@@ -1,4 +1,4 @@
-package com.github.superzhc.fund.akshare;
+package com.github.superzhc.fund.data.fund;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.http.HttpRequest;
@@ -14,7 +14,7 @@ import java.util.*;
  * @author superz
  * @create 2022/4/6 13:53
  **/
-public class Sina {
+public class SinaFund {
 
     public static DateTimeFormatter DEFAULT_DATETIMEFORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 

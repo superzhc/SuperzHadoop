@@ -31,29 +31,29 @@ public class CNIndex {
         Table table = TableUtils.build(columnNames, dataRows);
 
         List<String> finalColumnNames = Arrays.asList(
-                "_",
-                "_",
-                "指数代码",
-                "_",
-                "_",
-                "_",
-                "_",
-                "_",
-                "指数简称",
-                "_",
-                "_",
-                "_",
-                "样本数",
-                "收盘点位",
-                "涨跌幅",
-                "_",
-                "PE滚动",
-                "_",
-                "成交量",
-                "成交额",
-                "总市值",
-                "自由流通市值",
-                "_",
+//                "_",
+//                "_",
+//                "指数代码",
+//                "_",
+//                "_",
+//                "_",
+//                "_",
+//                "_",
+//                "指数简称",
+//                "_",
+//                "_",
+//                "_",
+//                "样本数",
+//                "收盘点位",
+//                "涨跌幅",
+//                "_",
+//                "PE滚动",
+//                "_",
+//                "成交量",
+//                "成交额",
+//                "总市值",
+//                "自由流通市值",
+//                "_",
                 "_"
         );
         table = TableUtils.rename(table, finalColumnNames);
@@ -99,7 +99,8 @@ public class CNIndex {
     }
 
     public static void main(String[] args) {
-        Table table = history("399001");
+        Table table=indices();
+//        Table table = history("399001");
 
         System.out.println(table.print());
         System.out.println(table.shape());

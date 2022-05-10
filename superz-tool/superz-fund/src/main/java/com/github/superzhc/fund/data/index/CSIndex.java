@@ -128,7 +128,7 @@ public class CSIndex {
         return table;
     }
 
-    public static Table indices(String str) {
+    /*public static Table indices(String str) {
         Table table = indices();
 
         if (null != str && str.trim().length() > 0) {
@@ -139,7 +139,7 @@ public class CSIndex {
         }
 
         return table;
-    }
+    }*/
 
     public static Table index(String indexCode) {
         String symbol = transform(indexCode);
