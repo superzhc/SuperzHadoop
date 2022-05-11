@@ -28,6 +28,7 @@ public class JdbcHelper implements Closeable {
         public static final String Informix = "com.informix.jdbc.IfxDriver";
         public static final String Sysbase = "com.sybase.jdbc.SybDriver";
         public static final String ODBC = "sun.jdbc.odbc.JdbcOdbcDriver";
+        public static final String SQLITE = "org.sqlite.JDBC";
 
         public static String match(String url) {
             if (url.startsWith("jdbc:mysql:")) {
@@ -46,6 +47,8 @@ public class JdbcHelper implements Closeable {
                 return Sysbase;
             } else if (url.startsWith("jdbc:odbc:")) {
                 return ODBC;
+            } else if (url.startsWith("jdbc:sqlite:")) {
+                return SQLITE;
             }
             return null;
         }
@@ -82,6 +85,8 @@ public class JdbcHelper implements Closeable {
                 return db2();
             } else if (url.startsWith("jdbc:odbc:")) {
                 return null;
+            } else if (url.startsWith("jdbc:sqlite:")) {
+                return sqlite();
             }
             return null;
         }
@@ -156,6 +161,10 @@ public class JdbcHelper implements Closeable {
 
         public String postgreSql() {
             return String.format("SELECT * FROM %s LIMIT %d,%d", table, size, start);
+        }
+
+        public String sqlite() {
+            return String.format("SELECT * FROM %d LIMIT %d OFFSET %d", table, size, start);
         }
     }
 
