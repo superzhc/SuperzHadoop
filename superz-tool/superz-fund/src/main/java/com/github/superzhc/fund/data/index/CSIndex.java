@@ -18,6 +18,7 @@ import java.io.InputStream;
 import java.util.*;
 
 /**
+ * 中证指数
  * 官网：https://www.csindex.com.cn
  * 参考：https://github.com/akfamily/akshare/blob/master/akshare/index/zh_stock_index_csindex.py
  *
@@ -67,10 +68,10 @@ public class CSIndex {
                 "indexSeries",
                 "indexSeriesEn",
                 "key",
-                "indexCode",
-                "indexName",
+                "indexCode",// 指数代码
+                "indexName",// 指数名称
                 "indexNameEn",
-                "consNumber",
+                "consNumber",// 样本数量
                 "latestClose",
                 "monthlyReturn",
                 "indexType",
