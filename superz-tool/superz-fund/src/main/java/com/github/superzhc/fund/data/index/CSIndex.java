@@ -142,6 +142,58 @@ public class CSIndex {
         return table;
     }*/
 
+    public static Table indices(String search) {
+        String url = "https://www.csindex.com.cn/csindex-home/index-list/search-result-about-index";
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("User-Agent", HttpConstant.UA);
+        headers.put("Content-Type", HttpConstant.JSON_CONTENT_TYPE);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("searchInput", search);
+        params.put("pageNum", 1);
+        params.put("pageSize", 100);
+
+        String result = HttpRequest.get(url, params).headers(headers).body();
+        JsonNode json = JsonUtils.json(result, "data");
+
+        List<String> columnNames = Arrays.asList(
+                // "indexCompliance",
+                // "indexComplianceEn",
+                // "ifTracked",
+                // "ifTrackedEn",
+                // "indexSeries",
+                // "indexSeriesEn",
+                // "key",
+                "indexCode",// 指数代码
+                "indexName",// 指数名称
+                "indexNameEn",
+                "consNumber",// 样本数量
+                "latestClose",
+                "monthlyReturn",
+                "indexType",
+                "assetsClassify",
+                "assetsClassifyEn",
+                "hotSpot",
+                "hotSpotEn",
+                "region",
+                "regionEn",
+                "currency",
+                "currencyEn",
+                "ifCustomized",
+                "ifCustomizedEn",
+                "indexClassify",
+                "indexClassifyEn",
+                "ifWeightCapped",
+                "ifWeightCappedEn",
+                "publishDate"
+        );
+
+        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
+        Table table = TableUtils.build(columnNames, dataRows);
+        return table;
+    }
+
     public static Table index(String indexCode) {
         String symbol = transform(indexCode);
         // 指数基本信息
@@ -217,6 +269,7 @@ public class CSIndex {
      * 行业分布
      *
      * @param indexCode
+     *
      * @return
      */
     public static Table industry(String indexCode) {
@@ -251,6 +304,7 @@ public class CSIndex {
      * 不推荐使用该接口，获取的数据不够全
      *
      * @param indexCode
+     *
      * @return Table
      * Index  |  Column Name  |  Column Type  |
      * -----------------------------------------

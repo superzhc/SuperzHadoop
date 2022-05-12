@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
  * @author superz
  * @create 2022/5/10 19:47
  */
-public class SZSE {
+public class SZSEIndex {
     public static Table indices() {
         String url = "https://www.szse.cn/api/report/ShowReport/data";
 
