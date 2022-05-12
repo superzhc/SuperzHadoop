@@ -3,6 +3,7 @@ package com.github.superzhc.tablesaw.utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.superzhc.common.jdbc.JdbcHelper;
 import com.github.superzhc.tablesaw.plot.PlotUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,6 +12,8 @@ import tech.tablesaw.columns.Column;
 import tech.tablesaw.io.TableBuildingUtils;
 import tech.tablesaw.plotly.Plot;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -160,6 +163,20 @@ public class TableUtils {
 
             table.column(i).setName(newName);
         }
+        return table;
+    }
+
+    public static Table db(JdbcHelper jdbc, String sql, Object... params) {
+        Table table = jdbc.dqlExecute(sql, params, new Function<ResultSet, Table>() {
+            @Override
+            public Table apply(ResultSet resultSet) {
+                try {
+                    return Table.read().db(resultSet);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
         return table;
     }
 

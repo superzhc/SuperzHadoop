@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import java.io.Closeable;
 import java.sql.*;
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * 2020年11月04日 superz add
@@ -470,9 +471,12 @@ public class JdbcHelper implements Closeable {
 
         Statement stmt = null;
         try {
-            log.debug("DDL 语句：{}", sql);
+            long start = System.currentTimeMillis();
+            log.debug("DDL语句：{}", sql);
             stmt = getConnection().createStatement();
-            return stmt.executeUpdate(sql);
+            int result = stmt.executeUpdate(sql);
+            log.debug("DDL耗时：{}s", (System.currentTimeMillis() - start) / 1000.0);
+            return result;
         } catch (Exception e) {
             log.error("DDL异常", e);
             return -1;
@@ -600,7 +604,7 @@ public class JdbcHelper implements Closeable {
             pstmt = getConnection().prepareStatement(sql);
             // 填充sql语句中的占位符
             if (null != params && params.length != 0) {
-                log.debug("DML参数个数：{}", params.length);
+                log.debug("DML参数：{}", Arrays.asList(params));
                 for (int i = 0, len = params.length; i < len; i++) {
                     pstmt.setObject(i + 1, params[i]);
                 }
@@ -645,59 +649,21 @@ public class JdbcHelper implements Closeable {
      * @throws SQLException
      */
     public List<Map<String, Object>> query(String sql, Object... params) {
-        if (StringUtils.isBlank(sql)) {
-            throw new RuntimeException("SQL不能为空");
-        }
-
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-        try {
-            long start = System.currentTimeMillis();
-            log.debug("查询语句：{}", sql);
-            pstmt = getConnection().prepareStatement(sql);
-            if (null != params && params.length != 0) {
-                log.debug("查询参数：{}", params);
-                for (int i = 0, len = params.length; i < len; i++) {
-                    pstmt.setObject(i + 1, params[i]);
-                }
+        return dqlExecute(sql, params, new Function<ResultSet, List<Map<String, Object>>>() {
+            @Override
+            public List<Map<String, Object>> apply(ResultSet rs) {
+                return ResultSetUtils.Result2ListMap(rs);
             }
-            rs = pstmt.executeQuery();
-            log.debug("查询耗时：{}s", (System.currentTimeMillis() - start) / 1000.0);
-            return ResultSetUtils.Result2ListMap(rs);
-        } catch (SQLException ex) {
-            log.error("查询异常", ex);
-            return null;
-        } finally {
-            free(null, pstmt, rs);
-        }
+        });
     }
 
     public <T> List<T> queryBeans(String sql, Class<T> beanClass, Object... params) {
-        if (StringUtils.isBlank(sql)) {
-            throw new RuntimeException("SQL不能为空");
-        }
-
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-        try {
-            long start = System.currentTimeMillis();
-            log.debug("查询语句：{}", sql);
-            pstmt = getConnection().prepareStatement(sql);
-            if (null != params && params.length != 0) {
-                log.debug("查询参数：{}", params);
-                for (int i = 0, len = params.length; i < len; i++) {
-                    pstmt.setObject(i + 1, params[i]);
-                }
+        return dqlExecute(sql, params, new Function<ResultSet, List<T>>() {
+            @Override
+            public List<T> apply(ResultSet rs) {
+                return ResultSetUtils.Result2ListBean(rs, beanClass);
             }
-            rs = pstmt.executeQuery();
-            log.debug("查询耗时：{}s", (System.currentTimeMillis() - start) / 1000.0);
-            return ResultSetUtils.Result2ListBean(rs, beanClass);
-        } catch (SQLException ex) {
-            log.error("查询异常", ex);
-            return null;
-        } finally {
-            free(null, pstmt, rs);
-        }
+        });
     }
 
     public void preview(String table) {
@@ -714,30 +680,17 @@ public class JdbcHelper implements Closeable {
     }
 
     public void show(String sql, Integer number, Object... params) {
-        if (StringUtils.isBlank(sql)) {
-            throw new RuntimeException("SQL不能为空");
-        }
-
-        PreparedStatement pstmt = null;
-        ResultSet rs = null;
-        try {
-            long start = System.currentTimeMillis();
-            log.debug("查询语句：{}", sql);
-            pstmt = getConnection().prepareStatement(sql);
-            if (null != params && params.length != 0) {
-                log.debug("查询参数：{}", params);
-                for (int i = 0, len = params.length; i < len; i++) {
-                    pstmt.setObject(i + 1, params[i]);
+        dqlExecute(sql, params, new Function<ResultSet, Void>() {
+            @Override
+            public Void apply(ResultSet rs) {
+                try {
+                    ResultSetUtils.print(rs, number);
+                } catch (SQLException e) {
+                    log.error("解析ResultSet异常", e);
                 }
+                return null;
             }
-            rs = pstmt.executeQuery();
-            log.debug("查询耗时：{}s", (System.currentTimeMillis() - start) / 1000.0);
-            ResultSetUtils.print(rs, number);
-        } catch (SQLException ex) {
-            log.error("查询异常", ex);
-        } finally {
-            free(null, pstmt, rs);
-        }
+        });
     }
 
     @Deprecated
@@ -783,35 +736,56 @@ public class JdbcHelper implements Closeable {
      * @return
      */
     public <T> T aggregate(String sql, Object... params) {
+        T result = dqlExecute(sql, params, new Function<ResultSet, T>() {
+            @Override
+            public T apply(ResultSet rs) {
+                try {
+                    while (true) {
+                        if (!rs.next()) break;
+
+                        return (T) rs.getObject(1);
+                    }
+                } catch (SQLException e) {
+                    log.error("解析ResultSet异常", e);
+                }
+                return null;
+            }
+        });
+        return result;
+    }
+
+    public <T> T dqlExecute(String sql, Function<ResultSet, T> callback) {
+        return dqlExecute(sql, null, callback);
+    }
+
+    public <T> T dqlExecute(String sql, Object[] params, Function<ResultSet, T> callback) {
         if (StringUtils.isBlank(sql)) {
             throw new RuntimeException("SQL不能为空");
         }
 
         PreparedStatement pstmt = null;
         ResultSet rs = null;
-        Object result = null;
         try {
             long start = System.currentTimeMillis();
             log.debug("查询语句：{}", sql);
             pstmt = getConnection().prepareStatement(sql);
             if (null != params && params.length != 0) {
-                log.debug("查询参数：{}", params);
+                log.debug("查询参数：{}", Arrays.asList(params));
                 for (int i = 0, len = params.length; i < len; i++) {
                     pstmt.setObject(i + 1, params[i]);
                 }
             }
             rs = pstmt.executeQuery();
             log.debug("查询耗时：{}s", (System.currentTimeMillis() - start) / 1000.0);
-            while (rs.next()) {
-                result = rs.getObject(1);
-                break;// 获取到第一行数据就不再获取其他行
-            }
+            return callback.apply(rs);
         } catch (SQLException ex) {
             log.error("查询异常", ex);
+            return null;
         } finally {
+            // 返回 rs 没什么意义，只要此处的进行关闭就会造成rs无法使用
+            // free(null, pstmt, null);
             free(null, pstmt, rs);
         }
-        return (T) result;
     }
 
     /**
