@@ -26,8 +26,16 @@ public class TusharePro {
         this.token = token;
     }
 
-    public Table indexBasic() {
-        return indexBasic(null, null, null, null, null);
+    public Table indices() {
+        return indices(null, null, null, null, null);
+    }
+
+    public Table indicesByName(String name) {
+        return indices(null, name, null, null, null);
+    }
+
+    public Table indicesByCode(String code) {
+        return indices(code, null, null, null, null);
     }
 
     /**
@@ -40,7 +48,7 @@ public class TusharePro {
      * @param category  指数类别
      * @return
      */
-    public Table indexBasic(String tsCode, String name, String market, String publisher, String category) {
+    public Table indices(String tsCode, String name, String market, String publisher, String category) {
         Map<String, String> params = new HashMap<>();
         if (StringUtils.isNotBlank(tsCode)) {
             params.put("ts_code", tsCode);
@@ -113,7 +121,7 @@ public class TusharePro {
 //        String password = "123456";
 //        new DBWriter(url, username, password).db(table);
 
-        Table table = pro.indexBasic(null, null, null, null, null);
+        Table table = pro.indices(null, null, null, null, null);
         System.out.println(table.printAll());
     }
 }

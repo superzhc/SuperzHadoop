@@ -824,7 +824,7 @@ public class HttpRequest {
     }
 
     public static HttpRequest post(final CharSequence baseUrl,
-                                  final Map<?, ?> params) {
+                                   final Map<?, ?> params) {
         return post(baseUrl, params, true);
     }
 
@@ -1522,8 +1522,7 @@ public class HttpRequest {
                         .replaceAll("        ", " ")
                         .replaceAll("    ", " ")
                         .replaceAll("  ", " ")
-                        .replaceAll(" ", " ")
-                        ;
+                        .replaceAll(" ", " ");
                 log.debug("[{}] response:{}", requestMethod, str.length() > 1024 ? str.substring(0, 1024) + "..." : str);
             }
             return resp;
@@ -1826,7 +1825,12 @@ public class HttpRequest {
      * @return this request
      */
     public HttpRequest header(final String name, final String value) {
-        getConnection().setRequestProperty(name, value);
+        HttpURLConnection conn = getConnection();
+        if (log.isDebugEnabled() &&
+                ("Cookie".equalsIgnoreCase(name))) {
+            log.debug("[{}] header:{}={}", requestMethod, name, value);
+        }
+        conn.setRequestProperty(name, value);
         return this;
     }
 
@@ -1962,8 +1966,10 @@ public class HttpRequest {
     }
 
     public HttpRequest cookies(String value) {
-        log.debug("[{}] Cookie:{}", requestMethod, value);
-        return header("Cookie", value);
+        if (null != value && value.trim().length() > 0) {
+            header("Cookie", value);
+        }
+        return this;
     }
 
     public HttpRequest cookies(Map<String, String> map) {
@@ -1975,9 +1981,40 @@ public class HttpRequest {
         return cookies(sb.substring(1));
     }
 
+    public String cookies2() {
+        String[] cookies = headers("Set-Cookie");
+
+        StringBuilder cookiesSb = new StringBuilder();
+        for (String cookie : cookies) {
+            String[] items = cookie.split(";");
+            for (String item : items) {
+                String str = item.trim();
+                if (str.indexOf("=") > 0) {
+                    int pos = str.indexOf("=");
+                    String key = str.substring(0, pos);
+                    if ("path".equals(key)
+                            //|| "maxAge".equals(key)
+                            || "expires".equals(key)
+                            || "domain".equals(key)
+                            || "secure".equals(key)
+                            || "httpOnly".equals(key)
+                            || "overwrite".equals(key)
+                    ) {
+                        continue;
+                    }
+                    String value = str.substring(pos + 1);
+                    cookiesSb.append("; ").append(key).append("=").append(value);
+                }
+            }
+        }
+
+        String str = cookiesSb.substring(2);
+        log.debug("[{}] Set-Cookie:{}", requestMethod, str);
+        return str;
+    }
+
     public Map<String, String> cookies() {
         String[] cookies = headers("Set-Cookie");
-        // log.debug(String.join(",",cookies));
 
         Map<String, String> map = new HashMap<>();
         for (String cookie : cookies) {
@@ -2002,6 +2039,7 @@ public class HttpRequest {
                 }
             }
         }
+
         return map;
     }
 

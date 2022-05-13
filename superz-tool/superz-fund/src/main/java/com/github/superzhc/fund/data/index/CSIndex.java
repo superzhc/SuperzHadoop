@@ -12,15 +12,18 @@ import org.slf4j.LoggerFactory;
 import tech.tablesaw.api.ColumnType;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.io.TableBuildingUtils;
-import tech.tablesaw.selection.Selection;
 
 import java.io.InputStream;
 import java.util.*;
+
+import static com.github.superzhc.common.HttpConstant.UA;
 
 /**
  * 中证指数
  * 官网：https://www.csindex.com.cn
  * 参考：https://github.com/akfamily/akshare/blob/master/akshare/index/zh_stock_index_csindex.py
+ * <p>
+ * 2022年5月13日 官方接口目前需要设置 Cookies 才能获取到数据，根据响应代码分析，引入的是阿里去验证码脚本，即 nc.js，手动添加 Cookie；注：过期时间很快~~~
  *
  * @author superz
  * @create 2022/4/6 17:59
@@ -29,12 +32,21 @@ public class CSIndex {
 
     private static final Logger log = LoggerFactory.getLogger(CSIndex.class);
 
+    public static String cookies = null;
+
+    public static void setCookies(String cookies) {
+        CSIndex.cookies = cookies;
+    }
+
     public static Table indices() {
         String url = "https://www.csindex.com.cn/csindex-home/index-list/query-index-item";
 
         Map<String, String> headers = new HashMap<>();
-        headers.put("User-Agent", HttpConstant.UA);
+        headers.put("User-Agent", UA);
         headers.put("Content-Type", HttpConstant.JSON_CONTENT_TYPE);
+        if (null != cookies) {
+            headers.put("Cookie", cookies);
+        }
 
         Map<String, Object> params = new HashMap<>();
         Map<String, Object> indexFilter = new HashMap<>();
@@ -146,8 +158,11 @@ public class CSIndex {
         String url = "https://www.csindex.com.cn/csindex-home/index-list/search-result-about-index";
 
         Map<String, String> headers = new HashMap<>();
-        headers.put("User-Agent", HttpConstant.UA);
+        headers.put("User-Agent", UA);
         headers.put("Content-Type", HttpConstant.JSON_CONTENT_TYPE);
+        if (null != cookies) {
+            headers.put("Cookie", cookies);
+        }
 
         Map<String, Object> params = new HashMap<>();
         params.put("searchInput", search);
@@ -199,17 +214,17 @@ public class CSIndex {
         // 指数基本信息
         String basicUrl = String.format("https://www.csindex.com.cn/csindex-home/indexInfo/index-basic-info/%s", symbol);
 
-        String basicResult = HttpRequest.get(basicUrl).body();
+        String basicResult = HttpRequest.get(basicUrl).userAgent(UA).cookies(cookies).body();
         Map<String, ?> basicMap = JsonUtils.map(basicResult, "data");
 
         // 指数特征
         String featureUrl = String.format("https://www.csindex.com.cn/csindex-home/indexInfo/index-feature/%s", symbol);
-        String featureResult = HttpRequest.get(featureUrl).body();
+        String featureResult = HttpRequest.get(featureUrl).userAgent(UA).cookies(cookies).body();
         Map<String, ?> featureMap = JsonUtils.map(featureResult, "data");
 
         // other
         String otherUrl = String.format("https://www.csindex.com.cn/csindex-home/indexInfo/index-details-data?fileLang=2&indexCode=%s", symbol);
-        String otherResult = HttpRequest.get(otherUrl).body();
+        String otherResult = HttpRequest.get(otherUrl).userAgent(UA).cookies(cookies).body();
         JsonNode other = JsonUtils.json(otherResult, "data");
 
         Map<String, Object> map = new LinkedHashMap<>();
@@ -242,7 +257,7 @@ public class CSIndex {
         String symbol = transform(indexCode);
         String url = String.format("https://www.csindex.com.cn/csindex-home/index-list/queryByIndexCode/%s?indexCode=%s", symbol, symbol);
 
-        String result = HttpRequest.get(url).body();
+        String result = HttpRequest.get(url).userAgent(UA).cookies(cookies).body();
         JsonNode json = JsonUtils.json(result, "data");
 
         List<String> columnNames = JsonUtils.extractObjectColumnName(json);
@@ -255,7 +270,7 @@ public class CSIndex {
     public static Table mainStocks(String indexCode) {
         String url = String.format("https://www.csindex.com.cn/csindex-home/index/weight/top10/%s", transform(indexCode));
 
-        String result = HttpRequest.get(url).body();
+        String result = HttpRequest.get(url).userAgent(UA).cookies(cookies).body();
         JsonNode json = JsonUtils.json(result, "data", "weightList");
 
         List<String> columnNames = JsonUtils.extractObjectColumnName(json);
@@ -269,13 +284,12 @@ public class CSIndex {
      * 行业分布
      *
      * @param indexCode
-     *
      * @return
      */
     public static Table industry(String indexCode) {
         String url = String.format("https://www.csindex.com.cn/csindex-home/index/weight/industry-weight/%s", transform(indexCode));
 
-        String result = HttpRequest.get(url).body();
+        String result = HttpRequest.get(url).userAgent(UA).cookies(cookies).body();
         JsonNode json = JsonUtils.json(result, "data", "industryWeightList");
 
         List<String> columnNames = JsonUtils.extractObjectColumnName(json);
@@ -288,7 +302,7 @@ public class CSIndex {
     public static Table markets(String indexCode) {
         String url = String.format("https://www.csindex.com.cn/csindex-home/index/weight/market-weight/%s", transform(indexCode));
 
-        String result = HttpRequest.get(url).body();
+        String result = HttpRequest.get(url).userAgent(UA).cookies(cookies).body();
         JsonNode json = JsonUtils.json(result, "data", "marketWeightList");
 
         List<String> columnNames = JsonUtils.extractObjectColumnName(json);
@@ -304,7 +318,6 @@ public class CSIndex {
      * 不推荐使用该接口，获取的数据不够全
      *
      * @param indexCode
-     *
      * @return Table
      * Index  |  Column Name  |  Column Type  |
      * -----------------------------------------
@@ -382,14 +395,14 @@ public class CSIndex {
     public static Table stocks(String indexCode) {
         String symbol = transform(indexCode);
         String url = String.format("https://csi-web-dev.oss-cn-shanghai-finance-1-pub.aliyuncs.com/static/html/csindex/public/uploads/file/autofile/cons/%scons.xls", symbol);
-        InputStream in = HttpRequest.get(url).stream();
+        InputStream in = HttpRequest.get(url).userAgent(UA).cookies(cookies).stream();
         return ExcelUtils.read(in);
     }
 
     public static Table stocksWeight(String indexCode) {
         String symbol = transform(indexCode);
         String url = String.format("https://csi-web-dev.oss-cn-shanghai-finance-1-pub.aliyuncs.com/static/html/csindex/public/uploads/file/autofile/closeweight/%scloseweight.xls", symbol);
-        InputStream in = HttpRequest.get(url).stream();
+        InputStream in = HttpRequest.get(url).userAgent(UA).cookies(cookies).stream();
         return ExcelUtils.read(in);
     }
 
@@ -397,7 +410,7 @@ public class CSIndex {
         String symbol = transform(indexCode);
         String url = String.format("https://csi-web-dev.oss-cn-shanghai-finance-1-pub.aliyuncs.com/static/html/csindex/public/uploads/file/autofile/indicator/%sindicator.xls", symbol);
 
-        InputStream in = HttpRequest.get(url).stream();
+        InputStream in = HttpRequest.get(url).userAgent(UA).cookies(cookies).stream();
         return ExcelUtils.read(in);
     }
 
@@ -409,7 +422,7 @@ public class CSIndex {
         Map<String, Object> params = new HashMap<>();
         params.put("indexCode", symbol);
 
-        String result = HttpRequest.get(url, params).body();
+        String result = HttpRequest.get(url, params).userAgent(UA).cookies(cookies).body();
         JsonNode json = JsonUtils.json(result, "data");
 
         if (null == json || json.size() == 0) {

@@ -63,7 +63,7 @@ public class AKShare {
         }
 
         TusharePro ts = new TusharePro(token);
-        Table table = ts.indexBasic(null, null, null, null, null);
+        Table table = ts.indices(null, null, null, null, null);
         Selection where = table.stringColumn("market")
                 //.isNotIn("OTH", "MSCI", "CICC", "SW", "NH", "CNI")
                 .isIn("SSE", "SZSE", "CSI");
@@ -100,7 +100,7 @@ public class AKShare {
         }
 
         TusharePro ts = new TusharePro(token);
-        Table table = ts.indexBasic(symbol, null, null, null, null);
+        Table table = ts.indices(symbol, null, null, null, null);
         return table;
     }
 
