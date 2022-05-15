@@ -8,6 +8,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 
 /**
@@ -63,12 +66,12 @@ public class JsonUtils {
         }
     }
 
-    public static Map<String, ?> map(String json, String... path) {
+    public static Map<String, Object> map(String json, String... path) {
         JsonNode node = json(json, path);
         return map(node);
     }
 
-    public static Map<String, ?> map(JsonNode json) {
+    public static Map<String, Object> map(JsonNode json) {
         return mapper.convertValue(json, LinkedHashMap.class);
     }
 
@@ -119,6 +122,39 @@ public class JsonUtils {
         return arr;
     }
 
+    public static int[] intArray(JsonNode node) {
+        int[] arr = new int[node.size()];
+        for (int i = 0, len = node.size(); i < len; i++) {
+            arr[i] = null == node.get(i) ? null : node.get(i).asInt();
+        }
+        return arr;
+    }
+
+
+    public static long[] longArray(JsonNode node) {
+        long[] arr = new long[node.size()];
+        for (int i = 0, len = node.size(); i < len; i++) {
+            arr[i] = null == node.get(i) ? null : node.get(i).asLong();
+        }
+        return arr;
+    }
+
+    public static LocalDateTime[] long2DateTimeArray(JsonNode node) {
+        LocalDateTime[] arr = new LocalDateTime[node.size()];
+        for (int i = 0, len = node.size(); i < len; i++) {
+            arr[i] = null == node.get(i) ? null : LocalDateTime.ofInstant(Instant.ofEpochMilli(node.get(i).asLong()), ZoneId.systemDefault());
+        }
+        return arr;
+    }
+
+    public static double[] doubleArray(JsonNode node) {
+        double[] arr = new double[node.size()];
+        for (int i = 0, len = node.size(); i < len; i++) {
+            arr[i] = null == node.get(i) ? null : node.get(i).asDouble();
+        }
+        return arr;
+    }
+
     public static List<String> extractObjectColumnName(JsonNode datas, String... paths) {
         // 保证列的顺序
         Set<String> columnNames = new LinkedHashSet<>();
@@ -160,6 +196,12 @@ public class JsonUtils {
                         row[i] = mapper.writeValueAsString(item.get(columnName));
                     } else {
                         row[i] = item.get(columnName).asText();
+                    }
+
+                    if (null != row[i] && (
+                            "--".equals(row[i].trim()) || "-".equals(row[i].trim())
+                    )) {
+                        row[i] = null;
                     }
                 }
                 rows.add(row);

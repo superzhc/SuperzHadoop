@@ -168,6 +168,7 @@ public class EastMoneyFund {
      * 推荐使用 fundNew 方法
      *
      * @param symbol
+     *
      * @return
      */
     @Deprecated
@@ -246,6 +247,7 @@ public class EastMoneyFund {
 
     /**
      * @param symbol
+     *
      * @return Structure of null
      * Index  |  Column Name  |  Column Type  |
      * -----------------------------------------
@@ -939,6 +941,7 @@ public class EastMoneyFund {
 
     /**
      * @param symbols 例如：1.000300
+     *
      * @return
      */
     public static Table test(String... symbols) {
@@ -1027,6 +1030,7 @@ public class EastMoneyFund {
      * 未完全解析，推荐使用 fundNew
      *
      * @param symbol
+     *
      * @return
      */
     public static Table fundInfo(String symbol) {
@@ -1071,6 +1075,7 @@ public class EastMoneyFund {
 
     /**
      * @param symbol
+     *
      * @return Structure of
      * Index  |       Column Name       |  Column Type  |
      * ---------------------------------------------------
@@ -1215,7 +1220,7 @@ public class EastMoneyFund {
             String url = String.format("http://fund.eastmoney.com/pingzhongdata/%s.js", symbol);
             String result = HttpRequest.get(url).userAgent(UA).body();
 
-            ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
+            ScriptEngine engine = ScriptUtils.JSEngine();
             engine.eval(result);
 
             Map<String, Object> map = new HashMap<>();
@@ -1225,8 +1230,8 @@ public class EastMoneyFund {
             map.put("rate", engine.get("fund_Rate"));
             map.put("min_purchase_amount", engine.get("fund_minsg"));
 
-            // ScriptObjectMirror stocks = (ScriptObjectMirror) engine.get("stockCodes");
-            // map.put("stocks", ScriptEngineUtils.getArray(stocks));
+            List stockCodes = ScriptUtils.array("stockCodes");
+            map.put("stocks", stockCodes);
 
             // ScriptObjectMirror var2=(ScriptObjectMirror) engine.get("Data_performanceEvaluation");
             // map.put("var",ScriptEngineUtils.getObject(var2));
@@ -1435,6 +1440,20 @@ public class EastMoneyFund {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static Table realNet(String symbol) {
+        String url = String.format("http://fundgz.1234567.com.cn/js/%s.js", symbol);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("rt", System.currentTimeMillis());
+
+        String result = HttpRequest.get(url, params).userAgent(UA).body();
+        result = result.substring("jsonpgz".length() + 1, result.length() - 2);
+        JsonNode json = JsonUtils.json(result);
+
+        Table table = TableUtils.json2Table(json);
+        return table;
     }
 
     public static void main(String[] args) throws Exception {

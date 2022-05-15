@@ -39,6 +39,7 @@ public class TableUtils {
                     case "fundcode":
                     case "fund.code":
                     case "indexcode":
+                    case "index_code":
                     case "gu_code":
                     case "fcode":
                     case "代码":
@@ -47,6 +48,7 @@ public class TableUtils {
                     case "zqdm":
                     case "etfcode":
                     case "指数代码 index code":
+                    case "market":
                         ct = ColumnType.STRING;
                         break;
                 }
