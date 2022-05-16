@@ -332,20 +332,20 @@ public class EastMoneyIndex {
         return String.format("%s.%s", transformM(ss[1]), ss[0]);
     }
 
-    private static String transformM(String market) {
+    public static String transformM(String market) {
         String s = market.toLowerCase();
-        if ("sh".equals(market)) {
+        if ("sh".equals(s)) {
             return "1";
-        } else if ("sz".equals(market)) {
+        } else if ("sz".equals(s)) {
             return "0";
-        } else if ("csi".equals(market)) {
+        } else if ("csi".equals(s)) {
             return "2";
         } else {
             return "1";
         }
     }
 
-    private static String transform2M(String marketCode) {
+    public static String transform2M(String marketCode) {
         if ("1".equals(marketCode)) {
             return "SH";
         } else if ("0".equals(marketCode)) {

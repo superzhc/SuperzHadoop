@@ -24,6 +24,9 @@ public class PlotUtils extends Plot {
     }
 
     public static File file(String fileName) {
+        if (!fileName.endsWith(".html")) {
+            fileName = fileName + ".html";
+        }
         Path path = Paths.get(DEFAULT_OUTPUT_FOLDER, fileName);
         try {
             Files.createDirectories(path.getParent());
