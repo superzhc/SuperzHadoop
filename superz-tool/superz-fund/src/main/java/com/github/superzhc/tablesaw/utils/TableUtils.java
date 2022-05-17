@@ -61,6 +61,29 @@ public class TableUtils {
         return TableBuildingUtils.build(columnNames, dataRows, ReadOptionsUtils.columnTypeByFunction(new FundColumnType()));
     }
 
+    public static Table buildByMap(List<Map<String, ?>> dataRows) {
+        Set<String> columnNames = new LinkedHashSet<>();
+        for (Map<String, ?> dataRow : dataRows) {
+            columnNames.addAll(dataRow.keySet());
+        }
+        return buildByMap(new ArrayList<>(columnNames), dataRows);
+    }
+
+    public static Table buildByMap(List<String> columnNames, List<Map<String, ?>> dataRows) {
+        int columnSize = columnNames.size();
+
+        List<String[]> dataRowList = new ArrayList<>();
+        for (Map<String, ?> dataRow : dataRows) {
+            String[] row = new String[columnSize];
+            for (int i = 0; i < columnSize; i++) {
+                String columnName = columnNames.get(i);
+                row[i] = null == dataRow.get(columnName) ? null : String.valueOf(dataRow.get(columnName));
+            }
+            dataRowList.add(row);
+        }
+        return build(columnNames, dataRowList);
+    }
+
     public static Table json2Table(JsonNode json) {
         return json2Table(null, json);
     }
