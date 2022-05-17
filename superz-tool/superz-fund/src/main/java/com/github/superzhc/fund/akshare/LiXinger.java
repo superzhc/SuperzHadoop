@@ -8,8 +8,10 @@ import com.github.superzhc.tablesaw.utils.TableUtils;
 import tech.tablesaw.api.DateColumn;
 import tech.tablesaw.api.Table;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 
 /**
@@ -119,21 +121,55 @@ public class LiXinger {
         this.token = token;
     }
 
-    public Table indices() {
+    public Table roe() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        LocalDate now = LocalDate.now();
+        // 当前季度的第一天
+        LocalDate currentQuarterFirstDay = LocalDate.of(now.getYear(), now.getMonth().firstMonthOfQuarter(), 1);
+        // 上个季度
+        LocalDate last = currentQuarterFirstDay.minusDays(1);
+        // 上上个季度
+        LocalDate last2 = last.minusMonths(3).with(TemporalAdjusters.lastDayOfMonth());
+        // 上上上个季度
+        LocalDate last3 = last2.minusMonths(3).with(TemporalAdjusters.lastDayOfMonth());
+        // 上上上上个季度
+        LocalDate last4 = last3.minusMonths(3).with(TemporalAdjusters.lastDayOfMonth());
+
         String url = "https://www.lixinger.com/api/company-collection/fs-metrics/indices/latest";
 
         Map<String, Object> payload = new HashMap<>();
         payload.put("series", "all");
         payload.put("source", "all");
         payload.put("metricsNames", new String[]{"q.m.roe.t"});
-        payload.put("dateStrs", new String[]{"2022-03-31", "2021-12-31", "2021-03-31"});
+        payload.put("dateStrs", new String[]{last.format(formatter), last2.format(formatter), last3.format(formatter), last4.format(formatter)});
 
         String result = HttpRequest.post(url).cookies(String.format("jwt=%s", token)).json(payload).body();
-        System.out.println(result);
-        return Table.create();
+        JsonNode json = JsonUtils.json(result);
+
+        Map<String, Map<String, Object>> map = new HashMap<>();
+        for (JsonNode node : json) {
+            String lxrStockId = node.get("stockId").asText();
+            String date = node.get("date").asText();
+            Double value = node.at("/q/m/roe/t").asDouble();
+            Map<String, Object> item;
+            if (map.containsKey(lxrStockId)) {
+                item = map.get(lxrStockId);
+            } else {
+                item = new HashMap<>();
+                item.put("lxr_index_code", lxrStockId);
+            }
+            item.put("roe_" + date, value);
+            map.put(lxrStockId, item);
+        }
+
+        List<Map<String, Object>> dataRows = new ArrayList<>(map.values());
+        Table table = TableUtils.buildByMap(dataRows);
+
+        return table;
     }
 
-    public Table indices2() {
+    public Table indices() {
         Map<String, Map<String, String>> map = new HashMap<>();
 
         List<String> columnNames = null;
@@ -205,6 +241,9 @@ public class LiXinger {
 
         Table table = TableUtils.build(columnNames, dataRows);
 
+        Table roeTable = roe();
+        table = table.joinOn("lxr_index_code").inner(roeTable);
+
         return table;
     }
 
@@ -258,7 +297,7 @@ public class LiXinger {
 
     public static void main(String[] args) {
         LiXinger liXinger = new LiXinger("188xxx", "xxxx");
-        Table table = liXinger.indices2();
+        Table table = liXinger.indices();
         System.out.println(table.print());
         System.out.println(table.shape());
         System.out.println(table.structure().printAll());
