@@ -11,6 +11,12 @@ import java.time.LocalDate;
  * @create 2022/4/21 14:54
  **/
 public class IndexTool {
+    // 均摊
+    public static Double shareEqually(double netWorth, double share, double increase, double currentNetWorth) {
+        double x = (increase * netWorth * share) / (1 - netWorth * (1 + increase) / currentNetWorth);
+        return x;
+    }
+
     public static void shengouCal(Double sg, Double sgf) {
         // 净金额
         Double jsg = sg / (1 + sgf * 0.01);
