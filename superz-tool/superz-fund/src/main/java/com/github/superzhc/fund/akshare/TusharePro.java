@@ -97,7 +97,7 @@ public class TusharePro {
             json.put("fields", fields);
         }
 
-        String result = HttpRequest.post(URL).json(JsonUtils.string(json)).body();
+        String result = HttpRequest.post(URL).json(JsonUtils.asString(json)).body();
         JsonNode data = JsonUtils.json(result, "data");
 
         List<String> columnNames = new ArrayList<>();

@@ -268,8 +268,8 @@ public class TableUtils {
                 htmlSb.append(",height: (dh-130)\n");
                 htmlSb.append(",page: true\n");
                 htmlSb.append(",limit: 11\n");
-                htmlSb.append(",cols: [" + JsonUtils.string(cols) + "]\n");
-                htmlSb.append(",data:" + JsonUtils.string(data));
+                htmlSb.append(",cols: [" + JsonUtils.asString(cols) + "]\n");
+                htmlSb.append(",data:" + JsonUtils.asString(data));
                 htmlSb.append("\n});\n");
                 htmlSb.append("});\n");
                 htmlSb.append("</script>\n");

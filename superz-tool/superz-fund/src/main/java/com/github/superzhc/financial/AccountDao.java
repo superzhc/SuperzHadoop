@@ -17,6 +17,14 @@ public class AccountDao {
         return getConfigValue("tushare_token");
     }
 
+    public String LiXingerAccount(){
+        return getConfigValue("lixinger_account");
+    }
+
+    public String LiXingerPassword(){
+        return getConfigValue("lixinger_password");
+    }
+
     public <T> T getConfigValue(String key) {
         return dao.queryOne("select config_value from USER_CONFIG where config_key=?", key);
     }
