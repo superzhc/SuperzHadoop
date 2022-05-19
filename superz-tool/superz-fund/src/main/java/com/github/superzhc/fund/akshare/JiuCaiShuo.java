@@ -2,19 +2,15 @@ package com.github.superzhc.fund.akshare;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.http.HttpRequest;
-import com.github.superzhc.tablesaw.utils.JsonUtils;
+import com.github.superzhc.common.JsonUtils;
 import com.github.superzhc.tablesaw.utils.ReadOptionsUtils;
 import com.github.superzhc.tablesaw.utils.TableUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.tablesaw.api.DateColumn;
 import tech.tablesaw.api.DateTimeColumn;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.io.TableBuildingUtils;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.*;
 
@@ -47,7 +43,7 @@ public class JiuCaiShuo {
      * 10  |           gu_up_down_fu  |       DOUBLE  |
      * 11  |         gu_up_down_year  |       DOUBLE  |
      */
-    public static Table indexValuation() {
+    public static Table indicesValuation() {
         String url = "https://api.jiucaishuo.com/v2/guzhi/showcategory";
 
         Map<String, Object> params = new HashMap<>();
@@ -84,7 +80,6 @@ public class JiuCaiShuo {
      * 追踪指数
      *
      * @param symbol
-     *
      * @return
      */
     @Deprecated
@@ -145,7 +140,6 @@ public class JiuCaiShuo {
      * 主要组成
      *
      * @param symbol
-     *
      * @return
      */
     public static Table indexComponent(String symbol) {
@@ -177,10 +171,17 @@ public class JiuCaiShuo {
         return result;
     }
 
+    public static Table pe(String symbol) {
+        return indexValuation(symbol, "pe");
+    }
+
+    public static Table pb(String symbol) {
+        return indexValuation(symbol, "pb");
+    }
+
     /**
      * @param symbol
-     * @param type 可选值：pe,pb,xilv
-     *
+     * @param type   可选值：pe,pb,xilv
      * @return
      */
     public static Table indexValuation(String symbol, String type) {
@@ -199,9 +200,9 @@ public class JiuCaiShuo {
         String result = HttpRequest.post(url).json(params).body();
         JsonNode series = JsonUtils.json(result, "data", "tubiao", "series");
 
-        List<String> columnNames = Arrays.asList("timestamp", "value");
+        List<String> columnNames = Arrays.asList("timestamp", type/*"value"*/);
 
-        Table table = null;
+        /*Table table = null;
         for (int i = 0; i < 6; i++) {
             JsonNode json = series.get(i).get("data");
             List<String[]> dataRows = JsonUtils.extractArrayData(json);
@@ -214,37 +215,15 @@ public class JiuCaiShuo {
                 table = table.joinOn("timestamp").inner(true, t);
             }
             table.column("value").setName(series.get(i).get("name").asText());
-        }
+        }*/
+
+        List<String[]> dataRows = JsonUtils.extractArrayData(series.get(1).get("data"));
+
+        Table table = TableUtils.build(columnNames, dataRows);
 
         // 时间戳转换成时间
         DateTimeColumn dateTimeColumn = table.longColumn("timestamp").asDateTimes(ZoneOffset.ofHours(+8));
-        table.replaceColumn("timestamp", dateTimeColumn.date().setName("day"));
-
-        return table;
-    }
-
-    public static Table test(String symbol, String type) {
-        String url = "https://api.jiucaishuo.com/v2/guzhi/newtubiaolinedata";
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("act_time", System.currentTimeMillis());
-        params.put("data_source", "xichou");
-        params.put("gu_code", symbol);
-        params.put("pe_category", type);
-        params.put("type", "pc");
-        params.put("ver", "new");
-        params.put("version", "1.9.7");
-        params.put("year", -1);
-
-        String result = HttpRequest.post(url).json(params).body();
-
-        JsonNode series = JsonUtils.json(result, "data", "tubiao", "series");
-        JsonNode data = series.get(1).get("data");
-
-        List<String> columnNames = Arrays.asList("date", type);
-        List<String[]> dataRows = JsonUtils.extractArrayData(data);
-
-        Table table = TableUtils.build(columnNames, dataRows);
+        table.replaceColumn("timestamp", dateTimeColumn.date().setName("date"));
 
         return table;
     }
@@ -256,13 +235,7 @@ public class JiuCaiShuo {
 
 //        Table table = indexValuation();
 
-        Table table = test(symbol, "pe");//indexInfo(symbol);
-
-        DateColumn dateColumn = table.longColumn("date").map(
-                d -> LocalDateTime.ofInstant(Instant.ofEpochMilli(d), ZoneId.systemDefault()).toLocalDate(),
-                name -> DateColumn.create(name));
-
-        table.replaceColumn("date", dateColumn);
+        Table table = indexValuation(symbol, "pe");//indexInfo(symbol);
 
         //Table table = indexComponent(symbol);
 

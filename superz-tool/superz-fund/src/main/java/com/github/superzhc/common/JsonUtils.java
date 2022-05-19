@@ -1,4 +1,4 @@
-package com.github.superzhc.tablesaw.utils;
+package com.github.superzhc.common;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -132,6 +132,11 @@ public class JsonUtils {
     public static Long aLong(JsonNode node, String... paths) {
         JsonNode childNode = json(node, paths);
         return null == childNode ? null : childNode.asLong();
+    }
+
+    public static Boolean bool(JsonNode node,String... paths){
+        JsonNode childNode = json(node, paths);
+        return null == childNode ? Boolean.FALSE : childNode.asBoolean();
     }
 
     public static String[] array(JsonNode node, String... paths) {

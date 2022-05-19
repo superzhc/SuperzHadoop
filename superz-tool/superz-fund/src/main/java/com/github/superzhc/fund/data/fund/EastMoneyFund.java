@@ -5,7 +5,7 @@ import com.github.superzhc.common.ScriptUtils;
 import com.github.superzhc.common.http.HttpRequest;
 import com.github.superzhc.common.tablesaw.read.EmptyReadOptions;
 import com.github.superzhc.tablesaw.utils.ColumnUtils;
-import com.github.superzhc.tablesaw.utils.JsonUtils;
+import com.github.superzhc.common.JsonUtils;
 import com.github.superzhc.tablesaw.utils.ReadOptionsUtils;
 import com.github.superzhc.tablesaw.utils.TableUtils;
 import org.jsoup.Jsoup;
@@ -22,7 +22,6 @@ import tech.tablesaw.api.Table;
 import tech.tablesaw.io.TableBuildingUtils;
 
 import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;

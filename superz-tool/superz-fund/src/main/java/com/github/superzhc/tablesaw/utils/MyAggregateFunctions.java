@@ -1,5 +1,6 @@
 package com.github.superzhc.tablesaw.utils;
 
+import com.github.superzhc.common.MathUtils;
 import com.github.superzhc.fund.data.index.DanJuanIndex;
 import tech.tablesaw.api.DoubleColumn;
 import tech.tablesaw.api.NumericColumn;
@@ -32,20 +33,7 @@ public class MyAggregateFunctions {
     public static Double position(NumericColumn<?> column, double value) {
         double[] values = removeMissing(column);
 
-        if (null == values || values.length == 0) {
-            return null;
-        }
-
-        int total = values.length;
-        int lessCount = 0;
-
-        for (int i = 0; i < total; i++) {
-            if (value > values[i]) {
-                lessCount++;
-            }
-        }
-
-        return lessCount / (1.0 * total);
+        return MathUtils.position(values, value);
     }
 
     private static double[] removeMissing(NumericColumn<?> column) {

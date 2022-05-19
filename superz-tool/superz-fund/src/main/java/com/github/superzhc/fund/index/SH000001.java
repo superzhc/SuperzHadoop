@@ -1,7 +1,7 @@
 package com.github.superzhc.fund.index;
 
 import com.github.superzhc.fund.akshare.JiuCaiShuo;
-import com.github.superzhc.tablesaw.utils.PlotUtils;
+//import com.github.superzhc.tablesaw.utils.PlotUtils;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.plotly.Plot;
 import tech.tablesaw.plotly.api.Histogram;
@@ -47,10 +47,10 @@ public class SH000001 {
 
         Figure figure = new Figure(layout, traces);
 
-        Plot.show(
-                figure,
-                PlotUtils.index(CODE, "History")
-        );
+//        Plot.show(
+//                figure,
+//                PlotUtils.index(CODE, "History")
+//        );
     }
 
     public Table component() {
@@ -61,10 +61,10 @@ public class SH000001 {
     public void componentPlot() {
         Table table = component();
 
-        Plot.show(
-                PiePlot.create(CODE, table, "name", "weight")
-                , PlotUtils.index(CODE, "Component")
-        );
+//        Plot.show(
+//                PiePlot.create(CODE, table, "name", "weight")
+//                , PlotUtils.index(CODE, "Component")
+//        );
     }
 
     public static void main(String[] args) {

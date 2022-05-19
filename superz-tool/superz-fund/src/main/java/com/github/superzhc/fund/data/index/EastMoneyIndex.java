@@ -3,7 +3,7 @@ package com.github.superzhc.fund.data.index;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.http.HttpRequest;
 import com.github.superzhc.common.utils.MapUtils;
-import com.github.superzhc.tablesaw.utils.JsonUtils;
+import com.github.superzhc.common.JsonUtils;
 import com.github.superzhc.tablesaw.utils.ReadOptionsUtils;
 import com.github.superzhc.tablesaw.utils.TableUtils;
 import org.jsoup.Jsoup;
@@ -17,7 +17,6 @@ import tech.tablesaw.io.TableBuildingUtils;
 import tech.tablesaw.io.html.HtmlReadOptions;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static com.github.superzhc.common.HttpConstant.UA;
 

@@ -3,7 +3,7 @@ package com.github.superzhc.marco.data;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.http.HttpRequest;
 import com.github.superzhc.tablesaw.utils.ColumnUtils;
-import com.github.superzhc.tablesaw.utils.JsonUtils;
+import com.github.superzhc.common.JsonUtils;
 import com.github.superzhc.tablesaw.utils.ReadOptionsUtils;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.io.TableBuildingUtils;

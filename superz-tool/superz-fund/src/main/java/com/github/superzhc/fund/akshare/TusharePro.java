@@ -2,7 +2,7 @@ package com.github.superzhc.fund.akshare;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.http.HttpRequest;
-import com.github.superzhc.tablesaw.utils.JsonUtils;
+import com.github.superzhc.common.JsonUtils;
 import com.github.superzhc.tablesaw.utils.TableUtils;
 import org.apache.commons.lang3.StringUtils;
 import tech.tablesaw.api.Table;
