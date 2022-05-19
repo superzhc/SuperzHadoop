@@ -11,24 +11,6 @@ import java.time.LocalDate;
  * @create 2022/4/21 14:54
  **/
 public class IndexTool {
-    // 均摊
-    public static Double shareEqually(double avgCost, double share, double increase, double currentNetWorth) {
-        // 最大幅度变化
-        double maxIncrease = (currentNetWorth - avgCost) / avgCost;
-        if (currentNetWorth >= avgCost) {
-            // 增幅在 0~(currentNetWorth-avgCost)/avgCost之间
-            if (increase <= 0 || increase >= maxIncrease) {
-                throw new RuntimeException(String.format("成本价：%.4f，当前估值：%.4f，成本增长区间须在(0,%.4f)", avgCost, currentNetWorth, maxIncrease));
-            }
-        } else {
-            if (increase >= 0 || increase <= maxIncrease) {
-                throw new RuntimeException(String.format("成本价：%.4f，当前估值：%.4f，成本减少区间须在(%.4f,0)", avgCost, currentNetWorth, maxIncrease));
-            }
-        }
-        double x = (increase * avgCost * share) / (1 - avgCost * (1 + increase) / currentNetWorth);
-        return x;
-    }
-
     public static void shengouCal(Double sg, Double sgf) {
         // 净金额
         Double jsg = sg / (1 + sgf * 0.01);

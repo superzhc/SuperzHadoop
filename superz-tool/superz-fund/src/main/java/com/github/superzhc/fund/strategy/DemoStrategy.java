@@ -54,6 +54,9 @@ public class DemoStrategy {
 
         Table table = JiuCaiShuo.pe("000905.SH");
 
+        LocalDate start=LocalDate.of(2020,1,1);
 
     }
+
+
 }

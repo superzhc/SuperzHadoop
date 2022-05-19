@@ -1,4 +1,4 @@
-package com.github.superzhc.fund;
+package com.github.superzhc.indicator;
 
 import tech.tablesaw.aggregate.AggregateFunctions;
 import tech.tablesaw.api.DoubleColumn;
@@ -33,6 +33,13 @@ public class IndicatorCalculator {
         return annualStd;
     }
 
+    /**
+     * 年化收益率
+     *
+     * @param datas
+     *
+     * @return
+     */
     public static double annualIncomeRate(DoubleColumn datas) {
         double annualReturn = Math.pow(datas.add(1).geometricMean(), 250) - 1;
         return annualReturn;
