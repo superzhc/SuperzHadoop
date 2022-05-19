@@ -7,21 +7,26 @@ import com.github.superzhc.tablesaw.utils.ReadOptionsUtils;
 import com.github.superzhc.tablesaw.utils.TableUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tech.tablesaw.api.DateColumn;
 import tech.tablesaw.api.DateTimeColumn;
 import tech.tablesaw.api.Table;
 import tech.tablesaw.io.TableBuildingUtils;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.*;
 
 /**
  * 官网地址：https://www.funddb.cn/
+ *
  * @author superz
  * @create 2022/4/7 11:40
  **/
 public class JiuCaiShuo {
 
-    private static final Logger log= LoggerFactory.getLogger(JiuCaiShuo.class);
+    private static final Logger log = LoggerFactory.getLogger(JiuCaiShuo.class);
 
     /**
      * 指数估值列表
@@ -79,8 +84,10 @@ public class JiuCaiShuo {
      * 追踪指数
      *
      * @param symbol
+     *
      * @return
      */
+    @Deprecated
     public static Table indexTrack(String symbol) {
         String indexBasic = indexBasic(symbol);
         JsonNode funds = JsonUtils.json(indexBasic, "data", "fund_info");
@@ -138,6 +145,7 @@ public class JiuCaiShuo {
      * 主要组成
      *
      * @param symbol
+     *
      * @return
      */
     public static Table indexComponent(String symbol) {
@@ -171,7 +179,8 @@ public class JiuCaiShuo {
 
     /**
      * @param symbol
-     * @param type   可选值：pe,pb,xilv
+     * @param type 可选值：pe,pb,xilv
+     *
      * @return
      */
     public static Table indexValuation(String symbol, String type) {
@@ -214,6 +223,32 @@ public class JiuCaiShuo {
         return table;
     }
 
+    public static Table test(String symbol, String type) {
+        String url = "https://api.jiucaishuo.com/v2/guzhi/newtubiaolinedata";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("act_time", System.currentTimeMillis());
+        params.put("data_source", "xichou");
+        params.put("gu_code", symbol);
+        params.put("pe_category", type);
+        params.put("type", "pc");
+        params.put("ver", "new");
+        params.put("version", "1.9.7");
+        params.put("year", -1);
+
+        String result = HttpRequest.post(url).json(params).body();
+
+        JsonNode series = JsonUtils.json(result, "data", "tubiao", "series");
+        JsonNode data = series.get(1).get("data");
+
+        List<String> columnNames = Arrays.asList("date", type);
+        List<String[]> dataRows = JsonUtils.extractArrayData(data);
+
+        Table table = TableUtils.build(columnNames, dataRows);
+
+        return table;
+    }
+
     public static void main(String[] args) {
         String symbol = "000300.SH";
 
@@ -221,7 +256,13 @@ public class JiuCaiShuo {
 
 //        Table table = indexValuation();
 
-        Table table = indexInfo(symbol);
+        Table table = test(symbol, "pe");//indexInfo(symbol);
+
+        DateColumn dateColumn = table.longColumn("date").map(
+                d -> LocalDateTime.ofInstant(Instant.ofEpochMilli(d), ZoneId.systemDefault()).toLocalDate(),
+                name -> DateColumn.create(name));
+
+        table.replaceColumn("date", dateColumn);
 
         //Table table = indexComponent(symbol);
 

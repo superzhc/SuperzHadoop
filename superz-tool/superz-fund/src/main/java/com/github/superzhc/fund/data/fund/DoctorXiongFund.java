@@ -22,11 +22,12 @@ public class DoctorXiongFund {
     private static final String BASE_URL = "https://api.doctorxiong.club";
 
     public static Table funds(String... codes) {
-        String url = url("/v1/fund/detail/list");
+        // String url = url("/v1/fund/detail/list");
+        String url=url("/v1/fund");
 
         Map<String, Object> params = new HashMap<>();
         params.put("code", String.join(",", codes));
-        params.put("startDate", "1990-01-01");
+        // params.put("startDate", "1990-01-01");
 
         String result = HttpRequest.get(url, params).acceptGzipEncoding().body();
         JsonNode json = JsonUtils.json(result, "data");
@@ -34,24 +35,24 @@ public class DoctorXiongFund {
         List<String> columnNames = Arrays.asList(
                 "code",
                 "name",
-                "type",
+                // "type",
                 "netWorth",
                 "netWorthDate",
                 "expectWorth",
                 "expectGrowth",
                 "expectWorthDate",
-                "totalWorth",
+                // "totalWorth",
                 "dayGrowth",
                 "lastWeekGrowth",
                 "lastMonthGrowth",
                 "lastThreeMonthsGrowth",
                 "lastSixMonthsGrowth",
-                "lastYearGrowth",
-                "buyMin",
-                "buySourceRate",
-                "buyRate",
-                "manager",
-                "fundScale"
+                "lastYearGrowth"
+                // "buyMin",
+                // "buySourceRate",
+                // "buyRate",
+                // "manager",
+                // "fundScale"
         );
         List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
 
@@ -117,7 +118,7 @@ public class DoctorXiongFund {
     }
 
     public static void main(String[] args) {
-        Table table = funds("501009");//fundWorth("501009");
+        Table table = funds("501009","164402");//fundWorth("501009");
         System.out.println(table.print());
         System.out.println(table.shape());
         System.out.println(table.structure().printAll());
