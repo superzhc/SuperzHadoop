@@ -26,6 +26,8 @@ public class DateUtils {
     private static Map<Integer, List<String>> holidayByYear = new ConcurrentHashMap<>();
     /* 非工作日 */
     private static Map<Integer, List<String>> offDayByYear = new ConcurrentHashMap<>();
+    /* 交易日 */
+    private static Map<Integer, List<String>> nonTradingDayByYear = new ConcurrentHashMap<>();
 
     public static boolean isHoliday(LocalDate date) {
         int year = date.getYear();
@@ -86,6 +88,38 @@ public class DateUtils {
         }
 
         return offDayByYear.get(year).contains(date.format(DEFAULT_FORMATTER));
+    }
+
+    public static boolean isNonTradingDay(LocalDate date) {
+        int year = date.getYear();
+        if (!nonTradingDayByYear.containsKey(year)) {
+            String url = String.format("https://natescarlet.coding.net/p/github/d/holiday-cn/git/raw/master/%d.json", year);
+            String result = HttpRequest.get(url).userAgent(UA).body();
+            JsonNode days = JsonUtils.json(result, "days");
+            // 周末补节假日的调休
+            List<String> nonTradingDays = new ArrayList<>();
+            for (JsonNode day : days) {
+                if (JsonUtils.bool(day, "isOffDay")) {
+                    nonTradingDays.add(JsonUtils.string(day, "date"));
+                }
+            }
+
+            LocalDate start = LocalDate.of(year, 1, 1);
+            LocalDate end = start.plusYears(1);
+
+            LocalDate d = start;
+            while (d.isBefore(end)) {
+                if (d.getDayOfWeek() == DayOfWeek.SATURDAY || d.getDayOfWeek() == DayOfWeek.SUNDAY) {
+                    String dStr = d.format(DEFAULT_FORMATTER);
+                    nonTradingDays.add(dStr);
+                }
+                d = d.plusDays(1);
+            }
+
+            nonTradingDayByYear.put(year, nonTradingDays);
+        }
+
+        return nonTradingDayByYear.get(year).contains(date.format(DEFAULT_FORMATTER));
     }
 
 

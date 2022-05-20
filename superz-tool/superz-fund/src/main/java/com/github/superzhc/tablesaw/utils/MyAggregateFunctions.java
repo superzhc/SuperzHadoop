@@ -2,6 +2,7 @@ package com.github.superzhc.tablesaw.utils;
 
 import com.github.superzhc.common.MathUtils;
 import com.github.superzhc.fund.data.index.DanJuanIndex;
+import com.github.superzhc.tablesaw.functions.DoubleFunctions;
 import tech.tablesaw.api.DoubleColumn;
 import tech.tablesaw.api.NumericColumn;
 import tech.tablesaw.api.Table;
@@ -10,6 +11,7 @@ import tech.tablesaw.api.Table;
  * @author superz
  * @create 2022/4/25 15:21
  **/
+@Deprecated
 public class MyAggregateFunctions {
     public static DoubleColumn position(DoubleColumn column) {
         int size = column.size();
@@ -31,14 +33,7 @@ public class MyAggregateFunctions {
      * @return
      */
     public static Double position(NumericColumn<?> column, double value) {
-        double[] values = removeMissing(column);
-
-        return MathUtils.position(values, value);
-    }
-
-    private static double[] removeMissing(NumericColumn<?> column) {
-        NumericColumn<?> numericColumn = (NumericColumn<?>) column.removeMissing();
-        return numericColumn.asDoubleArray();
+        return DoubleFunctions.position(column, value);
     }
 
     public static void main(String[] args) {

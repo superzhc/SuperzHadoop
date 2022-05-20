@@ -1,6 +1,8 @@
 package com.github.superzhc.tablesaw.functions;
 
+import com.github.superzhc.common.MathUtils;
 import tech.tablesaw.api.DoubleColumn;
+import tech.tablesaw.api.NumericColumn;
 import tech.tablesaw.api.StringColumn;
 
 import java.math.BigDecimal;
@@ -24,5 +26,23 @@ public class DoubleFunctions {
                 },
                 name -> DoubleColumn.create(name + "[Percentage]")
         );
+    }
+
+    /**
+     * 值在列中所处的百分位
+     *
+     * @param column
+     * @param value
+     * @return
+     */
+    public static Double position(NumericColumn<?> column, double value) {
+        double[] values = removeMissing(column);
+
+        return MathUtils.position(values, value);
+    }
+
+    private static double[] removeMissing(NumericColumn<?> column) {
+        NumericColumn<?> numericColumn = (NumericColumn<?>) column.removeMissing();
+        return numericColumn.asDoubleArray();
     }
 }

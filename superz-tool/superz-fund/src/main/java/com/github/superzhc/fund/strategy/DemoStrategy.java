@@ -2,13 +2,15 @@ package com.github.superzhc.fund.strategy;
 
 import com.github.superzhc.common.DateUtils;
 import com.github.superzhc.fund.akshare.JiuCaiShuo;
-import com.github.superzhc.fund.index.IndexTool;
+import com.github.superzhc.tablesaw.functions.DoubleFunctions;
 import com.github.superzhc.tablesaw.utils.MyAggregateFunctions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.tablesaw.api.Table;
+import tech.tablesaw.api.*;
 
 import java.time.LocalDate;
+
+import static tech.tablesaw.aggregate.AggregateFunctions.count;
 
 /**
  * @author superz
@@ -50,12 +52,64 @@ public class DemoStrategy {
     }
 
     public static void main(String[] args) {
-        Table records=Table.create();
+        String symbol = "000905.SH";
 
-        Table table = JiuCaiShuo.pe("000905.SH");
+        Table records = Table.create(DateColumn.create("date"), StringColumn.create("operate"), DoubleColumn.create("value"));
+        Table table = JiuCaiShuo.pe(symbol);
 
-        LocalDate start=LocalDate.of(2020,1,1);
+        int yearPeriod = 5;
+        String valueField = "pe";
+        LocalDate start = LocalDate.of(2020, 1, 1);
+        LocalDate end = LocalDate.now();
+        while (start.isBefore(end)) {
+            if (DateUtils.isNonTradingDay(start)) {
+                log.debug("data:{}非交易日", start);
+                start = start.plusDays(1);
+                continue;
+            }
+            LocalDate valuationDate = start.minusDays(1);
+            while (DateUtils.isNonTradingDay(valuationDate)) {
+                valuationDate = valuationDate.minusDays(1);
+            }
+            LocalDate earliest = valuationDate.minusYears(yearPeriod);
 
+            // yearPeriod 周期内的数据
+            Table childTable = table.where(table.dateColumn("date").isBetweenExcluding(earliest, valuationDate));
+            // 估值日期的数据
+            Table valuationDateT = table.where(table.dateColumn("date").isEqualTo(valuationDate));
+            if (valuationDateT.rowCount() == 0) {
+                log.error("date:{}，估值日期【{}】数据缺省", start, valuationDate);
+                start = start.plusDays(1);
+                continue;
+            }
+
+            Row row = valuationDateT.row(0);
+            double position = DoubleFunctions.position(childTable.doubleColumn(valueField), row.getDouble(valueField));
+            double positionPercentage = position * 100;
+            log.debug("date:{}，估值日期:{}={}%", start, valuationDate, positionPercentage);
+
+            if (positionPercentage < 20) {
+                records.dateColumn("date").append(start);
+                records.stringColumn("operate").append("I");
+                records.doubleColumn("value").append(position);
+            } else if (20 <= positionPercentage && positionPercentage < 50) {
+                // 无操作
+            } else if (50 <= positionPercentage && positionPercentage < 70) {
+                records.dateColumn("date").append(start);
+                records.stringColumn("operate").append("R");
+                records.doubleColumn("value").append(position);
+            } else if (70 <= positionPercentage) {
+                records.dateColumn("date").append(start);
+                records.stringColumn("operate").append("C");
+                records.doubleColumn("value").append(position);
+            }
+
+            start = start.plusDays(1);
+        }
+
+        System.out.println(records.print());
+        System.out.println(records.shape());
+        System.out.println(records.summarize("date", count).by("operate"));
     }
 
 

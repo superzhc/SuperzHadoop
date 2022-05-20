@@ -19,9 +19,11 @@ public class IndexData {
     }
 
     public static void main(String[] args) {
+        String symbol = "000905.SH";
+
         Table table = Table.create();
 
-        table = trackIndex("000905.SH");
+        table = trackIndex(symbol);
 
         System.out.println(table.print(100));
         System.out.println(table.shape());

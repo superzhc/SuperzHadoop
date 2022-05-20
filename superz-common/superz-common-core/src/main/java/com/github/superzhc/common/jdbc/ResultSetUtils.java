@@ -77,9 +77,12 @@ public class ResultSetUtils {
         int ColumnCount = resultSetMetaData.getColumnCount();
         // 保存当前列最大长度的数组
         int[] columnMaxLengths = new int[ColumnCount];
+        String[] columnNames = new String[ColumnCount];
         // 初始化列的长度
         for (int i = 0; i < ColumnCount; i++) {
-            columnMaxLengths[i] = StringUtils.length(resultSetMetaData.getColumnName(i + 1));
+            String columnName = resultSetMetaData.getColumnName(i + 1);
+            columnMaxLengths[i] = StringUtils.length(columnName) + 2;
+            columnNames[i] = columnName;
         }
 
         // 缓存结果集
@@ -95,13 +98,14 @@ public class ResultSetUtils {
                 columnStr[i] = rs.getString(i + 1);
                 // 计算当前列的最大长度
                 columnMaxLengths[i] = Math.max(columnMaxLengths[i],
-                        (columnStr[i] == null) ? 0 : StringUtils.length(columnStr[i]));
+                        (columnStr[i] == null) ? 0 : StringUtils.length(columnStr[i]) + 2);
             }
             // 缓存这一行.
             results.add(columnStr);
         }
         printSeparator(columnMaxLengths);
-        printColumnName(resultSetMetaData, columnMaxLengths);
+        // printColumnName(resultSetMetaData, columnMaxLengths);
+        printColumnName(columnNames, columnMaxLengths);
         printSeparator(columnMaxLengths);
         // 遍历集合输出结果
         Iterator<String[]> iterator = results.iterator();
@@ -125,6 +129,7 @@ public class ResultSetUtils {
      * @param columnMaxLengths  每一列最大长度的字符串的长度.
      * @throws SQLException
      */
+    @Deprecated
     private static void printColumnName(ResultSetMetaData resultSetMetaData, int[] columnMaxLengths)
             throws SQLException {
         int columnCount = resultSetMetaData.getColumnCount();
@@ -133,6 +138,23 @@ public class ResultSetUtils {
             // resultSetMetaData.getColumnName(i + 1));
             // 2020年11月4日 修改为左对齐
             System.out.printf("|%-" + columnMaxLengths[i] + "s", resultSetMetaData.getColumnName(i + 1));
+        }
+        System.out.println("|");
+    }
+
+    /**
+     * 2022年5月20日 modify 输出列名
+     *
+     * @param columnNames      列名的集合
+     * @param columnMaxLengths 每一列最大长度的字符串的长度
+     */
+    private static void printColumnName(String[] columnNames, int[] columnMaxLengths) {
+        int columnCount = columnNames.length;
+        for (int i = 0; i < columnCount; i++) {
+            // System.out.printf("|%" + (columnMaxLengths[i] + 1) + "s",
+            // resultSetMetaData.getColumnName(i + 1));
+            // 2020年11月4日 修改为左对齐
+            System.out.printf("|%-" + columnMaxLengths[i] + "s", columnNames[i]);
         }
         System.out.println("|");
     }

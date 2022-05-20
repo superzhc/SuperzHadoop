@@ -188,7 +188,7 @@ public class JiuCaiShuo {
         String url = "https://api.jiucaishuo.com/v2/guzhi/newtubiaolinedata";
 
         Map<String, Object> params = new HashMap<>();
-        params.put("act_time", 1634821370997L);
+        params.put("act_time", System.currentTimeMillis());
         params.put("authtoken", "");
         params.put("data_source", "xichou");
         params.put("gu_code", symbol);
@@ -201,21 +201,6 @@ public class JiuCaiShuo {
         JsonNode series = JsonUtils.json(result, "data", "tubiao", "series");
 
         List<String> columnNames = Arrays.asList("timestamp", type/*"value"*/);
-
-        /*Table table = null;
-        for (int i = 0; i < 6; i++) {
-            JsonNode json = series.get(i).get("data");
-            List<String[]> dataRows = JsonUtils.extractArrayData(json);
-
-            Table t = TableBuildingUtils.build(columnNames, dataRows, ReadOptionsUtils.empty());
-
-            if (null == table) {
-                table = t;
-            } else {
-                table = table.joinOn("timestamp").inner(true, t);
-            }
-            table.column("value").setName(series.get(i).get("name").asText());
-        }*/
 
         List<String[]> dataRows = JsonUtils.extractArrayData(series.get(1).get("data"));
 
@@ -235,7 +220,7 @@ public class JiuCaiShuo {
 
 //        Table table = indexValuation();
 
-        Table table = indexValuation(symbol, "pe");//indexInfo(symbol);
+        Table table = indexInfo(symbol);
 
         //Table table = indexComponent(symbol);
 

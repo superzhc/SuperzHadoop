@@ -1,9 +1,5 @@
 package com.github.superzhc.indicator;
 
-import tech.tablesaw.api.Table;
-
-import java.time.LocalDate;
-
 /**
  * 投入成本计算
  *
@@ -16,12 +12,11 @@ public class InvestCalculator {
      *
      * @param oldCost
      * @param share
-     * @param change
      * @param currentNetWorth
-     *
+     * @param change
      * @return
      */
-    public static double costByChange(double oldCost, double share, double change, double currentNetWorth) {
+    public static double investByChange(double oldCost, double share, double currentNetWorth, double change) {
         // 最大幅度变化
         double maxIncrease = (currentNetWorth - oldCost) / oldCost;
         if (currentNetWorth >= oldCost) {
@@ -43,13 +38,38 @@ public class InvestCalculator {
      *
      * @param oldCost
      * @param share
-     * @param invest
      * @param currentNetWorth
-     *
+     * @param invest
      * @return
      */
-    public static double costByInvest(double oldCost, double share, double invest, double currentNetWorth) {
+    public static double costByInvest(double oldCost, double share, double currentNetWorth, double invest) {
         double share2 = invest / currentNetWorth;
         return (oldCost * share + invest) / (share + share2);
+    }
+
+    /**
+     * 通过计算最新成本来获取投入总额
+     *
+     * @param oldCost
+     * @param share
+     * @param currentNetWorth
+     * @param newCost
+     * @return
+     */
+    public static double investByCost(double oldCost, double share, double currentNetWorth, double newCost) {
+        // 是否降本
+        boolean b = currentNetWorth - oldCost < 0;
+        if (b) {
+            if (newCost < currentNetWorth || newCost > oldCost) {
+                throw new RuntimeException(String.format("当前成本：%.4f，当前估值：%.4f，预期成本区间在(%.4f,%.4f)，设定成本[%.4f]不符合规定", oldCost, currentNetWorth, currentNetWorth, oldCost, newCost));
+            }
+        } else {
+            if (newCost < oldCost || newCost > currentNetWorth) {
+                throw new RuntimeException(String.format("当前成本：%.4f，当前估值：%.4f，预期成本区间在(%.4f,%.4f)，设定成本[%.4f]不符合规定", oldCost, currentNetWorth, oldCost, currentNetWorth, newCost));
+            }
+        }
+        // 在当前净值下买入多少份额可获取到新成本
+        double share2 = (oldCost - newCost) * share / (newCost - currentNetWorth);
+        return currentNetWorth * share2;
     }
 }
