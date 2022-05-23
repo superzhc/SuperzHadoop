@@ -150,19 +150,6 @@ public class EastMoneyFund {
     }
 */
 
-//    // 接口已不存在
-//    public static Table openFundInfo(String fundCode){
-//        String url=String.format("http://fund.eastmoney.com/pingzhongdata/%s.js",fundCode);
-//
-//        Map<String,String> headers=new HashMap<>();
-//        headers.put("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.149 Safari/537.36");
-//
-//        String result=HttpRequest.get(url).headers(headers).body();
-//        System.out.println(result);
-//
-//        return Table.create();
-//    }
-
     /**
      * 推荐使用 fundNew 方法
      *
@@ -315,7 +302,7 @@ public class EastMoneyFund {
         return table;
     }
 
-    public static Table fundPeriodIncrease(String symbol) {
+    public static Table fundPeriodRank(String symbol) {
         String url = "https://fundmobapi.eastmoney.com/FundMNewApi/FundMNPeriodIncrease";
 
         Map<String, Object> params = new HashMap<>();
@@ -1025,33 +1012,33 @@ public class EastMoneyFund {
 //        return table;
 //    }
 
-    /**
-     * 未完全解析，推荐使用 fundNew
-     *
-     * @param symbol
-     *
-     * @return
-     */
-    public static Table fundInfo(String symbol) {
-        String url = "https://fundmobapi.eastmoney.com/FundMApi/FundBaseTypeInformation.ashx";
-
-        Map<String, Object> params = new LinkedHashMap<>();
-        params.put("FCODE", symbol);
-        params.put("deviceid", "Wap");
-        params.put("plat", "Wap");
-        params.put("product", "EFund");
-        params.put("version", "2.0.0");
-        params.put("_", System.currentTimeMillis());
-
-        String result = HttpRequest.get(url, params).body();
-        JsonNode json = JsonUtils.json(result, "Datas");
-
-        Map<String, ?> map = JsonUtils.map(json);
-
-        Table table = TableUtils.map2Table(map);
-
-        return table;
-    }
+//    /**
+//     * 未完全解析，推荐使用 fundNew
+//     *
+//     * @param symbol
+//     *
+//     * @return
+//     */
+//    public static Table fundInfo(String symbol) {
+//        String url = "https://fundmobapi.eastmoney.com/FundMApi/FundBaseTypeInformation.ashx";
+//
+//        Map<String, Object> params = new LinkedHashMap<>();
+//        params.put("FCODE", symbol);
+//        params.put("deviceid", "Wap");
+//        params.put("plat", "Wap");
+//        params.put("product", "EFund");
+//        params.put("version", "2.0.0");
+//        params.put("_", System.currentTimeMillis());
+//
+//        String result = HttpRequest.get(url, params).body();
+//        JsonNode json = JsonUtils.json(result, "Datas");
+//
+//        Map<String, ?> map = JsonUtils.map(json);
+//
+//        Table table = TableUtils.map2Table(map);
+//
+//        return table;
+//    }
 
     public static Table test6(String symbol) {
         String url = "https://push2.eastmoney.com/api/qt/stock/trends2/get";

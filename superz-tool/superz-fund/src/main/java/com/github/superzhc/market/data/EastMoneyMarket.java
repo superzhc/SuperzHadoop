@@ -7,10 +7,9 @@ import com.github.superzhc.common.JsonUtils;
 import com.github.superzhc.tablesaw.utils.TableUtils;
 import tech.tablesaw.api.Table;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static com.github.superzhc.common.HttpConstant.UA;
 
 /**
  * @author superz
@@ -65,7 +64,7 @@ public class EastMoneyMarket {
         List<String> columnNames = Arrays.asList(fields.split(","));
         List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
 
-        List<String> columnNames2=Arrays.asList(
+        List<String> columnNames2 = Arrays.asList(
                 "f1,最新价,涨跌幅,涨跌额,f5,f6,f7,换手率,f9,f10,f11,板块代码,f13,板块名称,f15,f16,f17,f18,总市值,f21,f22,f23,f24,f25,f26,f33,f62,上涨家数,下跌家数,平盘家数,f107,f115,f124,f128,f136,f140,f141,f152,f207,f208,f209,f222".split(",")
         );
 
@@ -103,6 +102,51 @@ public class EastMoneyMarket {
         );
 
         Table table = TableUtils.build(columnNames2, dataRows);
+        return table;
+    }
+
+    public static Table test() {
+        List<String> columnNames = Arrays.asList(
+                "日期",
+                "主力净流入-净额",
+                "小单净流入-净额",
+                "中单净流入-净额",
+                "大单净流入-净额",
+                "超大单净流入-净额",
+                "主力净流入-净占比",
+                "小单净流入-净占比",
+                "中单净流入-净占比",
+                "大单净流入-净占比",
+                "超大单净流入-净占比",
+                "上证-收盘价",
+                "上证-涨跌幅",
+                "深证-收盘价",
+                "深证-涨跌幅"
+        );
+
+        String url = "http://push2his.eastmoney.com/api/qt/stock/fflow/daykline/get";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("lmt", "0");
+        params.put("klt", "101");
+        params.put("secid", "1.000001");
+        params.put("secid2", "0.399001");
+        params.put("fields1", "f1,f2,f3,f7");
+        params.put("fields2", "f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61,f62,f63,f64,f65");
+        //params.put( "ut", "b2884a393a59ad64002292a3e90d46a5");
+//        params.put("cb", "jQuery183003743205523325188_1589197499471");
+        params.put("_", System.currentTimeMillis());
+
+        String result = HttpRequest.get(url, params).userAgent(UA).body();
+        JsonNode json = JsonUtils.json(result, "data", "klines");
+
+        List<String[]> dataRows = new ArrayList<>();
+        for (JsonNode line : json) {
+            String[] row = JsonUtils.string(line).split(",");
+            dataRows.add(row);
+        }
+
+        Table table = TableUtils.build(columnNames, dataRows);
         return table;
     }
 
