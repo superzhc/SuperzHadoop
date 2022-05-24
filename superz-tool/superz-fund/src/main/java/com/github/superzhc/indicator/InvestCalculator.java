@@ -7,6 +7,10 @@ package com.github.superzhc.indicator;
  * @create 2022/5/19 22:42
  */
 public class InvestCalculator {
+    public static double realInvest(double invest, double fee) {
+        return invest / (1 + fee);
+    }
+
     /**
      * 通过计算成本涨跌幅来计算出投入
      *

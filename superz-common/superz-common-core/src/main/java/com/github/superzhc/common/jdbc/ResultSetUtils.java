@@ -20,7 +20,8 @@ public class ResultSetUtils {
             while (rs.next()) {
                 Map<String, Object> map = new HashMap<>();
                 for (int i = 0; i < cols_len; i++) {
-                    String cols_name = metaData.getColumnLabel(i + 1)/*metaData.getColumnName(i + 1)*/;
+                    // 2022年5月24日 modify 列名统一小写
+                    String cols_name = metaData.getColumnLabel(i + 1).toLowerCase()/*metaData.getColumnName(i + 1)*/;
                     Object cols_value = rs.getObject(cols_name);
                     // null值不做处理
                     // if (null == cols_value) {
@@ -80,7 +81,7 @@ public class ResultSetUtils {
         String[] columnNames = new String[ColumnCount];
         // 初始化列的长度
         for (int i = 0; i < ColumnCount; i++) {
-            String columnName = resultSetMetaData.getColumnName(i + 1);
+            String columnName = resultSetMetaData.getColumnName(i + 1).toLowerCase();
             columnMaxLengths[i] = StringUtils.length(columnName) + 2;
             columnNames[i] = columnName;
         }

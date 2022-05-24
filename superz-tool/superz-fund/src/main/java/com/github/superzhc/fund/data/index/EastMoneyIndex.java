@@ -212,7 +212,7 @@ public class EastMoneyIndex {
 
         Map<String, Object> params = new HashMap<>();
         params.put("secid", transformC(symbol));
-        params.put("ut", "7eea3edcaed734bea9cbfc24409ed989");
+        // params.put("ut", "7eea3edcaed734bea9cbfc24409ed989");
         params.put("fields1", "f1,f2,f3,f4,f5,f6");
         params.put("fields2", "f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61");
         params.put("klt", periodMap.get(period));

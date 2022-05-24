@@ -47,19 +47,20 @@ public class XueQiuIndex {
         // 当前点数
         map.put("current", quote.get("current").asDouble());
         // 最高
-        map.put("high",quote.get("high").asDouble());
+        map.put("high", quote.get("high").asDouble());
         // 最低
-        map.put("low",quote.get("low").asDouble());
-        // 涨跌幅（单位百分比）
-        map.put("percent", quote.get("percent").asDouble());
-        // 涨跌额
-        map.put("chg", quote.get("chg"));
-        // 振幅（单位百分比）
-        map.put("amplitude", quote.get("amplitude").asDouble());
+        map.put("low", quote.get("low").asDouble());
         // 成交额
         map.put("amount", quote.get("amount").asLong());
         // 成交量
         map.put("volume", quote.get("volume").asLong());
+        // 振幅（单位百分比）
+        map.put("amplitude", quote.get("amplitude").asDouble());
+        // 涨跌幅（单位百分比）
+        map.put("quote_change", quote.get("percent").asDouble());
+        // 涨跌额
+        map.put("quote_change_amount", quote.get("chg").asDouble());
+        map.put("turnover_rate", quote.get("turnover_rate").asDouble());
         // map.put("",quote.get(""));
 
         // 平均点数
@@ -86,7 +87,6 @@ public class XueQiuIndex {
         // time: 1652257798000
         // timestamp: 1652257798000
         // total_shares: null
-        // turnover_rate: null
         // type: 26
 
         Table table = TableUtils.map2Table(map);

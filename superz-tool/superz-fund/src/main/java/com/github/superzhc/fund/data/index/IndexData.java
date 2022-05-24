@@ -18,6 +18,31 @@ public class IndexData {
         return table;
     }
 
+    public static Table index(String symbol) {
+        Table table = EastMoneyIndex.index(symbol);
+        return table;
+    }
+
+    public static Table history(String symbol) {
+        Table table = EastMoneyIndex.dailyHistory(symbol);
+        return table;
+    }
+
+    public static Table realTime(String symbol) {
+        Table table = XueQiuIndex.realTime(symbol);
+        return table;
+    }
+
+    public static Table industry(String symbol) {
+        Table table = CSIndex.industry(symbol);
+        return table;
+    }
+
+    public static Table stocks(String symbol) {
+        Table table = CSIndex.stocksWeight(symbol);
+        return table;
+    }
+
     public static void main(String[] args) {
         String symbol = "000905.SH";
 

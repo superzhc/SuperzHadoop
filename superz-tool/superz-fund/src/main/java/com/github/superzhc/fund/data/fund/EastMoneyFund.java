@@ -154,7 +154,6 @@ public class EastMoneyFund {
      * 推荐使用 fundNew 方法
      *
      * @param symbol
-     *
      * @return
      */
     @Deprecated
@@ -233,7 +232,6 @@ public class EastMoneyFund {
 
     /**
      * @param symbol
-     *
      * @return Structure of null
      * Index  |  Column Name  |  Column Type  |
      * -----------------------------------------
@@ -271,9 +269,9 @@ public class EastMoneyFund {
         map.put("index_name", jjxq.get("INDEXNAME").asText());
         map.put("rate", jjxq.get("RLEVEL_SZ").asText());
         map.put("risk_level", jjxq.get("RISKLEVEL").asText());
-        map.put("bench", jjxq.get("BENCH").asText());
-        map.put("资产规模（元）", jjxq.get("ENDNAV").asText());
-        map.put("规模截止日期", jjxq.get("FEGMRQ").asText());
+//        map.put("bench", jjxq.get("BENCH").asText());
+        map.put("scale", jjxq.get("ENDNAV").asText());
+        map.put("scale_date", jjxq.get("FEGMRQ").asText());
 //        map.put("日涨幅 (%)", jjxq.get("RZDF").asText());
         map.put("net_worth"/*"单位净值"*/, jjxq.get("DWJZ").asText());
         map.put("accumulated_net_worth"/*"累计净值"*/, jjxq.get("LJJZ").asText());
@@ -283,7 +281,7 @@ public class EastMoneyFund {
 //        map.put("追加购买（元）", jjxq.get("MINSBSG").asText());
 //        map.put("定投起点（元）", jjxq.get("MINDT").asText());
 //        map.put("单日累计购买上限（元）", jjxq.get("MAXSG").asText());
-        map.put("申购状态", jjxq.get("SGZT").asText());
+        map.put("purchase_status", jjxq.get("SGZT").asText());
 //        map.put("卖出状态", jjxq.get("SHZT").asText());
 //        map.put("定投状态", jjxq.get("DTZT").asText());
         map.put("origin_rate"/*"原始购买费率"*/, jjxq.get("SOURCERATE").asText());
@@ -325,8 +323,8 @@ public class EastMoneyFund {
                 "avg",// 涨跌幅
                 "hs300",// 同类平均
                 "rank",// 同类排名
-                "sc",// 排名总数
-                "diff"
+                "sc"// 排名总数
+                // ,"diff"// 该字段一样不明，去掉
         );
 
         List<String[]> dataRows = JsonUtils.extractObjectData(jdzf, columnNames);
@@ -927,7 +925,6 @@ public class EastMoneyFund {
 
     /**
      * @param symbols 例如：1.000300
-     *
      * @return
      */
     public static Table test(String... symbols) {
@@ -1061,7 +1058,6 @@ public class EastMoneyFund {
 
     /**
      * @param symbol
-     *
      * @return Structure of
      * Index  |       Column Name       |  Column Type  |
      * ---------------------------------------------------
@@ -1195,10 +1191,6 @@ public class EastMoneyFund {
         Table table = TableUtils.build(columnNames, dataRows);
 
         return table;
-    }
-
-    public static Table test10() {
-        return Table.create();
     }
 
     public static Table test11(String symbol) {

@@ -693,7 +693,7 @@ public class JdbcHelper implements Closeable {
         });
     }
 
-    @Deprecated
+    /*@Deprecated*/
     public <T> T queryOne(String sql, Object... params) {
         return aggregate(sql, params);
     }

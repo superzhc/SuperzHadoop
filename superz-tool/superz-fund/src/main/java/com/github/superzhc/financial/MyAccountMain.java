@@ -1,7 +1,7 @@
 package com.github.superzhc.financial;
 
 import com.github.superzhc.common.jdbc.JdbcHelper;
-import com.github.superzhc.indicator.InvestCalculator;
+import tech.tablesaw.api.Table;
 
 /**
  * @author superz
@@ -11,13 +11,18 @@ public class MyAccountMain {
     public static final String JDBC_URL = "jdbc:sqlite:E:\\superz_financial\\db\\account.db";
 
     public static void main(String[] args) {
-        String symbol = "000905.SH";
-
         try (JdbcHelper jdbc = new JdbcHelper(JDBC_URL)) {
-            // jdbc.show("select * from USER_FUND_RECORDS");
+            Table table = Table.create();
 
-            double invest=InvestCalculator.investByCost(1.0, 1000, 0.95, 0.9);
-            System.out.println(invest);
+            FundRecordsDao fundRecordsDao = new FundRecordsDao(jdbc);
+//            table=fundRecordsDao.records();
+            table=fundRecordsDao.funds();
+
+            IndexDao indexDao = new IndexDao(jdbc);
+//            table = indexDao.indices();
+
+            System.out.println(table.print());
+            System.out.println(table.shape());
         }
     }
 }
