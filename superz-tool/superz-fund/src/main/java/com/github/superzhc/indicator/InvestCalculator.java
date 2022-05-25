@@ -1,5 +1,8 @@
 package com.github.superzhc.indicator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * 投入成本计算
  *
@@ -7,8 +10,14 @@ package com.github.superzhc.indicator;
  * @create 2022/5/19 22:42
  */
 public class InvestCalculator {
+    private static final Logger log = LoggerFactory.getLogger(InvestCalculator.class);
+
     public static double realInvest(double invest, double fee) {
         return invest / (1 + fee);
+    }
+
+    public static double totalInvest(double invest, double fee) {
+        return (1.0 + fee) * invest;
     }
 
     /**
@@ -24,11 +33,13 @@ public class InvestCalculator {
         // 最大幅度变化
         double maxIncrease = (currentNetWorth - oldCost) / oldCost;
         if (currentNetWorth >= oldCost) {
+            log.info("成本增长区间在(0,{})", maxIncrease);
             // 增幅在 0~(currentNetWorth-avgCost)/avgCost之间
             if (change <= 0 || change >= maxIncrease) {
                 throw new RuntimeException(String.format("成本价：%.4f，当前估值：%.4f，成本增长区间须在(0,%.4f)", oldCost, currentNetWorth, maxIncrease));
             }
         } else {
+            log.info("成本减少区间在({},0)", maxIncrease);
             if (change >= 0 || change <= maxIncrease) {
                 throw new RuntimeException(String.format("成本价：%.4f，当前估值：%.4f，成本减少区间须在(%.4f,0)", oldCost, currentNetWorth, maxIncrease));
             }

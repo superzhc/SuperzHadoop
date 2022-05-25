@@ -1523,7 +1523,7 @@ public class HttpRequest {
                         .replaceAll("    ", " ")
                         .replaceAll("  ", " ")
                         .replaceAll(" ", " ");
-                log.debug("[{}] response:{}", requestMethod, str.length() > 1024 ? str.substring(0, 1024) + "..." : str);
+                log.debug("[{}] response:{}", requestMethod, str.length() > 512 ? str.substring(0, 512) + "..." : str);
             }
             return resp;
         } catch (IOException e) {

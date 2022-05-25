@@ -64,6 +64,8 @@ public class JSONUtils {
                 indentCount -= 1;
                 appendIndent(formattedText, indentation, indentCount);
                 formattedText.append(c);
+            } else if (c == '\n' || c == '\t') {
+                // 不做处理
             } else {
                 formattedText.append(c);
             }
