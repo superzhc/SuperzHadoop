@@ -1,4 +1,4 @@
-package com.github.superzhc.common;
+package com.github.superzhc.common.jackson;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;

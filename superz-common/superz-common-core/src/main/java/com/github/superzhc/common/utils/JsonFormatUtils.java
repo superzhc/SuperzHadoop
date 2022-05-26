@@ -1,16 +1,13 @@
 package com.github.superzhc.common.utils;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * @author superz
  * @create 2022/3/16 10:42
  **/
-public class JSONUtils {
+public class JsonFormatUtils {
     private static final int INDENT_SPACE = 2;
 
-    private JSONUtils() {
+    private JsonFormatUtils() {
     }
 
     /**

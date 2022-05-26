@@ -20,6 +20,7 @@
         <module>superz-common-ssh</module>
         <module>superz-common-httpclient</module>
         <module>superz-common-pdfbox</module>
+        <module>superz-common-jackson</module>
     </modules>
 
     <properties>
