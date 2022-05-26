@@ -45,6 +45,19 @@ public class HdfsRestApi {
         return request.stream();
     }
 
+    public String content(String path) {
+        return content(path, "UTF-8");
+    }
+
+    public String content(String path, String charset) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("offset", 0);
+        params.put("length", null);
+        params.put("buffersize", null);
+        HttpRequest request = execute(METHOD_GET, path, "OPEN", params);
+        return request.body(charset);
+    }
+
     public String mkdirs(String path) {
         HttpRequest request = execute(METHOD_PUT, path, "MKDIRS", null);
         String result = request.body();
@@ -52,7 +65,7 @@ public class HdfsRestApi {
     }
 
     public String mkdirsWithPermission(String path) {
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("permission", /*"755"*/String.format("%d%d%d", FsAction.ALL.ordinal(), FsAction.READ_EXECUTE.ordinal(), FsAction.READ_EXECUTE.ordinal()));
         HttpRequest request = execute(METHOD_PUT, path, "MKDIRS", params);
         String result = request.body();
@@ -60,14 +73,14 @@ public class HdfsRestApi {
     }
 
     public String rename(String oldPath, String newPath) {
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("destination", newPath);
         HttpRequest request = execute(METHOD_PUT, oldPath, "RENAME", params);
         return request.body();
     }
 
     public String delete(String path) {
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("recursive", "true");// 是否递归
         HttpRequest request = execute(METHOD_DELETE, path, "DELETE", params);
         return request.body();
@@ -92,7 +105,7 @@ public class HdfsRestApi {
         return execute(method, path, operator, new HashMap<>());
     }
 
-    private HttpRequest execute(String method, String path, String operator, Map<String, String> params) {
+    private HttpRequest execute(String method, String path, String operator, Map<String, Object> params) {
         if (null == params) {
             params = new HashMap<>();
         }
