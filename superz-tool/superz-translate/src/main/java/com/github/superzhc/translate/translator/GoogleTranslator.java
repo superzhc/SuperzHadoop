@@ -1,4 +1,4 @@
-package com.github.superzhc.translate;
+package com.github.superzhc.translate.translator;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.http.HttpRequest;
@@ -13,7 +13,7 @@ import java.util.Random;
  * @author superz
  * @create 2022/5/26 13:42
  **/
-public class GoogleTranslate {
+public class GoogleTranslator implements BaseTranslator {
 
     public static final String[] DOMAINS = new String[]{"translate.google.ac", "translate.google.ad", "translate.google.ae", "translate.google.al", "translate.google.am", "translate.google.as",
             "translate.google.at", "translate.google.az", "translate.google.ba", "translate.google.be", "translate.google.bf", "translate.google.bg",
@@ -54,15 +54,32 @@ public class GoogleTranslate {
     private String proxyHost = "127.0.0.1";
     private Integer proxyPort = 10809;
 
-    public GoogleTranslate() {
+    public GoogleTranslator() {
         this.domain = DOMAINS[new Random().nextInt(DOMAINS.length)];
     }
 
-    public GoogleTranslate(String domain) {
+//    public GoogleTranslator(String domain) {
+//        this.domain = domain;
+//    }
+
+    public GoogleTranslator(String proxyHost, Integer proxyPort) {
+        this.proxyHost = proxyHost;
+        this.proxyPort = proxyPort;
+        this.domain = DOMAINS[new Random().nextInt(DOMAINS.length)];
+    }
+
+//    public GoogleTranslator(String domain, String proxyHost, Integer proxyPort) {
+//        this.proxyHost = proxyHost;
+//        this.proxyPort = proxyPort;
+//        this.domain = domain;
+//    }
+
+    public void setDomain(String domain) {
         this.domain = domain;
     }
 
-    public String translate(String text, String source, String destination) {
+    @Override
+    public String translate0(String text, String source, String destination) {
         String result = translate1(text, source, destination);
         if (StringUtils.isNotBlank(result)) {
             return result;
@@ -158,8 +175,17 @@ public class GoogleTranslate {
         return sb.toString();
     }
 
+    @Override
+    public String supportLang(String lang) {
+        lang = lang.toLowerCase();
+        if ("zh".equals(lang)) {
+            lang = "zh-cn";
+        }
+        return lang;
+    }
+
     public static void main(String[] args) {
-        GoogleTranslate translator = new GoogleTranslate();
+        GoogleTranslator translator = new GoogleTranslator();
 
         String str = translator.translate("主要基于Hadoop体系构建，针对工业企业缺乏数据基础、元数据管理、海量数据存储、工业机理通过大数据进行故障分析、预测维修等困难进行技术攻破，降低工业企业应用大数据的成本和门槛。", "zh-cn", "en");
         System.out.println(str);

@@ -1,4 +1,4 @@
-package com.github.superzhc.translate;
+package com.github.superzhc.translate.translator;
 
 import com.github.superzhc.common.http.HttpRequest;
 
@@ -11,7 +11,18 @@ import java.util.Map;
  * @author superz
  * @create 2022/5/26 15:54
  **/
-public class DeepLTranslate {
+@Deprecated
+public class DeepLTranslator implements BaseTranslator {
+    @Override
+    public String translate0(String text, String source, String destination) {
+        throw new RuntimeException("尚未实现翻译功能，请勿使用");
+    }
+
+    @Override
+    public String supportLang(String lang) {
+        return null;
+    }
+
     public static void main(String[] args) {
         int number = ((int) (Math.random() * 10000000));
 
@@ -32,7 +43,7 @@ public class DeepLTranslate {
 
         long ts = System.currentTimeMillis();
         ts += 1 - ts % 1;
-        map.put("timestamp",ts/*System.currentTimeMillis()*/);
+        map.put("timestamp", ts/*System.currentTimeMillis()*/);
 
         map.put("priority", -1);
 

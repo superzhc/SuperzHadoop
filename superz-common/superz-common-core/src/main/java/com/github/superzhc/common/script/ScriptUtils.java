@@ -25,6 +25,25 @@ public class ScriptUtils {
     public static Object function(ScriptEngine engine, String func, String funcName, Object... params) {
         try {
             engine.eval(func);
+//            Invocable invocable = (Invocable) engine;
+//            Object value = invocable.invokeFunction(funcName, params);
+//            return value;
+            return function(engine, funcName, params);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 注意事项：engine 已调用过 eval 加载了函数，此处直接进行调用
+     *
+     * @param engine
+     * @param funcName
+     * @param params
+     * @return
+     */
+    public static Object function(ScriptEngine engine, String funcName, Object... params) {
+        try {
             Invocable invocable = (Invocable) engine;
             Object value = invocable.invokeFunction(funcName, params);
             return value;

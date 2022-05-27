@@ -2003,7 +2003,7 @@ public class HttpRequest {
                         continue;
                     }
                     String value = str.substring(pos + 1);
-                    cookiesSb.append("; ").append(key).append("=").append(value);
+                    cookiesSb.append(";").append(key).append("=").append(value);
                 }
             }
         }

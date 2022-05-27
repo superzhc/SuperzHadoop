@@ -58,6 +58,14 @@ public class JsonUtils {
         }
     }
 
+    public static <T> String asString(List<T> lst) {
+        try {
+            return mapper.writeValueAsString(lst);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static String format(JsonNode json) {
         try {
             return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);
@@ -122,6 +130,11 @@ public class JsonUtils {
         return rows;
     }
 
+    public static String string(String json, String... path) {
+        JsonNode childNode = json(json, path);
+        return string(childNode);
+    }
+
     public static String string(JsonNode node, String... paths) {
         JsonNode childNode = json(node, paths);
         return null == childNode ? null : childNode.asText();
@@ -145,6 +158,10 @@ public class JsonUtils {
     public static Boolean bool(JsonNode node, String... paths) {
         JsonNode childNode = json(node, paths);
         return null == childNode ? Boolean.FALSE : childNode.asBoolean();
+    }
+
+    public static String[] array(String json, String... paths) {
+        return array(json(json), paths);
     }
 
     public static String[] array(JsonNode node, String... paths) {
@@ -250,9 +267,9 @@ public class JsonUtils {
     public static void main(String[] args) {
         Object[] objs = new Object[]{"Hello", "en", "zh-cn", true};
         Object[] objs2 = new Object[]{objs, new Object[]{null}};
-        Object[] objs3 = new Object[]{"MkEWBc",JsonUtils.asString(objs2),null,"generic"};
-        Object[] objs4=new Object[]{objs3};
-        Object[] objs5=new Object[]{objs4};
+        Object[] objs3 = new Object[]{"MkEWBc", JsonUtils.asString(objs2), null, "generic"};
+        Object[] objs4 = new Object[]{objs3};
+        Object[] objs5 = new Object[]{objs4};
         System.out.println(JsonUtils.asString(objs5));
     }
 }
