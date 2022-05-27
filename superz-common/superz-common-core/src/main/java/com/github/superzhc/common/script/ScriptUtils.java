@@ -1,4 +1,4 @@
-package com.github.superzhc.common;
+package com.github.superzhc.common.script;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.slf4j.Logger;
