@@ -111,33 +111,25 @@ public class JsonUtils {
         return node;
     }
 
-    public static List<String[]> extractArrayData(JsonNode datas, int... excludes) {
-        List<String[]> rows = new ArrayList<>();
-        skip:
-        for (int j = 0, len2 = datas.size(); j < len2; j++) {
-
-            for (int exclude : excludes) {
-                if (j == exclude) {
-                    continue skip;
-                }
-            }
-
-            JsonNode data = datas.get(j);
-
-            String[] row = array(data);
-            rows.add(row);
-        }
-        return rows;
-    }
-
-    public static String string(String json, String... path) {
-        JsonNode childNode = json(json, path);
+    public static String string(String json, String... paths) {
+        JsonNode childNode = json(json, paths);
         return string(childNode);
     }
 
     public static String string(JsonNode node, String... paths) {
         JsonNode childNode = json(node, paths);
         return null == childNode ? null : childNode.asText();
+    }
+
+    public static String text(JsonNode node, String... paths) {
+        JsonNode childNode = json(node, paths);
+        if (null == childNode) {
+            return null;
+        } else if (childNode.isObject() || childNode.isArray()) {
+            return asString(childNode);
+        } else {
+            return string(childNode);
+        }
     }
 
     public static Integer integer(JsonNode node, String... paths) {
@@ -210,58 +202,174 @@ public class JsonUtils {
         return arr;
     }
 
-    public static List<String> extractObjectColumnName(JsonNode datas, String... paths) {
+    public static String[] objectArrayKeys(JsonNode node, String... childPaths) {
+        return objectArrayKeys(node, null, childPaths);
+    }
+
+    public static String[] objectArrayKeys(JsonNode node, String[] paths, String[] childPaths) {
+        JsonNode childNode = node;
+        if (null != paths) {
+            childNode = json(node, paths);
+        }
+
         // 保证列的顺序
         Set<String> columnNames = new LinkedHashSet<>();
-        for (JsonNode data : datas) {
-            JsonNode item = data;
-            for (String path : paths) {
-                item = item.get(path);
+//        if (childNode.isArray()) {
+        for (JsonNode item : childNode) {
+            JsonNode childItem = item;
+            if (null != childPaths) {
+                childItem = json(item, childPaths);
             }
-            Iterator<String> fieldNames = item.fieldNames();
+            Iterator<String> fieldNames = childItem.fieldNames();
             while (fieldNames.hasNext()) {
                 columnNames.add(fieldNames.next());
             }
         }
-        return new ArrayList<>(columnNames);
+//        } else if (childNode.isObject()) {
+//            JsonNode childNode2 = childNode;
+//            if (null != childPaths) {
+//                childNode2 = json(childNode, childPaths);
+//            }
+//            Iterator<String> fieldNames = childNode2.fieldNames();
+//            while (fieldNames.hasNext()) {
+//                columnNames.add(fieldNames.next());
+//            }
+//        } else {
+//            return null;
+//        }
+        return columnNames.toArray(new String[columnNames.size()]);
     }
 
-    public static List<String[]> extractObjectData(JsonNode datas, String... paths) {
-        List<String> columnNames = extractObjectColumnName(datas, paths);
-        return extractObjectData(datas, columnNames, paths);
+    public static List<String[]> objectArray(JsonNode node, String... childPaths) {
+        return objectArray(node, null, childPaths);
     }
 
-    public static List<String[]> extractObjectData(JsonNode datas, List<String> columnNames, String... paths) {
-        List<String[]> rows = new ArrayList<>();
-        try {
-            for (JsonNode data : datas) {
-                JsonNode item = json(data, paths);
-
-                String[] row = new String[columnNames.size()];
-                for (int i = 0, len = columnNames.size(); i < len; i++) {
-                    String columnName = columnNames.get(i);
-                    if (!item.has(columnName)) {
-                        row[i] = null;
-                    } else if (null == item.get(columnName)) {
-                        row[i] = null;
-                    } else if (item.get(columnName).isObject() || item.get(columnName).isArray()) {
-                        row[i] = mapper.writeValueAsString(item.get(columnName));
-                    } else {
-                        row[i] = item.get(columnName).asText();
-                    }
-
-                    if (null != row[i] && (
-                            "--".equals(row[i].trim()) || "-".equals(row[i].trim())
-                    )) {
-                        row[i] = null;
-                    }
-                }
-                rows.add(row);
-            }
-        } catch (Exception e) {
-            log.error("抽取数据异常", e);
+    public static List<String[]> objectArray(JsonNode node, String[] paths, String[] childPaths) {
+        JsonNode childNode = node;
+        if (null != paths) {
+            childNode = json(node, paths);
         }
-        return rows;
+
+        List<String[]> table = new LinkedList<>();
+
+        String[] columnNames = objectArrayKeys(childNode, childPaths);
+        // 第一行是列的元数据信息
+        table.add(columnNames);
+
+//        if (childNode.isArray()) {
+        int columnLength = columnNames.length;
+        for (JsonNode item : childNode) {
+            JsonNode childItem = item;
+            if (null != childPaths) {
+                childItem = json(item, childPaths);
+            }
+            String[] dataRow = new String[columnLength];
+            for (int i = 0; i < columnLength; i++) {
+                String columnName = columnNames[i];
+                JsonNode dataCell = json(childItem, columnName);
+                dataRow[i] = text(dataCell);
+            }
+            table.add(dataRow);
+        }
+//        } else if (childNode.isObject()) {
+//            int columnLength = columnNames.length;
+//              JsonNode childNode2=childNode;
+//              if(null!=childPaths){
+//                  childNode2=json(childNode,childPaths);
+//              }
+//            String[] dataRow = new String[columnLength];
+//            for (int i = 0; i < columnLength; i++) {
+//                String columnName = columnNames[i];
+//                JsonNode dataCell = json(childNode, columnName);
+//                dataRow[i] = text(dataCell);
+//            }
+//            table.add(dataRow);
+//        } else {
+//            return null;
+//        }
+        return table;
+    }
+
+    public static List<String[]> objectArrayWithKeys(JsonNode node, List<String> columnNames, String... childPaths) {
+        return objectArrayWithKeys(node, null, childPaths, columnNames.toArray(new String[columnNames.size()]));
+    }
+
+    public static List<String[]> objectArrayWithKeys(JsonNode node, String[] columnNames, String... childPaths) {
+        return objectArrayWithKeys(node, null, childPaths, columnNames);
+    }
+
+    public static List<String[]> objectArrayWithKeys(JsonNode node, String[] paths, String[] childPaths, String[] columnNames) {
+        JsonNode childNode = node;
+        if (null != paths) {
+            childNode = json(node, paths);
+        }
+
+        List<String[]> table = new LinkedList<>();
+        table.add(columnNames);
+        int columnLength = columnNames.length;
+        for (JsonNode item : childNode) {
+            JsonNode childItem = item;
+            if (null != childPaths) {
+                childItem = json(item, childPaths);
+            }
+            String[] dataRow = new String[columnLength];
+            for (int i = 0; i < columnLength; i++) {
+                String columnName = columnNames[i];
+                JsonNode dataCell = json(childItem, columnName);
+                dataRow[i] = text(dataCell);
+            }
+            table.add(dataRow);
+        }
+        return table;
+    }
+
+    public static List<String[]> arrayArray(JsonNode node, String... paths) {
+        JsonNode childNode = json(node, paths);
+
+        List<String[]> dataRows = new ArrayList<>(childNode.size());
+        for (JsonNode item : childNode) {
+            String[] dataRow = array(item);
+            dataRows.add(dataRow);
+        }
+        return dataRows;
+    }
+
+    /**
+     * 推荐使用 objectArrayKeys
+     *
+     * @param datas
+     * @param childPaths
+     * @return
+     */
+    @Deprecated
+    public static List<String> extractObjectColumnName(JsonNode datas, String... childPaths) {
+        return Arrays.asList(objectArrayKeys(datas, childPaths));
+    }
+
+    /**
+     * 推荐使用 objectArray
+     *
+     * @param datas
+     * @param childPaths
+     * @return
+     */
+    @Deprecated
+    public static List<String[]> extractObjectData(JsonNode datas, String... childPaths) {
+        List<String[]> table = objectArray(datas, null, childPaths);
+        return table;
+    }
+
+    /**
+     * 推荐使用 objectArrayWithKeys
+     *
+     * @param datas
+     * @param columnNames
+     * @param childPaths
+     * @return
+     */
+    @Deprecated
+    public static List<String[]> extractObjectData(JsonNode datas, List<String> columnNames, String... childPaths) {
+        return objectArrayWithKeys(datas, columnNames.toArray(new String[columnNames.size()]), childPaths);
     }
 
     public static void main(String[] args) {

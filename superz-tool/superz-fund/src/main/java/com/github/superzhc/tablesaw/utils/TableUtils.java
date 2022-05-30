@@ -58,6 +58,11 @@ public class TableUtils {
         }
     }
 
+    public static Table build(List<String[]> table) {
+        String[] columnNames = table.remove(0);
+        return build(Arrays.asList(columnNames), table);
+    }
+
     public static Table build(List<String> columnNames, List<String[]> dataRows) {
         return TableBuildingUtils.build(columnNames, dataRows, ReadOptionsUtils.columnTypeByFunction(new FundColumnType()));
     }

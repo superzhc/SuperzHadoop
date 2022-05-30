@@ -2,7 +2,7 @@ package com.github.superzhc.news.data;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.http.HttpRequest;
-import com.github.superzhc.common.JsonUtils;
+import com.github.superzhc.common.jackson.JsonUtils;
 import com.github.superzhc.tablesaw.utils.TableUtils;
 import tech.tablesaw.api.Table;
 
@@ -77,8 +77,8 @@ public class AnyKnew {
         String result = HttpRequest.get(url).body();
         JsonNode json = JsonUtils.json(result, "data", "site");
 
-        String siteName = json.get("attrs").get("cn").asText();
-        String siteUrl = json.get("attrs").get("url").asText();
+        String siteName = JsonUtils.string(json, "attrs", "cn") /*json.get("attrs").get("cn").asText()*/;
+        String siteUrl = JsonUtils.string(json, "attrs", "url")/*json.get("attrs").get("url").asText()*/;
 
         List<String> columnNames = Arrays.asList(
                 "iid",
@@ -87,9 +87,10 @@ public class AnyKnew {
                 //, "new_tag"
         );
 
-        List<String[]> dataRows = JsonUtils.extractObjectData(json.get("subs").get(0).get("items"), columnNames);
+        //List<String[]> dataRows = JsonUtils.extractObjectData(json.get("subs").get(0).get("items"), columnNames);
+        List<String[]> dataRows=JsonUtils.objectArrayWithKeys(json.get("subs").get(0).get("items"),columnNames);
 
-        Table table = TableUtils.build(columnNames, dataRows);
+        Table table = TableUtils.build(dataRows);
         table.setName(String.format("%s[%s]", siteName, siteUrl));
 
         table.replaceColumn("add_date", table.intColumn("add_date").multiply(1000).asLongColumn().asDateTimes(ZoneOffset.ofHours(+8)).setName("add_date"));
