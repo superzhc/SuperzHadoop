@@ -21,6 +21,7 @@
         <module>superz-common-httpclient</module>
         <module>superz-common-pdfbox</module>
         <module>superz-common-jackson</module>
+        <module>superz-common-xchart</module>
     </modules>
 
     <properties>
