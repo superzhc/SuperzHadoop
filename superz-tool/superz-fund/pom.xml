@@ -22,6 +22,11 @@
     <dependencies>
         <dependency>
             <groupId>com.github.superzhc</groupId>
+            <artifactId>superz-common-jackson</artifactId>
+            <version>0.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.superzhc</groupId>
             <artifactId>superz-data</artifactId>
             <version>0.2.1</version>
             <exclusions>
