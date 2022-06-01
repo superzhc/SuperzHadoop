@@ -2,9 +2,11 @@ package com.github.superzhc.tablesaw.functions;
 
 import tech.tablesaw.api.DateColumn;
 import tech.tablesaw.api.LongColumn;
+import tech.tablesaw.api.StringColumn;
 
 import java.time.LocalDate;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 
 /**
  * @author superz
@@ -15,9 +17,23 @@ public class LocalDateFunctions {
         LongColumn longs = LongColumn.create(dates.name() + "[Long]", dates.size());
         for (int i = 0, size = dates.size(); i < size; i++) {
             LocalDate date = dates.get(i);
-            long timstamp = date.atStartOfDay(ZoneOffset.ofHours(+8)).toInstant().toEpochMilli();
-            longs.set(i, timstamp);
+            long timestamp = date.atStartOfDay(ZoneOffset.ofHours(+8)).toInstant().toEpochMilli();
+            longs.set(i, timestamp);
         }
         return longs;
+    }
+
+    public static StringColumn convert2String(DateColumn dates) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return convert2String(dates, formatter);
+    }
+
+    public static StringColumn convert2String(DateColumn dates, DateTimeFormatter formatter) {
+        StringColumn strings = StringColumn.create(dates.name() + "[String]", dates.size());
+        for (int i = 0, size = dates.size(); i < size; i++) {
+            LocalDate date = dates.get(i);
+            strings.set(i, date.format(formatter));
+        }
+        return strings;
     }
 }

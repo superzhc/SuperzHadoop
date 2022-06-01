@@ -1,18 +1,11 @@
 package com.github.superzhc.fund.plot;
 
 import com.github.superzhc.fund.data.index.IndexData;
-import com.github.superzhc.tablesaw.functions.DateFunctions;
+import com.github.superzhc.xchart.TableXChartTool;
 import org.knowm.xchart.*;
-import org.knowm.xchart.style.Styler;
-import org.knowm.xchart.style.colors.XChartSeriesColors;
-import org.knowm.xchart.style.lines.SeriesLines;
-import org.knowm.xchart.style.markers.SeriesMarkers;
-import tech.tablesaw.api.Row;
 import tech.tablesaw.api.Table;
 
-import java.time.Instant;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
 
 /**
  * @author superz
@@ -24,6 +17,7 @@ public class PlotMain {
         Table table = Table.create();
 
         table = IndexData.history(index);
+        table = table.where(table.dateColumn("date").isAfter(LocalDate.now().minusMonths(3)));
 
 //        table=IndexData.industry(index);
 
@@ -31,31 +25,13 @@ public class PlotMain {
         System.out.println(table.shape());
         System.out.println(table.structure().printAll());
 
-        XYChart chart = new XYChartBuilder()
-                .width(1500)
-                .height(800)
-                .title("TEST")
-                .theme(Styler.ChartTheme.XChart)
-                .xAxisTitle("date")
-                .yAxisTitle("y")
-                .build();
+//        XYChart chart = TimeSeries.lineChart(table, "date", "CLOSE", "OPEN", "HIGH", "LOW");
 
-        chart.getStyler().setLegendPosition(Styler.LegendPosition.InsideNW);
-        chart.getStyler().setZoomEnabled(true);
-        chart.getStyler().setCursorEnabled(true);
+//        CategoryChart chart2 = TimeSeries.barChart(table, "date", "amplitude", "quote_change");
 
-        DateTimeFormatter dtFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        chart.getStyler().setxAxisTickLabelsFormattingFunction(timestamp -> Instant.ofEpochMilli(timestamp.longValue()).atZone(ZoneOffset.ofHours(8)).toLocalDate().format(dtFormatter));
+        OHLCChart chart2 = TableXChartTool.ohlcChart(table, "date", "OPEN", "HIGH", "LOW", "CLOSE","volume");
 
-        double[] dates = DateFunctions.convert2Long(table.dateColumn("date")).asDoubleArray();
-        XYSeries series = chart.addSeries("CLOSE", dates, table.doubleColumn("close").asDoubleArray());
-        series.setMarker(SeriesMarkers.NONE);
-        series.setLineColor(XChartSeriesColors.GREEN);
-//        chart.addSeries("OPEN", dates, table.doubleColumn("open").asDoubleArray()).setMarker(SeriesMarkers.NONE);
-//        chart.addSeries("HIGH", dates, table.doubleColumn("high").asDoubleArray());
-//        chart.addSeries("LOW", dates, table.doubleColumn("low").asDoubleArray());
-
-
-        new SwingWrapper<>(chart).displayChart();
+        //new SwingWrapper<>(Arrays.asList(chart, chart2), 2, 1).displayChartMatrix();
+        new SwingWrapper<>(chart2).displayChart();
     }
 }
