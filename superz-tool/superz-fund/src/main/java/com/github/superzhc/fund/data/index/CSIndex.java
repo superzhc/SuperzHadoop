@@ -17,6 +17,8 @@ import java.io.InputStream;
 import java.util.*;
 
 import static com.github.superzhc.common.HttpConstant.UA;
+import static com.github.superzhc.fund.utils.IndexConstant.*;
+import static com.github.superzhc.fund.utils.FundConstant.*;
 
 /**
  * 中证指数
@@ -209,6 +211,30 @@ public class CSIndex {
         return table;
     }
 
+    public static Table basicIndex(String indexCode) {
+        String symbol = transform(indexCode);
+        // 指数基本信息
+        String basicUrl = String.format("https://www.csindex.com.cn/csindex-home/indexInfo/index-basic-info/%s", symbol);
+
+        String basicResult = HttpRequest.get(basicUrl).userAgent(UA).cookies(cookies).body();
+        Map<String, ?> basicMap = JsonUtils.map(basicResult, "data");
+
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put(INDEX_CODE, basicMap.get("indexCode"));
+        map.put(INDEX_NAME, basicMap.get("indexShortNameCn"));
+        map.put(INDEX_FULL_NAME, basicMap.get("indexFullNameCn"));
+        map.put(INDEX_TYPE, basicMap.get("indexType"));
+        map.put(INDEX_BASIC, basicMap.get("basicIndex"));
+        map.put(INDEX_BASIC_DATE, basicMap.get("basicDate"));
+        map.put(INDEX_PUBLISH_DATE, basicMap.get("publishDate"));
+        map.put(INDEX_ADJUST_FREQUENCY, basicMap.get("adjFreqCn"));
+        map.put(INDEX_DESCRIPTION, basicMap.get("indexCnDesc"));
+
+        Table table = TableUtils.map2Table(map);
+
+        return table;
+    }
+
     public static Table index(String indexCode) {
         String symbol = transform(indexCode);
         // 指数基本信息
@@ -228,10 +254,22 @@ public class CSIndex {
         JsonNode other = JsonUtils.json(otherResult, "data");
 
         Map<String, Object> map = new LinkedHashMap<>();
-        map.putAll(basicMap);
-        map.putAll(featureMap);
 
-        map.put("preparation", other.get("编制方案").get(0).get("filePath").asText());
+        // 基础信息获取
+        map.put(INDEX_CODE, basicMap.get("indexCode"));
+        map.put(INDEX_NAME, basicMap.get("indexShortNameCn"));
+        map.put(INDEX_FULL_NAME, basicMap.get("indexFullNameCn"));
+        map.put(INDEX_TYPE, basicMap.get("indexType"));
+        map.put(INDEX_BASIC, basicMap.get("basicIndex"));
+        map.put(INDEX_BASIC_DATE, basicMap.get("basicDate"));
+        map.put(INDEX_PUBLISH_DATE, basicMap.get("publishDate"));
+        map.put(INDEX_ADJUST_FREQUENCY, basicMap.get("adjFreqCn"));
+        map.put(INDEX_DESCRIPTION, basicMap.get("indexCnDesc"));
+
+        //指数特征
+        map.put(INDEX_SAMPLE_NUMBER, featureMap.get("consNum"));
+
+        // map.put("preparation", other.get("编制方案").get(0).get("filePath").asText());
 
         Table table = TableUtils.map2Table(map);
 
@@ -260,10 +298,21 @@ public class CSIndex {
         String result = HttpRequest.get(url).userAgent(UA).cookies(cookies).body();
         JsonNode json = JsonUtils.json(result, "data");
 
-        List<String> columnNames = JsonUtils.extractObjectColumnName(json);
+        Map<String, String> map = new LinkedHashMap<>();
+        map.put("indexCode", INDEX_CODE);
+        map.put("indexNameCn", INDEX_NAME);
+        map.put("productCode", FUND_CODE);
+        map.put("fundName", FUND_NAME);
+        map.put("fundType", FUND_TYPE);
+        map.put("aum", FUND_SCALE);
+        map.put("fundManager", FUND_BELONG_COMPANY);
+        map.put("inceptionDate", FUND_PUBLISH_DATE);
+
+        List<String> columnNames = new ArrayList<>(map.keySet());
+        List<String> columnNames2 = new ArrayList<>(map.values());
         List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
 
-        Table table = TableUtils.build(columnNames, dataRows);
+        Table table = TableUtils.build(columnNames2, dataRows);
         return table;
     }
 

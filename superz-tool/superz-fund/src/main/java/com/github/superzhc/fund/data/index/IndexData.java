@@ -1,16 +1,42 @@
 package com.github.superzhc.fund.data.index;
 
+import com.github.superzhc.fund.akshare.JiuCaiShuo;
 import com.github.superzhc.tablesaw.functions.DoubleFunctions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tech.tablesaw.api.Table;
+
+import static com.github.superzhc.fund.utils.FundConstant.*;
 
 /**
  * @author superz
  * @create 2022/5/19 23:37
  */
 public class IndexData {
+    private static final Logger log = LoggerFactory.getLogger(IndexData.class);
+
     public static Table trackIndex(String symbol) {
-        Table table = EastMoneyIndex.tranceIndex(symbol);
-        String[] columnNames = new String[]{"跟踪误差", "手续费"};
+        Table table, t1 = null;
+        try {
+            t1 = CSIndex.trackIndex(symbol);
+            log.debug("source [CSINDEX] size : {}", t1.rowCount());
+        } catch (Exception e) {
+            log.error("fetch [csindex] fail !", e);
+        }
+        Table t2 = EastMoneyIndex.tranceIndex(symbol);
+        log.debug("source [EM] size : {}", t2.rowCount());
+        if (null == t1) {
+            table = t2;
+        } else {
+            table = t1.joinOn(FUND_CODE).fullOuter(true, t2);
+        }
+        String[] columnNames = new String[]{
+                FUND_TRACKING_ERROR, FUND_FEE
+                , FUND_YIELD_LAST_WEEK
+                , FUND_YIELD_LAST_MONTH, FUND_YIELD_LAST_THREE_MONTH, FUND_YIELD_LAST_SIX_MONTH
+                , FUND_YIELD_THIS_YEAR, FUND_YIELD_LAST_YEAR, FUND_YIELD_LAST_THREE_YEAR
+                , FUND_YIELD_ALL
+        };
         for (String columnName : columnNames) {
             table.replaceColumn(columnName, DoubleFunctions.percentage(table.stringColumn(columnName)).setName(columnName));
         }
@@ -19,7 +45,7 @@ public class IndexData {
     }
 
     public static Table index(String symbol) {
-        Table table = EastMoneyIndex.index(symbol);
+        Table table = CSIndex.index(symbol);
         return table;
     }
 
@@ -40,6 +66,16 @@ public class IndexData {
 
     public static Table stocks(String symbol) {
         Table table = CSIndex.stocksWeight(symbol);
+        return table;
+    }
+
+    public static Table pe(String symbol) {
+        Table table = JiuCaiShuo.pe(symbol);
+        return table;
+    }
+
+    public static Table pb(String symbol) {
+        Table table = JiuCaiShuo.pb(symbol);
         return table;
     }
 

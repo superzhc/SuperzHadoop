@@ -19,6 +19,8 @@ import tech.tablesaw.io.html.HtmlReadOptions;
 import java.util.*;
 
 import static com.github.superzhc.common.HttpConstant.UA;
+import static com.github.superzhc.fund.utils.FundConstant.*;
+import static com.github.superzhc.fund.utils.IndexConstant.*;
 
 /**
  * 统一 indexCode.market，示例 000300.SH
@@ -199,7 +201,6 @@ public class EastMoneyIndex {
     /**
      * @param symbol
      * @param period 周期，choice of {'daily', 'weekly', 'monthly'}
-     *
      * @return
      */
     public static Table history(String symbol, String period) {
@@ -225,17 +226,17 @@ public class EastMoneyIndex {
         JsonNode json = JsonUtils.json(result, "data", "klines");
 
         List<String> columnNames = Arrays.asList(
-                "date",//"日期"
-                "open",//"开盘"
-                "close",//"收盘"
-                "high",//"最高"
-                "low",//"最低"
-                "volume",//"成交量"
-                "turnover",//"成交额"
-                "amplitude",//"振幅"
-                "quote_change",//"涨跌幅"
-                "quote_change_amount",//"涨跌额"
-                "turnover_rate"//"换手率"
+                INDEX_TRADE_DATE,//"日期"
+                INDEX_TRADE_OPEN,//"开盘"
+                INDEX_TRADE_CLOSE,//"收盘"
+                INDEX_TRADE_HIGH,//"最高"
+                INDEX_TRADE_LOW,//"最低"
+                INDEX_TRADE_VOLUME,//"成交量"
+                INDEX_TRADE_TURNOVER,//"成交额"
+                INDEX_TRADE_AMPLITUDE,//"振幅"
+                INDEX_TRADE_QUOTE_CHANGE,//"涨跌幅"
+                INDEX_TRADE_QUOTE_CHANGE_AMOUNT,//"涨跌额"
+                INDEX_TRADE_TURNOVER_RATE//"换手率"
         );
 
         List<String[]> dataRows = new ArrayList<>();
@@ -319,6 +320,22 @@ public class EastMoneyIndex {
             table.insertColumn(1, StringColumn.create("基金名称", fundNames));
 
             table.removeColumns("产品名称", "净值 日增长率", "购买起点", "操作");
+
+            Map<String, String> map = new HashMap<>();
+            map.put("基金代码", FUND_CODE);
+            map.put("基金名称", FUND_NAME);
+            map.put("近1周", FUND_YIELD_LAST_WEEK);
+            map.put("近1月", FUND_YIELD_LAST_MONTH);
+            map.put("近3月", FUND_YIELD_LAST_THREE_MONTH);
+            map.put("近6月", FUND_YIELD_LAST_SIX_MONTH);
+            map.put("近1年", FUND_YIELD_LAST_YEAR);
+            map.put("近3年", FUND_YIELD_LAST_THREE_YEAR);
+            map.put("今年来", FUND_YIELD_THIS_YEAR);
+            map.put("成立来", FUND_YIELD_ALL);
+            map.put("跟踪误差", FUND_TRACKING_ERROR);
+            map.put("手续费", FUND_FEE);
+
+            table = TableUtils.rename(table, map);
 
             return table;
         } catch (Exception e) {
