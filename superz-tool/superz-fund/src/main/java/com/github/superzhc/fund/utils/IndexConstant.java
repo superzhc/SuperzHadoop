@@ -19,6 +19,7 @@ public class IndexConstant {
 
     // 交易
     public static final String INDEX_TRADE_DATE = "date";
+    public static final String INDEX_TRADE_LAST_CLOSE = "last_close";
     public static final String INDEX_TRADE_OPEN = "open";
     public static final String INDEX_TRADE_CLOSE = "close";
     public static final String INDEX_TRADE_HIGH = "high";

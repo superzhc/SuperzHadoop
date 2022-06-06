@@ -1,7 +1,10 @@
 package com.github.superzhc.hadoop.yarn.api;
 
 import com.github.superzhc.common.http.HttpRequest;
-import com.github.superzhc.common.utils.JSONUtils;
+import com.github.superzhc.common.utils.JsonFormatUtils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 参考：
@@ -22,16 +25,65 @@ public class YarnRestApi {
     }
 
     /**
-     * 获取单个应用相关信息的访问地址
+     * 获取集群信息
+     *
+     * @return
+     */
+    public String cluster() {
+        /* 集群信息，下面两个都可以 GET */
+        //String url = uri("cluster");
+        String url = uri("cluster/info");
+        String result = HttpRequest.get(url).body();
+        return result;
+    }
+
+    /**
+     * 获取所有节点信息
+     *
+     * @return
+     */
+    public String nodes() {
+        /* 所有节点信息 */
+        String url = uri("cluster/nodes");
+        String result = HttpRequest.get(url).body();
+        return result;
+    }
+
+    public String applications() {
+        String url = uri("cluster/apps");
+        String result = HttpRequest.get(url).body();
+        return result;
+    }
+
+    /**
+     * 获取单个应用相关信息
      *
      * @param applicationId
      * @return
      */
     public String application(String applicationId) {
-        return uri(String.format("/cluster/apps/%s", applicationId));
+        String url = uri(String.format("cluster/apps/%s", applicationId));
+        String result = HttpRequest.get(url).body();
+        return result;
     }
 
-    public String uri(String resourcepath) {
+    public String applicationState(String applicationId) {
+        String url = uri(String.format("cluster/apps/%s/state", applicationId));
+        String result = HttpRequest.get(url).body();
+        return result;
+    }
+
+    public String updateApplicationState(String applicationId, String state) {
+        String url = uri(String.format("cluster/apps/%s/state", applicationId));
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("state", state);
+
+        String result = HttpRequest.put(url).json(payload).body();
+        return result;
+    }
+
+    private String uri(String resourcepath) {
         if (resourcepath.trim().startsWith("/")) {
             resourcepath = resourcepath.substring(1);
         }
@@ -47,10 +99,7 @@ public class YarnRestApi {
         String applicationId = "application_1648187566782_0014";
 
         String uri = null;
-//        /* 集群信息，下面两个都可以 GET */
-//        uri=api.uri("/cluster");
-//        uri = api.uri("/cluster/info");
-//
+
 //        /* 集群指标 */
 //        uri = api.uri("/cluster/metrics");
 //
@@ -68,15 +117,13 @@ public class YarnRestApi {
 //
 //        uri = api.uri(String.format("/cluster/apps/%s/appattempts/%s/containers", "application_1644398887576_0057", "appattempt_1644398887576_0057_000001"));
 //
-//        /* 所有节点信息 */
-//        uri = api.uri("/cluster/nodes");
-//
 //        /* 单个节点信息 */
 //        uri = api.uri(String.format("/cluster/nodes/%s", "log-platform02:45540"));
 //
-        uri = api.application(applicationId);
-        String result = HttpRequest.get(uri).body();
-        System.out.println(JSONUtils.format(result));
+//        uri = api.application(applicationId);
+//        String result = HttpRequest.get(uri).body();
+        String result = api.applicationState("application_1653876255814_0007");
+        System.out.println(JsonFormatUtils.format(result));
 
     }
 }

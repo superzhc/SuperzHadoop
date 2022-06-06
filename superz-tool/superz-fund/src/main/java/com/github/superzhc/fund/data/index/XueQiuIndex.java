@@ -5,6 +5,7 @@ import com.github.superzhc.common.HttpConstant;
 import com.github.superzhc.common.XueQiuUtils;
 import com.github.superzhc.common.http.HttpRequest;
 import com.github.superzhc.common.JsonUtils;
+import com.github.superzhc.fund.utils.IndexConstant;
 import com.github.superzhc.tablesaw.utils.TableUtils;
 import tech.tablesaw.api.Table;
 
@@ -37,23 +38,23 @@ public class XueQiuIndex {
 
         JsonNode quote = json.get("quote");
         // 指数代码
-        map.put("code", quote.get("code").asText());
+        map.put(IndexConstant.INDEX_CODE, quote.get("code").asText());
         // 指数名称
-        map.put("name", quote.get("name").asText());
+        map.put(IndexConstant.INDEX_NAME, quote.get("name").asText());
         // 昨收
-        map.put("last_close", quote.get("last_close").asDouble());
+        map.put(IndexConstant.INDEX_TRADE_LAST_CLOSE, quote.get("last_close").asDouble());
         // 今开
-        map.put("open", quote.get("open").asDouble());
+        map.put(IndexConstant.INDEX_TRADE_OPEN, quote.get("open").asDouble());
         // 当前点数
         map.put("current", quote.get("current").asDouble());
         // 最高
-        map.put("high", quote.get("high").asDouble());
+        map.put(IndexConstant.INDEX_TRADE_HIGH, quote.get("high").asDouble());
         // 最低
-        map.put("low", quote.get("low").asDouble());
+        map.put(IndexConstant.INDEX_TRADE_LOW, quote.get("low").asDouble());
         // 成交额
         map.put("amount", quote.get("amount").asLong());
         // 成交量
-        map.put("volume", quote.get("volume").asLong());
+        map.put(IndexConstant.INDEX_TRADE_VOLUME, quote.get("volume").asLong());
         // 振幅（单位百分比）
         map.put("amplitude", quote.get("amplitude").asDouble());
         // 涨跌幅（单位百分比）
