@@ -128,6 +128,29 @@ General Options:
 
 ## FAQ
 
+### 修改 pip 源
+
+**临时修改**
+
+```shell
+pip install markdown -i https://pypi.tuna.tsinghua.edu.cn/simple
+```
+
+**永久修改**
+
+```shell
+# 清华源
+pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+
+# 或：
+# 阿里源
+pip config set global.index-url https://mirrors.aliyun.com/pypi/simple/
+# 腾讯源
+pip config set global.index-url http://mirrors.cloud.tencent.com/pypi/simple
+# 豆瓣源
+pip config set global.index-url http://pypi.douban.com/simple/
+```
+
 ### 方括号在pip安装中的含义是什么
 
 在日常安装包的过程中，会看到如下的命令：
@@ -159,7 +182,6 @@ pip install git+https://github.com/shadowsocks/shadowsocks.git@master
 ```sh
 pip install https://github.com/shadowsocks/shadowsocks/archive/master.zip
 ```
-
 
 
 

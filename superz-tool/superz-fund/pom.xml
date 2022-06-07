@@ -23,17 +23,17 @@
         <dependency>
             <groupId>com.github.superzhc</groupId>
             <artifactId>superz-common-jackson</artifactId>
-            <version>0.2.1</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.superzhc</groupId>
             <artifactId>superz-common-xchart</artifactId>
-            <version>0.2.1</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.superzhc</groupId>
             <artifactId>superz-data</artifactId>
-            <version>0.2.1</version>
+            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.fasterxml.jackson.module</groupId>
@@ -51,6 +51,13 @@
             <groupId>org.decampo</groupId>
             <artifactId>xirr</artifactId>
             <version>1.2</version>
+        </dependency>
+
+        <!--元组的实现-->
+        <dependency>
+            <groupId>io.vavr</groupId>
+            <artifactId>vavr</artifactId>
+            <version>0.10.4</version>
         </dependency>
 
         <dependency>

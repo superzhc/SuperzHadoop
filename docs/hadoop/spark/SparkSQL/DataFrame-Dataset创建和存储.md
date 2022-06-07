@@ -90,6 +90,22 @@ Dataset<Integer> transformedDS = primitiveDS.map(value -> value + 1, integerEnco
 transformedDS.collect(); // 返回 [2, 3, 4]
 ```
 
+**Python 版本**
+
+```python
+from pyspark.sql import SparkSession,Row
+from pyspark.sql.types import *
+
+# 通过元组创建 DataFrame
+df=spark.createDataFrame([("张三",27)],["name","age"])
+
+# 创建Schema
+schemaString="name,age"
+schema=StructType(map(lambda column:StructField(column,StringType(),True),schemaString.split(",")))
+row=rdd.map(lambda line:Row(line[0],line[1]))
+df2=spark.createDataFrame(row,schema)
+```
+
 ## 通用 load/save 函数
 
 ### 默认文件的读取

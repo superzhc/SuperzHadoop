@@ -24,6 +24,13 @@ Function<Integer, Boolean> filter = k -> ( k % 3 == 0);//过滤函数
 JavaRDD<Integer> rddf = rdd.filter(filter);
 ```
 
+**Python 版本**
+
+```python
+words = sc.parallelize(["scala","java","hadoop","spark","pyspark","pyspark and spark"])
+words_filter = words.filter(lambda x: 'spark' in x)
+```
+
 ### `map` 和 `flatMap`
 
 <img src="../images/15050362138086-1568652283504.jpg" alt="img" style="zoom: 40%;" />
@@ -587,12 +594,22 @@ rdd.randomSplit(Array(0.1,0.2,0.3,0.4)).foreach(x => {println(x.count)})
 
 ### `count`：统计RDD中元素的个数
 
+**Scala 版本**
+
 ```scala
 val rdd = sc.makeRDD(Array("hello","hello","hello","world"))
 val num = rdd.count()
 println(num)
 结果：
 4
+```
+
+**Python 版本**
+
+```python
+words = sc.parallelize(["scala","java","hadoop","spark","pyspark","pyspark and spark"])
+counts = words.count()
+print(counts)
 ```
 
 ### `foreach`：遍历RDD中的元素
@@ -629,6 +646,13 @@ items.foreach(item -> {
 });
 ```
 
+**Python 版本**
+
+```python
+words = sc.parallelize(["scala","java","hadoop","spark","pyspark","pyspark and spark"])
+words.foreach(lambda x : print(x) )
+```
+
 ### `foreachPartition`
 
 `foreach`以一条记录为单位来遍历RDD；`foreachPartition`以分区为单位遍历RDD
@@ -658,6 +682,8 @@ rdd.foreachPartition(x => {
 
 ### `collect`：把运行结果拉回到Driver端
 
+**Scala 版本**
+
 ```
 val rdd = sc.makeRDD(Array(
   (5,"Tom"),(10,"Jed"),(3,"Tony"),(2,"Jack")
@@ -670,6 +696,14 @@ list.foreach(println)
 (3,Tony)
 (5,Tom)
 (10,Jed)
+```
+
+**Python 版本**
+
+```python
+words = sc.parallelize(["scala","java","hadoop","spark","pyspark","pyspark and spark"])
+coll = words.collect()
+print("Elements in RDD -> %s" % coll)
 ```
 
 ### `take(n)`：取RDD中的前n个元素

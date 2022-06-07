@@ -24,7 +24,7 @@ python -m venv test_venv
 虚拟环境创建好后，需要激活才能在当前命令行中使用，可以理解成将当前命令行环境中 PATH 变量的值替换掉
 
 - Windows 系统：激活脚本路径是 `<myvenv>\Scripts\activate.bat` ，如果是 powershell 命令行，脚本换成 `Activate.ps1`, 注意将 `<myvenv>` 换成你自己的虚拟环境目录
-- Linux 系统：激活脚本路径是 `<myvenv>/bin/activate` ，默认脚本没有执行权限，要么设置脚本为可执行，要么用 source 命令执行，例如 `source myvenv/bin/activate`
+- Linux 系统：激活脚本路径是 `<myvenv>/bin/activate` ，默认脚本没有执行权限，要么设置脚本为可执行，要么用 source 命令执行，例如 `source <myvenv>/bin/activate`
 
 ## 退出
 
