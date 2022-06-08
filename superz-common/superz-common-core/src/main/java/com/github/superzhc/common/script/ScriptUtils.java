@@ -7,6 +7,9 @@ import org.slf4j.LoggerFactory;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.*;
 
 /**
@@ -22,31 +25,53 @@ public class ScriptUtils {
         return SCRIPT_ENGINE_MANAGER.getEngineByName("nashorn");
     }
 
-    public static Object function(ScriptEngine engine, String func, String funcName, Object... params) {
+    /**
+     * 加载资源
+     *
+     * @param path
+     */
+    public static void load(ScriptEngine engine, String path) {
+        try {
+            engine.eval(new FileReader(path));
+        } catch (ScriptException | FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 输入方法体内容，并进行调用
+     *
+     * @param engine
+     * @param func
+     * @param funcName
+     * @param params
+     * @return
+     */
+    public static <T> T function(ScriptEngine engine, String func, String funcName, Object... params) {
         try {
             engine.eval(func);
 //            Invocable invocable = (Invocable) engine;
 //            Object value = invocable.invokeFunction(funcName, params);
 //            return value;
-            return function(engine, funcName, params);
+            return call(engine, funcName, params);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
     /**
-     * 注意事项：engine 已调用过 eval 加载了函数，此处直接进行调用
+     * 调用引擎中的方法
      *
      * @param engine
      * @param funcName
      * @param params
      * @return
      */
-    public static Object function(ScriptEngine engine, String funcName, Object... params) {
+    public static <T> T call(ScriptEngine engine, String funcName, Object... params) {
         try {
             Invocable invocable = (Invocable) engine;
             Object value = invocable.invokeFunction(funcName, params);
-            return value;
+            return (T) value;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

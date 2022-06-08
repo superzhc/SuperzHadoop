@@ -14,6 +14,8 @@ import tech.tablesaw.io.TableBuildingUtils;
 import java.time.ZoneOffset;
 import java.util.*;
 
+import static com.github.superzhc.fund.utils.IndexConstant.*;
+
 /**
  * 官网地址：https://www.funddb.cn/
  *
@@ -172,11 +174,11 @@ public class JiuCaiShuo {
     }
 
     public static Table pe(String symbol) {
-        return indexValuation(symbol, "pe");
+        return indexValuation(symbol, INDEX_VALUATION_PE);
     }
 
     public static Table pb(String symbol) {
-        return indexValuation(symbol, "pb");
+        return indexValuation(symbol, INDEX_VALUATION_PB);
     }
 
     /**
@@ -209,6 +211,9 @@ public class JiuCaiShuo {
         // 时间戳转换成时间
         DateTimeColumn dateTimeColumn = table.longColumn("timestamp").asDateTimes(ZoneOffset.ofHours(+8));
         table.replaceColumn("timestamp", dateTimeColumn.date().setName("date"));
+
+        // 确保时间排序
+        table = table.sortAscendingOn("date");
 
         return table;
     }

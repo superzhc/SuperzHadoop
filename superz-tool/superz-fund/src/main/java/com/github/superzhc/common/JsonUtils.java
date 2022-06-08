@@ -14,9 +14,14 @@ import java.time.ZoneId;
 import java.util.*;
 
 /**
+ * 该部分代码公共出来，抽取到 superz-common-jackson 模块了，后续更新也全部在该模块，本模块代码不做任何更新，bug 问题将会全部改用公共模块的修复代码
+ * <p>
+ * 后续将删除
+ *
  * @author superz
  * @create 2022/4/2 10:05
  **/
+@Deprecated
 public class JsonUtils {
     private static final Logger log = LoggerFactory.getLogger(JsonUtils.class);
 
@@ -250,9 +255,9 @@ public class JsonUtils {
     public static void main(String[] args) {
         Object[] objs = new Object[]{"Hello", "en", "zh-cn", true};
         Object[] objs2 = new Object[]{objs, new Object[]{null}};
-        Object[] objs3 = new Object[]{"MkEWBc",JsonUtils.asString(objs2),null,"generic"};
-        Object[] objs4=new Object[]{objs3};
-        Object[] objs5=new Object[]{objs4};
+        Object[] objs3 = new Object[]{"MkEWBc", JsonUtils.asString(objs2), null, "generic"};
+        Object[] objs4 = new Object[]{objs3};
+        Object[] objs5 = new Object[]{objs4};
         System.out.println(JsonUtils.asString(objs5));
     }
 }

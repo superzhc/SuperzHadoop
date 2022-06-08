@@ -152,6 +152,10 @@ public class JsonUtils {
         return null == childNode ? Boolean.FALSE : childNode.asBoolean();
     }
 
+    public static List<String> list(JsonNode node, String... paths) {
+        return Arrays.asList(array(node, paths));
+    }
+
     public static String[] array(String json, String... paths) {
         return array(json(json), paths);
     }

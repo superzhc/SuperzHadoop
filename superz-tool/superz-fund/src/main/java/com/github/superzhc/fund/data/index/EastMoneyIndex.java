@@ -140,7 +140,7 @@ public class EastMoneyIndex {
         params.put("invt", 2);
         params.put("fltt", 1);
         // params.put("ut","fa5fd1943c7b386f172d6893dbfba10b");
-        params.put("secid", transformC(symbol));
+        params.put("secid", transform(symbol));
         params.put("fields", fields);
         params.put("_", System.currentTimeMillis());
 
@@ -212,7 +212,7 @@ public class EastMoneyIndex {
         String url = "http://push2his.eastmoney.com/api/qt/stock/kline/get";
 
         Map<String, Object> params = new HashMap<>();
-        params.put("secid", transformC(symbol));
+        params.put("secid", transform(symbol));
         // params.put("ut", "7eea3edcaed734bea9cbfc24409ed989");
         params.put("fields1", "f1,f2,f3,f4,f5,f6");
         params.put("fields2", "f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61");
@@ -343,7 +343,7 @@ public class EastMoneyIndex {
         }
     }
 
-    private static String transformC(String symbol) {
+    private static String transform(String symbol) {
         String[] ss = symbol.split("\\.");
         return String.format("%s.%s", transformM(ss[1]), ss[0]);
     }

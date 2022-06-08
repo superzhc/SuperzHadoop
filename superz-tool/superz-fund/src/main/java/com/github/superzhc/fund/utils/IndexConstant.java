@@ -31,5 +31,8 @@ public class IndexConstant {
     public static final String INDEX_TRADE_QUOTE_CHANGE_AMOUNT = "quote_change_amount";
     public static final String INDEX_TRADE_TURNOVER_RATE = "turnover_rate";
 
-
+    // 估值
+    public static final String INDEX_VALUATION_PE = "pe";
+    public static final String INDEX_VALUATION_PE_TTM = "pe_ttm";
+    public static final String INDEX_VALUATION_PB = "pb";
 }
