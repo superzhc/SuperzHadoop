@@ -2,7 +2,7 @@ package com.github.superzhc.news.data;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.http.HttpRequest;
-import com.github.superzhc.common.JsonUtils;
+import com.github.superzhc.common.jackson.JsonUtils;
 import com.github.superzhc.tablesaw.utils.TableUtils;
 import tech.tablesaw.api.StringColumn;
 import tech.tablesaw.api.Table;
@@ -40,10 +40,9 @@ public class Jin10 {
                 .body();
         JsonNode json = JsonUtils.json(result, "data");
 
-        List<String> columnNames = JsonUtils.extractObjectColumnName(json);
-        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
+        List<String[]> datas = JsonUtils.objectArray(json);
 
-        Table table = TableUtils.build(columnNames, dataRows);
+        Table table = TableUtils.build(datas);
 
         StringColumn content = table.stringColumn("data").map(str -> {
             if (null == str || str.trim().length() == 0) {
@@ -65,8 +64,10 @@ public class Jin10 {
     public static void main(String[] args) {
         Table table = news();
 
-        System.out.println(table.print());
+        System.out.println(table.print(200));
         System.out.println(table.shape());
         System.out.println(table.structure().printAll());
+
+        TableUtils.write2Html(table);
     }
 }

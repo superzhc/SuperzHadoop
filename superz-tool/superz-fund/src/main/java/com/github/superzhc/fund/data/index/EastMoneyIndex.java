@@ -232,7 +232,7 @@ public class EastMoneyIndex {
                 INDEX_TRADE_HIGH,//"最高"
                 INDEX_TRADE_LOW,//"最低"
                 INDEX_TRADE_VOLUME,//"成交量"
-                INDEX_TRADE_TURNOVER,//"成交额"
+                INDEX_TRADE_AMOUNT,//"成交额"
                 INDEX_TRADE_AMPLITUDE,//"振幅"
                 INDEX_TRADE_QUOTE_CHANGE,//"涨跌幅"
                 INDEX_TRADE_QUOTE_CHANGE_AMOUNT,//"涨跌额"

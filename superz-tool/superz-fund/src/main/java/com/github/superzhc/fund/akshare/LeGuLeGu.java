@@ -76,6 +76,7 @@ public class LeGuLeGu {
 
     public static void main(String[] args) throws Exception {
         String str = "000300.SH";
+        str="000905.SH";
         Table table = valuation(str);
         System.out.println(table.print());
         System.out.println(table.shape());

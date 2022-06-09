@@ -116,4 +116,10 @@ public class SinaIndex {
             throw new RuntimeException(e);
         }
     }
+
+    private String transform(String symbol) {
+        String[] ss = symbol.split("\\.");
+        String sinaCode = ss[1].toLowerCase() + ss[0];
+        return sinaCode;
+    }
 }

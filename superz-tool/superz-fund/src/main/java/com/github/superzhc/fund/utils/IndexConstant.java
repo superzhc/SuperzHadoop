@@ -17,21 +17,24 @@ public class IndexConstant {
     public static final String INDEX_SAMPLE_NUMBER = "index_sample_num";
     public static final String INDEX_DESCRIPTION = "index_desc";
 
-    // 交易
+    /*交易*/
     public static final String INDEX_TRADE_DATE = "date";
     public static final String INDEX_TRADE_LAST_CLOSE = "last_close";
     public static final String INDEX_TRADE_OPEN = "open";
     public static final String INDEX_TRADE_CLOSE = "close";
     public static final String INDEX_TRADE_HIGH = "high";
     public static final String INDEX_TRADE_LOW = "low";
+    // 成交量
     public static final String INDEX_TRADE_VOLUME = "volume";
-    public static final String INDEX_TRADE_TURNOVER = "turnover";
+    // 成交额
+    public static final String INDEX_TRADE_AMOUNT = "amount";
     public static final String INDEX_TRADE_AMPLITUDE = "amplitude";
     public static final String INDEX_TRADE_QUOTE_CHANGE = "quote_change";
     public static final String INDEX_TRADE_QUOTE_CHANGE_AMOUNT = "quote_change_amount";
-    public static final String INDEX_TRADE_TURNOVER_RATE = "turnover_rate";
+    // 换手率
+    public static final String INDEX_TRADE_TURNOVER_RATE = "turnover"/*"turnover_rate"*/;
 
-    // 估值
+    /*估值*/
     public static final String INDEX_VALUATION_PE = "pe";
     public static final String INDEX_VALUATION_PE_TTM = "pe_ttm";
     public static final String INDEX_VALUATION_PB = "pb";

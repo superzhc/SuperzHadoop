@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.ExcelUtils;
 import com.github.superzhc.common.http.HttpRequest;
 import com.github.superzhc.common.HttpConstant;
-import com.github.superzhc.common.JsonUtils;
+import com.github.superzhc.common.jackson.JsonUtils;
 import com.github.superzhc.tablesaw.utils.ReadOptionsUtils;
 import com.github.superzhc.tablesaw.utils.TableUtils;
 import org.slf4j.Logger;
@@ -128,7 +128,8 @@ public class CSIndex {
             JsonNode json = JsonUtils.json(result);
             size = json.get("size").asInt();
 
-            List<String[]> dataRows = JsonUtils.extractObjectData(json.get("data"), columnNames);
+            List<String[]> dataRows = JsonUtils.objectArrayWithKeys(json.get("data"), columnNames);
+            dataRows.remove(0);
             Table t = TableBuildingUtils.build(columnNames, dataRows, ReadOptionsUtils.columnTypeByName(columnTypeMap));
             if (null == table) {
                 table = t;
@@ -184,30 +185,33 @@ public class CSIndex {
                 // "key",
                 "indexCode",// 指数代码
                 "indexName",// 指数名称
-                "indexNameEn",
-                "consNumber",// 样本数量
-                "latestClose",
-                "monthlyReturn",
-                "indexType",
-                "assetsClassify",
-                "assetsClassifyEn",
-                "hotSpot",
-                "hotSpotEn",
-                "region",
-                "regionEn",
-                "currency",
-                "currencyEn",
-                "ifCustomized",
-                "ifCustomizedEn",
+                // "indexNameEn",
+                // "consNumber",// 样本数量
+                // "latestClose",
+                // "monthlyReturn",
+                // "indexType",
+                // "assetsClassify",
+                // "assetsClassifyEn",
+                // "hotSpot",
+                // "hotSpotEn",
+                // "region",
+                // "regionEn",
+                // "currency",
+                // "currencyEn",
+                // "ifCustomized",
+                // "ifCustomizedEn",
                 "indexClassify",
-                "indexClassifyEn",
-                "ifWeightCapped",
-                "ifWeightCappedEn",
+                // "indexClassifyEn",
+                // "ifWeightCapped",
+                // "ifWeightCappedEn",
                 "publishDate"
         );
 
-        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
-        Table table = TableUtils.build(columnNames, dataRows);
+        List<String> finalColumnNames = Arrays.asList(INDEX_CODE, INDEX_NAME, INDEX_TYPE, INDEX_PUBLISH_DATE);
+
+        List<String[]> dataRows = JsonUtils.objectArrayWithKeys(json, columnNames);
+        dataRows.remove(0);
+        Table table = TableUtils.build(finalColumnNames, dataRows);
         return table;
     }
 
@@ -310,7 +314,8 @@ public class CSIndex {
 
         List<String> columnNames = new ArrayList<>(map.keySet());
         List<String> columnNames2 = new ArrayList<>(map.values());
-        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
+        List<String[]> dataRows = JsonUtils.objectArrayWithKeys(json, columnNames);
+        dataRows.remove(0);
 
         Table table = TableUtils.build(columnNames2, dataRows);
         return table;
@@ -322,8 +327,8 @@ public class CSIndex {
         String result = HttpRequest.get(url).userAgent(UA).cookies(cookies).body();
         JsonNode json = JsonUtils.json(result, "data", "weightList");
 
-        List<String> columnNames = JsonUtils.extractObjectColumnName(json);
-        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
+        List<String[]> dataRows = JsonUtils.objectArray(json);
+        List<String> columnNames = Arrays.asList(dataRows.remove(0));
 
         Table table = TableUtils.build(columnNames, dataRows);
         return table;
@@ -341,8 +346,8 @@ public class CSIndex {
         String result = HttpRequest.get(url).userAgent(UA).cookies(cookies).body();
         JsonNode json = JsonUtils.json(result, "data", "industryWeightList");
 
-        List<String> columnNames = JsonUtils.extractObjectColumnName(json);
-        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
+        List<String[]> dataRows = JsonUtils.objectArray(json);
+        List<String> columnNames = Arrays.asList(dataRows.remove(0));
 
         Table table = TableUtils.build(columnNames, dataRows);
         return table;
@@ -354,8 +359,8 @@ public class CSIndex {
         String result = HttpRequest.get(url).userAgent(UA).cookies(cookies).body();
         JsonNode json = JsonUtils.json(result, "data", "marketWeightList");
 
-        List<String> columnNames = JsonUtils.extractObjectColumnName(json);
-        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
+        List<String[]> dataRows = JsonUtils.objectArray(json);
+        List<String> columnNames = Arrays.asList(dataRows.remove(0));
 
         Table table = TableUtils.build(columnNames, dataRows);
         return table;
@@ -452,7 +457,17 @@ public class CSIndex {
         String symbol = transform(indexCode);
         String url = String.format("https://csi-web-dev.oss-cn-shanghai-finance-1-pub.aliyuncs.com/static/html/csindex/public/uploads/file/autofile/closeweight/%scloseweight.xls", symbol);
         InputStream in = HttpRequest.get(url).userAgent(UA).cookies(cookies).stream();
-        return ExcelUtils.read(in);
+        Table table = ExcelUtils.read(in);
+
+        table.column(0).setName("date");
+        //table.column(4).setName("stock_code");
+        table.addColumns(table.intColumn(4).asStringColumn().padStart(6, '0').setName("stock_code"));
+        table.column(5).setName("stock_name");
+        table.column(9).setName("weight");
+
+        table = table.select("date", "stock_code", "stock_name", "weight");
+
+        return table;
     }
 
     public static Table valuation(String indexCode) {
@@ -478,8 +493,8 @@ public class CSIndex {
             return Table.create();
         }
 
-        List<String> columnNames = JsonUtils.extractObjectColumnName(json);
-        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
+        List<String[]> dataRows = JsonUtils.objectArray(json);
+        List<String> columnNames = Arrays.asList(dataRows.remove(0));
         Table table = TableUtils.build(columnNames, dataRows);
         return table;
     }

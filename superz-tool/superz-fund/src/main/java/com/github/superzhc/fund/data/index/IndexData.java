@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import tech.tablesaw.api.Table;
 
 import static com.github.superzhc.fund.utils.FundConstant.*;
+import static com.github.superzhc.fund.utils.IndexConstant.*;
 
 /**
  * @author superz
@@ -41,6 +42,11 @@ public class IndexData {
             table.replaceColumn(columnName, DoubleFunctions.percentage(table.stringColumn(columnName)).setName(columnName));
         }
         table = table.sortAscendingOn(columnNames);
+        return table;
+    }
+
+    public static Table indices(String str) {
+        Table table = CSIndex.indices(str);
         return table;
     }
 
