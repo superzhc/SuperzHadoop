@@ -66,6 +66,11 @@ public class JsonUtils {
         }
     }
 
+    public static String format(String str) {
+        JsonNode json = json(str);
+        return format(json);
+    }
+
     public static String format(JsonNode json) {
         try {
             return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(json);

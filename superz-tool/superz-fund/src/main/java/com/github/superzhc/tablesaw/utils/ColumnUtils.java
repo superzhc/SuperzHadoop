@@ -44,10 +44,10 @@ public class ColumnUtils {
         return columnNameArr;
     }
 
-    public static void rename(Table table, String columnName, String newColumnName) {
-        Column column = table.column(columnName);
-        rename(column, newColumnName);
-    }
+//    public static void rename(Table table, String columnName, String newColumnName) {
+//        Column column = table.column(columnName);
+//        rename(column, newColumnName);
+//    }
 
     public static void rename(Column<?> column, String newColumnName) {
         column.setName(newColumnName);
