@@ -5,6 +5,7 @@
  */
 package com.github.superzhc.common.file.avro.generate;
 
+import org.apache.avro.generic.GenericArray;
 import org.apache.avro.specific.SpecificData;
 import org.apache.avro.util.Utf8;
 import org.apache.avro.message.BinaryMessageEncoder;
@@ -13,10 +14,10 @@ import org.apache.avro.message.SchemaStore;
 
 @org.apache.avro.specific.AvroGenerated
 public class User extends org.apache.avro.specific.SpecificRecordBase implements org.apache.avro.specific.SpecificRecord {
-  private static final long serialVersionUID = 8666510753750762481L;
+  private static final long serialVersionUID = 4285839498140649604L;
 
 
-  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"User\",\"namespace\":\"com.github.superzhc.common.avro.generate\",\"fields\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"favorite_number\",\"type\":[\"int\",\"null\"]},{\"name\":\"favorite_color\",\"type\":[\"string\",\"null\"]}]}");
+  public static final org.apache.avro.Schema SCHEMA$ = new org.apache.avro.Schema.Parser().parse("{\"type\":\"record\",\"name\":\"User\",\"namespace\":\"com.github.superzhc.common.file.avro.generate\",\"fields\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"favorite_number\",\"type\":[\"int\",\"null\"]},{\"name\":\"favorite_color\",\"type\":[\"string\",\"null\"]}]}");
   public static org.apache.avro.Schema getClassSchema() { return SCHEMA$; }
 
   private static final SpecificData MODEL$ = new SpecificData();
@@ -173,8 +174,8 @@ public class User extends org.apache.avro.specific.SpecificRecordBase implements
    * Creates a new User RecordBuilder.
    * @return A new User RecordBuilder
    */
-  public static User.Builder newBuilder() {
-    return new User.Builder();
+  public static com.github.superzhc.common.file.avro.generate.User.Builder newBuilder() {
+    return new com.github.superzhc.common.file.avro.generate.User.Builder();
   }
 
   /**
@@ -182,11 +183,11 @@ public class User extends org.apache.avro.specific.SpecificRecordBase implements
    * @param other The existing builder to copy.
    * @return A new User RecordBuilder
    */
-  public static User.Builder newBuilder(User.Builder other) {
+  public static com.github.superzhc.common.file.avro.generate.User.Builder newBuilder(com.github.superzhc.common.file.avro.generate.User.Builder other) {
     if (other == null) {
-      return new User.Builder();
+      return new com.github.superzhc.common.file.avro.generate.User.Builder();
     } else {
-      return new User.Builder(other);
+      return new com.github.superzhc.common.file.avro.generate.User.Builder(other);
     }
   }
 
@@ -195,11 +196,11 @@ public class User extends org.apache.avro.specific.SpecificRecordBase implements
    * @param other The existing instance to copy.
    * @return A new User RecordBuilder
    */
-  public static User.Builder newBuilder(User other) {
+  public static com.github.superzhc.common.file.avro.generate.User.Builder newBuilder(com.github.superzhc.common.file.avro.generate.User other) {
     if (other == null) {
-      return new User.Builder();
+      return new com.github.superzhc.common.file.avro.generate.User.Builder();
     } else {
-      return new User.Builder(other);
+      return new com.github.superzhc.common.file.avro.generate.User.Builder(other);
     }
   }
 
@@ -223,7 +224,7 @@ public class User extends org.apache.avro.specific.SpecificRecordBase implements
      * Creates a Builder by copying an existing Builder.
      * @param other The existing Builder to copy.
      */
-    private Builder(User.Builder other) {
+    private Builder(com.github.superzhc.common.file.avro.generate.User.Builder other) {
       super(other);
       if (isValidValue(fields()[0], other.name)) {
         this.name = data().deepCopy(fields()[0].schema(), other.name);
@@ -243,7 +244,7 @@ public class User extends org.apache.avro.specific.SpecificRecordBase implements
      * Creates a Builder by copying an existing User instance
      * @param other The existing instance to copy.
      */
-    private Builder(User other) {
+    private Builder(com.github.superzhc.common.file.avro.generate.User other) {
       super(SCHEMA$, MODEL$);
       if (isValidValue(fields()[0], other.name)) {
         this.name = data().deepCopy(fields()[0].schema(), other.name);
@@ -273,7 +274,7 @@ public class User extends org.apache.avro.specific.SpecificRecordBase implements
       * @param value The value of 'name'.
       * @return This builder.
       */
-    public User.Builder setName(java.lang.CharSequence value) {
+    public com.github.superzhc.common.file.avro.generate.User.Builder setName(java.lang.CharSequence value) {
       validate(fields()[0], value);
       this.name = value;
       fieldSetFlags()[0] = true;
@@ -293,7 +294,7 @@ public class User extends org.apache.avro.specific.SpecificRecordBase implements
       * Clears the value of the 'name' field.
       * @return This builder.
       */
-    public User.Builder clearName() {
+    public com.github.superzhc.common.file.avro.generate.User.Builder clearName() {
       name = null;
       fieldSetFlags()[0] = false;
       return this;
@@ -313,7 +314,7 @@ public class User extends org.apache.avro.specific.SpecificRecordBase implements
       * @param value The value of 'favorite_number'.
       * @return This builder.
       */
-    public User.Builder setFavoriteNumber(java.lang.Integer value) {
+    public com.github.superzhc.common.file.avro.generate.User.Builder setFavoriteNumber(java.lang.Integer value) {
       validate(fields()[1], value);
       this.favorite_number = value;
       fieldSetFlags()[1] = true;
@@ -333,7 +334,7 @@ public class User extends org.apache.avro.specific.SpecificRecordBase implements
       * Clears the value of the 'favorite_number' field.
       * @return This builder.
       */
-    public User.Builder clearFavoriteNumber() {
+    public com.github.superzhc.common.file.avro.generate.User.Builder clearFavoriteNumber() {
       favorite_number = null;
       fieldSetFlags()[1] = false;
       return this;
@@ -353,7 +354,7 @@ public class User extends org.apache.avro.specific.SpecificRecordBase implements
       * @param value The value of 'favorite_color'.
       * @return This builder.
       */
-    public User.Builder setFavoriteColor(java.lang.CharSequence value) {
+    public com.github.superzhc.common.file.avro.generate.User.Builder setFavoriteColor(java.lang.CharSequence value) {
       validate(fields()[2], value);
       this.favorite_color = value;
       fieldSetFlags()[2] = true;
@@ -373,7 +374,7 @@ public class User extends org.apache.avro.specific.SpecificRecordBase implements
       * Clears the value of the 'favorite_color' field.
       * @return This builder.
       */
-    public User.Builder clearFavoriteColor() {
+    public com.github.superzhc.common.file.avro.generate.User.Builder clearFavoriteColor() {
       favorite_color = null;
       fieldSetFlags()[2] = false;
       return this;

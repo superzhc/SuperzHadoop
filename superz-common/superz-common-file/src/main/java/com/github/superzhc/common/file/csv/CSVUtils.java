@@ -1,6 +1,6 @@
 package com.github.superzhc.common.file.csv;
 
-import com.github.superzhc.common.file.text.TextUtils;
+import com.github.superzhc.common.file.text.TextWriter;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -24,6 +24,6 @@ public final class CSVUtils {
             String str = Arrays.stream(data).map(d -> null == data ? (String) null : data.toString()).collect(Collectors.joining(","));
             sb.append(str).append("\n");
         }
-        return TextUtils.write(path, sb.toString());
+        return TextWriter.write(path, sb.toString());
     }
 }

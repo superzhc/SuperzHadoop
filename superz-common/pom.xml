@@ -13,15 +13,13 @@
     <packaging>pom</packaging>
     <modules>
         <module>superz-common-core</module>
-        <module>superz-common-okhttp3</module>
         <module>superz-common-faker</module>
         <module>superz-common-tablesaw</module>
         <module>superz-common-file</module>
         <module>superz-common-ssh</module>
-        <module>superz-common-httpclient</module>
-        <module>superz-common-pdfbox</module>
         <module>superz-common-jackson</module>
         <module>superz-common-xchart</module>
+        <module>superz-common-third-http</module>
     </modules>
 
     <properties>
