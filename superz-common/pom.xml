@@ -20,6 +20,7 @@
         <module>superz-common-jackson</module>
         <module>superz-common-xchart</module>
         <module>superz-common-third-http</module>
+        <module>superz-common-html</module>
     </modules>
 
     <properties>

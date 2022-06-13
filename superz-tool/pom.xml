@@ -17,7 +17,6 @@
         <module>superz-tool-main</module>
         <module>superz-mysql</module>
         <module>superz-fund</module>
-        <module>superz-selenium</module>
         <module>superz-translate</module>
     </modules>
 
