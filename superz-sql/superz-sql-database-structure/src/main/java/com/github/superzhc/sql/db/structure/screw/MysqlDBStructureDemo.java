@@ -1,4 +1,4 @@
-package com.github.superzhc.screw;
+package com.github.superzhc.sql.db.structure.screw;
 
 import cn.smallbun.screw.core.Configuration;
 import cn.smallbun.screw.core.engine.EngineConfig;
@@ -14,9 +14,9 @@ import java.util.ArrayList;
 
 /**
  * @author superz
- * @create 2021/9/4 16:09
- */
-public class LocalMysqlDB {
+ * @create 2022/6/14 13:50
+ **/
+public class MysqlDBStructureDemo {
     public static void main(String[] args) {
         //数据源
         HikariConfig hikariConfig = new HikariConfig();

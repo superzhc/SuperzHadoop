@@ -1,4 +1,4 @@
-package com.github.superzhc.mysql;
+package com.github.superzhc.sql.mysql;
 
 import com.github.superzhc.common.jdbc.JdbcHelper;
 

@@ -13,9 +13,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>superz-data</module>
-        <module>superz-screw</module>
         <module>superz-tool-main</module>
-        <module>superz-mysql</module>
         <module>superz-fund</module>
         <module>superz-translate</module>
     </modules>

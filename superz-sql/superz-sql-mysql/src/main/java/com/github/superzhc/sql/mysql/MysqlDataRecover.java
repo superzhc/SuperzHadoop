@@ -1,7 +1,7 @@
-package com.github.superzhc.mysql.tool;
+package com.github.superzhc.sql.mysql;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
  * @author Administrator
  */
 public class MysqlDataRecover {
-    private static final Logger log = LoggerFactory.getLogger(MysqlDataRecover.class);
+    // private static final Logger log = LoggerFactory.getLogger(MysqlDataRecover.class);
 
     private final static String databaseName = "home_dw";
 
