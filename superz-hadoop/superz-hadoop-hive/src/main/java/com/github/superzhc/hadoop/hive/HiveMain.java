@@ -13,11 +13,12 @@ import java.sql.ResultSet;
 public class HiveMain
 {
     private static String JDBC_DRIVER = "org.apache.hive.jdbc.HiveDriver";
-    private static String CONNECTION_URL = "jdbc:hive2://localhost:10000/";
+    private static String CONNECTION_URL = "jdbc:hive2://log-platform02:10000/";
 
     public static void main(String[] args) {
         try(JdbcHelper jdbc=new JdbcHelper(JDBC_DRIVER,CONNECTION_URL,"root",null)){
-            jdbc.show("show tables");
+             // jdbc.show("show tables");
+            jdbc.show("select * from any_knew_hot_news");
         }
     }
 }

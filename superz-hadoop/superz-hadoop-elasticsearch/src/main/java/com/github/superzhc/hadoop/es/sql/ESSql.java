@@ -1,6 +1,5 @@
 package com.github.superzhc.hadoop.es.sql;
 
-import com.github.superzhc.common.utils.JSONUtils;
 import com.github.superzhc.hadoop.es.ESClient;
 import com.github.superzhc.hadoop.es.ESCommon;
 import com.github.superzhc.hadoop.es.util.ResponseUtils;

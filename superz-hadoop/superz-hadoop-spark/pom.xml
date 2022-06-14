@@ -5,7 +5,7 @@
     <parent>
         <artifactId>superz-hadoop</artifactId>
         <groupId>com.github.superzhc</groupId>
-        <version>0.2.1</version>
+        <version>0.2.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -22,7 +22,7 @@
         <dependency>
             <groupId>com.github.superzhc</groupId>
             <artifactId>superz-common-core</artifactId>
-            <version>0.2.1</version>
+            <version>0.2.2</version>
         </dependency>
 
         <dependency>
@@ -107,6 +107,15 @@
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-streaming-kafka-0-10_${scala.binary.version}</artifactId>
             <version>${spark.version}</version>
+        </dependency>
+        <!--<dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-tensorflow-connector_${scala.binary.version}</artifactId>
+        </dependency>-->
+        <dependency>
+            <groupId>com.linkedin.sparktfrecord</groupId>
+            <artifactId>spark-tfrecord_${scala.binary.version}</artifactId>
+            <version>0.3.4</version>
         </dependency>
 
         <!--region scala-->

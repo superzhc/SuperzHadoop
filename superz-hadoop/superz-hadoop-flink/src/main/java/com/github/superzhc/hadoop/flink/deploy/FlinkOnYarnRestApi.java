@@ -1,7 +1,6 @@
 package com.github.superzhc.hadoop.flink.deploy;
 
 import com.github.superzhc.common.http.HttpRequest;
-import com.github.superzhc.common.utils.JSONUtils;
 
 import java.io.BufferedReader;
 import java.io.IOException;

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>superz-hadoop</artifactId>
         <groupId>com.github.superzhc</groupId>
-        <version>0.2.1</version>
+        <version>0.2.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -20,7 +20,7 @@
         <dependency>
             <groupId>com.github.superzhc</groupId>
             <artifactId>superz-common-core</artifactId>
-            <version>0.2.1</version>
+            <version>0.2.2</version>
         </dependency>
 
         <dependency>
@@ -80,6 +80,11 @@
             <groupId>com.facebook.presto</groupId>
             <artifactId>presto-jdbc</artifactId>
             <version>0.265</version>
+        </dependency>
+        <dependency>
+            <groupId>io.trino</groupId>
+            <artifactId>trino-jdbc</artifactId>
+            <version>379</version>
         </dependency>
     </dependencies>
 

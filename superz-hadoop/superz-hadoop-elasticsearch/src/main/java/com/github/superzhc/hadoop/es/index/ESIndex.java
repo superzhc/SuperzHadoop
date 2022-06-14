@@ -16,7 +16,7 @@ public class ESIndex extends ESCommon {
         super(client);
     }
 
-    public String indices(){
+    public String indices() {
         Response response = client.get(formatJson("/_cat/indices"));
         return ResponseUtils.getEntity(response);
     }
@@ -45,6 +45,18 @@ public class ESIndex extends ESCommon {
         String json = "{\"settings\":{\"number_of_shards\": " + numberOfShards + ",\"number_of_replicas\": " + numberOfReplicas + "}}";
         Response response = client.put(String.format("/%s", index), json);
 
+        return ResponseUtils.getEntity(response);
+    }
+
+    public String get(String index) {
+        String url = String.format("/%s", index);
+        Response response = client.get(url);
+        return ResponseUtils.getEntity(response);
+    }
+
+    public String settings(String index) {
+        String url = String.format("/%s/_settings", index);
+        Response response = client.get(url);
         return ResponseUtils.getEntity(response);
     }
 

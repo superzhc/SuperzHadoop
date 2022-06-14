@@ -19,7 +19,11 @@ public class PrestoMain {
          * jdbc:presto://host:port/catalog
          * jdbc:presto://host:port/catalog/schema
          */
-        String url = "jdbc:presto://log-platform01:8099/hive/default";
+//        String url = "jdbc:presto://log-platform01:8099/hive/default";
+
+//        String url = "jdbc:trino://log-platform01:8099/elasticsearch/default";
+
+        String url = "jdbc:trino://log-platform01:8099";
 
 //        Connection conn = null;
 //        Statement stmt = null;
@@ -49,7 +53,10 @@ public class PrestoMain {
 //        }
 
         try (JdbcHelper jdbc = new JdbcHelper(url, "root", null)) {
-            jdbc.show("select * from any_knew_hot_news");
+            jdbc.show("select * from hive.default.any_knew_hot_news");
+
+            String sql = "select * from elasticsearch.default.\"service_instance_sla-20220423\" where time_bucket>202204231414 order by time_bucket asc limit 5";
+            jdbc.show(sql);
         }
     }
 }

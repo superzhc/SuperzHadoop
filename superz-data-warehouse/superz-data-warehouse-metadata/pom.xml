@@ -5,7 +5,7 @@
     <parent>
         <artifactId>superz-data-warehouse</artifactId>
         <groupId>com.github.superzhc</groupId>
-        <version>0.2.1</version>
+        <version>0.2.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
