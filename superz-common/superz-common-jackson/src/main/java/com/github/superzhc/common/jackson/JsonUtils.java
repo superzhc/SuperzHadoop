@@ -1,5 +1,6 @@
 package com.github.superzhc.common.jackson;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -28,6 +29,8 @@ public class JsonUtils {
         //允许使用单引号
         mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        // mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     }
 
     public static ObjectMapper mapper() {

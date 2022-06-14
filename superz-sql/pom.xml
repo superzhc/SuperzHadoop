@@ -15,6 +15,7 @@
         <module>superz-sql-parser</module>
         <module>superz-sql-mysql</module>
         <module>superz-sql-database-structure</module>
+        <module>superz-sql-postgresql</module>
     </modules>
 
     <properties>
