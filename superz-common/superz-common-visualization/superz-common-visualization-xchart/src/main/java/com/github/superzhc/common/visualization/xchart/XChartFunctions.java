@@ -1,4 +1,4 @@
-package com.github.superzhc.common.xchart;
+package com.github.superzhc.common.visualization.xchart;
 
 import java.time.Instant;
 import java.time.ZoneOffset;

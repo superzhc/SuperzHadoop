@@ -1,6 +1,6 @@
 package com.github.superzhc.xchart;
 
-import com.github.superzhc.common.xchart.XChartFunctions;
+import com.github.superzhc.common.visualization.xchart.XChartFunctions;
 import com.github.superzhc.tablesaw.functions.DateFunctions;
 import org.knowm.xchart.*;
 import org.knowm.xchart.style.Styler;
