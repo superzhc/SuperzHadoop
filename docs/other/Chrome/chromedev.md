@@ -496,7 +496,7 @@ Popup页面提供了一个简单便捷的UI接口。由于有时新窗口会使�
 
 将鼠标移至扩展图标上，片刻后所显示的文字就是扩展的标题。
 
-在Manifest中，browser\_action的default\_title属性可以设置扩展的默认标题，比如如下的例子：
+在Manifest中，browserType\_action的default\_title属性可以设置扩展的默认标题，比如如下的例子：
 
 ```json
 "browser_action": {

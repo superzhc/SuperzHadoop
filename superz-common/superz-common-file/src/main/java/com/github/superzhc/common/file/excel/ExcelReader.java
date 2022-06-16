@@ -266,8 +266,29 @@ public class ExcelReader {
     }
 
     public static void main(String[] args) {
-        String path = "E:\\downloads\\累计入园人数_2022-03-24_10-37-45-104.xlsx";
+        String path = "D:\\download\\telegram\\江苏.xlsx";
 
         preview(path, 0);
+
+        // ExcelReaderSetting setting = new ExcelReaderSetting();
+        // setting.setPath(path).setSheetNumber(0).setBatchSize(1000);
+        //
+        // setting.setDataFunction(new Function<List<Map<Integer, String>>, Object>() {
+        //     @Override
+        //     public Object apply(List<Map<Integer, String>> maps) {
+        //         for (Map<Integer, String> map : maps) {
+        //             if ((null != map.get(8) && map.get(8).contains("张家港")) || (null != map.get(7) && map.get(7).contains("张家港"))) {
+        //                 StringBuilder sb = new StringBuilder("|");
+        //                 for (Map.Entry<Integer, String> entry : map.entrySet()) {
+        //                     sb.append(entry.getValue()).append("|");
+        //                 }
+        //                 System.out.println(sb);
+        //             }
+        //         }
+        //         return null;
+        //     }
+        // });
+        //
+        // read(setting);
     }
 }

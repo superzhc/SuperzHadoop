@@ -1,4 +1,4 @@
-package com.github.superzhc.data.utils;
+package com.github.superzhc.common.html.spider;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -19,8 +19,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author superz
  * @create 2022/1/10 15:47
  */
-public class UserAgent {
-    private static final Logger log = LoggerFactory.getLogger(UserAgent.class);
+public class UserAgentSpider {
+    private static final Logger log = LoggerFactory.getLogger(UserAgentSpider.class);
 
     public static enum Browser {
         /**
@@ -123,7 +123,7 @@ public class UserAgent {
 
     public static String random(Browser browser) {
         if (!cache.containsKey(browser.name())) {
-            new UserAgent().get(browser);
+            new UserAgentSpider().get(browser);
         }
 
         List<String> userAgents = cache.get(browser.name());
@@ -134,7 +134,7 @@ public class UserAgent {
 //        List<String> userAgents = new UserAgent().get(Browser.Edge);
 //        System.out.println(userAgents.stream().collect(Collectors.joining("\n")));
 //        while (true) {
-            System.out.println(UserAgent.Chrome());
+            System.out.println(UserAgentSpider.Chrome());
 //            Thread.sleep(1000);
 //        }
     }

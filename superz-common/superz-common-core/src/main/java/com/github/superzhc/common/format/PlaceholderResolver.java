@@ -1,4 +1,4 @@
-package com.github.superzhc.common.utils;
+package com.github.superzhc.common.format;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -15,12 +15,12 @@ import java.util.stream.Stream;
 /**
  * 占位符解析器
  * 2020年4月28日 superz 二次开发
+ *
  * @author meilin.huang
  * @version 1.0
  * @date 2018-11-13 1:42 PM
  */
-public class PlaceholderResolver
-{
+public class PlaceholderResolver {
     /**
      * 默认前缀占位符
      */
@@ -56,6 +56,7 @@ public class PlaceholderResolver
 
     /**
      * 获取默认的占位符解析器，即占位符前缀为"${", 后缀为"}"
+     *
      * @return
      */
     public static PlaceholderResolver getDefaultResolver() {
@@ -73,7 +74,8 @@ public class PlaceholderResolver
      * 返回 category:1:product:2<br/>
      *
      * @param content 要解析的带有占位符的模板字符串
-     * @param values   按照模板占位符索引位置设置对应的值
+     * @param values 按照模板占位符索引位置设置对应的值
+     *
      * @return
      */
     public String resolve(String content, String... values) {
@@ -101,7 +103,8 @@ public class PlaceholderResolver
      * 返回 category:1:product:2<br/>
      *
      * @param content 要解析的带有占位符的模板字符串
-     * @param values   按照模板占位符索引位置设置对应的值
+     * @param values 按照模板占位符索引位置设置对应的值
+     *
      * @return
      */
     public String resolve(String content, Object[] values) {
@@ -111,13 +114,14 @@ public class PlaceholderResolver
     /**
      * 2021年8月17日 superz add
      * 解析带有指定占位符的模板字符串，默认占位符为前缀：${  后缀：}<br/><br/>
-     * 如：template = category:${1}:product:${2}:category:${1}<br/>
+     * 如：template = category:${0}:product:${1}:category:${0}<br/>
      * values = {"1", "2"}<br/>
      * 返回 category:1:product:2:category:1<br/>
      * 注意：索引从0开始
      *
      * @param content 要解析的带有占位符的模板字符串
-     * @param values   按照模板占位符索引位置设置对应的值
+     * @param values 按照模板占位符索引位置设置对应的值
+     *
      * @return
      */
     public String resolveByIndex(String content, String... values) {
@@ -130,6 +134,9 @@ public class PlaceholderResolver
         StringBuilder result = new StringBuilder(content);
         while (start != -1) {
             int end = result.indexOf(this.placeholderSuffix, start);
+            if (end == -1) {
+                break;
+            }
             // 获取占位符属性值，如${index}, 即获取index
             String placeholder = result.substring(start + this.placeholderPrefix.length(), end).trim();
             // 替换整个占位符内容，即将${index}值替换为替换规则回调中的内容
@@ -146,8 +153,10 @@ public class PlaceholderResolver
 
     /**
      * 根据替换规则来替换指定模板中的占位符值
-     * @param content  要解析的字符串
-     * @param rule  解析规则回调
+     *
+     * @param content 要解析的字符串
+     * @param rule 解析规则回调
+     *
      * @return
      */
     public String resolveByRule(String content, Function<String, String> rule) {
@@ -176,15 +185,16 @@ public class PlaceholderResolver
     /**
      * 替换模板中占位符内容，占位符的内容即为map key对应的值，key为占位符中的内容。<br/><br/>
      * 如：content = product:${id}:detail:${did}<br/>
-     *    valueMap = id -> 1; pid -> 2<br/>
-     *    经过解析返回 product:1:detail:2<br/>
+     * valueMap = id -> 1; pid -> 2<br/>
+     * 经过解析返回 product:1:detail:2<br/>
      *
-     * @param content  模板内容。
+     * @param content 模板内容。
      * @param valueMap 值映射
-     * @return   替换完成后的字符串。
+     *
+     * @return 替换完成后的字符串。
      */
     public String resolveByMap(String content, final Map<String, Object> valueMap) {
-        if(null==valueMap||valueMap.size()==0){
+        if (null == valueMap || valueMap.size() == 0) {
             return content;
         }
 
@@ -241,8 +251,10 @@ public class PlaceholderResolver
 
     /**
      * 根据properties文件替换占位符内容
+     *
      * @param content
      * @param properties
+     *
      * @return
      */
     public String resolveByProperties(String content, final Properties properties) {
