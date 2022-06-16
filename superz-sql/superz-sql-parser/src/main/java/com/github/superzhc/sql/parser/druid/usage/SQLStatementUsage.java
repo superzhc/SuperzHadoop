@@ -11,11 +11,12 @@ public class SQLStatementUsage {
 
     public static void usage(SQLStatement sqlStatement) {
         log.info("SQL 分析语句：{}", SQLUtils.toSQLString(sqlStatement));
+        Object result = null;
 
         /* 最常用的Statement是SELECT/UPDATE/DELETE/INSERT */
         if (sqlStatement instanceof SQLSelectStatement) {
             SQLSelectStatement sqlSelectStatement = (SQLSelectStatement) sqlStatement;
-            SQLSelectStatementUsage.usage(sqlSelectStatement);
+            result = SQLSelectStatementUsage.usage(sqlSelectStatement);
         } else if (sqlStatement instanceof SQLInsertStatement) {
             SQLInsertStatement sqlInsertStatement = (SQLInsertStatement) sqlStatement;
             SQLInsertStatementUsage.usage(sqlInsertStatement);
@@ -37,7 +38,8 @@ public class SQLStatementUsage {
             SQLCreateTableStatement sqlCreateTableStatement = (SQLCreateTableStatement) sqlStatement;
             SQLCreateTableStatementUsage.usage(sqlCreateTableStatement);
         } else {
-            log.error("TODO：{}", sqlStatement.getClass().getName());
+            result = String.format("TODO：%s", sqlStatement.getClass().getName());
         }
+        log.info("SQL 分析结果：{}", result);
     }
 }

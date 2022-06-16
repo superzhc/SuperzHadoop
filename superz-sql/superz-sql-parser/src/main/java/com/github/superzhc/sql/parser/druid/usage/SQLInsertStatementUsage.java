@@ -5,6 +5,9 @@ import com.alibaba.druid.sql.ast.SQLExpr;
 import com.alibaba.druid.sql.ast.statement.SQLInsertStatement;
 import com.alibaba.druid.sql.ast.statement.SQLSelect;
 import com.alibaba.druid.sql.ast.statement.SQLTableSource;
+import com.github.superzhc.sql.parser.druid.lineage.DataLineage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -13,9 +16,14 @@ import java.util.List;
  * @create 2022/6/15 14:49
  **/
 public class SQLInsertStatementUsage {
+    private static final Logger log= LoggerFactory.getLogger(SQLInsertStatementUsage.class);
+
     public static void usage(SQLInsertStatement statement){
-        SQLTableSource to = statement.getTableSource();
-        System.out.println("插入表：" + SQLUtils.toSQLString(to));
+        DataLineage dataLineage=new DataLineage();
+
+        SQLTableSource target = statement.getTableSource();
+        // log.debug("插入数据的表：{}",target);
+        // System.out.println("插入表：" + SQLUtils.toSQLString(to));
 
         // 插入的列，若未提供则如何获取列的元数据
         List<SQLExpr> exprs = statement.getColumns();
