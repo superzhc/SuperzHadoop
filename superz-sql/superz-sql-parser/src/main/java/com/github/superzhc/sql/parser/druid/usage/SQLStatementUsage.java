@@ -10,7 +10,7 @@ public class SQLStatementUsage {
     static final Logger log = LoggerFactory.getLogger(SQLStatementUsage.class);
 
     public static void usage(SQLStatement sqlStatement) {
-        log.info("SQL 分析语句：{}", SQLUtils.toSQLString(sqlStatement));
+        log.info("SQL 分析语句：\n{}", SQLUtils.toSQLString(sqlStatement));
         Object result = null;
 
         /* 最常用的Statement是SELECT/UPDATE/DELETE/INSERT */

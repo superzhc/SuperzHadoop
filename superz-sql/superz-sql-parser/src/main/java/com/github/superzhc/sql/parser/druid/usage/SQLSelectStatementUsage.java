@@ -41,51 +41,50 @@ public class SQLSelectStatementUsage {
     }
 
     public static TableInfo usage(SQLSelect sqlSelect) {
-        TableInfo tableInfo = new TableInfo(SQLUtils.toSQLString(sqlSelect));
-
         SQLSelectQuery query = sqlSelect.getQuery();
         if (query instanceof SQLSelectQueryBlock) {
             SQLSelectQueryBlock sqlSelectQueryBlock = (SQLSelectQueryBlock) query;
 
             // 获取查询的表
             SQLTableSource table = sqlSelectQueryBlock.getFrom();
-            TableInfo sourceTableInfo = SQLTablSourceUsage.usage(table);
-            tableInfo.addTables(sourceTableInfo.getTables());
+            TableInfo sourceTableInfo = SQLTableSourceUsage.usage(table);
+
+            TableInfo tableInfo = sourceTableInfo.setExpr(SQLUtils.toSQLString(sqlSelect));
 
             // 获取字段
             List<SQLSelectItem> columns = sqlSelectQueryBlock.getSelectList();
             if (null != columns && columns.size() > 0) {
+
+                // 窄化：若有选择列，则代表从表中选取有限的列，这是一个窄化的过程
+                List<TableField> fields = tableInfo.clearFields();
+
                 for (SQLSelectItem column : columns) {
-                    // log.debug("字段列：{}", SQLUtils.toSQLString(column));
                     String columnName = SQLUtils.toSQLString(column.getExpr());
                     if ("*".equals(columnName)) {
-                        if (sourceTableInfo.getFields().size() == 0) {
-                            TableField field = new TableField(sourceTableInfo.getId(), "*");
-                            tableInfo.addField(field);
-                        } else {
-                            tableInfo.addFields(sourceTableInfo.getFields());
-                        }
+                        tableInfo.addFields(fields);
                     } else {
                         TableField field = new TableField(tableInfo.getId(), columnName);
+                        field.setTable(tableInfo.getTable());
+                        field.setAlias(column.getAlias());
                         tableInfo.addField(field);
                     }
                 }
-            } else {
-                // log.warn("查询字段列为空");
-                tableInfo.addFields(sourceTableInfo.getFields());
             }
+
+            log.debug("{}", tableInfo);
+            return tableInfo;
         } else if (query instanceof SQLUnionQuery) {
             log.warn("尚未实现 SQLUnionQuery 分析：{}", SQLUtils.toSQLString(query));
         } else {
             log.error("当前类型{}尚未实现分析：{}", query.getClass().getName(), SQLUtils.toSQLString(query));
         }
-        return tableInfo;
+        return null;
     }
 
     public static void main(String[] args) {
         String sql = "select * from t1 a inner join t2 b on a.id=b.id where id=1 and a.name='superz'";
 
         SQLStatement statement = SQLUtils.parseStatements(sql, JdbcConstants.MYSQL).get(0);
-        usage((SQLSelectStatement) statement);
+        SQLStatementUsage.usage(statement);
     }
 }

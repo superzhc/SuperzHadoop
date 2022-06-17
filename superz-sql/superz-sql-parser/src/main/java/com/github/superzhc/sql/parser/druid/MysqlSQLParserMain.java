@@ -8,6 +8,8 @@ import com.alibaba.druid.sql.ast.statement.*;
 import com.alibaba.druid.sql.visitor.SchemaStatVisitor;
 import com.alibaba.druid.util.JdbcConstants;
 import com.github.superzhc.sql.parser.druid.usage.SQLStatementUsage;
+import com.github.superzhc.sql.parser.lineage.handler.SQLTableSourceHandler;
+import com.github.superzhc.sql.parser.lineage.handler.SelectStatementHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,14 +69,27 @@ public class MysqlSQLParserMain {
         String sql3_14 = "SELECT * FROM articles a LEFT JOIN categories c ON a.cid = c.cid WHERE c.cid IS NOT NULL;";
         String sql3_15 = "SELECT * FROM articles a RIGHT JOIN categories c ON a.cid = c.cid WHERE a.cid IS NOT NULL;";
         String sql3_16 = "SELECT aid, title, name FROM articles NATURAL JOIN categories;";
+        String sql3_17 = "select * from (select x,y,z from t1) a";// √
+        String sql3_18 = "select * from Student RIGHT JOIN " +
+                "(select T1.sid,class1,class2 from " +
+                "(select SId, score as class1 from sc where sc.CId = '01') as t1, " +
+                "(select SId, score as class2 from sc where sc.CId = '02') as t2 " +
+                "where t1.SId = t2.SId AND t1.class1 > t2.class2 )r on Student.SId = r.SId";
+
+        /* WITH...AS语句 */
+        String sql4_1 = "WITH xm_gl AS (SELECT * FROM products WHERE pname IN('小米电视机', '格力空调')) SELECT avg( price ) FROM xm_gl;";
+        String sql4_2 = "WITH a AS ( SELECT * FROM category WHERE cname = '家电'),\n" +
+                "b AS ( SELECT * FROM products WHERE pname IN('小米电视机', '格力空调'))\n" +
+                "SELECT * FROM a LEFT JOIN b ON a.cid = b.category_id;";
 
         /* 视图 */
-        String sql4_1="CREATE VIEW v_staffs AS SELECT * FROM staffs;";
+        String sql5_1 = "CREATE VIEW v_staffs AS SELECT * FROM staffs;";
 
         // 解析 SQL 语句，每一个 SQLStatement 代表一条完整的 SQL 语句
-        List<SQLStatement> statementList = SQLUtils.parseStatements(sql3_7, DB_TYPE);
+        List<SQLStatement> statementList = SQLUtils.parseStatements(sql3_18, DB_TYPE);
         for (SQLStatement sqlStatement : statementList) {
-            SQLStatementUsage.usage(sqlStatement);
+            // SQLStatementUsage.usage(sqlStatement);
+            SelectStatementHandler.handle((SQLSelectStatement) sqlStatement);
         }
     }
 
