@@ -13,6 +13,8 @@ import com.github.superzhc.sql.parser.lineage.handler.SelectStatementHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.List;
 
 /**
@@ -85,11 +87,27 @@ public class MysqlSQLParserMain {
         /* 视图 */
         String sql5_1 = "CREATE VIEW v_staffs AS SELECT * FROM staffs;";
 
+        String sql6_1 = "";
+        try (BufferedReader reader = new BufferedReader(new FileReader(MysqlSQLParserMain.class.getResource("/sql/GG12-GCSN.sql").getPath()))) {
+            String str;
+            while ((str = reader.readLine()) != null) {
+                sql6_1 += str;
+                sql6_1 += "\n";
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        log.info("{}", sql6_1);
+
         // 解析 SQL 语句，每一个 SQLStatement 代表一条完整的 SQL 语句
-        List<SQLStatement> statementList = SQLUtils.parseStatements(sql3_18, DB_TYPE);
+        List<SQLStatement> statementList = SQLUtils.parseStatements(sql6_1, DB_TYPE);
         for (SQLStatement sqlStatement : statementList) {
             // SQLStatementUsage.usage(sqlStatement);
-            SelectStatementHandler.handle((SQLSelectStatement) sqlStatement);
+
+            log.info("SQL 分析语句：{}", SQLUtils.toSQLString(sqlStatement));
+            Object result = SelectStatementHandler.handle((SQLSelectStatement) sqlStatement);
+            log.info("SQL 分析结果：{}", result);
         }
     }
 
