@@ -98,7 +98,7 @@ public class MysqlSQLParserMain {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        log.info("{}", sql6_1);
+        // log.info("{}", sql6_1);
 
         // 解析 SQL 语句，每一个 SQLStatement 代表一条完整的 SQL 语句
         List<SQLStatement> statementList = SQLUtils.parseStatements(sql6_1, DB_TYPE);

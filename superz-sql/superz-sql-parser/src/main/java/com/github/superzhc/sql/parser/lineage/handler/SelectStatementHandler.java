@@ -69,7 +69,7 @@ public class SelectStatementHandler {
                     columnName = columnProperty.getName();
                     owner = columnProperty.getOwnerName();
                 } else {
-                    log.warn("Column[{}] <{}> Unsupported!", columnExpr.getClass().getName(), SQLUtils.toSQLString(columnExpr));
+                    log.warn("Column[{}] `{}` Unsupported!", columnExpr.getClass().getName(), SQLUtils.toSQLString(columnExpr));
                     columnName = SQLUtils.toSQLString(columnExpr);
                 }
                 String alias = column.getAlias();
