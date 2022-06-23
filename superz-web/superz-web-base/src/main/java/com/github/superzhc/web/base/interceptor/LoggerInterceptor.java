@@ -1,7 +1,7 @@
 package com.github.superzhc.web.base.interceptor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.superzhc.web.base.common.ResultT;
+import com.github.superzhc.common.http.ResultT;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

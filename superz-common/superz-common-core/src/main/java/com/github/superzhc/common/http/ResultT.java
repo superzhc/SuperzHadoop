@@ -1,6 +1,6 @@
 package com.github.superzhc.common.http;
 
-import java.text.MessageFormat;
+import com.github.superzhc.common.format.LogFormat;
 
 /**
  * @author superz
@@ -36,11 +36,11 @@ public class ResultT {
     }
 
     public static ResultT fail(int code, String msg, Object... params) {
-        return create(code, MessageFormat.format(msg, params), null);
+        return create(code, LogFormat.format(msg, params), null);
     }
 
     public static ResultT msg(int code, String msg, Object... params) {
-        return create(code, MessageFormat.format(msg, params), null);
+        return create(code, LogFormat.format(msg, params), null);
     }
 
     private static ResultT create(int code, String msg, Object data) {
@@ -77,5 +77,36 @@ public class ResultT {
 
     public void setData(Object data) {
         this.data = data;
+    }
+
+    /**
+     * 自动进行数据转换
+     *
+     * @param <T>
+     * @return
+     */
+    public <T> T data() {
+        if (null == data) {
+            return null;
+        }
+
+//        try {
+//            Method method = getClass().getDeclaredMethod("data");
+//            // 获取返回值类型
+//            Type genericReturnType = method.getGenericReturnType();
+//
+//        } catch (Exception e) {
+//            // 直接进行转换，报错也就报错了
+        return (T) data;
+//        }
+    }
+
+    @Override
+    public String toString() {
+        return "ResultT{" +
+                "code=" + code +
+                ", msg='" + msg + '\'' +
+                ", data=" + data +
+                '}';
     }
 }

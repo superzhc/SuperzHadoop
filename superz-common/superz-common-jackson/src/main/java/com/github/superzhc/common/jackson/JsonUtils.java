@@ -1,6 +1,5 @@
 package com.github.superzhc.common.jackson;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -214,6 +213,96 @@ public class JsonUtils {
         return arr;
     }
 
+    public static String[] mapOneArray(JsonNode node, String key, String... paths) {
+        JsonNode childNode = node;
+        if (null != paths) {
+            childNode = json(node, paths);
+        }
+
+        String[] arr = new String[childNode.size()];
+        for (int i = 0, len = childNode.size(); i < len; i++) {
+            JsonNode item = childNode.get(i);
+            if (null == item) {
+                continue;
+            }
+
+            arr[i] = text(item, key);
+        }
+        return arr;
+    }
+
+    public static Map<String, String>[] mapArray(JsonNode node, String[] keys, String... paths) {
+        return mapArray(node, Arrays.asList(keys), paths);
+    }
+
+    public static Map<String, String>[] mapArray(JsonNode node, List<String> keys, String... paths) {
+        JsonNode childNode = node;
+        if (null != paths) {
+            childNode = json(node, paths);
+        }
+
+        Map<String, String>[] arr = new Map[childNode.size()];
+        for (int i = 0, len = childNode.size(); i < len; i++) {
+            JsonNode item = childNode.get(i);
+            if (null == item) {
+                continue;
+            }
+
+            Map<String, String> map = new HashMap<>();
+            for (String key : keys) {
+                map.put(key, text(item, key));
+            }
+            arr[i] = map;
+        }
+        return arr;
+    }
+
+    public static Map<String, String>[] mapArray(JsonNode node, String... paths) {
+        JsonNode childNode = node;
+        if (null != paths) {
+            childNode = json(node, paths);
+        }
+
+        Map<String, String>[] arr = new Map[childNode.size()];
+        for (int i = 0, len = childNode.size(); i < len; i++) {
+            JsonNode item = childNode.get(i);
+            if (null == item) {
+                continue;
+            }
+
+            Map<String, String> map = new HashMap<>();
+            Iterator<String> fieldNames = item.fieldNames();
+            while (fieldNames.hasNext()) {
+                String fieldName = fieldNames.next();
+                map.put(fieldName, text(item, fieldName));
+            }
+            arr[i] = map;
+        }
+        return arr;
+    }
+
+    public static String[][] arrayArray(JsonNode node, String... paths) {
+        JsonNode childNode = node;
+        if (null != paths) {
+            childNode = json(node, paths);
+        }
+
+        String[][] arr = new String[childNode.size()][];
+        for (int i = 0, len = childNode.size(); i < len; i++) {
+            JsonNode item = childNode.get(i);
+            if (null == item) {
+                continue;
+            }
+
+            arr[i] = array(item);
+        }
+        return arr;
+    }
+
+    public static String[] objectOneArray(JsonNode node, String key, String... paths) {
+        return mapOneArray(node, key, paths);
+    }
+
     public static String[] objectArrayKeys(JsonNode node, String... childPaths) {
         return objectArrayKeys(node, null, childPaths);
     }
@@ -335,15 +424,8 @@ public class JsonUtils {
         return table;
     }
 
-    public static List<String[]> arrayArray(JsonNode node, String... paths) {
-        JsonNode childNode = json(node, paths);
-
-        List<String[]> dataRows = new ArrayList<>(childNode.size());
-        for (JsonNode item : childNode) {
-            String[] dataRow = array(item);
-            dataRows.add(dataRow);
-        }
-        return dataRows;
+    public static List<String[]> arrayArray2(JsonNode node, String... paths) {
+        return Arrays.asList(arrayArray(node, paths));
     }
 
     /**

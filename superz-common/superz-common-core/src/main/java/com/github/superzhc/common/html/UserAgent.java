@@ -59,15 +59,17 @@ public class UserAgent {
                 if (!cache.containsKey(browserType.name())) {
                     try {
                         List<String> userAgents = new ArrayList<>();
-                        // Document document = Jsoup.connect(String.format(BROWSER_BASE_PAGE, browser.value()))
+                        // 因 core 包不依赖任何第三方库，此处使用正则表达式进行提取
+                        // Document document = Jsoup.connect(String.format(BROWSER_BASE_PAGE, browserType.value()))
                         //         //.userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36")
                         //         .get();
                         // Elements elements = document.getElementById("liste").select("li").select("a[href]");
                         // for (Element element : elements) {
                         //     userAgents.add(element.text());
                         // }
-                        String result = HttpRequest.get(String.format(BROWSER_BASE_PAGE, BrowserType.Chrome.value())).body();
-                        String regex = "<li><a href=(['\"])\\/index\\.php\\?id=(\\d*)(['\"])>([\\s\\S]*?)<\\/a><\\/li>";
+                        String result = HttpRequest.get(String.format(BROWSER_BASE_PAGE, browserType.value())).body();
+                        // String regex = "<li><a href=(['\"])\\/index\\.php\\?id=(\\d*)(['\"])>([\\s\\S]*?)<\\/a><\\/li>";
+                        String regex = "<a href=(['\"])\\/index\\.php\\?id=(\\d*)(['\"])>([\\s\\S]*?)<\\/a>";
                         Pattern pattern = Pattern.compile(regex);
                         Matcher matcher = pattern.matcher(result);
                         while (matcher.find()) {

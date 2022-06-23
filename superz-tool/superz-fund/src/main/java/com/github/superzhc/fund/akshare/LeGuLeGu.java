@@ -5,7 +5,6 @@ import com.github.superzhc.common.http.HttpRequest;
 import com.github.superzhc.common.jackson.JsonUtils;
 import com.github.superzhc.common.script.ScriptUtils;
 import com.github.superzhc.tablesaw.functions.DateFunctions;
-import com.github.superzhc.tablesaw.functions.LongFunctions;
 import com.github.superzhc.tablesaw.utils.TableUtils;
 import tech.tablesaw.api.Table;
 
@@ -28,7 +27,7 @@ public class LeGuLeGu {
         JsonNode json = JsonUtils.json(result, "data");
 
         List<String> columnNames = JsonUtils.list(json, "fields");
-        List<String[]> dataRows = JsonUtils.arrayArray(json, "items");
+        List<String[]> dataRows = JsonUtils.arrayArray2(json, "items");
 
         Table table = TableUtils.build(columnNames, dataRows);
         return table;

@@ -72,7 +72,7 @@ public class ESClient implements Closeable {
             });
         }
         this.highLevelClient = new RestHighLevelClient(builder);
-        this.client = highLevelClient.getLowLevelClient();
+        this.client = builder.build()/*highLevelClient.getLowLevelClient()*/;
     }
 
     public ESClient(HttpHost[] httpHosts, String pemPath) {
@@ -130,7 +130,7 @@ public class ESClient implements Closeable {
         );
 
         this.highLevelClient = new RestHighLevelClient(builder);
-        this.client = highLevelClient.getLowLevelClient();
+        this.client = builder.build()/*highLevelClient.getLowLevelClient()*/;
     }
 
     @Override
