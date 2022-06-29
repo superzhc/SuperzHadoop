@@ -1,8 +1,8 @@
 package com.github.superzhc.common.jdbc;
 
-import com.github.superzhc.common.utils.MapUtils;
-import com.github.superzhc.common.utils.StringUtils;
-
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -23,10 +23,6 @@ public class ResultSetUtils {
                     // 2022年5月24日 modify 列名统一小写
                     String cols_name = metaData.getColumnLabel(i + 1).toLowerCase()/*metaData.getColumnName(i + 1)*/;
                     Object cols_value = rs.getObject(cols_name);
-                    // null值不做处理
-                    // if (null == cols_value) {
-                    // cols_value = "";
-                    // }
                     map.put(cols_name, cols_value);
                 }
                 list.add(map);
@@ -40,20 +36,57 @@ public class ResultSetUtils {
     public static <T> List<T> Result2ListBean(ResultSet rs, Class<T> beanClass) {
         List<T> list = new ArrayList<>();
         try {
+            boolean emptyConstructor = false;
+            Constructor[] constructors = beanClass.getDeclaredConstructors();
+            for (Constructor constructor : constructors) {
+                if (constructor.getParameterCount() == 0) {
+                    emptyConstructor = true;
+                    break;
+                }
+            }
+            if (!emptyConstructor)
+                throw new RuntimeException("无空构造函数，Map无法转" + beanClass.getName());
+
+            Field[] allFields = beanClass.getDeclaredFields();
+
+            // 注意：某些数据库只支持读一次 metaData，不重复读操作
             ResultSetMetaData metaData = rs.getMetaData();
             int cols_len = metaData.getColumnCount();
-            while (rs.next()) {
-                Map<String, Object> map = new HashMap<>();
-                for (int i = 0; i < cols_len; i++) {
-                    String cols_name = metaData.getColumnName(i + 1);
-                    Object cols_value = rs.getObject(cols_name);
-                    // null值不做处理
-                    // if (null == cols_value) {
-                    // cols_value = "";
-                    // }
-                    map.put(cols_name, cols_value);
+
+            Map<String, Field> colNameFieldMap = new HashMap<>(Math.min(allFields.length, cols_len));
+
+            for (int i = 0; i < cols_len; i++) {
+                String cols_name = metaData.getColumnName(i + 1);
+
+                // 支持驼峰命名方式 TODO
+
+                for (Field field : allFields) {
+                    int mod = field.getModifiers();
+                    // 静态变量不做处理，一般Bean中不存在静态变量
+                    if (Modifier.isStatic(mod))
+                        continue;
+
+                    if (field.getName().equals(cols_name)) {
+                        field.setAccessible(true);
+                        colNameFieldMap.put(cols_name, field);
+                        break;
+                    }
+
                 }
-                list.add(MapUtils.mapToBean(map, beanClass));
+            }
+
+            while (rs.next()) {
+                T obj = beanClass.newInstance();
+
+                for (Map.Entry<String, Field> item : colNameFieldMap.entrySet()) {
+                    String cols_name = item.getKey();
+                    Object cols_value = rs.getObject(cols_name);
+                    if (null == cols_value) {
+                        continue;
+                    }
+                    item.getValue().set(obj, cols_value);
+                }
+                list.add(obj);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -82,7 +115,7 @@ public class ResultSetUtils {
         // 初始化列的长度
         for (int i = 0; i < ColumnCount; i++) {
             String columnName = resultSetMetaData.getColumnName(i + 1).toLowerCase();
-            columnMaxLengths[i] = StringUtils.length(columnName) + 2;
+            columnMaxLengths[i] = length(columnName);
             columnNames[i] = columnName;
         }
 
@@ -98,8 +131,7 @@ public class ResultSetUtils {
                 // 获取一列
                 columnStr[i] = rs.getString(i + 1);
                 // 计算当前列的最大长度
-                columnMaxLengths[i] = Math.max(columnMaxLengths[i],
-                        (columnStr[i] == null) ? 0 : StringUtils.length(columnStr[i]) + 2);
+                columnMaxLengths[i] = Math.max(columnMaxLengths[i], (columnStr[i] == null) ? 0 : length(columnStr[i]));
             }
             // 缓存这一行.
             results.add(columnStr);
@@ -116,7 +148,10 @@ public class ResultSetUtils {
             for (int i = 0; i < ColumnCount; i++) {
                 // System.out.printf("|%" + (columnMaxLengths[i] + 1) + "s", columnStr[i]);
                 // 2020年11月4日 左对齐使用 %-10s，右对齐 %10s；修改为左对齐
-                System.out.printf("|%-" + columnMaxLengths[i] + "s", columnStr[i]);
+                // System.out.printf("|%-" + columnMaxLengths[i] + "s", columnStr[i]);
+                // 2022年6月27日 直接使用printf还是对不齐输出
+                System.out.print("|");
+                System.out.print(rightPad(columnStr[i], columnMaxLengths[i]));
             }
             System.out.println("|");
         }
@@ -138,7 +173,10 @@ public class ResultSetUtils {
             // System.out.printf("|%" + (columnMaxLengths[i] + 1) + "s",
             // resultSetMetaData.getColumnName(i + 1));
             // 2020年11月4日 修改为左对齐
-            System.out.printf("|%-" + columnMaxLengths[i] + "s", resultSetMetaData.getColumnName(i + 1));
+            // System.out.printf("|%-" + columnMaxLengths[i] + "s", resultSetMetaData.getColumnName(i + 1));
+            // 2022年6月27日 直接使用printf还是对不齐输出
+            System.out.print("|");
+            System.out.print(rightPad(resultSetMetaData.getColumnName(i + 1), columnMaxLengths[i]));
         }
         System.out.println("|");
     }
@@ -155,7 +193,10 @@ public class ResultSetUtils {
             // System.out.printf("|%" + (columnMaxLengths[i] + 1) + "s",
             // resultSetMetaData.getColumnName(i + 1));
             // 2020年11月4日 修改为左对齐
-            System.out.printf("|%-" + columnMaxLengths[i] + "s", columnNames[i]);
+            // System.out.printf("|%-" + columnMaxLengths[i] + "s", columnNames[i]);
+            // 2022年6月27日 直接使用printf还是对不齐输出
+            System.out.print("|");
+            System.out.print(rightPad(columnNames[i], columnMaxLengths[i]));
         }
         System.out.println("|");
     }
@@ -168,11 +209,39 @@ public class ResultSetUtils {
     private static void printSeparator(int[] columnMaxLengths) {
         for (int i = 0; i < columnMaxLengths.length; i++) {
             System.out.print("+");
-            // for (int j = 0; j < columnMaxLengths[i] + 1; j++) {
-            for (int j = 0; j < columnMaxLengths[i]; j++) {
+            for (int j = 0; j < columnMaxLengths[i] + 1; j++) {
                 System.out.print("-");
             }
         }
         System.out.println("+");
+    }
+
+    private static String rightPad(String str, int maxLength) {
+        int len = length(str);
+        for (int i = 0; i < ((maxLength - len) + 1); i++) {
+            str += " ";
+        }
+        return str;
+    }
+
+    private static int length(String str) {
+        int valueLength = 0;
+        // String chinese = "[\u0391-\uFFE5]";//匹配中文字符的正则表达式： [\u4e00-\u9fa5]
+        // String doubleChar = "[^\\x00-\\xff]";// 匹配双字节字符(包括汉字在内)：[^\x00-\xff]
+        String doubleChar = "[\u1100-\u115F\u2E80-\uA4CF\uAC00-\uD7A3\uF900-\uFAFF\uFE10-\uFE19\uFE30-\uFE6F\uFF00-\uFF60\uFFE0-\uFFE6]";
+        /* 获取字段值的长度，如果含中文字符，则每个中文字符长度为2，否则为1 */
+        for (int i = 0; i < str.length(); i++) {
+            /* 获取一个字符 */
+            String temp = str.substring(i, i + 1);
+            /* 判断是否为中文字符 */
+            if (temp.matches(doubleChar)) {
+                /* 中文字符长度为2 */
+                valueLength += 2;
+            } else {
+                /* 其他字符长度为1 */
+                valueLength += 1;
+            }
+        }
+        return valueLength;
     }
 }

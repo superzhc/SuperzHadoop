@@ -1,8 +1,8 @@
 package com.github.superzhc.common.script;
 
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
@@ -17,7 +17,7 @@ import java.util.*;
  * @create 2022/5/10 0:41
  */
 public class ScriptUtils {
-    private static final Logger log = LoggerFactory.getLogger(ScriptUtils.class);
+//    private static final Logger log = LoggerFactory.getLogger(ScriptUtils.class);
 
     private static final ScriptEngineManager SCRIPT_ENGINE_MANAGER = new ScriptEngineManager();
 
@@ -34,6 +34,14 @@ public class ScriptUtils {
         try {
             engine.eval(new FileReader(path));
         } catch (ScriptException | FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void eval(ScriptEngine engine, String str) {
+        try {
+            engine.eval(str);
+        } catch (ScriptException e) {
             throw new RuntimeException(e);
         }
     }
@@ -77,9 +85,41 @@ public class ScriptUtils {
         }
     }
 
+    /**
+     * 获取变量
+     *
+     * @param engine
+     * @param varName
+     * @return
+     */
+    public static Object variable(ScriptEngine engine, String varName) {
+        return engine.get(varName);
+    }
+
+    public static String string(ScriptEngine engine, String varName) {
+        Object obj = variable(engine, varName);
+        return string(obj);
+    }
+
     public static String string(Object obj) {
-        String value = (String) obj;
+        if (null == obj) {
+            return null;
+        }
+
+        String value;
+        if (obj instanceof ScriptObjectMirror) {
+            ScriptObjectMirror obj2 = (ScriptObjectMirror) ((ScriptObjectMirror) obj).eval("JSON");
+            Object stringify = obj2.callMember("stringify", obj);
+            value = (String) stringify;
+        } else {
+            value = (String) obj;
+        }
         return value;
+    }
+
+    public static Map<String, Object> object(ScriptEngine engine, String varName) {
+        Object obj = variable(engine, varName);
+        return object(obj);
     }
 
     public static Map<String, Object> object(Object value) {
@@ -95,6 +135,11 @@ public class ScriptUtils {
         }*/
         ScriptObjectMirror v2 = (ScriptObjectMirror) value;
         return getObject(v2);
+    }
+
+    public static List array(ScriptEngine engine, String varName) {
+        Object obj = variable(engine, varName);
+        return array(obj);
     }
 
     public static List array(Object value) {
