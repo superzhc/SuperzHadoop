@@ -2,7 +2,7 @@ package com.github.superzhc.fund.data.fund;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.http.HttpRequest;
-import com.github.superzhc.common.JsonUtils;
+import com.github.superzhc.common.jackson.JsonUtils;
 import com.github.superzhc.tablesaw.utils.TableUtils;
 import tech.tablesaw.api.Table;
 
@@ -75,6 +75,7 @@ public class JiSiLuFund {
         }
 
         Table table = TableUtils.build(columnNames, dataRows);
+        table.setName("JISILU_INDEX_ETF");
 
         return table;
     }

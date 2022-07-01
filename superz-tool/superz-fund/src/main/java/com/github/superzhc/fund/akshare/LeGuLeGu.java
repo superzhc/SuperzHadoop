@@ -63,7 +63,9 @@ public class LeGuLeGu {
         Table table = TableUtils.build(columnNames, data);
 
         table.replaceColumn("date", DateFunctions.long2Date(table.longColumn("date")).setName("date"));
-        table.removeColumns("id","industryCode");
+        table.removeColumns("id", "industryCode");
+
+        table.setName(String.format("LeGuLeGu_INDEX_VALUATION_%s", symbol.substring(0, 6)));
 
         return table;
     }
@@ -75,7 +77,7 @@ public class LeGuLeGu {
 
     public static void main(String[] args) throws Exception {
         String str = "000300.SH";
-        str="000905.SH";
+        str = "000905.SH";
         Table table = valuation(str);
         System.out.println(table.print());
         System.out.println(table.shape());

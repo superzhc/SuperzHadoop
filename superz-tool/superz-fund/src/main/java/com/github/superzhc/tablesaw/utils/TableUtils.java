@@ -197,6 +197,14 @@ public class TableUtils {
         return table;
     }
 
+    /**
+     * 推荐使用：com.github.superzhc.common.tablesaw.utils.TableReaderUtils#db
+     * @param jdbc
+     * @param sql
+     * @param params
+     * @return
+     */
+    @Deprecated
     public static Table db(JdbcHelper jdbc, String sql, Object... params) {
         Table table = jdbc.dqlExecute(sql, params, new Function<ResultSet, Table>() {
             @Override

@@ -213,7 +213,7 @@ public class JiuCaiShuo {
         table.replaceColumn("timestamp", dateTimeColumn.date().setName("date"));
 
         // 确保时间排序
-        table = table.sortAscendingOn("date");
+        table = table.sortDescendingOn("date");
 
         return table;
     }

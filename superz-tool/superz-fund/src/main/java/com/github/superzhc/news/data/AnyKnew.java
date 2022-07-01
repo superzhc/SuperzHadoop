@@ -101,7 +101,7 @@ public class AnyKnew {
     }
 
     public static void main(String[] args) {
-        Table table = smzdm();
+        Table table = finance();
 
         System.out.println(table.printAll());
         System.out.println(table.shape());
