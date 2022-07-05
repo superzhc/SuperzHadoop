@@ -46,6 +46,13 @@
             </exclusions>
         </dependency>
 
+        <!--Java WebSocket-->
+        <dependency>
+            <groupId>org.java-websocket</groupId>
+            <artifactId>Java-WebSocket</artifactId>
+            <version>1.5.3</version>
+        </dependency>
+
         <!--XIRR实现-->
         <dependency>
             <groupId>org.decampo</groupId>
