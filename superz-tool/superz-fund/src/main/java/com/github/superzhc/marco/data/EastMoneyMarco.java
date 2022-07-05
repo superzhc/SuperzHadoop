@@ -1,12 +1,9 @@
 package com.github.superzhc.marco.data;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.http.HttpRequest;
-import com.github.superzhc.tablesaw.utils.ColumnUtils;
-import com.github.superzhc.common.JsonUtils;
-import com.github.superzhc.tablesaw.utils.ReadOptionsUtils;
+import com.github.superzhc.common.jackson.JsonUtils;
+import com.github.superzhc.tablesaw.utils.TableUtils;
 import tech.tablesaw.api.Table;
-import tech.tablesaw.io.TableBuildingUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,6 +15,34 @@ import java.util.Map;
  * @create 2022/4/2 16:59
  **/
 public class EastMoneyMarco {
+    public static Table qyspjg() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("type", "GJZB");
+        params.put("sty", "ZGZB");
+        params.put("mkt", "9");
+        params.put("p", 1);
+        params.put("ps", 2000);
+        params.put("_", System.currentTimeMillis());
+
+        String[] columnNames = new String[]{
+                "月份",
+                "总指数-指数值",
+                "总指数-同比增长",
+                "总指数-环比增长",
+                "农产品-指数值",
+                "农产品-同比增长",
+                "农产品-环比增长",
+                "矿产品-指数值",
+                "矿产品-同比增长",
+                "矿产品-环比增长",
+                "煤油电-指数值",
+                "煤油电-同比增长",
+                "煤油电-环比增长"
+        };
+
+        return EMDataCenter(params, "企业商品价格指数", columnNames);
+    }
+
     /**
      * 获取季度国内生产总值数据
      *
@@ -210,26 +235,26 @@ public class EastMoneyMarco {
         Map<String, String> params = new HashMap<>();
         params.put("type", "GJZB");
         params.put("sty", "ZGZB");
-        params.put("p", "1");
-        params.put("ps", "200");
         params.put("mkt", "15");
+        params.put("p", "1");
+        params.put("ps", "2000");
         return EMDataCenter(params, "FDI", columns);
     }
 
-    private static Table EMDataCenter(Map<String, String> params, String tableName, String[] columns) {
+    private static Table EMDataCenter(Map<String, ?> params, String tableName, String[] columns) {
         String url = "http://datainterface.eastmoney.com/EM_DataCenter/JS.aspx";
         try {
             String result = HttpRequest.get(url, params).body();
-            JsonNode arr = JsonUtils.json(result.substring(1, result.length() - 1));
+            result = result.substring(1, result.length() - 1);
+            String[] arr = JsonUtils.array(result);
 
             List<String[]> dataRows = new ArrayList<>();
-            for (JsonNode node : arr) {
-                String row = node.asText();
+            for (String row : arr) {
                 String[] item = row.split(",", -1);
                 dataRows.add(item);
             }
 
-            Table table = TableBuildingUtils.build(ColumnUtils.transform(columns), dataRows, ReadOptionsUtils.empty());
+            Table table = TableUtils.build(columns, dataRows);
             table.setName(tableName);
             return table;
         } catch (Exception e) {
@@ -240,25 +265,5 @@ public class EastMoneyMarco {
     public static void main(String[] args) {
         Table table = PPI();
         System.out.println(table.print());
-
-        Table cpi=CPI();
-        System.out.println(cpi.print());
-
-        Table t2=fiscalRevenue();
-        System.out.println(t2.print());
-
-        Table gdp=GDPQuarter();
-        System.out.println(gdp.print());
-
-//        LocalDate d20090101=LocalDate.of(2009,01,01);
-//        table=table.where(table.dateColumn(0).isAfter(d20090101));
-//        cpi=cpi.where(table.dateColumn(0).isAfter(d20090101));
-//
-//        Table ppi_cpi=Table.create("PPI-CPI");
-//        ppi_cpi.addColumns(table.dateColumn(0));
-//        ppi_cpi.addColumns(table.doubleColumn(2).copy().setName("PPI（当月同比）"));
-//        ppi_cpi.addColumns(cpi.doubleColumn(2).copy().setName("CPI（当月同比）"));
-//        ppi_cpi.addColumns(table.doubleColumn(2).subtract(cpi.doubleColumn(2)));
-//        System.out.println(ppi_cpi.printAll());
     }
 }

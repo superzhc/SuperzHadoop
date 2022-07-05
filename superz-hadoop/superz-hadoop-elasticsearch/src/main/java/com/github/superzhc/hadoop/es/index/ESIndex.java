@@ -22,7 +22,9 @@ public class ESIndex extends ESCommon {
     }
 
     public String create(String index) {
-        return create(index, null, null);
+        // return create(index, null, null);
+        Response response = client.put(String.format("/%s", index), null);
+        return ResponseUtils.getEntity(response);
     }
 
     /**

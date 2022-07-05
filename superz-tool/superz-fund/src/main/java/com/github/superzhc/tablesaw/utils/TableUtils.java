@@ -63,6 +63,10 @@ public class TableUtils {
         return build(Arrays.asList(columnNames), table);
     }
 
+    public static Table build(String[] columnNames, List<String[]> dataRows) {
+        return build(Arrays.asList(columnNames), dataRows);
+    }
+
     public static Table build(List<String> columnNames, List<String[]> dataRows) {
         return TableBuildingUtils.build(columnNames, dataRows, ReadOptionsUtils.columnTypeByFunction(new FundColumnType()));
     }
@@ -199,6 +203,7 @@ public class TableUtils {
 
     /**
      * 推荐使用：com.github.superzhc.common.tablesaw.utils.TableReaderUtils#db
+     *
      * @param jdbc
      * @param sql
      * @param params

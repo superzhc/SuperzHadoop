@@ -475,7 +475,7 @@ public class JdbcHelper implements Closeable {
             log.debug("DDL语句：{}", sql);
             stmt = getConnection().createStatement();
             int result = stmt.executeUpdate(sql);
-            log.debug("DDL耗时：{}s", (System.currentTimeMillis() - start) / 1000.0);
+            log.debug("DDL结果：{}，耗时：{}s", result, (System.currentTimeMillis() - start) / 1000.0);
             return result;
         } catch (Exception e) {
             log.error("DDL异常", e);
@@ -612,7 +612,7 @@ public class JdbcHelper implements Closeable {
 
             // 影响行数
             int result = pstmt.executeUpdate();
-            log.debug("DML耗时：{}s", (System.currentTimeMillis() - start) / 1000.0);
+            log.debug("DML结果：{}，耗时：{}s", result, (System.currentTimeMillis() - start) / 1000.0);
             return result;
         } catch (SQLException ex) {
             log.error("DML异常", ex);
@@ -1113,7 +1113,7 @@ public class JdbcHelper implements Closeable {
                 getConnection().commit();
                 remainSize = remainSize - currentBatchSize;
                 long end = System.currentTimeMillis();
-                log.debug("[总数：" + totalSize + "，剩余：" + remainSize + "]插入" + batchSize + "条数据，耗时：" + ((end - start) / 1000.0) + "s");
+                log.debug("[总数：" + totalSize + "，剩余：" + remainSize + "]插入" + currentBatchSize + "条数据，耗时：" + ((end - start) / 1000.0) + "s");
             }
             log.debug("[总数：" + totalSize + "]插入总耗时：" + ((System.currentTimeMillis() - totalStart) / 1000.0) + "s");
         } catch (SQLException e) {

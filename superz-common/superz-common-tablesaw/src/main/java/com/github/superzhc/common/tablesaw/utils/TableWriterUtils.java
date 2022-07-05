@@ -16,7 +16,6 @@ import tech.tablesaw.columns.numbers.*;
 import tech.tablesaw.columns.strings.StringColumnType;
 import tech.tablesaw.columns.strings.TextColumnType;
 import tech.tablesaw.columns.times.TimeColumnType;
-import tech.tablesaw.io.json.JsonWriteOptions;
 
 import java.util.UUID;
 
@@ -121,8 +120,8 @@ public class TableWriterUtils {
                 tableName +
                 "(" +
                 (hasIdColumn ? "" : "id INT AUTO_INCREMENT,") +
-                sb +
-                "PRIMARY KEY (id)" +
+                sb.substring(0, sb.length() - 1) +
+                (hasIdColumn ? "" : ",PRIMARY KEY (id)") +
                 ")ENGINE=InnoDB DEFAULT CHARSET=utf8";
         jdbc.ddlExecute(ddlSQL);
 

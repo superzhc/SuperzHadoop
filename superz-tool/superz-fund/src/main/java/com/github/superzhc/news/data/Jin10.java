@@ -51,12 +51,17 @@ public class Jin10 {
 
             JsonNode data = JsonUtils.json(str);
             if (data.has("content")) {
-                return data.get("content").asText();
+                String s = data.get("content").asText();
+                if (data.has("pic")) {
+                    s += "<" + JsonUtils.string(data, "pic") + ">";
+                }
+                return s;
             } else {
-                return "";
+                return str;
             }
         }).setName("content");
         table.replaceColumn("data", content);
+        table.setName("news_jin10");
 
         return table;
     }

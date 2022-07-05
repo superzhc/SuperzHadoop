@@ -36,7 +36,7 @@ public class AnyKnew {
                 .append(wallstreetcn())
                 .append(eastmoney())
                 .append(caixin())
-                .setName("News");
+                .setName("news_anyknew_finance");
 
         Table t2 = table.sortDescendingOn("add_date");
 
@@ -88,7 +88,7 @@ public class AnyKnew {
         );
 
         //List<String[]> dataRows = JsonUtils.extractObjectData(json.get("subs").get(0).get("items"), columnNames);
-        List<String[]> dataRows=JsonUtils.objectArrayWithKeys(json.get("subs").get(0).get("items"),columnNames);
+        List<String[]> dataRows = JsonUtils.objectArrayWithKeys(json.get("subs").get(0).get("items"), columnNames);
 
         Table table = TableUtils.build(dataRows);
         table.setName(String.format("%s[%s]", siteName, siteUrl));
@@ -96,6 +96,7 @@ public class AnyKnew {
         table.replaceColumn("add_date", table.intColumn("add_date").multiply(1000).asLongColumn().asDateTimes(ZoneOffset.ofHours(+8)).setName("add_date"));
 
         TableUtils.addConstantColumn(table, "type", type);
+        table.setName(String.format("news_anyknew_%s", type));
 
         return table;
     }
