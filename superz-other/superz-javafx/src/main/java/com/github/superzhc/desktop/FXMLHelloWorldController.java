@@ -1,5 +1,6 @@
 package com.github.superzhc.desktop;
 
+import com.github.superzhc.desktop.dialog.DialogUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.text.Text;
@@ -19,7 +20,8 @@ public class FXMLHelloWorldController {
 
     @FXML
     protected void handleBtnEvent(ActionEvent actionEvent) {
-        //System.out.println(counter.getAndIncrement());
-        myCounter.setText(String.valueOf(counter.getAndIncrement()));
+        int i = counter.getAndIncrement();
+        DialogUtils.info("提示", String.valueOf(i));
+        myCounter.setText(String.valueOf(i));
     }
 }
