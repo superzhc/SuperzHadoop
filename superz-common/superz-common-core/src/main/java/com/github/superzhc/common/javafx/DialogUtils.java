@@ -1,4 +1,4 @@
-package com.github.superzhc.desktop.dialog;
+package com.github.superzhc.common.javafx;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;

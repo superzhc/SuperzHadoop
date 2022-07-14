@@ -22,15 +22,30 @@
     <dependencies>
         <dependency>
             <groupId>com.github.superzhc</groupId>
+            <artifactId>superz-common-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.superzhc</groupId>
+            <artifactId>superz-common-tablesaw</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.superzhc</groupId>
             <artifactId>superz-common-jackson</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.superzhc</groupId>
             <artifactId>superz-common-visualization-xchart</artifactId>
-            <version>0.2.2</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.github.superzhc</groupId>
+            <artifactId>superz-common-html</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!--<dependency>
             <groupId>com.github.superzhc</groupId>
             <artifactId>superz-data</artifactId>
             <version>${project.version}</version>
@@ -44,7 +59,7 @@
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
+        </dependency>-->
 
         <!--Java WebSocket-->
         <dependency>
@@ -72,7 +87,7 @@
             <artifactId>guava</artifactId>
             <version>27.0-jre</version>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-core_${scala.binary.version}</artifactId>
             <version>${spark.version}</version>
@@ -81,7 +96,7 @@
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-sql_${scala.binary.version}</artifactId>
             <version>${spark.version}</version>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>mysql</groupId>
@@ -95,24 +110,24 @@
         </dependency>
 
         <!--region scala-->
-        <dependency>
+        <!--<dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-compiler</artifactId>
             <version>${scala.version}</version>
-            <!--<scope>provided</scope>-->
+            &lt;!&ndash;<scope>provided</scope>&ndash;&gt;
         </dependency>
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-reflect</artifactId>
             <version>${scala.version}</version>
-            <!--<scope>provided</scope>-->
+            &lt;!&ndash;<scope>provided</scope>&ndash;&gt;
         </dependency>
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
             <version>${scala.version}</version>
-            <!--<scope>provided</scope>-->
-        </dependency>
+            &lt;!&ndash;<scope>provided</scope>&ndash;&gt;
+        </dependency>-->
         <!-- 已被废弃
         <dependency>
             <groupId>org.scala-lang</groupId>
@@ -123,13 +138,13 @@
         <!--endregion-->
     </dependencies>
 
-    <build>
+    <!--<build>
         <plugins>
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>scala-maven-plugin</artifactId>
             </plugin>
         </plugins>
-    </build>
+    </build>-->
 
 </project>

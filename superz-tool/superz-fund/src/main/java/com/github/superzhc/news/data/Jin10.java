@@ -52,7 +52,8 @@ public class Jin10 {
             JsonNode data = JsonUtils.json(str);
             if (data.has("content")) {
                 String s = data.get("content").asText();
-                if (data.has("pic")) {
+                if (data.has("pic") &&
+                        (data.get("pic") != null && data.get("pic").asText().trim().length() > 0)) {
                     s += "<" + JsonUtils.string(data, "pic") + ">";
                 }
                 return s;

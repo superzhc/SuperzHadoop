@@ -33,9 +33,20 @@ public class JdbcHelper implements Closeable {
 
         public static String match(String url) {
             if (url.startsWith("jdbc:mysql:")) {
-                return MySQL;
+                // 多种驱动的时候，通过该方案来返回
+                try {
+                    Class.forName(MySQL8);
+                    return MySQL8;
+                } catch (ClassNotFoundException e) {
+                    return MySQL;
+                }
             } else if (url.startsWith("jdbc:microsoft:sqlserver:")) {
-                return SQLServer;
+                try {
+                    Class.forName(SQLServer_v2);
+                    return SQLServer_v2;
+                } catch (ClassNotFoundException e) {
+                    return SQLServer;
+                }
             } else if (url.startsWith("jdbc:oracle:thin:")) {
                 return Oracle;
             } else if (url.startsWith("jdbc:postgresql:")) {
@@ -73,7 +84,7 @@ public class JdbcHelper implements Closeable {
         }
 
         public String sql() {
-            String url = jdbc.dbConfig.getUrl();
+            String url = jdbc.url;
             if (url.startsWith("jdbc:mysql:")) {
                 return mysql();
             } else if (url.startsWith("jdbc:microsoft:sqlserver:")) {
@@ -169,54 +180,11 @@ public class JdbcHelper implements Closeable {
         }
     }
 
-    public static class DBConfig {
-        private String driver;
-        private String url;
-        private String username;
-        private String password;
-
-        public DBConfig(String driver, String url, String username, String password) {
-            this.driver = driver;
-            this.url = url;
-            this.username = username;
-            this.password = password;
-        }
-
-        public String getDriver() {
-            return driver;
-        }
-
-        public void setDriver(String driver) {
-            this.driver = driver;
-        }
-
-        public String getUrl() {
-            return url;
-        }
-
-        public void setUrl(String url) {
-            this.url = url;
-        }
-
-        public String getUsername() {
-            return username;
-        }
-
-        public void setUsername(String username) {
-            this.username = username;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-
-        public void setPassword(String password) {
-            this.password = password;
-        }
-    }
-
-    /* 定义数据库的配置信息 */
-    private DBConfig dbConfig;
+    //    /* 定义数据库的配置信息 */
+    private String driver;
+    private String url;
+    private String username;
+    private String password;
     /* 定义数据库的连接 */
     private Connection conn = null;
 
@@ -229,7 +197,10 @@ public class JdbcHelper implements Closeable {
     }
 
     public JdbcHelper(String driver, String url, String username, String password) {
-        dbConfig = new DBConfig(driver, url, username, password);
+        this.driver = driver;
+        this.url = url;
+        this.username = username;
+        this.password = password;
     }
 
     /**
@@ -242,19 +213,19 @@ public class JdbcHelper implements Closeable {
             if (null == conn || conn.isClosed()) {
                 synchronized (this) {
                     if (null == conn || conn.isClosed()) {
-                        if (null != dbConfig.driver) {
-                            Class.forName(dbConfig.driver);
+                        if (null != driver) {
+                            Class.forName(driver);
                         }
                         Properties info = new Properties();
 
-                        if (null != dbConfig.username && dbConfig.username.trim().length() > 0) {
-                            info.put("user", dbConfig.username);
+                        if (null != username && username.trim().length() > 0) {
+                            info.put("user", username);
                         }
-                        if (null != dbConfig.password && dbConfig.password.trim().length() > 0) {
-                            info.put("password", dbConfig.password);
+                        if (null != password && password.trim().length() > 0) {
+                            info.put("password", password);
                         }
 
-                        conn = DriverManager.getConnection(dbConfig.url, info);
+                        conn = DriverManager.getConnection(url, info);
                     }
                 }
             }

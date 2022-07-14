@@ -6,10 +6,13 @@ import com.github.superzhc.common.utils.MapUtils;
 import com.github.superzhc.common.JsonUtils;
 import com.github.superzhc.tablesaw.utils.ReadOptionsUtils;
 import com.github.superzhc.tablesaw.utils.TableUtils;
+import com.github.superzhc.xchart.TableXChartTool;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.knowm.xchart.SwingWrapper;
+import org.knowm.xchart.XYChart;
 import tech.tablesaw.api.ColumnType;
 import tech.tablesaw.api.StringColumn;
 import tech.tablesaw.api.Table;
@@ -377,8 +380,12 @@ public class EastMoneyIndex {
         String symbol = "000300.SH";
 
         Table table = weeklyHistory(symbol);
+
         System.out.println(table.print());
         System.out.println(table.structure().print());
         System.out.println(table.shape());
+
+        XYChart chart=TableXChartTool.line4date(table,"date","close");
+        new SwingWrapper<>(chart).displayChart();
     }
 }

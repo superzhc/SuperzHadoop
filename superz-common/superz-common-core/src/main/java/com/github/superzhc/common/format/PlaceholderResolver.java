@@ -193,7 +193,7 @@ public class PlaceholderResolver {
      *
      * @return 替换完成后的字符串。
      */
-    public String resolveByMap(String content, final Map<String, Object> valueMap) {
+    public String resolveByMap(String content, final Map<String, ?> valueMap) {
         if (null == valueMap || valueMap.size() == 0) {
             return content;
         }
