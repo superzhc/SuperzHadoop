@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 public class MainUIApp extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
-        String appFxmlPath = "view/index_info.fxml";
+        String appFxmlPath = "view/main.fxml";
         Parent root = FXMLLoader.load(getClass().getResource(appFxmlPath));
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);

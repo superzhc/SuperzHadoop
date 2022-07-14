@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 public class FXMLHelloWorldMain extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root= FXMLLoader.load(getClass().getResource("fxml_hello_world.fxml"));
+        Parent root= FXMLLoader.load(getClass().getResource("table_demo.fxml"/*"fxml_hello_world.fxml"*/));
         Scene scene=new Scene(root);
 
         primaryStage.setTitle("FXML Welcome");
