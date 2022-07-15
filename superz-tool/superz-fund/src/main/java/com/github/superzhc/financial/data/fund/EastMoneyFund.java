@@ -1,11 +1,11 @@
-package com.github.superzhc.fund.data.fund;
+package com.github.superzhc.financial.data.fund;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.superzhc.common.jackson.JsonUtils;
 import com.github.superzhc.common.script.ScriptUtils;
 import com.github.superzhc.common.http.HttpRequest;
 import com.github.superzhc.common.tablesaw.read.EmptyReadOptions;
 import com.github.superzhc.tablesaw.utils.ColumnUtils;
-import com.github.superzhc.common.JsonUtils;
 import com.github.superzhc.tablesaw.utils.ReadOptionsUtils;
 import com.github.superzhc.tablesaw.utils.TableUtils;
 import org.jsoup.Jsoup;
@@ -55,7 +55,8 @@ public class EastMoneyFund {
                     "full_pinyin"
             );
 
-            List<String[]> dataRows = JsonUtils.extractArrayData(nodes);
+            // List<String[]> dataRows = JsonUtils.extractArrayData(nodes);
+            List<String[]> dataRows = JsonUtils.arrayArray2(nodes);
 
             Table table = TableUtils.build(columnNames, dataRows);
             return table;
@@ -877,7 +878,8 @@ public class EastMoneyFund {
             );
 
             JsonNode node = JsonUtils.json(json, "datas");
-            List<String[]> dataRows = JsonUtils.extractArrayData(node);
+            // List<String[]> dataRows = JsonUtils.extractArrayData(node);
+            List<String[]> dataRows = JsonUtils.arrayArray2(node);
 
             Table table = TableBuildingUtils.build(columnNames, dataRows, ReadOptionsUtils.empty());
             return table;

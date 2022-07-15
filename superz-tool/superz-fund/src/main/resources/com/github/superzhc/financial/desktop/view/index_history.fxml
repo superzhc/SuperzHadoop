@@ -17,7 +17,7 @@
          </padding>
          <children>
             <Label alignment="CENTER_RIGHT" prefHeight="24.0" prefWidth="52.0" text="代码：" />
-            <TextField fx:id="txtIndexCode" prefHeight="23.0" prefWidth="168.0" />
+            <TextField fx:id="txtIndexCode" prefHeight="23.0" prefWidth="168.0" text="000300.SH" />
             <Button mnemonicParsing="false" onAction="#btnSearch" text="查询" />
          </children>
       </HBox>

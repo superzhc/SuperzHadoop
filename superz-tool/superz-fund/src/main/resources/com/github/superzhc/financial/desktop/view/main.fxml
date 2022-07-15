@@ -3,8 +3,8 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="491.0" prefWidth="669.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.superzhc.financial.desktop.controller.MainController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.superzhc.financial.desktop.controller.MainController">
    <center>
-      <TabPane fx:id="contentTab" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="ALL_TABS" BorderPane.alignment="CENTER" />
+      <TabPane fx:id="contentTab" prefHeight="400.0" prefWidth="550.0" tabClosingPolicy="ALL_TABS" BorderPane.alignment="CENTER" />
    </center>
 </BorderPane>

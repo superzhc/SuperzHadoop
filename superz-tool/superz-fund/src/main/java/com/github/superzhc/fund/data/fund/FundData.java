@@ -1,5 +1,6 @@
 package com.github.superzhc.fund.data.fund;
 
+import com.github.superzhc.financial.data.fund.EastMoneyFund;
 import tech.tablesaw.api.Table;
 
 /**
