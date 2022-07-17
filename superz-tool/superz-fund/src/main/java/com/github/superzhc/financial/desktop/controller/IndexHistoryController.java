@@ -35,7 +35,8 @@ public class IndexHistoryController {
         }
 
         Table table = IndexData.history(indexCode);
-        System.out.println(table.structure().printAll());
+        table=table.sortDescendingOn("date");
+        // System.out.println(table.structure().printAll());
 
         // 清除掉原有的数据
         tableView.getItems().clear();
