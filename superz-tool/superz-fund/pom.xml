@@ -109,6 +109,14 @@
             <version>3.36.0.3</version>
         </dependency>
 
+        <!--图表-->
+        <!--https://github.com/fair-acc/chart-fx-->
+        <dependency>
+            <groupId>de.gsi.chart</groupId>
+            <artifactId>chartfx-chart</artifactId>
+            <version>11.1.5</version>
+        </dependency>
+
         <!--region scala-->
         <!--<dependency>
             <groupId>org.scala-lang</groupId>

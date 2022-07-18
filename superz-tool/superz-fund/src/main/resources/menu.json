@@ -3,13 +3,26 @@
     "name": "Index",
     "hasChild": true,
     "children": {
+      "ALL": {
+        "name": "All",
+        "title": "Indices",
+        "url": "../view/indices_eastmoney.fxml"
+      },
+      "separator1": {
+        "isSeparator": true
+      },
       "Basic": {
         "name": "Basic",
         "title": "Index Basic",
         "url": "../view/index_info.fxml"
       },
-      "separator": {
+      "separator2": {
         "isSeparator": true
+      },
+      "Data": {
+        "name": "Data",
+        "title": "Index Data",
+        "url": "../view/index_data.fxml"
       },
       "History": {
         "name": "History",

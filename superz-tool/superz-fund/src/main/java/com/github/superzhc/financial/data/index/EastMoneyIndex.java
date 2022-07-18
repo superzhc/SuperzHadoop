@@ -1,4 +1,4 @@
-package com.github.superzhc.fund.data.index;
+package com.github.superzhc.financial.data.index;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.http.HttpRequest;

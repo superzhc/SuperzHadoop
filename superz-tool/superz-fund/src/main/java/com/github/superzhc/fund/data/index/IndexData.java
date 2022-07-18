@@ -1,5 +1,6 @@
 package com.github.superzhc.fund.data.index;
 
+import com.github.superzhc.financial.data.index.EastMoneyIndex;
 import com.github.superzhc.fund.akshare.JiuCaiShuo;
 import com.github.superzhc.tablesaw.functions.DoubleFunctions;
 import org.slf4j.Logger;
@@ -7,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import tech.tablesaw.api.Table;
 
 import static com.github.superzhc.fund.utils.FundConstant.*;
-import static com.github.superzhc.fund.utils.IndexConstant.*;
 
 /**
  * @author superz
