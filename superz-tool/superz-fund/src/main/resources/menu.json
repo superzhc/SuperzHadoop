@@ -1,0 +1,32 @@
+{
+  "Index": {
+    "name": "Index",
+    "hasChild": true,
+    "children": {
+      "Basic": {
+        "name": "Basic",
+        "title": "Index Basic",
+        "url": "../view/index_info.fxml"
+      },
+      "separator": {
+        "isSeparator": true
+      },
+      "History": {
+        "name": "History",
+        "title": "Index History",
+        "url": "../view/index_history.fxml"
+      }
+    }
+  },
+  "Fund": {
+    "name": "Fund",
+    "hasChild": true,
+    "children": {
+      "Basic": {
+        "name": "Basic",
+        "title": "Fund Basic",
+        "url": "../view/fund_info.fxml"
+      }
+    }
+  }
+}

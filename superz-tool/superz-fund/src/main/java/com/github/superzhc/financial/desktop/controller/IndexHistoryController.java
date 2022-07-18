@@ -1,6 +1,7 @@
 package com.github.superzhc.financial.desktop.controller;
 
 import com.github.superzhc.common.javafx.DialogUtils;
+import com.github.superzhc.financial.desktop.control.utils.TableViewUtils;
 import com.github.superzhc.financial.desktop.utils.ConvertTableUtils;
 import com.github.superzhc.fund.data.index.IndexData;
 import javafx.beans.property.*;
@@ -35,27 +36,9 @@ public class IndexHistoryController {
         }
 
         Table table = IndexData.history(indexCode);
-        table=table.sortDescendingOn("date");
+        table = table.sortDescendingOn("date");
         // System.out.println(table.structure().printAll());
 
-        // 清除掉原有的数据
-        tableView.getItems().clear();
-        tableView.setItems(ConvertTableUtils.convert(table));
-
-        // 清除掉原有的列
-        tableView.getColumns().clear();
-        // 初始化列
-        for (String columnName : table.columnNames()) {
-            TableColumn column = new TableColumn(columnName);
-            tableView.getColumns().add(column);
-
-            column.setCellValueFactory(new Callback<TableColumn.CellDataFeatures, ObservableValue>() {
-                @Override
-                public ObservableValue call(TableColumn.CellDataFeatures param) {
-                    ObservableMap<String, ObservableValue> row = (ObservableMap<String, ObservableValue>) param.getValue();
-                    return row.get(columnName);
-                }
-            });
-        }
+        TableViewUtils.bind(tableView, table);
     }
 }

@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -96,6 +97,15 @@ public class JsonUtils {
 
     public static Map<String, Object> map(JsonNode json) {
         return mapper.convertValue(json, LinkedHashMap.class);
+    }
+
+    public static JsonNode file(String path, String... paths) {
+        try {
+            JsonNode node = mapper.readTree(new File(path));
+            return json(node, paths);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static JsonNode json(String json, String... paths) {

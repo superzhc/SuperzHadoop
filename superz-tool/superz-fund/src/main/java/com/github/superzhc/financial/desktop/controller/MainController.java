@@ -1,13 +1,19 @@
 package com.github.superzhc.financial.desktop.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.github.superzhc.common.jackson.JsonUtils;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCombination;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 
 /**
@@ -15,6 +21,8 @@ import java.util.ResourceBundle;
  * @create 2022/7/15 1:35
  */
 public class MainController implements Initializable {
+    private static final Logger log = LoggerFactory.getLogger(MainController.class);
+
     @FXML
     private MenuBar menu;
 
@@ -24,61 +32,74 @@ public class MainController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
-
-            Menu index = new Menu("Index");
-            MenuItem indexBasic = new MenuItem("Basic");
-            // 设置快捷键
-            //indexBasic.setAccelerator(KeyCombination.valueOf("ctrl+i+b"));
-            // 设置点击事件
-            indexBasic.setOnAction(event -> {
-                try {
-                    Tab indexInfoTab = new Tab("Index Basic");
-                    indexInfoTab.setContent(FXMLLoader.load(getClass().getResource("../view/index_info.fxml")));
-                    contentTab.getTabs().add(indexInfoTab);
-                    contentTab.getSelectionModel().select(indexInfoTab);
-                } catch (Exception e) {
-                    e.printStackTrace();
+            /**
+             * 菜单逻辑
+             */
+            log.info("初始化菜单开始...");
+            JsonNode json = JsonUtils.file(getClass().getResource("/menu.json").getPath());
+            Iterator<String> ite = json.fieldNames();
+            while (ite.hasNext()) {
+                String menuName = ite.next();
+                MenuItem menuItem = parse(json.get(menuName));
+                if (!(menuItem instanceof Menu)) {
+                    //throw new RuntimeException("顶层菜单的hasChild属性必须为true");
+                    // 跳过配置错误的顶层菜单
+                    log.error("顶层菜单的hasChild属性必须为true，且isSeparator不可设置为true");
+                    continue;
                 }
-            });
-
-            //创建分割线
-            SeparatorMenuItem separator1 = new SeparatorMenuItem();
-
-            MenuItem indexHistroy = new MenuItem("History");
-            indexHistroy.setOnAction(event -> {
-                try {
-                    Tab indexHistoryTab = new Tab("Index History"/*"指数历史数据"*/);
-                    indexHistoryTab.setContent(FXMLLoader.load(getClass().getResource("../view/index_history.fxml")));
-                    contentTab.getTabs().add(indexHistoryTab);
-                    contentTab.getSelectionModel().select(indexHistoryTab);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
-
-            index.getItems().addAll(indexBasic, separator1, indexHistroy);
-
-            Menu fund = new Menu("fund");
-
-            MenuItem fundBasic = new MenuItem("Fund Basic");
-            fundBasic.setOnAction(event -> {
-                try {
-                    Tab fundInfoTab = new Tab("基金信息");
-                    fundInfoTab.setContent(FXMLLoader.load(getClass().getResource("../view/fund_info.fxml")));
-                    contentTab.getTabs().add(fundInfoTab);
-                    contentTab.getSelectionModel().select(fundInfoTab);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
-
-            fund.getItems().addAll(fundBasic);
-
-            menu.getMenus().addAll(index, fund);
-
+                menu.getMenus().add((Menu) menuItem);
+            }
+            log.info("菜单生成完成！！！");
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private MenuItem parse(JsonNode node) {
+        String name = JsonUtils.string(node, "name");
+        boolean hasChild = JsonUtils.bool(node, "hasChild");
+        boolean isSeparator = JsonUtils.bool(node, "isSeparator");
+        if (isSeparator) {
+            SeparatorMenuItem separator = new SeparatorMenuItem();
+            return separator;
+        } else if (hasChild) {
+            // 定义当前节点
+            Menu menuInfo = new Menu(name);
+
+            JsonNode children = node.get("children");
+            Iterator<String> childrenName = children.fieldNames();
+            while (childrenName.hasNext()) {
+                JsonNode childNode = children.get(childrenName.next());
+                MenuItem menuItem = parse(childNode);
+                menuInfo.getItems().add(menuItem);
+            }
+            return menuInfo;
+        } else {
+            MenuItem menuItem = new MenuItem(name);
+
+            String title = JsonUtils.string(node, "title");
+            String url = JsonUtils.string(node, "url");
+            menuItem.setOnAction(event -> {
+                try {
+                    // 判断是否存在已打开的 Tab，若已打开不在重新新增Tab
+                    ObservableList<Tab> openedTabs = contentTab.getTabs();
+                    for (Tab openedTab : openedTabs) {
+                        if (title.equals(openedTab.getText())) {
+                            contentTab.getSelectionModel().select(openedTab);
+                            return;
+                        }
+                    }
+
+                    Tab tab = new Tab(title);
+                    tab.setContent(FXMLLoader.load(getClass().getResource(url)));
+                    contentTab.getTabs().add(tab);
+                    contentTab.getSelectionModel().select(tab);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+            return menuItem;
         }
     }
 }
