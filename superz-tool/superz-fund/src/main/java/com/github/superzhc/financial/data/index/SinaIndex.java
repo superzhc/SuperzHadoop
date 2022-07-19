@@ -1,8 +1,11 @@
-package com.github.superzhc.fund.data.index;
+package com.github.superzhc.financial.data.index;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.http.HttpRequest;
+import com.github.superzhc.common.jackson.JsonUtils;
 import com.github.superzhc.tablesaw.utils.ColumnUtils;
 import com.github.superzhc.tablesaw.utils.ReadOptionsUtils;
+import com.github.superzhc.tablesaw.utils.TableUtils;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import tech.tablesaw.api.ColumnType;
 import tech.tablesaw.api.StringColumn;
@@ -115,6 +118,72 @@ public class SinaIndex {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * 目前该接口可获取指数数量较少
+     *
+     * @param symbol
+     * @return
+     */
+    public static Table stocks(String symbol) {
+        String[] ss = symbol.split("\\.");
+        String sinaCode = ss[0];
+
+        if ("000300".equals(sinaCode)) {
+            sinaCode = "hs300";
+            String totalUrl = "http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeStockCountSimple";
+
+            Map<String, Object> totalParams = new HashMap<>();
+            totalParams.put("node", sinaCode);
+
+            String totalResult = HttpRequest.get(totalUrl, totalParams).body();
+            int total = Integer.valueOf(totalResult.substring(1, totalResult.length() - 1));
+            int pageSize = 100;
+            int pages = total / pageSize + (total % pageSize == 0 ? 0 : 1);
+
+            String[] columnNames = null;
+            List<String[]> data = new ArrayList<>();
+            for (int i = 0; i < pages; i++) {
+                String url = "http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeData";
+
+                Map<String, Object> params = new HashMap<>();
+                params.put("page", i);
+                params.put("num", pageSize);
+                params.put("sort", "symbol");
+                params.put("asc", "1");
+                params.put("node", sinaCode);
+                params.put("symbol", "");
+                params.put("_s_r_a", "init");
+
+                String result = HttpRequest.get(url, params).body();
+                JsonNode json = JsonUtils.json(result);
+                List<String[]> dataWithColumn = JsonUtils.objectArray(json);
+                String[] jsonColumnNames = dataWithColumn.remove(0);
+                if (columnNames == null) {
+                    columnNames = jsonColumnNames;
+                }
+                data.addAll(dataWithColumn);
+            }
+            Table table = TableUtils.build(columnNames, data);
+            return table;
+        }
+
+        String url = "http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeDataSimple";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("page", 1);
+        params.put("num", "3000");
+        params.put("sort", "symbol");
+        params.put("asc", "1");
+        params.put("node", String.format("zhishu_%s", sinaCode));
+        params.put("_s_r_a", "setlen");
+
+        String result = HttpRequest.get(url, params).body();
+        JsonNode json = JsonUtils.json(result);
+        List<String[]> dataWithColumn = JsonUtils.objectArray(json);
+        Table table = TableUtils.build(dataWithColumn);
+        return table;
     }
 
     private String transform(String symbol) {

@@ -1,5 +1,6 @@
 package com.github.superzhc.fund.data.index;
 
+import com.github.superzhc.financial.data.index.CSIndex;
 import com.github.superzhc.financial.data.index.EastMoneyIndex;
 import com.github.superzhc.fund.akshare.JiuCaiShuo;
 import com.github.superzhc.tablesaw.functions.DoubleFunctions;

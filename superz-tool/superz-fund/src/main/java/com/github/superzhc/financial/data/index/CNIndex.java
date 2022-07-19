@@ -1,4 +1,4 @@
-package com.github.superzhc.fund.data.index;
+package com.github.superzhc.financial.data.index;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.http.HttpRequest;
@@ -9,6 +9,8 @@ import tech.tablesaw.api.Table;
 import java.util.*;
 
 /**
+ * 不可用
+ *
  * @author superz
  * @create 2022/5/6 19:12
  **/
@@ -99,7 +101,7 @@ public class CNIndex {
     }
 
     public static void main(String[] args) {
-        Table table=indices();
+        Table table = indices();
 //        Table table = history("399001");
 
         System.out.println(table.print());

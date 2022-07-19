@@ -109,6 +109,13 @@
             <version>3.36.0.3</version>
         </dependency>
 
+        <!--定时任务-->
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+
         <!--图表-->
         <!--https://github.com/fair-acc/chart-fx-->
         <dependency>

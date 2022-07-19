@@ -6,7 +6,7 @@
       "ALL": {
         "name": "All",
         "title": "Indices",
-        "url": "../view/indices_eastmoney.fxml"
+        "url": "../view/indices.fxml"
       },
       "separator1": {
         "isSeparator": true
