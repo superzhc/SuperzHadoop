@@ -26,6 +26,7 @@ public class IndexComponentController implements Initializable {
     @FXML
     private ChoiceBox<String> cbDataSource;
 
+    @FXML
     private TableView tableView;
 
     @Override
@@ -33,7 +34,7 @@ public class IndexComponentController implements Initializable {
         cbDataSource.getItems().addAll("Sina", "CS");
     }
 
-    public void btnSearchIndices(ActionEvent actionEvent) {
+    public void btnSearch(ActionEvent actionEvent) {
         String ds = cbDataSource.getValue();
         if (null == ds || ds.trim().length() == 0) {
             DialogUtils.error("消息", "请选择数据源");

@@ -59,4 +59,8 @@ public class TableViewUtils {
             });
         }
     }
+
+    public static void append(TableView view, Table table) {
+        view.getItems().addAll(0, ConvertTableUtils.convert(table));
+    }
 }

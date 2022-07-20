@@ -1,9 +1,6 @@
 package com.github.superzhc.financial.desktop.controller;
 
-import com.github.superzhc.financial.data.index.CNIndex;
-import com.github.superzhc.financial.data.index.CSIndex;
-import com.github.superzhc.financial.data.index.EastMoneyIndex;
-import com.github.superzhc.financial.data.index.SinaIndex;
+import com.github.superzhc.financial.data.index.*;
 import com.github.superzhc.financial.desktop.control.utils.TableViewUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -33,12 +30,7 @@ public class IndicesController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        cbDataSource.getItems().addAll("EastMoney"/*, "国证"*/, "Sina", "中证");
-
-//        Table table = getData(cbDataSource.getValue());
-//        if (null != table) {
-//            TableViewUtils.bind(tableView, table);
-//        }
+        cbDataSource.getItems().addAll("EastMoney", "Sina", "CS", "JoinQuant");
     }
 
     public void btnSearchIndices(ActionEvent actionEvent) {
@@ -77,6 +69,9 @@ public class IndicesController implements Initializable {
                 if (null != indexName && indexName.trim().length() > 0) {
                     table = table.where(table.stringColumn("name").containsString(indexName));
                 }
+                break;
+            case "JoinQuant":
+                table = JoinquantIndex.indices();
                 break;
         }
         return table;

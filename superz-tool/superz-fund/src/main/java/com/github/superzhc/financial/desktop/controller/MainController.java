@@ -40,6 +40,7 @@ public class MainController implements Initializable {
             Iterator<String> ite = json.fieldNames();
             while (ite.hasNext()) {
                 String menuName = ite.next();
+                // 一级菜单的类型必须为 Menu
                 MenuItem menuItem = parse(json.get(menuName));
                 if (!(menuItem instanceof Menu)) {
                     //throw new RuntimeException("顶层菜单的hasChild属性必须为true");
