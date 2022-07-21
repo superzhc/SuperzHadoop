@@ -1,4 +1,4 @@
-package com.github.superzhc.marco.data;
+package com.github.superzhc.financial.data.marco;
 
 import com.github.superzhc.common.http.HttpRequest;
 import com.github.superzhc.common.jackson.JsonUtils;

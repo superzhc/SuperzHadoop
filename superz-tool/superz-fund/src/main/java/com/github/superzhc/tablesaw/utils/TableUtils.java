@@ -34,7 +34,7 @@ public class TableUtils {
         public Optional<ColumnType> apply(String s) {
             ColumnType ct = null;
             if (null != s) {
-                switch (s.toLowerCase()) {
+                switch (s.trim().toLowerCase()) {
                     case "code":
                     case "fund_code":
                     case "fundcode":
@@ -49,6 +49,7 @@ public class TableUtils {
                     case "zqdm":
                     case "etfcode":
                     case "指数代码 index code":
+                    case "品种代码":
                     case "market":
                         ct = ColumnType.STRING;
                         break;

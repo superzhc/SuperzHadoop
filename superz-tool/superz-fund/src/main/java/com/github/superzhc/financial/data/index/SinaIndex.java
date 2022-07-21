@@ -7,6 +7,10 @@ import com.github.superzhc.tablesaw.utils.ColumnUtils;
 import com.github.superzhc.tablesaw.utils.ReadOptionsUtils;
 import com.github.superzhc.tablesaw.utils.TableUtils;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import tech.tablesaw.api.ColumnType;
 import tech.tablesaw.api.StringColumn;
 import tech.tablesaw.api.Table;
@@ -183,6 +187,61 @@ public class SinaIndex {
         JsonNode json = JsonUtils.json(result);
         List<String[]> dataWithColumn = JsonUtils.objectArray(json);
         Table table = TableUtils.build(dataWithColumn);
+        return table;
+    }
+
+    public static Table oldStocks(String symbol) {
+        String[] ss = symbol.split("\\.");
+        String sinaCode = ss[0];
+
+        String url = String.format("http://vip.stock.finance.sina.com.cn/corp/go.php/vII_NewestComponent/indexid/%s.phtml", sinaCode);
+
+        String result = HttpRequest.get(url).body("gb2312");
+        Document doc = Jsoup.parse(result);
+        String pageNum = doc.selectFirst(".table2 td a:last-of-type").attr("href").split("page=")[1].split("&")[0];
+
+        List<String[]> dataRows = new ArrayList<>();
+//        {
+//            Element table = doc.select("table").get(3);
+//            for (Element row : table.select("tr")) {
+//                Elements cells = row.select("td");
+//                if (null != cells && cells.size() > 0) {
+//                    String[] dataRow = new String[cells.size()];
+//                    for (int j = 0; j < cells.size(); j++) {
+//                        dataRow[j] = cells.get(j).text();
+//                    }
+//                    dataRows.add(dataRow);
+//                }
+//            }
+//        }
+
+        if (!"#".equals(pageNum)) {
+            for (int page = 1, total = Integer.valueOf(pageNum); page < total; page++) {
+                url = String.format("http://vip.stock.finance.sina.com.cn/corp/view/vII_NewestComponent.php?page=%d&indexid=%s", page, sinaCode);
+                result = HttpRequest.get(url).body("gb2312");
+                doc = Jsoup.parse(result);
+
+                int start = 2;
+                if (page == 1) {
+                    start = 1;
+                }
+
+                Element table = doc.select("table").get(3);
+                Elements rows = table.select("tr");
+                for (int i = start; i < rows.size(); i++) {
+                    Elements cells = rows.get(i).select("td");
+                    if (null != cells && cells.size() > 0) {
+                        String[] dataRow = new String[cells.size()];
+                        for (int j = 0; j < cells.size(); j++) {
+                            dataRow[j] = cells.get(j).text();
+                        }
+                        dataRows.add(dataRow);
+                    }
+                }
+            }
+        }
+
+        Table table = TableUtils.build(dataRows);
         return table;
     }
 

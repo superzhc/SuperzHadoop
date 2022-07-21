@@ -1,4 +1,4 @@
-package com.github.superzhc.marco.data;
+package com.github.superzhc.financial.data.marco;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.format.LogFormat;

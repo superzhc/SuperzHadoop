@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.superzhc.financial.desktop.controller.IndexHistoryChartController">
+   <children>
+      <HBox prefHeight="30.0" prefWidth="600.0" spacing="5.0">
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+         <children>
+            <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="40.0" text="代码：" />
+            <TextField fx:id="txtIndexCode" prefHeight="25.0" prefWidth="120.0" text="000300.SH" />
+            <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="60.0" text="时间范围：" />
+            <DatePicker prefHeight="25.0" prefWidth="120.0" fx:id="dpStart" onAction="#chgStart" />
+            <Label alignment="CENTER" prefHeight="25.0" prefWidth="10.0" text="~" />
+            <DatePicker prefHeight="25.0" prefWidth="120.0" fx:id="dpEnd" onAction="#chgEnd" />
+            <Button mnemonicParsing="false" onAction="#btnSearch" text="查询" />
+         </children>
+      </HBox>
+      <HBox fx:id="container" prefHeight="370.0" prefWidth="600.0" spacing="5.0">
+
+      </HBox>
+   </children>
+</VBox>

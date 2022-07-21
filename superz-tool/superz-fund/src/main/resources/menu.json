@@ -16,6 +16,11 @@
         "title": "Index Basic",
         "url": "../view/index_info.fxml"
       },
+      "Component": {
+        "name": "Component",
+        "title": "Index Component",
+        "url": "../view/index_component.fxml"
+      },
       "separator2": {
         "isSeparator": true
       },
@@ -28,6 +33,11 @@
         "name": "History",
         "title": "Index History",
         "url": "../view/index_history.fxml"
+      },
+      "HistoryChart": {
+        "name": "HistoryChart",
+        "title": "Index History Chart",
+        "url": "../view/index_history_chart.fxml"
       }
     }
   },
@@ -39,6 +49,17 @@
         "name": "Basic",
         "title": "Fund Basic",
         "url": "../view/fund_info.fxml"
+      }
+    }
+  },
+  "News": {
+    "name": "News",
+    "hasChild": true,
+    "children": {
+      "Jin10": {
+        "name": "Jin10",
+        "title": "Jin10 News",
+        "url": "../view/news.fxml"
       }
     }
   }

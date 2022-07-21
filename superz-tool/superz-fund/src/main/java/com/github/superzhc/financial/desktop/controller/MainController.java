@@ -2,32 +2,57 @@ package com.github.superzhc.financial.desktop.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.jackson.JsonUtils;
+import javafx.application.Application;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCombination;
+import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
  * @author superz
  * @create 2022/7/15 1:35
  */
-public class MainController implements Initializable {
+public class MainController extends Application implements Initializable {
     private static final Logger log = LoggerFactory.getLogger(MainController.class);
+
+    private static final String MAIN_FXML_PATH = "../view/main.fxml";
+    private static final String APPLICATION_NAME = "SUPERZ";
 
     @FXML
     private MenuBar menu;
 
     @FXML
     private TabPane contentTab;
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(MAIN_FXML_PATH));
+        Parent root = loader.load();
+        // MainController controller = loader.getController();
+
+        Scene scene = new Scene(root);
+        // 系统配置信息
+        Map<String, String> systemConfigs = new HashMap<>();
+        scene.setUserData(systemConfigs);
+
+        primaryStage.setScene(scene);
+        primaryStage.setTitle(APPLICATION_NAME);
+        primaryStage.show();
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {

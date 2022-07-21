@@ -42,6 +42,11 @@
         </dependency>
         <dependency>
             <groupId>com.github.superzhc</groupId>
+            <artifactId>superz-common-visualization-jfreechart</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.superzhc</groupId>
             <artifactId>superz-common-html</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -117,12 +122,17 @@
         </dependency>
 
         <!--图表-->
+        <!--<dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreechart</artifactId>
+            <version>1.5.3</version>
+        </dependency>-->
         <!--https://github.com/fair-acc/chart-fx-->
-        <dependency>
+        <!--<dependency>
             <groupId>de.gsi.chart</groupId>
             <artifactId>chartfx-chart</artifactId>
             <version>11.1.5</version>
-        </dependency>
+        </dependency>-->
 
         <!--region scala-->
         <!--<dependency>
