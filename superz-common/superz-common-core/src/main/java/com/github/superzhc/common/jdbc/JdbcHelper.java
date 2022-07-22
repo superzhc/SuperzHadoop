@@ -637,6 +637,30 @@ public class JdbcHelper implements Closeable {
         });
     }
 
+    public <T> List<T> queryOneColumn(String sql, Object... params) {
+        return dqlExecute(sql, params, new Function<ResultSet, List<T>>() {
+            @Override
+            public List<T> apply(ResultSet rs) {
+                List<T> list = new ArrayList<>();
+                try {
+                    ResultSetMetaData metaData = rs.getMetaData();
+                    int cols_len = metaData.getColumnCount();
+                    if (cols_len != 1) {
+                        throw new RuntimeException("查询SQL包含多列");
+                    }
+
+                    while (rs.next()) {
+                        T value = (T) rs.getObject(1);
+                        list.add(value);
+                    }
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                return list;
+            }
+        });
+    }
+
     public void preview(String table) {
         preview(table, DEFAULT_SHOW_NUMBER);
     }

@@ -11,19 +11,19 @@
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.superzhc.financial.desktop.controller.IndexHistoryController">
    <children>
-      <HBox prefHeight="28.0" prefWidth="600.0" spacing="5.0">
+      <HBox prefHeight="30.0" prefWidth="600.0" spacing="5.0">
          <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </padding>
          <children>
-            <Label alignment="CENTER_RIGHT" prefHeight="24.0" prefWidth="52.0" text="代码：" />
-            <TextField fx:id="txtIndexCode" prefHeight="23.0" prefWidth="168.0" text="000300.SH" />
+            <Label alignment="CENTER_RIGHT" prefHeight="20.0" prefWidth="40.0" text="代码:" />
+            <TextField fx:id="txtIndexCode" prefHeight="20.0" prefWidth="160.0" text="000300.SH" />
             <Button mnemonicParsing="false" onAction="#btnSearch" text="查询" />
          </children>
       </HBox>
-      <HBox prefHeight="361.0" prefWidth="600.0" spacing="5.0">
+      <HBox prefHeight="370.0" prefWidth="600.0" spacing="5.0">
          <children>
-            <TableView prefHeight="299.0" prefWidth="590.0" fx:id="tableView" />
+            <TableView prefHeight="370.0" prefWidth="600.0" fx:id="tableView" />
          </children>
          <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

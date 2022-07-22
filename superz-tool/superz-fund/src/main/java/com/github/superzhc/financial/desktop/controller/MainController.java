@@ -50,6 +50,7 @@ public class MainController extends Application implements Initializable {
         scene.setUserData(systemConfigs);
 
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
         primaryStage.setTitle(APPLICATION_NAME);
         primaryStage.show();
     }

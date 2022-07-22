@@ -15,12 +15,12 @@
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </padding>
          <children>
-            <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="40.0" text="代码：" />
-            <TextField fx:id="txtIndexCode" prefHeight="25.0" prefWidth="120.0" text="000300.SH" />
-            <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="60.0" text="时间范围：" />
-            <DatePicker prefHeight="25.0" prefWidth="120.0" fx:id="dpStart" onAction="#chgStart" />
-            <Label alignment="CENTER" prefHeight="25.0" prefWidth="10.0" text="~" />
-            <DatePicker prefHeight="25.0" prefWidth="120.0" fx:id="dpEnd" onAction="#chgEnd" />
+            <Label alignment="CENTER_RIGHT" prefHeight="20.0" prefWidth="40.0" text="代码:" />
+            <TextField fx:id="txtIndexCode" prefHeight="20.0" prefWidth="120.0" text="000300.SH" />
+            <Label alignment="CENTER_RIGHT" prefHeight="20.0" prefWidth="60.0" text="时间范围：" />
+            <DatePicker prefHeight="20.0" prefWidth="120.0" fx:id="dpStart" onAction="#chgStart" />
+            <Label alignment="CENTER" prefHeight="20.0" prefWidth="10.0" text="~" />
+            <DatePicker prefHeight="20.0" prefWidth="120.0" fx:id="dpEnd" onAction="#chgEnd" />
             <Button mnemonicParsing="false" onAction="#btnSearch" text="查询" />
          </children>
       </HBox>
