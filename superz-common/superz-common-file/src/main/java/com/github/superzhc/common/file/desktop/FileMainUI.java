@@ -1,4 +1,4 @@
-package com.github.superzhc.desktop;
+package com.github.superzhc.common.file.desktop;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -8,16 +8,19 @@ import javafx.stage.Stage;
 
 /**
  * @author superz
- * @create 2022/7/13 14:51
+ * @create 2022/7/26 15:51
  **/
-public class FXMLHelloWorldMain extends Application {
+public class FileMainUI extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root= FXMLLoader.load(getClass().getResource("table_demo.fxml"/*"fxml_hello_world.fxml"*/));
-        Scene scene=new Scene(root);
+        String path = "tool_file.fxml";
 
-        primaryStage.setTitle("FXML Welcome");
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
+        Parent root = loader.load();
+        Scene scene = new Scene(root);
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
+        primaryStage.setTitle("工具");
         primaryStage.show();
     }
 

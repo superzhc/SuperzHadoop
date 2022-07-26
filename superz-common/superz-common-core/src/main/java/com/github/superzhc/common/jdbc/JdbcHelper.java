@@ -311,13 +311,22 @@ public class JdbcHelper implements Closeable {
      * @return
      */
     public boolean exist(String table) {
+        try {
+            return exist(getConnection().getSchema(), table);
+        } catch (Exception e) {
+            log.error("判断表[{}]是否存在异常", table, e);
+            return false;
+        }
+    }
+
+    public boolean exist(String schema, String table) {
         ResultSet rs = null;
         try {
             DatabaseMetaData metaData = getConnection().getMetaData();
-            rs = metaData.getTables(conn.getCatalog(), conn.getSchema(), table, new String[]{"TABLE"});
+            rs = metaData.getTables(getConnection().getCatalog(), null == schema ? getConnection().getSchema() : schema, table, new String[]{"TABLE"});
             return rs.next();
         } catch (Exception e) {
-            log.error("判断表[" + table + "]是否存在异常，", e);
+            log.error("判断表[{}.{}]是否存在异常", schema, table, e);
             return false;
         } finally {
             free(null, null, rs);
@@ -383,6 +392,18 @@ public class JdbcHelper implements Closeable {
                 if ("YES".equalsIgnoreCase(rs.getString("IS_AUTOINCREMENT"))) {
                     continue;
                 }
+                /**
+                 * rs.getString("TABLE_NAME")//表名
+                 * rs.getString("column_name")//字段名
+                 * rs.getString("TYPE_NAME")//字段类型
+                 * rs.getString("DATA_TYPE")//字段类型
+                 * rs.getString("COLUMN_SIZE")//长度
+                 * rs.getString("DECIMAL_DIGITS")//长度
+                 * rs.getString("COLUMN_DEF")//默认值
+                 * rs.getString("REMARKS")//注释
+                 * rs.getString("ORDINAL_POSITION")//字段位置
+                 * rs.getString("IS_AUTOINCREMENT"));//是否自增
+                 */
                 result.add(rs.getString("COLUMN_NAME"));
             }
 

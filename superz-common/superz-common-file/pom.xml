@@ -17,6 +17,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.github.superzhc</groupId>
+            <artifactId>superz-common-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <!--Avro-->
         <dependency>
             <groupId>org.apache.avro</groupId>

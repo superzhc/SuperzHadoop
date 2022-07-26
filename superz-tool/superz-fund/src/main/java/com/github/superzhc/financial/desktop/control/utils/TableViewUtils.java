@@ -16,7 +16,7 @@ import tech.tablesaw.api.Table;
 public class TableViewUtils {
     public static void bind(TableView view, Table table) {
         // 清除掉原有的数据
-        view.getItems().clear();
+        // view.getItems().clear();
         view.setItems(ConvertTableUtils.convert(table));
 
         // 清除掉原有的列

@@ -102,6 +102,7 @@ public class TextReader {
     }
 
     public static <T> List<T> read(TextReaderSetting setting) {
+        log.info("文件路径：{}", setting.getPath());
         List<T> ret = null;
         try (InputStream inputStream = new FileInputStream(setting.getPath()/*new File(path)*/)) {
             try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream, Charset.forName(setting.getCharset()))) {
