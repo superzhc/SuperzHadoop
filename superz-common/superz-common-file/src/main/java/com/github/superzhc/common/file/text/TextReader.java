@@ -128,7 +128,8 @@ public class TextReader {
                                 log.debug("文件处理中，行号：[" + (currentLineNum - currentBatchLineNum + 1) + "~" + currentBatchLineNum + "]");
                             }
 
-                            Object result = setting.getDataFunction().apply(lines);
+                            List<String> copyList = new ArrayList<>(lines);
+                            Object result = setting.getDataFunction().apply(copyList);
                             if (null != result) {
                                 ret.add((T) result);
                             }

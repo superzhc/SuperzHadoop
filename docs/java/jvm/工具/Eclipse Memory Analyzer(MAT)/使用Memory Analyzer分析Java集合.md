@@ -6,7 +6,7 @@
 
 ### 方案说明
 
-这次会使用MAT中的Query Browser对dump文件进行切面式的分析。Query Browser我们之前已经多次使用，它提供了一系列非常有用的功能，就是这个：[![query browser](D:\superz\BigData-A-Question\JVM\工具\Eclipse Memory Analyzer(MAT)\images\query-browser_thumb.png)](http://www.zhyea.com/wp-content/uploads/2016/07/query-browser.png)。这次主要是用到Java Collections功能组。说一下思路，目前我们有两种方案：
+这次会使用MAT中的Query Browser对dump文件进行切面式的分析。Query Browser我们之前已经多次使用，它提供了一系列非常有用的功能，就是这个：[![query browserType](D:\superz\BigData-A-Question\JVM\工具\Eclipse Memory Analyzer(MAT)\images\query-browser_thumb.png)](http://www.zhyea.com/wp-content/uploads/2016/07/query-browserType.png)。这次主要是用到Java Collections功能组。说一下思路，目前我们有两种方案：
 
 方案一：查询dump中某一个集合类型的全部对象（比如HashMap），然后对结果集进行分组。比如按size进行分组，然后查看size为1的集合对象的持有者。如果您的兴趣在于dump中的全部对象，那么这个方案就值得参考。
 

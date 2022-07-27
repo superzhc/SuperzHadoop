@@ -1,8 +1,15 @@
 package com.github.superzhc.common.javafx;
 
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.util.Callback;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author superz
@@ -36,5 +43,30 @@ public class TableViewUtils {
             }
         });
         return idColumn;
+    }
+
+    public static <T> List<TableColumn<Map<String, T>, T>> bind(List<Map<String, T>> data) {
+        List<TableColumn<Map<String, T>, T>> columns = new ArrayList<>();
+        List<String> columnNames = new ArrayList<>();
+        for (int i = 0, len = data.size(); i < len; i++) {
+            Map<String, T> row = data.get(i);
+            for (Map.Entry<String, T> item : row.entrySet()) {
+                String columnName = item.getKey();
+                if (!columnNames.contains(columnName)) {
+                    TableColumn<Map<String, T>, T> column = new TableColumn<>(columnName);
+                    column.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Map<String, T>, T>, ObservableValue<T>>() {
+                        @Override
+                        public ObservableValue<T> call(TableColumn.CellDataFeatures<Map<String, T>, T> param) {
+                            Map<String, T> currentRow = param.getValue();
+                            T value = currentRow.get(columnName);
+                            return new SimpleObjectProperty<T>(value);
+                        }
+                    });
+                    columns.add(column);
+                    columnNames.add(columnName);
+                }
+            }
+        }
+        return columns;
     }
 }

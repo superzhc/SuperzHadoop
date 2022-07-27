@@ -35,7 +35,7 @@
 * RFC 7231 - HTTP/1.1: [Semantics and Content](http://tools.ietf.org/html/rfc7231) - methods, status codes and headers
 * RFC 7232 - HTTP/1.1: [Conditional Requests](http://tools.ietf.org/html/rfc7232) - e.g., If-Modified-Since
 * RFC 7233 - HTTP/1.1: [Range Requests](http://tools.ietf.org/html/rfc7233) - getting partial content
-* RFC 7234 - HTTP/1.1: [Caching](http://tools.ietf.org/html/rfc7234) - browser and intermediary caches
+* RFC 7234 - HTTP/1.1: [Caching](http://tools.ietf.org/html/rfc7234) - browserType and intermediary caches
 * RFC 7235 - HTTP/1.1: [Authentication](http://tools.ietf.org/html/rfc7235) - a framework for HTTP authentication
 
 相关资料：

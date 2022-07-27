@@ -1417,7 +1417,7 @@ hbase.rest.csrf.enabled
 默认: `false`
 
 ```
-hbase.rest-csrf.browser-useragents-regex
+hbase.rest-csrf.browserType-useragents-regex
 ```
 
 通过将 hbase.rest.csrf.enabled 设置为 true 来启用为 REST 服务器，针对跨站点请求伪造（CSRF）的防护时，用于匹配 HTTP 请求的 User-Agent 标头的正则表达式的逗号分隔列表。如果传入的用户代理与这些正则表达式中的任何一个相匹配，则认为该请求被浏览器发送，因此 CSRF 预防被强制执行。如果请求的用户代理与这些正则表达式中的任何一个都不匹配，则该请求被认为是由除浏览器以外的其他东西发送的，例如脚本自动化。在这种情况下，CSRF 不是一个潜在的攻击向量，所以预防没有被执行。这有助于实现与尚未更新以发送 CSRF 预防报头的现有自动化的向后兼容性。
