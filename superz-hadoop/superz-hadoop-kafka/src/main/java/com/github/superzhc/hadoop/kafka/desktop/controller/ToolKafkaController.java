@@ -111,5 +111,31 @@ public class ToolKafkaController {
         }
     }
 
+    @FXML
+    public void btnSearchTopics(ActionEvent actionEvent) {
+        String brokers = txtBrokers.getText();
+        if (null == brokers || brokers.trim().length() == 0) {
+            DialogUtils.error("消息", "请输入Brokers");
+            return;
+        }
 
+        String topic = cbTopics.getValue();
+        if (null == topic || topic.trim().length() == 0) {
+            DialogUtils.error("消息", "请输入主题");
+            return;
+        }
+
+        try (MyAdminClient adminClient = new MyAdminClient(brokers)) {
+            Set<String> topics = adminClient.list();
+
+            List<String> matchTopics = new ArrayList<>();
+            for (String str : topics) {
+                if (str.contains(topic)) {
+                    matchTopics.add(str);
+                }
+            }
+
+            txtOutput.setText(matchTopics.stream().collect(Collectors.joining("\n")));
+        }
+    }
 }
