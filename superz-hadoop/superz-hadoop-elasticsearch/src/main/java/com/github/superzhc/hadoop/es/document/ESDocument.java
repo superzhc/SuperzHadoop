@@ -36,7 +36,7 @@ public class ESDocument extends ESCommon {
      */
     public String add(String index, String id, String jsonData) {
         String url = String.format("/%s%s/%s", index, type(), null == id ? "" : id);
-        Response response = client.put(url, jsonData);
+        Response response = client.post(url, jsonData);
         return ResponseUtils.getEntity(response);
     }
 

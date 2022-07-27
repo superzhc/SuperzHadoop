@@ -33,6 +33,11 @@
             <artifactId>superz-data</artifactId>
             <version>0.2.1</version>
         </dependency>-->
+        <dependency>
+            <groupId>com.github.superzhc</groupId>
+            <artifactId>superz-common-javafx</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.bouncycastle</groupId>

@@ -1,11 +1,16 @@
 package com.github.superzhc.hadoop.es.index;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.github.superzhc.common.jackson.JsonUtils;
 import com.github.superzhc.hadoop.es.ESClient;
 import com.github.superzhc.hadoop.es.ESCommon;
 import com.github.superzhc.hadoop.es.util.ResponseUtils;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author superz
@@ -16,9 +21,31 @@ public class ESIndex extends ESCommon {
         super(client);
     }
 
-    public String indices() {
+    public List<String> indices() {
         Response response = client.get(formatJson("/_cat/indices"));
-        return ResponseUtils.getEntity(response);
+        /*
+        返回结果：
+        [
+            {
+                "health": "green",
+                "status": "open",
+                "index": "ui_template",
+                "uuid": "se83R0ObS6G_bM-L1Udo-A",
+                "pri": "1",
+                "rep": "1",
+                "docs.count": "8",
+                "docs.deleted": "0",
+                "store.size": "158.5kb",
+                "pri.store.size": "79.2kb"
+            },
+            ...
+        ]
+        */
+        String result = ResponseUtils.getEntity(response);
+        JsonNode json = JsonUtils.json(result);
+
+        String[] indices = JsonUtils.objectOneArray(json, "index");
+        return Arrays.asList(indices);
     }
 
     public String create(String index) {

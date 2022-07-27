@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" spacing="3.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.superzhc.hadoop.es.desktop.controller.ToolESController">
+    <padding>
+        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+    </padding>
+    <children>
+        <HBox prefHeight="35.0" prefWidth="590.0" spacing="3.0">
+            <padding>
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+            </padding>
+            <children>
+                <Label alignment="CENTER_RIGHT" prefHeight="25.0" text="Host:" />
+                <TextField fx:id="txtHost" prefHeight="25.0" prefWidth="108.0" />
+                <Label alignment="CENTER_RIGHT" prefHeight="25.0" text="Port:" />
+                <TextField fx:id="txtPort" prefHeight="25.0" prefWidth="50.0" text="9200" />
+                <Label alignment="CENTER_RIGHT" prefHeight="25.0" text="用户名:" />
+                <TextField fx:id="txtUsername" prefHeight="25.0" prefWidth="70.0" />
+                <Label alignment="CENTER_RIGHT" prefHeight="25.0" text="密码:" />
+                <PasswordField fx:id="txtPassword" prefHeight="25.0" prefWidth="70.0" />
+                <Button fx:id="btnConnect" mnemonicParsing="false" onAction="#btnConnectAction" prefHeight="25.0" text="连接" />
+                <Button fx:id="btnDisconnect" disable="true" mnemonicParsing="false" onAction="#btnDisconnectAction" prefHeight="25.0" text="断开连接" />
+            </children>
+        </HBox>
+        <HBox alignment="CENTER_LEFT" prefHeight="10.0" prefWidth="590.0">
+            <children>
+                <Text fill="#e10909" strokeType="OUTSIDE" strokeWidth="0.0" text="提示信息：请先连接Elasticsearch；连接成功会自动初始化索引列表">
+                    <font>
+                        <Font size="10.0" />
+                    </font>
+                </Text>
+            </children>
+        </HBox>
+      <HBox prefHeight="35.0" prefWidth="590.0" spacing="3.0">
+         <children>
+            <Label alignment="CENTER_RIGHT" prefHeight="25.0" text="索引:" />
+            <ComboBox fx:id="cbIndices" prefHeight="25.0" prefWidth="120.0" />
+             <Button mnemonicParsing="false" onAction="#btnGetIndexInfoAction" prefHeight="25.0" text="索引信息">
+                 <font>
+                     <Font size="11.0" />
+                 </font></Button>
+             <Button mnemonicParsing="false" onAction="#btnGetIndexMappingsAction" prefHeight="25.0" text="索引映射">
+                 <font>
+                     <Font size="11.0" />
+                 </font></Button>
+             <Button mnemonicParsing="false" onAction="#btnAddDocumentAction" prefHeight="25.0" text="新增数据">
+               <font>
+                  <Font size="11.0" />
+               </font></Button>
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </HBox>
+        <HBox prefHeight="35.0" prefWidth="590.0" spacing="3.0">
+            <padding>
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+            </padding>
+            <children>
+                <Label alignment="CENTER_RIGHT" prefHeight="25.0" text="索引:" />
+                <HBox fx:id="ccbContainer" prefHeight="25.0" prefWidth="120.0" />
+            <Button mnemonicParsing="false" onAction="#btnSearchAllAction" prefHeight="25.0" text="查询全部">
+               <font>
+                  <Font size="11.0" />
+               </font>
+            </Button>
+            </children>
+        </HBox>
+        <VBox prefHeight="140.0" prefWidth="590.0">
+            <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="请求：" />
+                <TextArea fx:id="txtRequest" prefWidth="590.0" />
+            </children>
+        </VBox>
+        <VBox prefHeight="120.0" prefWidth="590.0">
+            <children>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="响应：" />
+                <TextArea fx:id="txtResponse" editable="false" prefWidth="590.0" />
+            </children>
+        </VBox>
+    </children>
+</VBox>

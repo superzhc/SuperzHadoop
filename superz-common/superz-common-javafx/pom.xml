@@ -3,13 +3,17 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>superz-hadoop</artifactId>
+        <artifactId>superz-common</artifactId>
         <groupId>com.github.superzhc</groupId>
         <version>0.2.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>superz-hadoop-kafka</artifactId>
+    <artifactId>superz-common-javafx</artifactId>
+    <description>
+        1. Oracle从JDK11开始，将JavaFX单独独立出来，如果使用，需单独引用
+        2. 第三方JavaFX库
+    </description>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -19,13 +23,14 @@
     <dependencies>
         <dependency>
             <groupId>com.github.superzhc</groupId>
-            <artifactId>superz-common-javafx</artifactId>
+            <artifactId>superz-common-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+
         <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
-            <version>${kafka.version}</version>
+            <groupId>org.controlsfx</groupId>
+            <artifactId>controlsfx</artifactId>
+            <version>8.40.18</version>
         </dependency>
     </dependencies>
 

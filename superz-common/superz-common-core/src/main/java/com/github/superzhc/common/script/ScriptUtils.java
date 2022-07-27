@@ -25,6 +25,10 @@ public class ScriptUtils {
         return SCRIPT_ENGINE_MANAGER.getEngineByName("nashorn");
     }
 
+    public static ScriptEngine getEngine(String engineName) {
+        return SCRIPT_ENGINE_MANAGER.getEngineByName(engineName);
+    }
+
     /**
      * 加载资源
      *

@@ -21,6 +21,7 @@
         <module>superz-common-third-http</module>
         <module>superz-common-html</module>
         <module>superz-common-visualization</module>
+        <module>superz-common-javafx</module>
     </modules>
 
     <properties>
