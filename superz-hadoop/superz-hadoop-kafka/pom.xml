@@ -19,6 +19,11 @@
     <dependencies>
         <dependency>
             <groupId>com.github.superzhc</groupId>
+            <artifactId>superz-common-faker</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.superzhc</groupId>
             <artifactId>superz-common-javafx</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -28,5 +33,19 @@
             <version>${kafka.version}</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.zenjava</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>8.8.3</version>
+                <configuration>
+                    <vendor>superz-kafka</vendor>
+                    <mainClass>com.github.superzhc.hadoop.kafka.desktop.KafkaMainUI</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
