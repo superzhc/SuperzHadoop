@@ -313,6 +313,20 @@ public class JsonUtils {
         return mapOneArray(node, key, paths);
     }
 
+    public static String[] objectKeys(JsonNode node, String... paths) {
+        JsonNode childNode = node;
+        if (null != paths) {
+            childNode = json(node, paths);
+        }
+
+        List<String> keys = new ArrayList<>();
+        Iterator<String> fieldNames = childNode.fieldNames();
+        while (fieldNames.hasNext()) {
+            keys.add(fieldNames.next());
+        }
+        return keys.toArray(new String[keys.size()]);
+    }
+
     public static String[] objectArrayKeys(JsonNode node, String... childPaths) {
         return objectArrayKeys(node, null, childPaths);
     }

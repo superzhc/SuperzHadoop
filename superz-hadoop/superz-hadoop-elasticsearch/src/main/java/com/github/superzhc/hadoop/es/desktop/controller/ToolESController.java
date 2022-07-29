@@ -1,11 +1,16 @@
 package com.github.superzhc.hadoop.es.desktop.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.github.superzhc.common.faker.utils.ExpressionUtils;
+import com.github.superzhc.common.format.PlaceholderResolver;
 import com.github.superzhc.common.jackson.JsonUtils;
 import com.github.superzhc.common.javafx.DialogUtils;
 import com.github.superzhc.hadoop.es.ESClient;
 import com.github.superzhc.hadoop.es.document.ESDocument;
 import com.github.superzhc.hadoop.es.index.ESIndex;
 import com.github.superzhc.hadoop.es.search.ESNewSearch;
+import com.github.superzhc.hadoop.es.sql.ESSql;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -192,6 +197,31 @@ public class ToolESController implements Initializable {
     }
 
     @FXML
+    public void btnAddDocumentTemplateAction(ActionEvent actionEvent) {
+        if (!isConnect) {
+            DialogUtils.error("消息", "请先连接Elasticsearch");
+            return;
+        }
+
+        String index = cbIndices.getValue();
+        if (null == index || index.trim().length() == 0) {
+            DialogUtils.error("消息", "请选择索引");
+            return;
+        }
+
+        ESIndex indexClient = new ESIndex(client);
+        String indexMappings = indexClient.mapping(index);
+        JsonNode json = JsonUtils.json(indexMappings, index, "mappings", "properties");
+        String[] properties = JsonUtils.objectKeys(json);
+
+        ObjectNode documentTemplate = JsonUtils.mapper().createObjectNode();
+        for (String property : properties) {
+            documentTemplate.put(property, "");
+        }
+        txtRequest.setText(JsonUtils.format(documentTemplate));
+    }
+
+    @FXML
     public void btnAddDocumentAction(ActionEvent actionEvent) {
         if (!isConnect) {
             DialogUtils.error("消息", "请先连接Elasticsearch");
@@ -209,10 +239,60 @@ public class ToolESController implements Initializable {
             DialogUtils.error("消息", "请输入请求数据");
             return;
         }
+        String data2 = ExpressionUtils.convert(data);
 
         ESDocument docClient = new ESDocument(client);
-        String result = docClient.add(index, data);
+        String result = docClient.add(index, data2);
         txtResponse.setText(JsonUtils.format(result));
+    }
+
+    @FXML
+    public void btnBatchAddDocumentAction(ActionEvent actionEvent) {
+        if (!isConnect) {
+            DialogUtils.error("消息", "请先连接Elasticsearch");
+            return;
+        }
+
+        String index = cbIndices.getValue();
+        if (null == index || index.trim().length() == 0) {
+            DialogUtils.error("消息", "请选择索引");
+            return;
+        }
+
+        String data = txtRequest.getText();
+        if (null == data || data.trim().length() == 0) {
+            DialogUtils.error("消息", "请输入请求数据");
+            return;
+        }
+
+        String strNum = DialogUtils.prompt("信息", "请输入批量发送的条数", "100");
+        if (null == strNum) {
+            return;
+        }
+
+        if (strNum.trim().length() == 0) {
+            DialogUtils.error("消息", "请输入批量发送的信息条数");
+            return;
+        }
+
+        Integer num = null;
+        try {
+            num = Integer.parseInt(strNum);
+        } catch (Exception e) {
+            DialogUtils.error("消息", "请输入有效批量发送的信息条数");
+            return;
+        }
+
+        ESDocument docClient = new ESDocument(client);
+        List<String> expressions = ExpressionUtils.extractExpressions(data, false);
+
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < num; i++) {
+            String data2 = ExpressionUtils.convert(data, expressions);
+            String result = docClient.add(index, data2);
+            sb.append(result).append("\n");
+        }
+        txtResponse.setText(sb.toString());
     }
 
     @FXML
@@ -225,7 +305,6 @@ public class ToolESController implements Initializable {
         ESNewSearch search = new ESNewSearch(client);
 
         String[] indices = null;
-
         ObservableList<String> checkedItems = ccbIndices.getCheckModel().getCheckedItems();
         if (null != checkedItems && checkedItems.size() > 0) {
             indices = new String[checkedItems.size()];
@@ -234,6 +313,70 @@ public class ToolESController implements Initializable {
             }
         }
         String result = search.queryAll(indices);
+        txtResponse.setText(JsonUtils.format(result));
+    }
+
+    @FXML
+    public void btnSearchAction(ActionEvent actionEvent) {
+        if (!isConnect) {
+            DialogUtils.error("消息", "请先连接Elasticsearch");
+            return;
+        }
+
+        String body = txtRequest.getText();
+        if (null == body || body.trim().length() == 0) {
+            DialogUtils.error("消息", "请输入搜索条件");
+            return;
+        }
+
+        ESNewSearch search = new ESNewSearch(client);
+
+        String[] indices = null;
+        ObservableList<String> checkedItems = ccbIndices.getCheckModel().getCheckedItems();
+        if (null != checkedItems && checkedItems.size() > 0) {
+            indices = new String[checkedItems.size()];
+            for (int i = 0, len = checkedItems.size(); i < len; i++) {
+                indices[i] = checkedItems.get(i);
+            }
+        }
+
+        String result = search.queryDSL(body, indices);
+        txtResponse.setText(JsonUtils.format(result));
+    }
+
+    @FXML
+    public void btnSearchSQLAction(ActionEvent actionEvent) {
+        if (!isConnect) {
+            DialogUtils.error("消息", "请先连接Elasticsearch");
+            return;
+        }
+
+        String sql = txtRequest.getText();
+        if (null == sql || sql.trim().length() == 0) {
+            DialogUtils.error("消息", "请输入请求SQL");
+            return;
+        }
+
+        ESSql esSql = new ESSql(client);
+        String result = esSql.sql(sql);
+        txtResponse.setText(JsonUtils.format(result));
+    }
+
+    @FXML
+    public void btnSearchSQLTranslateAction(ActionEvent actionEvent) {
+        if (!isConnect) {
+            DialogUtils.error("消息", "请先连接Elasticsearch");
+            return;
+        }
+
+        String sql = txtRequest.getText();
+        if (null == sql || sql.trim().length() == 0) {
+            DialogUtils.error("消息", "请输入请求SQL");
+            return;
+        }
+
+        ESSql esSql = new ESSql(client);
+        String result = esSql.translate(sql);
         txtResponse.setText(JsonUtils.format(result));
     }
 }
