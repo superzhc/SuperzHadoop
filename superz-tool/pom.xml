@@ -16,6 +16,7 @@
         <module>superz-tool-main</module>
         <module>superz-fund</module>
         <module>superz-translate</module>
+        <module>superz-ocr</module>
     </modules>
 
     <properties>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.superzhc.ocr.desktop.controller.ToolOCRController">
+   <children>
+      <HBox prefHeight="200.0" prefWidth="600.0" spacing="3.0">
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+         <children>
+            <ImageView fx:id="imageView" fitHeight="190.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+            <VBox prefHeight="190.0" prefWidth="52.0" spacing="3.0">
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+               <children>
+                  <Button mnemonicParsing="false" onAction="#btnLoadAction" prefHeight="25.0" text="加载" />
+                  <Button mnemonicParsing="false" onAction="#btnIdentityAction" prefHeight="25.0" text="识别" />
+                  <Button mnemonicParsing="false" onAction="#btnTestAction" prefHeight="25.0" text="测试" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+   </children>
+</VBox>
