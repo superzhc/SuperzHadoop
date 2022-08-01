@@ -246,7 +246,14 @@ public class EastMoneyFund {
      * 7  |   risk_level  |       STRING  |
      * 8  |        bench  |       STRING  |
      */
-    public static Table fundNew(String symbol) {
+    public static Table fundNewTable(String symbol) {
+        Map<String, String> map = fundNew(symbol);
+        Table table = TableUtils.map2Table(map);
+
+        return table;
+    }
+
+    public static Map<String, String> fundNew(String symbol) {
         String url = "https://fundmobapi.eastmoney.com/FundMNewApi/FundMNNBasicInformation";
 
         Map<String, Object> params = new HashMap<>();
@@ -260,7 +267,7 @@ public class EastMoneyFund {
         String result = HttpRequest.get(url, params).userAgent(UA).body();
         JsonNode jjxq = JsonUtils.json(result, "Datas");
 
-        Map<String, Object> map = new LinkedHashMap<>();
+        Map<String, String> map = new LinkedHashMap<>();
 
         map.put("code", jjxq.get("FCODE").asText());
         map.put("name", jjxq.get("SHORTNAME").asText());
@@ -296,9 +303,7 @@ public class EastMoneyFund {
 //        map.put("近1年最大回撤", jjxq.get("MAXRETRA1").asText());
 //        map.put("买入确认日", jjxq.get("SSBCFDAY").asText());
 
-        Table table = TableUtils.map2Table(map);
-
-        return table;
+        return map;
     }
 
     public static Table fundPeriodRank(String symbol) {

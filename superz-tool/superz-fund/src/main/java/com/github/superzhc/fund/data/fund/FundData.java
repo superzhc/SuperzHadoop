@@ -9,7 +9,7 @@ import tech.tablesaw.api.Table;
  */
 public class FundData {
     public static Table fund(String symbol) {
-        Table table = EastMoneyFund.fundNew(symbol);
+        Table table = EastMoneyFund.fundNewTable(symbol);
         return table;
     }
 
