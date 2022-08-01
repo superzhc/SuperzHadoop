@@ -2,6 +2,8 @@ package com.github.superzhc.financial.desktop.controller;
 
 import com.github.superzhc.common.javafx.DialogUtils;
 import com.github.superzhc.financial.data.fund.EastMoneyFund;
+import com.github.superzhc.financial.data.index.CSIndex;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -13,7 +15,9 @@ import javafx.util.Callback;
 import tech.tablesaw.api.Table;
 
 import java.net.URL;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -63,7 +67,8 @@ public class FundRecordAddController implements Initializable {
                     public void updateItem(LocalDate item, boolean empty) {
                         super.updateItem(item, empty);
 
-                        if (item.isAfter(now)) {
+                        DayOfWeek dayOfWeek = item.getDayOfWeek();
+                        if (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY || item.isAfter(now)) {
                             setDisable(true);
                             setStyle("-fx-background-color: #ffc0cb;");
                         }
@@ -74,23 +79,23 @@ public class FundRecordAddController implements Initializable {
     }
 
     @FXML
-    public void btnSearchFundCode(ActionEvent actionEvent) {
-//        String indexCode=
-    }
-
-    @FXML
-    public void btnSearchIndexCode(ActionEvent actionEvent) {
-        String indexName = txtIndexName.getText();
-        if (null == indexName || indexName.trim().length() == 0) {
-            DialogUtils.error("消息", "请输入指数名称");
+    public void btnSearchFundByName(ActionEvent actionEvent) {
+        String fundName = txtFundName.getText();
+        if (null == fundName || fundName.trim().length() == 0) {
+            DialogUtils.error("请输入基金名称");
             return;
         }
 
-
+        Table table = EastMoneyFund.funds();
+        table = table.where(table.stringColumn("name").containsString(fundName));
+        List<String> fundCodes = table.stringColumn("code").asList();
+        cbFundCode.setItems(FXCollections.observableList(fundCodes));
+        txtFundName.setText(null);
+        DialogUtils.info("查询成功");
     }
 
     @FXML
-    public void btnSearchIndex(ActionEvent actionEvent) {
+    public void btnSearchIndexByFundCode(ActionEvent actionEvent) {
         String fundCode = cbFundCode.getValue();
         if (null == fundCode || fundCode.trim().length() == 0) {
             DialogUtils.error("消息", "Fund Code 不能为空");
@@ -110,6 +115,32 @@ public class FundRecordAddController implements Initializable {
         txtFundName.setText(fundInfo.get("name"));
         cbIndexCode.setValue(fundInfo.get("index_code"));
         txtIndexName.setText(fundInfo.get("index_name"));
-        txtRate.setText(fundInfo.get("rate"));
+        txtRate.setText(fundInfo.get("real_rate"));
+    }
+
+    @FXML
+    public void btnSearchIndexByName(ActionEvent actionEvent) {
+        String indexName = txtIndexName.getText();
+        if (null == indexName || indexName.trim().length() == 0) {
+            DialogUtils.error("消息", "请输入指数的名称");
+            return;
+        }
+
+        Table table = CSIndex.indices(indexName);
+
+        if (null == table || table.rowCount() == 0) {
+            DialogUtils.warning("未查询到数据");
+            return;
+        }
+
+        List<String> indexCodes = table.stringColumn("index_code").asList();
+        cbIndexCode.getItems().setAll(indexCodes);
+        txtIndexName.setText(null);
+        DialogUtils.info("消息", "查询成功");
+    }
+
+    @FXML
+    public void indexCodeChange(ActionEvent actionEvent) {
+
     }
 }

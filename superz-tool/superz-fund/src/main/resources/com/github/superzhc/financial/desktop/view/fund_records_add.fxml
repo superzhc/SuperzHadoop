@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<GridPane alignment="CENTER" hgap="3.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" vgap="3.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.superzhc.financial.desktop.controller.FundRecordAddController">
+  <columnConstraints>
+      <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" percentWidth="10.0" prefWidth="100.0" />
+      <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" percentWidth="40.0" prefWidth="100.0" />
+    <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" percentWidth="10.0" prefWidth="100.0" />
+    <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" percentWidth="40.0" prefWidth="100.0" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+    <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+  </rowConstraints>
+   <padding>
+      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+   </padding>
+   <children>
+      <Label prefHeight="25.0" text="基金代码:" />
+      <HBox alignment="CENTER_LEFT" spacing="3.0" GridPane.columnIndex="1">
+         <children>
+            <ComboBox fx:id="cbFundCode" editable="true" prefHeight="25.0" prefWidth="160.0" />
+            <Button mnemonicParsing="false" onAction="#btnSearchIndexByFundCode" prefHeight="25.0" text="获取" />
+         </children>
+      </HBox>
+      <Label prefHeight="25.0" text="基金名称:" GridPane.columnIndex="2" />
+      <HBox alignment="CENTER_LEFT" spacing="3.0" GridPane.columnIndex="3">
+         <children>
+            <TextField fx:id="txtFundName" prefHeight="25.0" prefWidth="160.0" />
+            <Button mnemonicParsing="false" onAction="#btnSearchFundByName" prefHeight="25.0" text="查询" />
+         </children>
+      </HBox>
+      <Label prefHeight="25.0" text="指数代码:" GridPane.rowIndex="1" />
+      <HBox alignment="CENTER_LEFT" spacing="3.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+         <children>
+            <ComboBox fx:id="cbIndexCode" editable="true" prefHeight="25.0" prefWidth="160.0" />
+         </children>
+      </HBox>
+      <Label prefHeight="25.0" text="指数名称:" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+      <HBox alignment="CENTER_LEFT" spacing="3.0" GridPane.columnIndex="3" GridPane.rowIndex="1">
+         <children>
+            <TextField fx:id="txtIndexName" prefHeight="25.0" prefWidth="160.0" />
+            <Button mnemonicParsing="false" onAction="#btnSearchIndexByName" prefHeight="25.0" text="查询" />
+         </children>
+      </HBox>
+      <Label prefHeight="25.0" text="日期:" GridPane.rowIndex="2" />
+      <HBox alignment="CENTER_LEFT" spacing="3.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+         <children>
+            <DatePicker fx:id="dpBuyDate" prefHeight="25.0" prefWidth="160.0" />
+         </children>
+      </HBox>
+      <Label prefHeight="25.0" text="成本:" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+      <HBox alignment="CENTER_LEFT" spacing="3.0" GridPane.columnIndex="3" GridPane.rowIndex="2">
+         <children>
+            <TextField fx:id="txtInvest" prefHeight="25.0" prefWidth="160.0" />
+         </children>
+      </HBox>
+      <Label prefHeight="25.0" text="单位净值:" GridPane.rowIndex="3" />
+      <HBox alignment="CENTER_LEFT" spacing="3.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+         <children>
+            <TextField fx:id="txtNetWorth" prefHeight="25.0" prefWidth="160.0" />
+         </children>
+      </HBox>
+      <Label prefHeight="25.0" text="份额:" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+      <HBox alignment="CENTER_LEFT" spacing="3.0" GridPane.columnIndex="3" GridPane.rowIndex="3">
+         <children>
+            <TextField fx:id="txtShare" prefHeight="25.0" prefWidth="160.0" />
+         </children>
+      </HBox>
+      <Label prefHeight="25.0" text="市值:" GridPane.rowIndex="4" />
+      <HBox alignment="CENTER_LEFT" spacing="3.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+         <children>
+            <TextField fx:id="txtWorth" prefHeight="25.0" prefWidth="160.0" />
+         </children>
+      </HBox>
+      <Label prefHeight="25.0" text="费率:" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+      <HBox alignment="CENTER_LEFT" spacing="3.0" GridPane.columnIndex="3" GridPane.rowIndex="4">
+         <children>
+            <TextField fx:id="txtRate" prefHeight="25.0" prefWidth="160.0" />
+         </children>
+      </HBox>
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnSpan="4" GridPane.rowIndex="5">
+         <children>
+            <Button mnemonicParsing="false" text="保存" />
+         </children>
+      </HBox>
+   </children>
+</GridPane>

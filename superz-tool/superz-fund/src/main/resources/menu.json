@@ -49,6 +49,11 @@
         "name": "Basic",
         "title": "Fund Basic",
         "url": "../view/fund_info.fxml"
+      },
+      "Record": {
+        "name": "Record",
+        "title": "Fund Record",
+        "url": "../view/fund_records_add.fxml"
       }
     }
   },

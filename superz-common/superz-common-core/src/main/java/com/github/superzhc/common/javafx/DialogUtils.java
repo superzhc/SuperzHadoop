@@ -13,6 +13,8 @@ import java.util.Optional;
  * @create 2022/7/13 17:39
  **/
 public class DialogUtils {
+    private static final String DEFAULT_TITLE = "消息";
+
     public static void alert(String title, String content) {
         Alert alert = new Alert(AlertType.NONE);
         alert.setTitle(title);
@@ -20,6 +22,10 @@ public class DialogUtils {
         alert.setContentText(content);
 
         alert.showAndWait();
+    }
+
+    public static void info(String content) {
+        info(DEFAULT_TITLE, content);
     }
 
     public static void info(String title, String content) {
@@ -32,6 +38,10 @@ public class DialogUtils {
         alert.showAndWait();
     }
 
+    public static void warning(String content) {
+        warning(DEFAULT_TITLE, content);
+    }
+
     public static void warning(String title, String content) {
         Alert alert = new Alert(AlertType.WARNING);
         alert.setTitle(title);
@@ -39,6 +49,10 @@ public class DialogUtils {
         alert.setContentText(content);
 
         alert.showAndWait();
+    }
+
+    public static void error(String content) {
+        error(DEFAULT_TITLE, content);
     }
 
     public static void error(String title, String content) {
