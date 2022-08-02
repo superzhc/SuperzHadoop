@@ -1,6 +1,7 @@
 package com.github.superzhc.hadoop.es.index;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.superzhc.common.jackson.JsonUtils;
 import com.github.superzhc.hadoop.es.ESClient;
 import com.github.superzhc.hadoop.es.ESCommon;
@@ -11,6 +12,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author superz
@@ -48,10 +50,13 @@ public class ESIndex extends ESCommon {
         return Arrays.asList(indices);
     }
 
+    public boolean exist(String index) {
+        Response response = client.head(String.format("/%s", index));
+        return response.getStatusLine().getStatusCode() == 200;
+    }
+
     public String create(String index) {
-        // return create(index, null, null);
-        Response response = client.put(String.format("/%s", index), null);
-        return ResponseUtils.getEntity(response);
+        return create(index, null);
     }
 
     /**
@@ -63,6 +68,26 @@ public class ESIndex extends ESCommon {
      * @return
      */
     public String create(String index, Integer numberOfShards, Integer numberOfReplicas) {
+        return create(index, numberOfShards, numberOfReplicas, (String) null);
+    }
+
+    public String create(String index, Integer numberOfShards, Integer numberOfReplicas, Map<String, String> mappings) {
+        ObjectNode mappingsNode = JsonUtils.mapper().createObjectNode();
+        if (null != mappings && mappings.size() > 0) {
+            ObjectNode properties = JsonUtils.mapper().createObjectNode();
+            for (Map.Entry<String, String> mapping : mappings.entrySet()) {
+                ObjectNode property = JsonUtils.mapper().createObjectNode();
+                property.put("type", mapping.getValue());
+                properties.set(mapping.getKey(), property);
+            }
+            mappingsNode.set("properties", properties);
+        }
+        return create(index, numberOfShards, numberOfReplicas, JsonUtils.asString(mappingsNode));
+    }
+
+    public String create(String index, Integer numberOfShards, Integer numberOfReplicas, String mappingsJson) {
+        ObjectNode json = JsonUtils.mapper().createObjectNode();
+
         if (null == numberOfShards || numberOfShards < 1) {
             numberOfShards = 5;
         }
@@ -71,9 +96,20 @@ public class ESIndex extends ESCommon {
             numberOfReplicas = 1;
         }
 
-        String json = "{\"settings\":{\"number_of_shards\": " + numberOfShards + ",\"number_of_replicas\": " + numberOfReplicas + "}}";
-        Response response = client.put(String.format("/%s", index), json);
+        ObjectNode settings = JsonUtils.mapper().createObjectNode();
+        settings.put("number_of_shards", numberOfShards);
+        settings.put("number_of_replicas", numberOfReplicas);
+        json.set("settings", settings);
 
+        if (null != mappingsJson && mappingsJson.trim().length() > 0) {
+            json.set("mappings", JsonUtils.json(mappingsJson));
+        }
+
+        return create(index, JsonUtils.asString(json));
+    }
+
+    public String create(String index, String json) {
+        Response response = client.put(String.format("/%s", index), json);
         return ResponseUtils.getEntity(response);
     }
 

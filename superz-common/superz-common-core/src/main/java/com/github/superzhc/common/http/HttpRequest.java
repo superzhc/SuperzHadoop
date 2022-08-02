@@ -2997,7 +2997,7 @@ public class HttpRequest {
             output.write('=');
             if (value != null)
                 output.write(URLEncoder.encode(value.toString(), charset));
-            log.debug("[{}] form: {}={}", requestMethod, URLEncoder.encode(name.toString(), charset), URLEncoder.encode(value.toString(), charset));
+            log.debug("[{}] form: {}={}", requestMethod, URLEncoder.encode(name.toString(), charset), (null == value ? null : URLEncoder.encode(value.toString(), charset)));
         } catch (IOException e) {
             throw new HttpRequestException(e);
         }

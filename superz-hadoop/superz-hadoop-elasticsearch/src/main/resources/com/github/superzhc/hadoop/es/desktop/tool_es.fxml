@@ -46,7 +46,17 @@
         <HBox prefHeight="35.0" prefWidth="590.0" spacing="3.0">
             <children>
                 <Label alignment="CENTER_RIGHT" prefHeight="25.0" text="索引:"/>
-                <ComboBox fx:id="cbIndices" prefHeight="25.0" prefWidth="120.0"/>
+                <ComboBox fx:id="cbIndices" prefHeight="25.0" prefWidth="120.0" editable="true"/>
+                <Button mnemonicParsing="false" onAction="#btnAddIndexAction" prefHeight="25.0" text="新增索引">
+                    <font>
+                        <Font size="11.0"/>
+                    </font>
+                </Button>
+                <Button mnemonicParsing="false" onAction="#btnDeleteIndexAction" prefHeight="25.0" text="删除索引">
+                    <font>
+                        <Font size="11.0"/>
+                    </font>
+                </Button>
                 <Button mnemonicParsing="false" onAction="#btnGetIndexInfoAction" prefHeight="25.0" text="索引信息">
                     <font>
                         <Font size="11.0"/>

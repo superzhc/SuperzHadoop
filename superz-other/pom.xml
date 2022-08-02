@@ -18,7 +18,6 @@
         <module>superz-windows-bat</module>
         <module>superz-minio</module>
         <module>superz-java</module>
-        <module>superz-javafx</module>
     </modules>
 
     <properties>

@@ -99,7 +99,7 @@
       </HBox>
       <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.columnSpan="4" GridPane.rowIndex="5">
          <children>
-            <Button mnemonicParsing="false" text="保存" />
+            <Button mnemonicParsing="false" prefHeight="25.0" text="保存" />
          </children>
       </HBox>
    </children>

@@ -114,21 +114,25 @@ public class ToolESController implements Initializable {
         }
         String password = txtPassword.getText();
 
-        client = ESClient.create(host, port, username, password);
-        isConnect = true;
-        txtHost.setDisable(true);
-        txtPort.setDisable(true);
-        txtUsername.setDisable(true);
-        txtPassword.setDisable(true);
-        btnConnect.setDisable(true);
-        btnDisconnect.setDisable(false);
+        try {
+            client = ESClient.create(host, port, username, password);
+            isConnect = true;
+            txtHost.setDisable(true);
+            txtPort.setDisable(true);
+            txtUsername.setDisable(true);
+            txtPassword.setDisable(true);
+            btnConnect.setDisable(true);
+            btnDisconnect.setDisable(false);
 
-        // 初始化索引
-        ESIndex indexClient = new ESIndex(client);
-        List<String> indices = indexClient.indices();
+            // 初始化索引
+            ESIndex indexClient = new ESIndex(client);
+            List<String> indices = indexClient.indices();
 
-        cbIndices.setItems(FXCollections.observableList(indices));
-        ccbIndices.getItems().addAll(indices);
+            cbIndices.setItems(FXCollections.observableList(indices));
+            ccbIndices.getItems().addAll(indices);
+        } catch (Exception e) {
+            DialogUtils.error("消息", "连接失败：" + e.getMessage());
+        }
     }
 
     /**
@@ -149,11 +153,81 @@ public class ToolESController implements Initializable {
             btnDisconnect.setDisable(true);
 
             cbIndices.setItems(null);
-            ccbIndices.setTitle(null);
+            // 先清除所有已勾选的，再删除元素
+            ccbIndices.getCheckModel().clearChecks();
             ccbIndices.getItems().clear();
         } catch (Exception e) {
             DialogUtils.error("消息", e.getMessage());
         }
+    }
+
+    @FXML
+    public void btnAddIndexAction(ActionEvent actionEvent) {
+        if (!isConnect) {
+            DialogUtils.error("消息", "请先连接Elasticsearch");
+            return;
+        }
+
+        String index = cbIndices.getValue();
+        if (null == index || index.trim().length() == 0) {
+            DialogUtils.error("消息", "请选择或输入索引");
+            return;
+        }
+
+        // 判断索引是否存在
+        ESIndex indexClient = new ESIndex(client);
+        boolean b = indexClient.exist(index);
+        if (b) {
+            DialogUtils.error("创建失败，索引已存在");
+            return;
+        }
+
+        String result = null;
+        String request = txtRequest.getText();
+        if (null == request || request.trim().length() == 0) {
+            result = indexClient.create(index);
+        } else {
+            JsonNode json = JsonUtils.json(request);
+            if (json.has("mappings") || json.has("settings")) {
+                result = indexClient.create(index, request);
+            } else {
+                result = indexClient.create(index, null, null, request);
+            }
+        }
+        txtResponse.setText(JsonUtils.format(result));
+
+        // 更新索引,TODO
+//        cbIndices.getItems().add(index);
+//        ccbIndices.getItems().add(index);
+    }
+
+    @FXML
+    public void btnDeleteIndexAction(ActionEvent actionEvent) {
+        if (!isConnect) {
+            DialogUtils.error("消息", "请先连接Elasticsearch");
+            return;
+        }
+
+        String index = cbIndices.getValue();
+        if (null == index || index.trim().length() == 0) {
+            DialogUtils.error("消息", "请选择或输入索引");
+            return;
+        }
+
+        // 判断索引是否存在
+        ESIndex indexClient = new ESIndex(client);
+        boolean b = indexClient.exist(index);
+        if (!b) {
+            DialogUtils.error("删除失败，索引不存在");
+            return;
+        }
+
+        String result = indexClient.delete(index);
+        txtResponse.setText(JsonUtils.format(result));
+
+        // TODO
+//        cbIndices.getItems().remove(index);
+//        ccbIndices.getItems().remove(index);
     }
 
     @FXML
