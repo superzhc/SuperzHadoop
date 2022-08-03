@@ -11,6 +11,7 @@ import com.github.superzhc.hadoop.es.document.ESDocument;
 import com.github.superzhc.hadoop.es.index.ESIndex;
 import com.github.superzhc.hadoop.es.search.ESNewSearch;
 import com.github.superzhc.hadoop.es.sql.ESSql;
+import com.github.superzhc.hadoop.es.sys.ESAnalyzer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -196,9 +197,9 @@ public class ToolESController implements Initializable {
         }
         txtResponse.setText(JsonUtils.format(result));
 
-        // 更新索引,TODO
-//        cbIndices.getItems().add(index);
-//        ccbIndices.getItems().add(index);
+        // 更新索引
+        cbIndices.getItems().add(index);
+        ccbIndices.getItems().add(index);
     }
 
     @FXML
@@ -225,7 +226,7 @@ public class ToolESController implements Initializable {
         String result = indexClient.delete(index);
         txtResponse.setText(JsonUtils.format(result));
 
-        // TODO
+        // TODO，删除有报错的情况
 //        cbIndices.getItems().remove(index);
 //        ccbIndices.getItems().remove(index);
     }
@@ -419,6 +420,34 @@ public class ToolESController implements Initializable {
     }
 
     @FXML
+    public void btnSearchTemplateAction(ActionEvent actionEvent) {
+        if (!isConnect) {
+            DialogUtils.error("消息", "请先连接Elasticsearch");
+            return;
+        }
+
+        String type = DialogUtils.choice("消息", "模板类型", "match_all", "match","multi_match","term");
+
+        String template = null;
+        switch (type) {
+            case "match_all":
+                template = "{\"query\":{\"match_all\":{}}}";
+                break;
+            case "match":
+                template = "{\"query\":{\"match\":{\"col1\":\"条件\"}}}";
+                break;
+            case "multi_match":
+                template="{\"query\": {\"multi_match\": {\"query\": \"条件\",\"fields\": [\"col1\",\"col2\"]}}}";
+                break;
+            case "term":
+                template="{\"query\": {\"term\": {\"col1\": {\"value\": \"值\"}}}}";
+                break;
+        }
+
+        txtRequest.setText(null == template ? null : JsonUtils.format(template));
+    }
+
+    @FXML
     public void btnSearchSQLAction(ActionEvent actionEvent) {
         if (!isConnect) {
             DialogUtils.error("消息", "请先连接Elasticsearch");
@@ -451,6 +480,29 @@ public class ToolESController implements Initializable {
 
         ESSql esSql = new ESSql(client);
         String result = esSql.translate(sql);
+        txtResponse.setText(JsonUtils.format(result));
+    }
+
+    @FXML
+    public void btnAnalyzerAction(ActionEvent actionEvent) {
+        if (!isConnect) {
+            DialogUtils.error("消息", "请先连接Elasticsearch");
+            return;
+        }
+
+        String body = txtRequest.getText();
+        if (null == body || body.trim().length() == 0) {
+            DialogUtils.error("请输入测试文本");
+            return;
+        }
+
+        String analyzer = DialogUtils.choice("消息", "分词器", "standard", "simple");
+        if (null == analyzer) {
+            analyzer = "standard";
+        }
+
+        ESAnalyzer analyzerClient = new ESAnalyzer(client);
+        String result = analyzerClient.Analyzer(analyzer, body);
         txtResponse.setText(JsonUtils.format(result));
     }
 }

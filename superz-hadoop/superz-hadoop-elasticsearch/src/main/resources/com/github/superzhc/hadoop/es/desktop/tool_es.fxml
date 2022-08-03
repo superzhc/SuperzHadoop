@@ -105,6 +105,11 @@
                         <Font size="11.0"/>
                     </font>
                 </Button>
+                <Button mnemonicParsing="false" onAction="#btnSearchTemplateAction" prefHeight="25.0" text="搜索模板">
+                    <font>
+                        <Font size="11.0"/>
+                    </font>
+                </Button>
             </children>
         </HBox>
         <Separator prefWidth="590.0"/>
@@ -118,15 +123,24 @@
                 <Button mnemonicParsing="false" onAction="#btnSearchSQLTranslateAction" text="SQL转换"/>
             </children>
         </HBox>
-
         <Separator prefWidth="590.0"/>
-        <VBox prefHeight="140.0" prefWidth="590.0">
+        <HBox prefHeight="35.0" prefWidth="590.0" spacing="3.0">
+            <padding>
+                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+            </padding>
+            <children>
+                <Label prefHeight="25.0" text="其他:"/>
+                <Button mnemonicParsing="false" onAction="#btnAnalyzerAction" text="分词器"/>
+            </children>
+        </HBox>
+        <Separator prefWidth="590.0"/>
+        <VBox prefHeight="120.0" prefWidth="590.0">
             <children>
                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="请求："/>
                 <TextArea fx:id="txtRequest" prefWidth="590.0"/>
             </children>
         </VBox>
-        <VBox prefHeight="120.0" prefWidth="590.0">
+        <VBox prefHeight="105.0" prefWidth="590.0">
             <children>
                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="响应："/>
                 <TextArea fx:id="txtResponse" editable="false" prefWidth="590.0"/>
