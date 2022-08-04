@@ -9,6 +9,7 @@ import java.io.Closeable;
 import java.sql.*;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * 2020年11月04日 superz add
@@ -99,8 +100,10 @@ public class JdbcHelper implements Closeable {
                 return null;
             } else if (url.startsWith("jdbc:sqlite:")) {
                 return sqlite();
+            } else {
+                // 2022年8月4日 modify 默认使用 MySQL 分页的模式
+                return mysql();
             }
-            return null;
         }
 
         public String oracle() {
@@ -230,6 +233,7 @@ public class JdbcHelper implements Closeable {
                 }
             }
         } catch (Exception e) {
+            log.error("JDBC 连接失败", e);
             throw new RuntimeException(e);
         }
         return conn;
@@ -333,14 +337,65 @@ public class JdbcHelper implements Closeable {
         }
     }
 
+    public String[] catalogs() {
+        ResultSet rs = null;
+
+        try {
+            List<String> catalogs = new ArrayList<>();
+            Connection connection = getConnection();
+            DatabaseMetaData meta = connection.getMetaData();
+            rs = meta.getCatalogs();
+            while (rs.next()) {
+                catalogs.add(rs.getString("TABLE_CAT"));
+            }
+            return catalogs.toArray(new String[catalogs.size()]);
+        } catch (SQLException e) {
+            log.error("获取数据库Schema异常", e);
+            return null;
+        } finally {
+            free(null, null, rs);
+        }
+    }
+
+    public String[] schemas() {
+        ResultSet rs = null;
+
+        try {
+            List<String> schemas = new ArrayList<>();
+            Connection connection = getConnection();
+            DatabaseMetaData meta = connection.getMetaData();
+            rs = meta.getSchemas();
+            while (rs.next()) {
+                schemas.add(rs.getString("TABLE_SCHEM"));
+            }
+            return schemas.toArray(new String[schemas.size()]);
+        } catch (SQLException e) {
+            log.error("获取数据库Schema异常", e);
+            return null;
+        } finally {
+            free(null, null, rs);
+        }
+    }
+
     public String[] tables() {
+        try {
+            String catalog = getConnection().getCatalog();
+            String schema = getConnection().getSchema();
+            return tables(catalog, schema);
+        } catch (SQLException e) {
+            log.error("获取表元数据异常", e);
+            return null;
+        }
+    }
+
+    public String[] tables(String catalog, String schema) {
         ResultSet rs = null;
         try {
             Connection connection = getConnection();
             List<String> tables = new ArrayList<>();
 
             DatabaseMetaData meta = connection.getMetaData();
-            rs = meta.getTables(connection.getCatalog(), connection.getSchema(), "%", new String[]{"TABLE"});
+            rs = meta.getTables(catalog, schema, "%", new String[]{"TABLE"});
             while (rs.next()) {
                 tables.add(rs.getString("TABLE_NAME"));
             }
@@ -379,19 +434,42 @@ public class JdbcHelper implements Closeable {
         }
     }
 
-    public String[] columns(String table) {
+    public String[] columnNames(String table) {
+        try {
+            return columnNames(getConnection().getCatalog(), getConnection().getSchema(), table);
+        } catch (SQLException throwables) {
+            log.error("获取表元数据异常", throwables);
+            return null;
+        }
+    }
+
+    public String[] columnNames(String catalog, String schema, String table) {
+        List<Map<String, String>> columns = columns(catalog, schema, table);
+        if (null == columns) {
+            return null;
+        }
+        List<String> names = columns.stream().map(column -> column.get("name")).collect(Collectors.toList());
+        return names.toArray(new String[names.size()]);
+    }
+
+    public List<Map<String, String>> columns(String table) {
+        try {
+            return columns(getConnection().getCatalog(), getConnection().getSchema(), table);
+        } catch (SQLException e) {
+            log.error("获取表元数据异常", e);
+            return null;
+        }
+    }
+
+    public List<Map<String, String>> columns(String catalog, String schema, String table) {
         ResultSet rs = null;
         try {
             Connection connection = getConnection();
-            List<String> result = new ArrayList<>();
+            List<Map<String, String>> result = new ArrayList<>();
 
             DatabaseMetaData meta = connection.getMetaData();
-            rs = meta.getColumns(connection.getCatalog(), connection.getSchema(), table, "%");
+            rs = meta.getColumns(catalog, schema, table, "%");
             while (rs.next()) {
-                // 不返回自增列
-                if ("YES".equalsIgnoreCase(rs.getString("IS_AUTOINCREMENT"))) {
-                    continue;
-                }
                 /**
                  * rs.getString("TABLE_NAME")//表名
                  * rs.getString("column_name")//字段名
@@ -402,14 +480,22 @@ public class JdbcHelper implements Closeable {
                  * rs.getString("COLUMN_DEF")//默认值
                  * rs.getString("REMARKS")//注释
                  * rs.getString("ORDINAL_POSITION")//字段位置
-                 * rs.getString("IS_AUTOINCREMENT"));//是否自增
+                 * rs.getString("IS_AUTOINCREMENT");//是否自增
                  */
-                result.add(rs.getString("COLUMN_NAME"));
+                Map<String, String> column = new LinkedHashMap<>();
+                column.put("tableName", rs.getString("TABLE_NAME"));
+                column.put("name", rs.getString("COLUMN_NAME"));
+                column.put("type", rs.getString("TYPE_NAME"));
+                column.put("dataType", rs.getString("DATA_TYPE"));
+                column.put("size", rs.getString("COLUMN_SIZE"));
+                column.put("decimalDigits", rs.getString("DECIMAL_DIGITS"));
+                column.put("defaultValue", rs.getString("COLUMN_DEF"));
+                column.put("comment", rs.getString("REMARKS"));
+                column.put("autoincrement", rs.getString("IS_AUTOINCREMENT"));
+                result.add(column);
             }
 
-            String[] rt = new String[result.size()];
-            result.toArray(rt);
-            return rt;
+            return result;
         } catch (SQLException throwables) {
             log.error("获取表元数据异常", throwables);
             return null;
@@ -418,6 +504,7 @@ public class JdbcHelper implements Closeable {
         }
     }
 
+    @Deprecated
     public Map<String, String> columnAndTypes(String table) {
         ResultSet rs = null;
         try {

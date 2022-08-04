@@ -3,8 +3,11 @@ package com.github.superzhc.common.javafx;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.Tooltip;
 import javafx.util.Callback;
 
 import java.util.ArrayList;
@@ -45,6 +48,26 @@ public class TableViewUtils {
         return idColumn;
     }
 
+    public static <T> TableView<Map<String, T>> clearAndBind(TableView<Map<String, T>> tv, List<Map<String, T>> data) {
+        // 清除数据
+        tv.setItems(null);
+
+        // 清除列
+        tv.getColumns().clear();
+
+        return bind(tv, data);
+    }
+
+    public static <T> TableView<Map<String, T>> bind(TableView<Map<String, T>> tv, List<Map<String, T>> data) {
+        // 绑定列
+        List<TableColumn<Map<String, T>, T>> columns = bind(data);
+        tv.getColumns().addAll(columns);
+
+        // 绑定数据
+        tv.setItems(FXCollections.observableList(data));
+        return tv;
+    }
+
     public static <T> List<TableColumn<Map<String, T>, T>> bind(List<Map<String, T>> data) {
         List<TableColumn<Map<String, T>, T>> columns = new ArrayList<>();
         List<String> columnNames = new ArrayList<>();
@@ -62,6 +85,10 @@ public class TableViewUtils {
                             return new SimpleObjectProperty<T>(value);
                         }
                     });
+
+                    // 2022年8月4日 将宽度控制在一个范围
+                    column.setMaxWidth(180);
+
                     columns.add(column);
                     columnNames.add(columnName);
                 }

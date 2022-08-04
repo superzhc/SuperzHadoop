@@ -3,29 +3,40 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>SuperzHadoop</artifactId>
+        <artifactId>superz-sql</artifactId>
         <groupId>com.github.superzhc</groupId>
         <version>0.2.2</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>superz-sql</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>superz-sql-parser</module>
-        <module>superz-sql-mysql</module>
-        <module>superz-sql-database-structure</module>
-        <module>superz-sql-postgresql</module>
-        <module>superz-sql-driver</module>
-    </modules>
+    <artifactId>superz-sql-driver</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <mysql.version>5.1.47</mysql.version>
     </properties>
 
     <dependencies>
-        <!--日志模块-->
+        <dependency>
+            <groupId>com.github.superzhc</groupId>
+            <artifactId>superz-common-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.superzhc</groupId>
+            <artifactId>superz-common-javafx</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!--mysql数据库-->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.version}</version>
+        </dependency>
+
+        <!--日志-->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
