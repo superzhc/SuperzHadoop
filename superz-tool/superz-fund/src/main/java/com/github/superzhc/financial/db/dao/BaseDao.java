@@ -5,6 +5,8 @@ import com.github.superzhc.financial.db.DBConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+
 /**
  * @author superz
  * @create 2022/7/22 14:09
@@ -25,4 +27,10 @@ public abstract class BaseDao {
     public JdbcHelper getJdbc() {
         return jdbc;
     }
+
+    public void add(Map<String, Object> map) {
+        jdbc.insert(tableName(), map);
+    }
+
+    protected abstract String tableName();
 }

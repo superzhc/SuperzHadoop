@@ -14,9 +14,11 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import org.apache.kafka.clients.CommonClientConfigs;
+import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.TopicPartition;
+import org.apache.kafka.common.TopicPartitionInfo;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,9 +74,14 @@ public class ToolKafkaController implements Initializable {
 
         try (MyAdminClient adminClient = new MyAdminClient(brokers)) {
             Set<String> topics = adminClient.list();
-            cbTopics.setItems(FXCollections.observableList(new ArrayList<>(topics)));
-            txtOutput.setText(topics.stream().collect(Collectors.joining("\n")));
-            DialogUtils.info("消息", "获取成功");
+            if (null == topics) {
+                DialogUtils.error("无主题");
+                return;
+            } else {
+                cbTopics.setItems(FXCollections.observableList(new ArrayList<>(topics)));
+                txtOutput.setText(topics.stream().collect(Collectors.joining("\n")));
+                DialogUtils.info("消息", "获取成功");
+            }
         }
     }
 
@@ -168,6 +175,32 @@ public class ToolKafkaController implements Initializable {
             }
 
             txtOutput.setText(matchTopics.stream().collect(Collectors.joining("\n")));
+        }
+    }
+
+    @FXML
+    public void btnTopicDescribe(ActionEvent actionEvent) {
+        String brokers = txtBrokers.getText();
+        if (null == brokers || brokers.trim().length() == 0) {
+            DialogUtils.error("消息", "请输入Brokers");
+            return;
+        }
+
+        String topic = cbTopics.getValue();
+        if (null == topic || topic.trim().length() == 0) {
+            DialogUtils.error("消息", "请输入主题");
+            return;
+        }
+
+        try (MyAdminClient adminClient = new MyAdminClient(brokers)) {
+            TopicDescription description = adminClient.describe(topic);
+            List<TopicPartitionInfo> partitions = description.partitions();
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("主题名称：").append(description.name()).append("\n");
+            sb.append("分区数：").append(partitions.size()).append("\n");
+
+            txtOutput.setText(sb.toString());
         }
     }
 

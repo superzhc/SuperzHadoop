@@ -140,6 +140,12 @@ public class ToolJdbcController {
             return;
         }
 
+        // 没啥作用
+//            String catalog = cbCatalog.getValue();
+//            if (null != catalog && catalog.trim().length() > 0) {
+//                jdbc.getConnection().setCatalog(catalog);
+//            }
+
         String[] schemas = jdbc.schemas();
         cbSchema.setItems(FXCollections.observableArrayList(schemas));
 

@@ -1,6 +1,8 @@
 package com.github.superzhc.common;
 
 import com.github.superzhc.common.http.HttpRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -11,6 +13,7 @@ import java.util.Map;
  * @create 2022/4/21 15:07
  **/
 public class XueQiuUtils {
+    private static final Logger log = LoggerFactory.getLogger(XueQiuUtils.class);
     private static volatile String COOKIES = null;
     private static volatile LocalDateTime EXPIRED = null;
 
@@ -25,7 +28,10 @@ public class XueQiuUtils {
             String xqAToken = map.get("xq_a_token");
             COOKIES = String.format("xq_a_token=%s", xqAToken);
             EXPIRED = LocalDateTime.now().plusMinutes(10);
+        } else {
+            EXPIRED = LocalDateTime.now().plusMinutes(10);
         }
+        log.debug("XueQiu Cookies[{},{}]", EXPIRED, COOKIES);
         return COOKIES;
     }
 

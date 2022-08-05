@@ -96,6 +96,7 @@ public class MyAdminClient extends KafkaBrokers implements Closeable {
             Set<String> topics = result.names().get(1, TimeUnit.SECONDS);
             return topics;
         } catch (Exception e) {
+            log.error("获取主题异常", e);
             return null;
         }
     }

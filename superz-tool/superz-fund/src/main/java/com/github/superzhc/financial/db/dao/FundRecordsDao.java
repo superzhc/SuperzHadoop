@@ -15,6 +15,11 @@ public class FundRecordsDao extends BaseDao {
         super(jdbc);
     }
 
+    @Override
+    protected String tableName() {
+        return "fund_records";
+    }
+
     public void add(String fundCode, String fundName, String indexCode, String indexName, String buyDate, Double invest) {
         add(fundCode, fundName, indexCode, indexName, buyDate, null, null, null, invest);
     }

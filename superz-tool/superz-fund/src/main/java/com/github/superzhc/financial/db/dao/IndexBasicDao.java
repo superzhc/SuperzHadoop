@@ -17,6 +17,11 @@ public class IndexBasicDao extends BaseDao {
         super(jdbc);
     }
 
+    @Override
+    protected String tableName() {
+        return "index_basic";
+    }
+
     public List<String> indexCodes() {
         String sql = "SELECT id FROM index_basic";
         List<String> codes = jdbc.queryOneColumn(sql);

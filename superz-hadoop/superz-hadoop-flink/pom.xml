@@ -118,7 +118,7 @@
         <!--endregion-->
 
         <!--region 工具类-->
-        <dependency>
+        <!--<dependency>
             <groupId>com.github.superzhc</groupId>
             <artifactId>superz-common-core</artifactId>
             <version>0.2.2</version>
@@ -127,6 +127,11 @@
             <groupId>com.github.javafaker</groupId>
             <artifactId>javafaker</artifactId>
             <version>1.0.2</version>
+        </dependency>-->
+        <dependency>
+            <groupId>com.github.superzhc</groupId>
+            <artifactId>superz-common-faker</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <!--http工具-->
         <dependency>

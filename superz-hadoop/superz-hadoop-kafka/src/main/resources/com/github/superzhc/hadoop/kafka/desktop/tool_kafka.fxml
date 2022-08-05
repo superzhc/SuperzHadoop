@@ -18,7 +18,7 @@
             <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="50.0" text="Brokers:" />
             <TextField fx:id="txtBrokers" prefHeight="25.0" prefWidth="160.0" />
             <Button mnemonicParsing="false" onAction="#btnInitCbTopicsAction" prefHeight="25.0" text="获取主题" />
-            <Button mnemonicParsing="false" onAction="#btnGetALLGroupAction" prefHeight="25.0" text="消费者组" />
+            <!--<Button mnemonicParsing="false" onAction="#btnGetALLGroupAction" prefHeight="25.0" text="消费者组" />-->
          </children>
       </HBox>
       <HBox prefHeight="35.0" prefWidth="590.0" spacing="3.0">
@@ -29,6 +29,7 @@
             <Label alignment="CENTER_RIGHT" contentDisplay="CENTER" prefHeight="25.0" prefWidth="50.0" text="主题:" />
             <ComboBox fx:id="cbTopics" editable="true" prefHeight="25.0" prefWidth="160.0" />
             <Button mnemonicParsing="false" onAction="#btnExistTopicAction" prefHeight="25.0" text="是否存在" />
+            <Button mnemonicParsing="false" onAction="#btnTopicDescribe" prefHeight="25.0" text="主题详情" />
             <Button mnemonicParsing="false" onAction="#btnSearchTopics" prefHeight="25.0" text="模糊搜索" />
             <Button mnemonicParsing="false" onAction="#btnGetTopicGroupAction" prefHeight="25.0" text="消费者组" />
          </children>

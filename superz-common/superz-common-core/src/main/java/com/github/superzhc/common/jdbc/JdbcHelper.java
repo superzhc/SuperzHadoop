@@ -100,6 +100,8 @@ public class JdbcHelper implements Closeable {
                 return null;
             } else if (url.startsWith("jdbc:sqlite:")) {
                 return sqlite();
+            } else if (url.startsWith("jdbc:trino:") || url.startsWith("jdbc:presto:")) {
+                return trino();
             } else {
                 // 2022年8月4日 modify 默认使用 MySQL 分页的模式
                 return mysql();
@@ -107,7 +109,7 @@ public class JdbcHelper implements Closeable {
         }
 
         public String oracle() {
-            return String.format("SELECT * FROM (SELECT a.*,ROWNUM FROM %s AS a WHERE ROWNUM<=%d) WHERE ROWNUM>%d", table, start + size, start);
+            return String.format("SELECT * FROM (SELECT a.*,ROWNUM FROM \"%s\" AS a WHERE ROWNUM<=%d) WHERE ROWNUM>%d", table, start + size, start);
         }
 
         public String db2() {
@@ -119,7 +121,7 @@ public class JdbcHelper implements Closeable {
                 rs = meta.getColumns(connection.getCatalog(), connection.getSchema(), table, "%");
                 if (rs.next()) {
                     String column = rs.getString("TABLE_NAME");
-                    String sqlTemplate = "SELECT * FROM (SELECT ROWNUMBER() OVER() AS rc,a.* FROM(SELECT * FROM %s ORDER BY %s) as a) WHERE rc BETWEEN %d AND %d";
+                    String sqlTemplate = "SELECT * FROM (SELECT ROWNUMBER() OVER() AS rc,a.* FROM(SELECT * FROM \"%s\" ORDER BY %s) as a) WHERE rc BETWEEN %d AND %d";
                     return String.format(sqlTemplate, table, column, start, start + size);
                 }
             } catch (Exception e) {
@@ -171,15 +173,19 @@ public class JdbcHelper implements Closeable {
         }
 
         public String mysql() {
-            return String.format("SELECT * FROM %s LIMIT %d,%d", table, start, size);
+            return String.format("SELECT * FROM `%s` LIMIT %d,%d", table, start, size);
         }
 
         public String postgreSql() {
-            return String.format("SELECT * FROM %s LIMIT %d,%d", table, size, start);
+            return String.format("SELECT * FROM \"%s\" LIMIT %d,%d", table, size, start);
         }
 
         public String sqlite() {
-            return String.format("SELECT * FROM %d LIMIT %d OFFSET %d", table, size, start);
+            return String.format("SELECT * FROM [%s] LIMIT %d OFFSET %d", table, size, start);
+        }
+
+        public String trino() {
+            return String.format("SELECT * FROM \"%s\" OFFSET %d LIMIT %d", table, start, size);
         }
     }
 
@@ -491,7 +497,8 @@ public class JdbcHelper implements Closeable {
                 column.put("decimalDigits", rs.getString("DECIMAL_DIGITS"));
                 column.put("defaultValue", rs.getString("COLUMN_DEF"));
                 column.put("comment", rs.getString("REMARKS"));
-                column.put("autoincrement", rs.getString("IS_AUTOINCREMENT"));
+                // Hudi-Hive 不支持
+                // column.put("autoincrement", rs.getString("IS_AUTOINCREMENT"));
                 result.add(column);
             }
 
@@ -562,6 +569,20 @@ public class JdbcHelper implements Closeable {
         } finally {
             free(null, stmt, null);
         }
+    }
+
+    public int insert(String table, Map<String, Object> params) {
+        int columnCount = params.size();
+        String[] columns = new String[columnCount];
+        Object[] values = new Object[columnCount];
+
+        int i = 0;
+        for (Map.Entry<String, Object> param : params.entrySet()) {
+            columns[i] = param.getKey();
+            values[i] = param.getValue();
+            i++;
+        }
+        return insert(table, columns, values);
     }
 
     public int insert(String table, String[] columns, List<Object> params) {
