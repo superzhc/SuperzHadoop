@@ -1,4 +1,4 @@
-package com.github.superzhc.common.javafx.demo.canvas;
+package com.github.superzhc.common.javafx.demo.control;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;

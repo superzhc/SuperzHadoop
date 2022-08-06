@@ -10,10 +10,7 @@ import javafx.scene.control.*;
 
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author superz
@@ -252,9 +249,24 @@ public class ToolJdbcController {
             }
 
             JdbcHelper.Page page = new JdbcHelper.Page(jdbc, table, 100);
-            List<Map<String, Object>> data = jdbc.query(page.sql());
+            String sql=page.sql();
+            txtSQL.setText(sql);
+            List<Map<String, Object>> data = jdbc.query(sql);
             if (null != data) {
-                TableViewUtils.clearAndBind(tvResult, data);
+                List<Map<String, Object>> data2 = new ArrayList<>(data.size());
+                for (Map<String, Object> row : data) {
+                    Map<String, Object> row2 = new HashMap<>(row.size());
+                    for (Map.Entry<String, Object> column : row.entrySet()) {
+                        String columnName = column.getKey();
+                        if (null != columnName && columnName.startsWith(String.format("%s.", table))) {
+                            columnName = columnName.substring(table.length() + 1);
+                        }
+                        row2.put(columnName, column.getValue());
+                    }
+                    data2.add(row2);
+                }
+
+                TableViewUtils.clearAndBind(tvResult, data2);
             }
         } catch (Exception e) {
             DialogUtils.error(e.getMessage());

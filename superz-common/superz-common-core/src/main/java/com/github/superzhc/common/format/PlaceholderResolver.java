@@ -6,9 +6,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -166,9 +164,29 @@ public class PlaceholderResolver {
         }
         StringBuilder result = new StringBuilder(content);
         while (start != -1) {
-            int end = result.indexOf(this.placeholderSuffix, start);
+            if (start > 1 && result.charAt(start - 1) == '\\') {
+                start = result.indexOf(this.placeholderPrefix, start + 1);
+                continue;
+            }
+            int placeholderStart = start;
+            boolean isEscape;
+            int end;
+            do {
+                end = result.indexOf(this.placeholderSuffix, placeholderStart);
+
+                // 2022年8月6日 支持转义字符，反斜杠(\)
+                isEscape = result.charAt(end - 1) == '\\';
+                placeholderStart = end + 1;
+            } while (isEscape && end != -1);
+
+            if (end == -1)
+                break;
+
             // 获取占位符属性值，如${id}, 即获取id
             String placeholder = result.substring(start + this.placeholderPrefix.length(), end).trim();
+            // 2022年8月6日 去掉转义符
+            placeholder = placeholder.replace(String.format("\\%s", this.placeholderPrefix), this.placeholderPrefix)
+                    .replace(String.format("\\%s", this.placeholderSuffix), this.placeholderSuffix);
             // 替换整个占位符内容，即将${id}值替换为替换规则回调中的内容
             String replaceContent;
             if (placeholder.isEmpty()) {
@@ -180,6 +198,22 @@ public class PlaceholderResolver {
             start = result.indexOf(this.placeholderPrefix, start + replaceContent.length());
         }
         return result.toString();
+    }
+
+    /**
+     * 提取内容中的占位符信息
+     * @param content
+     * @return
+     */
+    public List<String> fetchPlaceholders(String content) {
+        final Set<String> placeholders = new LinkedHashSet<>();
+        resolveByRule(content, placeholder ->
+                {
+                    placeholders.add(placeholder);
+                    return String.format("%s%s%s", this.placeholderPrefix, placeholder, this.placeholderSuffix);
+                }
+        );
+        return new ArrayList<>(placeholders);
     }
 
     /**

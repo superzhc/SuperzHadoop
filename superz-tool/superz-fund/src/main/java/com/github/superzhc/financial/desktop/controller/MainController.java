@@ -52,6 +52,16 @@ public class MainController extends Application implements Initializable {
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.setTitle(APPLICATION_NAME);
+        // 设置窗体透明度
+        // primaryStage.setOpacity(1);
+        // 设置窗口最大化
+        // primaryStage.setMaximized(true);
+        // 始终显示在其他窗口之上
+        // primaryStage.setAlwaysOnTop(true);
+        // 全屏显示，ESC退出
+        // primaryStage.setFullScreen(true);
+        // 最小化，任务栏可见图标
+        // primaryStage.setIconified(true);
         primaryStage.show();
     }
 

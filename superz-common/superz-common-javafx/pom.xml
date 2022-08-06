@@ -34,4 +34,20 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <!--带JRE运行环境的可执行文件-->
+            <!--Github地址：https://github.com/javafx-maven-plugin/javafx-maven-plugin-->
+            <plugin>
+                <groupId>com.zenjava</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>8.8.3</version>
+                <configuration>
+                    <vendor>SUPERZ</vendor>
+                    <mainClass>com.github.superzhc.common.javafx.demo.control.ContextMenuMain</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

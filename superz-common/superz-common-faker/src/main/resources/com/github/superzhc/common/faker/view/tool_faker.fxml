@@ -3,27 +3,86 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" spacing="3.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" spacing="3.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.superzhc.common.faker.desktop.controller.ToolFakerController">
    <padding>
       <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
    </padding>
    <children>
-      <AnchorPane prefHeight="100.0" prefWidth="590.0" />
+      <HBox prefHeight="25.0" prefWidth="590.0">
+         <children>
+            <Separator prefWidth="15.0">
+               <HBox.margin>
+                  <Insets top="12.0" />
+               </HBox.margin>
+            </Separator>
+            <Label prefHeight="25.0" prefWidth="25.0" text="模板" />
+            <Separator prefWidth="540.0">
+               <HBox.margin>
+                  <Insets top="12.0" />
+               </HBox.margin>
+            </Separator>
+         </children>
+      </HBox>
+      <FlowPane hgap="3.0" prefHeight="100.0" prefWidth="590.0" vgap="3.0">
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+         <children>
+            <Button mnemonicParsing="false" onAction="#btnTemplateName" text="姓名" />
+            <!--<Button mnemonicParsing="false" onAction="#btnTemplateName2" text="姓名2" />-->
+            <Button mnemonicParsing="false" onAction="#btnTemplateAge" text="年龄" />
+            <Button mnemonicParsing="false" onAction="#btnTemplateSex" text="性别" />
+            <Button mnemonicParsing="false" onAction="#btnTemplateIdCard" text="身份证" />
+            <Button mnemonicParsing="false" onAction="#btnTemplateQQ" text="QQ号" />
+            <Button mnemonicParsing="false" onAction="#btnTemplateIP" text="IP地址" />
+            <Button mnemonicParsing="false" onAction="#btnTemplateEducation" text="教育程度" />
+            <Button mnemonicParsing="false" onAction="#btnTemplateJob" text="工作" />
+         </children>
+      </FlowPane>
+      <HBox prefHeight="25.0" prefWidth="590.0">
+         <children>
+            <Separator prefWidth="15.0">
+               <HBox.margin>
+                  <Insets top="12.0" />
+               </HBox.margin>
+            </Separator>
+            <Label prefHeight="25.0" prefWidth="40.0" text="表达式" />
+            <Separator prefWidth="525.0">
+               <HBox.margin>
+                  <Insets top="12.0" />
+               </HBox.margin>
+            </Separator>
+         </children>
+      </HBox>
       <HBox prefHeight="35.0" prefWidth="590.0" spacing="3.0">
          <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </padding>
          <children>
-            <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="50.0" text="表达式：" />
-            <TextField prefHeight="25.0" prefWidth="440.0" />
-            <Button mnemonicParsing="false" prefHeight="25.0" text="生成" />
+            <TextField fx:id="txtExpression" prefHeight="25.0" prefWidth="540.0" />
+            <Button mnemonicParsing="false" onAction="#btnGenerateDataByExpression" prefHeight="25.0" text="生成" />
+         </children>
+      </HBox>
+      <HBox prefHeight="25.0" prefWidth="590.0">
+         <children>
+            <Separator prefWidth="15.0">
+               <HBox.margin>
+                  <Insets top="12.0" />
+               </HBox.margin>
+            </Separator>
+            <Label prefHeight="25.0" prefWidth="25.0" text="结果" />
+            <Separator prefWidth="540.0">
+               <HBox.margin>
+                  <Insets top="12.0" />
+               </HBox.margin>
+            </Separator>
          </children>
       </HBox>
       <VBox prefHeight="100.0" prefWidth="590.0" spacing="1.0">
@@ -31,8 +90,7 @@
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </padding>
          <children>
-            <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="50.0" text="结果：" />
-            <TextArea prefHeight="200.0" prefWidth="200.0" />
+            <TextArea fx:id="txtResult" prefHeight="200.0" prefWidth="590.0" />
          </children>
       </VBox>
    </children>
