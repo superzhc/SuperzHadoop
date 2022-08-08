@@ -67,6 +67,7 @@ public class IndexController {
         }
 
         TableView<Map<String, Object>> tv = new TableView<>();
+        tv.setPrefWidth(590.0);
         TableViewUtils.bind(tv, ConvertTableUtils.toMap(table));
         container.getChildren().add(tv);
     }
@@ -87,6 +88,7 @@ public class IndexController {
         }
 
         TableView<Map<String, Object>> tv = new TableView<>();
+        tv.setPrefWidth(590.0);
         TableViewUtils.bind(tv, ConvertTableUtils.toMap(table));
         container.getChildren().add(tv);
     }

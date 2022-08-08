@@ -16,6 +16,11 @@
         "title": "Index Basic",
         "url": "../view/index_info.fxml"
       },
+      "Index": {
+        "name": "指数",
+        "title": "Index",
+        "url": "../view/index.fxml"
+      },
       "Component": {
         "name": "组成成分",
         "title": "Index Component",
