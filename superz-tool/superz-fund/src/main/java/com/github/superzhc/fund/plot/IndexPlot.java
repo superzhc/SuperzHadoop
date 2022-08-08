@@ -1,11 +1,11 @@
 package com.github.superzhc.fund.plot;
 
-import com.github.superzhc.fund.data.index.IndexData;
+import com.github.superzhc.financial.data.index.IndexData;
 import com.github.superzhc.xchart.TableXChartTool;
 import org.knowm.xchart.XYChart;
 import tech.tablesaw.api.Table;
 
-import static com.github.superzhc.fund.utils.IndexConstant.*;
+import static com.github.superzhc.financial.utils.IndexConstant.*;
 
 /**
  * @author superz

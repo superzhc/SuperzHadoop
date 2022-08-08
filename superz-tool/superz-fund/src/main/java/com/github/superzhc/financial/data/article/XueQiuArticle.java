@@ -1,11 +1,10 @@
 package com.github.superzhc.financial.data.article;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.github.superzhc.common.XueQiuUtils;
+import com.github.superzhc.financial.utils.XueQiuUtils;
 import com.github.superzhc.common.http.HttpRequest;
 import com.github.superzhc.common.jackson.JsonUtils;
 import com.github.superzhc.common.jdbc.JdbcHelper;
-import com.github.superzhc.common.tablesaw.utils.TableReaderUtils;
 import com.github.superzhc.common.tablesaw.utils.TableWriterUtils;
 import com.github.superzhc.tablesaw.utils.TableUtils;
 import tech.tablesaw.api.Table;

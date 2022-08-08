@@ -17,8 +17,8 @@ import java.io.InputStream;
 import java.util.*;
 
 import static com.github.superzhc.common.HttpConstant.UA;
-import static com.github.superzhc.fund.utils.IndexConstant.*;
-import static com.github.superzhc.fund.utils.FundConstant.*;
+import static com.github.superzhc.financial.utils.IndexConstant.*;
+import static com.github.superzhc.financial.utils.FundConstant.*;
 
 /**
  * 中证指数

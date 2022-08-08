@@ -3,7 +3,7 @@ package com.github.superzhc.financial.desktop.controller;
 import com.github.superzhc.common.javafx.DialogUtils;
 import com.github.superzhc.financial.data.index.EastMoneyIndex;
 import com.github.superzhc.financial.desktop.control.utils.TableViewUtils;
-import com.github.superzhc.fund.data.index.IndexData;
+import com.github.superzhc.financial.data.index.IndexData;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

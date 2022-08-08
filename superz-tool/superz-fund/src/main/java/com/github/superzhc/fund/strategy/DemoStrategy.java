@@ -1,7 +1,7 @@
 package com.github.superzhc.fund.strategy;
 
 import com.github.superzhc.common.DateUtils;
-import com.github.superzhc.fund.akshare.JiuCaiShuo;
+import com.github.superzhc.financial.data.index.JiuCaiShuoIndex;
 import com.github.superzhc.tablesaw.functions.DoubleFunctions;
 import com.github.superzhc.tablesaw.utils.MyAggregateFunctions;
 import org.slf4j.Logger;
@@ -55,7 +55,7 @@ public class DemoStrategy {
         String symbol = "000905.SH";
 
         Table records = Table.create(DateColumn.create("date"), StringColumn.create("operate"), DoubleColumn.create("value"));
-        Table table = JiuCaiShuo.pe(symbol);
+        Table table = JiuCaiShuoIndex.pe(symbol);
 
         int yearPeriod = 5;
         String valueField = "pe";

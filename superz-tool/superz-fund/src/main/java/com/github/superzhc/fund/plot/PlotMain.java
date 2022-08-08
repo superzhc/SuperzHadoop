@@ -1,6 +1,6 @@
 package com.github.superzhc.fund.plot;
 
-import com.github.superzhc.fund.data.index.IndexData;
+import com.github.superzhc.financial.data.index.IndexData;
 import com.github.superzhc.xchart.TableXChartTool;
 import org.knowm.xchart.*;
 import tech.tablesaw.api.Table;

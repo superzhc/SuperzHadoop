@@ -22,8 +22,8 @@ import tech.tablesaw.io.html.HtmlReadOptions;
 import java.util.*;
 
 import static com.github.superzhc.common.HttpConstant.UA;
-import static com.github.superzhc.fund.utils.FundConstant.*;
-import static com.github.superzhc.fund.utils.IndexConstant.*;
+import static com.github.superzhc.financial.utils.FundConstant.*;
+import static com.github.superzhc.financial.utils.IndexConstant.*;
 
 /**
  * 统一 indexCode.market，示例 000300.SH

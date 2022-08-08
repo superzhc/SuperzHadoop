@@ -1,7 +1,6 @@
 package com.github.superzhc.tablesaw.utils;
 
-import com.github.superzhc.common.MathUtils;
-import com.github.superzhc.fund.data.index.DanJuanIndex;
+import com.github.superzhc.financial.data.index.DanJuanIndex;
 import com.github.superzhc.tablesaw.functions.DoubleFunctions;
 import tech.tablesaw.api.DoubleColumn;
 import tech.tablesaw.api.NumericColumn;

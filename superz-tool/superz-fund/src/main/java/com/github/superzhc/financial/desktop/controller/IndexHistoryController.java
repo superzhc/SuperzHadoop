@@ -2,20 +2,12 @@ package com.github.superzhc.financial.desktop.controller;
 
 import com.github.superzhc.common.javafx.DialogUtils;
 import com.github.superzhc.financial.desktop.control.utils.TableViewUtils;
-import com.github.superzhc.financial.desktop.utils.ConvertTableUtils;
-import com.github.superzhc.fund.data.index.IndexData;
-import javafx.beans.property.*;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableMap;
+import com.github.superzhc.financial.data.index.IndexData;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.util.Callback;
 import tech.tablesaw.api.Table;
-
-import java.util.*;
 
 /**
  * @author superz
