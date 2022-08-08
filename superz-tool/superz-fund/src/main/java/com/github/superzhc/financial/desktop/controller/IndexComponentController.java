@@ -3,7 +3,7 @@ package com.github.superzhc.financial.desktop.controller;
 import com.github.superzhc.common.javafx.DialogUtils;
 import com.github.superzhc.financial.data.index.CSIndex;
 import com.github.superzhc.financial.data.index.SinaIndex;
-import com.github.superzhc.financial.desktop.control.utils.TableViewUtils;
+import com.github.superzhc.financial.desktop.control.utils.TablesawViewUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -57,7 +57,7 @@ public class IndexComponentController implements Initializable {
                 break;
         }
         if (null != table) {
-            TableViewUtils.bind(tableView, table);
+            TablesawViewUtils.bind(tableView, table);
         }
     }
 }

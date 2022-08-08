@@ -1,7 +1,7 @@
 package com.github.superzhc.financial.desktop.controller;
 
 import com.github.superzhc.common.javafx.DialogUtils;
-import com.github.superzhc.financial.desktop.control.utils.TableViewUtils;
+import com.github.superzhc.financial.desktop.control.utils.TablesawViewUtils;
 import com.github.superzhc.financial.data.index.IndexData;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -31,6 +31,6 @@ public class IndexHistoryController {
         table = table.sortDescendingOn("date");
         // System.out.println(table.structure().printAll());
 
-        TableViewUtils.bind(tableView, table);
+        TablesawViewUtils.bind(tableView, table);
     }
 }

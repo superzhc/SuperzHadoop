@@ -1,7 +1,7 @@
 package com.github.superzhc.financial.desktop.controller;
 
 import com.github.superzhc.financial.data.index.*;
-import com.github.superzhc.financial.desktop.control.utils.TableViewUtils;
+import com.github.superzhc.financial.desktop.control.utils.TablesawViewUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -36,7 +36,7 @@ public class IndicesController implements Initializable {
     public void btnSearchIndices(ActionEvent actionEvent) {
         Table table = getData(cbDataSource.getValue(), txtIndexName.getText());
         if (null != table) {
-            TableViewUtils.bind(tableView, table);
+            TablesawViewUtils.bind(tableView, table);
         }
     }
 

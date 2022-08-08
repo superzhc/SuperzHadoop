@@ -4,7 +4,7 @@
     "hasChild": true,
     "children": {
       "ALL": {
-        "name": "All",
+        "name": "全部",
         "title": "Indices",
         "url": "../view/indices.fxml"
       },
@@ -12,12 +12,12 @@
         "isSeparator": true
       },
       "Basic": {
-        "name": "Basic",
+        "name": "基础信息",
         "title": "Index Basic",
         "url": "../view/index_info.fxml"
       },
       "Component": {
-        "name": "Component",
+        "name": "组成成分",
         "title": "Index Component",
         "url": "../view/index_component.fxml"
       },

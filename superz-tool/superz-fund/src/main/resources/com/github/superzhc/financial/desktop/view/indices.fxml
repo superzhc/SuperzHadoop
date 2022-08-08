@@ -9,23 +9,20 @@
 <?import javafx.scene.layout.VBox?>
 
 <?import javafx.scene.control.TextField?>
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.superzhc.financial.desktop.controller.IndicesController">
-   <padding>
-      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-   </padding>
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="390.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.superzhc.financial.desktop.controller.IndicesController">
    <children>
-      <HBox prefHeight="64.0" prefWidth="590.0" spacing="5.0">
+      <HBox prefHeight="35.0" prefWidth="600.0" spacing="3.0">
          <children>
-            <Label prefHeight="23.0" prefWidth="39.0" text="数据源:" />
-            <ChoiceBox fx:id="cbDataSource" prefHeight="23.0" prefWidth="120.0" />
-            <Label prefHeight="23.0" prefWidth="39.0" text="名称:" />
-            <TextField fx:id="txtIndexName" prefHeight="23.0" prefWidth="168.0" />
-            <Button mnemonicParsing="false" onAction="#btnSearchIndices" text="查询" />
+            <Label prefHeight="25.0" prefWidth="39.0" text="数据源:" />
+            <ChoiceBox fx:id="cbDataSource" prefHeight="25.0" prefWidth="120.0" />
+            <Label prefHeight="25.0" prefWidth="39.0" text="名称:" />
+            <TextField fx:id="txtIndexName" prefHeight="25.0" prefWidth="168.0" />
+            <Button prefHeight="25.0" mnemonicParsing="false" onAction="#btnSearchIndices" text="查询" />
          </children>
          <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </padding>
       </HBox>
-      <TableView fx:id="tableView" prefHeight="401.0" prefWidth="590.0" />
+      <TableView fx:id="tableView" prefHeight="355.0" prefWidth="600.0" />
    </children>
 </VBox>

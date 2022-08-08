@@ -2,7 +2,7 @@ package com.github.superzhc.financial.desktop.controller;
 
 import com.github.superzhc.common.javafx.DialogUtils;
 import com.github.superzhc.financial.data.index.EastMoneyIndex;
-import com.github.superzhc.financial.desktop.control.utils.TableViewUtils;
+import com.github.superzhc.financial.desktop.control.utils.TablesawViewUtils;
 import com.github.superzhc.financial.data.index.IndexData;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -62,7 +62,7 @@ public class IndexDataController {
 
         Tab tab = new Tab(title);
         TableView view = new TableView();
-        TableViewUtils.bind(view, data);
+        TablesawViewUtils.bind(view, data);
         tab.setContent(view);
         indexDataTabPane.getTabs().add(tab);
         indexDataTabPane.getSelectionModel().select(tab);

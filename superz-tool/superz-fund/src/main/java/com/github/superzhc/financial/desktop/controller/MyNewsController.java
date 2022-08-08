@@ -1,6 +1,6 @@
 package com.github.superzhc.financial.desktop.controller;
 
-import com.github.superzhc.financial.desktop.control.utils.TableViewUtils;
+import com.github.superzhc.financial.desktop.control.utils.TablesawViewUtils;
 import com.github.superzhc.financial.data.news.Jin10;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -10,8 +10,6 @@ import tech.tablesaw.api.Table;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ResourceBundle;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * @author superz
@@ -25,7 +23,7 @@ public class MyNewsController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         LocalDateTime firstTime = LocalDateTime.now();
         Table table = Jin10.news(firstTime);
-        TableViewUtils.bind(tableView, table);
+        TablesawViewUtils.bind(tableView, table);
 
         // Note：关闭了Tab，定时任务还是在继续执行
 //        Timer timer = new Timer();
