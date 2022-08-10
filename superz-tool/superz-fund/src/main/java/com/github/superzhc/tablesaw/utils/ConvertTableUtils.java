@@ -35,7 +35,14 @@ public class ConvertTableUtils {
             Row row = iterator.next();
             for (String columnName : table.columnNames()) {
                 ColumnType columnType = row.getColumnType(columnName);
-                Object value;
+                // 2022年8月11日 fix bug：【数值类型在null的情况下会返回NAN显示有点问题】
+                // 先判定数据是否为null，如果未null不进行类型操作
+                Object value = row.getObject(columnName);
+                if (null == value) {
+                    map.put(columnName, null);
+                    continue;
+                }
+
                 if (ColumnType.SHORT.equals(columnType)) {
                     value = row.getShort(columnName);
                 } else if (ColumnType.INTEGER.equals(columnType)) {
@@ -68,8 +75,6 @@ public class ConvertTableUtils {
                     value = instant.toEpochMilli();
                 } else if (ColumnType.TEXT.equals(columnType)) {
                     value = row.getText(columnName);
-                } else {
-                    value = row.getObject(columnName);
                 }
                 map.put(columnName, value);
             }

@@ -19,7 +19,7 @@ public class CanvasMain extends Application {
     public void start(Stage primaryStage) throws Exception {
         Group root = new Group();
 
-        Canvas canvas = new Canvas();
+        Canvas canvas = new Canvas(600.0, 400.0);
         GraphicsContext gc = canvas.getGraphicsContext2D();
         drawShapes(gc);
         root.getChildren().add(canvas);
