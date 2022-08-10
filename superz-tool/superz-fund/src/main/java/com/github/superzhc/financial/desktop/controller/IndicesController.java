@@ -11,6 +11,7 @@ import javafx.scene.control.TextField;
 import tech.tablesaw.api.Table;
 
 import java.net.URL;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
@@ -26,13 +27,14 @@ public class IndicesController implements Initializable {
     private TextField txtIndexName;
 
     @FXML
-    private TableView tableView;
+    private TableView<Map<String, Object>> tableView;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         cbDataSource.getItems().addAll("EastMoney", "Sina", "CS", "JoinQuant");
     }
 
+    @FXML
     public void btnSearchIndices(ActionEvent actionEvent) {
         Table table = getData(cbDataSource.getValue(), txtIndexName.getText());
         if (null != table) {

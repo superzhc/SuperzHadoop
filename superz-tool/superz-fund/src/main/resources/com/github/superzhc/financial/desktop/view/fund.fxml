@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Separator?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="390.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.superzhc.financial.desktop.controller.FundController">
+   <children>
+      <HBox prefHeight="35.0" prefWidth="600.0" spacing="3.0">
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+         <children>
+            <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="40.0" text="Code:" />
+            <TextField fx:id="txtFundCode" prefHeight="25.0" text="160119" />
+            <Button mnemonicParsing="false" onAction="#btnGetBasicInfo" prefHeight="25.0" text="基础信息" />
+         </children>
+      </HBox>
+      <HBox prefHeight="35.0" prefWidth="600.0" spacing="3.0">
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+         <children>
+            <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="40.0" text="数据:" />
+            <Button mnemonicParsing="false" onAction="#btnGetRank" prefHeight="25.0" text="排名" />
+            <Button mnemonicParsing="false" onAction="#btnGetScale" prefHeight="25.0" text="资产数据" />
+            <Button mnemonicParsing="false" onAction="#btnUpdatePosition" prefHeight="25.0" text="仓位更新" />
+            <Button mnemonicParsing="false" onAction="#btnGetFenHong" prefHeight="25.0" text="分红" />
+            <Button mnemonicParsing="false" onAction="#btnGetStocks" prefHeight="25.0" text="Stocks" />
+            <Button mnemonicParsing="false" onAction="#btnPositionRatio" prefHeight="25.0" text="种类占比" />
+            <Button mnemonicParsing="false" onAction="#btnIndustryComponent" prefHeight="25.0" text="行业占比" />
+            <Button mnemonicParsing="false" onAction="#btnNetWorthHistory" prefHeight="25.0" text="历史净值" />
+            <Button mnemonicParsing="false" onAction="#btnRealNetWorth" prefHeight="25.0" text="实时净值" />
+         </children>
+      </HBox>
+      <Separator prefWidth="600.0" />
+      <HBox fx:id="container" prefHeight="320.0" prefWidth="600.0">
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </HBox>
+   </children>
+</VBox>

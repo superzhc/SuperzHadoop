@@ -20,29 +20,6 @@
         "name": "指数",
         "title": "Index",
         "url": "../view/index.fxml"
-      },
-      "Component": {
-        "name": "组成成分",
-        "title": "Index Component",
-        "url": "../view/index_component.fxml"
-      },
-      "separator2": {
-        "isSeparator": true
-      },
-      "Data": {
-        "name": "Data",
-        "title": "Index Data",
-        "url": "../view/index_data.fxml"
-      },
-      "History": {
-        "name": "History",
-        "title": "Index History",
-        "url": "../view/index_history.fxml"
-      },
-      "HistoryChart": {
-        "name": "HistoryChart",
-        "title": "Index History Chart",
-        "url": "../view/index_history_chart.fxml"
       }
     }
   },
@@ -54,6 +31,11 @@
         "name": "Basic",
         "title": "Fund Basic",
         "url": "../view/fund_info.fxml"
+      },
+      "Fund": {
+        "name": "Fund",
+        "title": "Fund",
+        "url": "../view/fund.fxml"
       },
       "Record": {
         "name": "Record",
@@ -67,8 +49,8 @@
     "hasChild": true,
     "children": {
       "Jin10": {
-        "name": "Jin10",
-        "title": "Jin10 News",
+        "name": "News",
+        "title": "News",
         "url": "../view/news.fxml"
       }
     }

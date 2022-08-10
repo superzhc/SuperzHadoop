@@ -6,7 +6,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
-
+<?import javafx.scene.control.Separator?>
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="390.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.superzhc.financial.desktop.controller.IndexController">
    <children>
@@ -16,8 +16,10 @@
          </padding>
          <children>
             <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="40.0" text="Code:" />
-            <TextField fx:id="txtIndexCode" prefHeight="25.0" />
+            <TextField fx:id="txtIndexCode" prefHeight="25.0" text="000300.SH" />
+            <Button mnemonicParsing="false" onAction="#btnGetBasicInfo" prefHeight="25.0" text="基础信息" />
             <Button mnemonicParsing="false" onAction="#btnGetComponent" prefHeight="25.0" text="成分" />
+            <Button mnemonicParsing="false" onAction="#btnTranceIndex" prefHeight="25.0" text="追踪标的" />
          </children>
       </HBox>
       <HBox prefHeight="35.0" prefWidth="600.0" spacing="3.0">
@@ -38,6 +40,7 @@
             <Button mnemonicParsing="false" onAction="#btnGetHistroyChart" prefHeight="25.0" text="历史数据" />
          </children>
       </HBox>
+      <Separator prefWidth="600.0" />
       <HBox fx:id="container" prefHeight="285.0" prefWidth="590.0" />
    </children>
 </VBox>

@@ -333,9 +333,9 @@ public class EastMoneyFund {
                 // ,"diff"// 该字段一样不明，去掉
         );
 
-        List<String[]> dataRows = JsonUtils.extractObjectData(jdzf, columnNames);
+        List<String[]> dataRows = JsonUtils.objectArrayWithKeys(jdzf, columnNames);
 
-        Table table = TableUtils.build(columnNames, dataRows);
+        Table table = TableUtils.build(dataRows);
 
         StringColumn titleColumn = table.stringColumn("title").map(d -> {
             switch (d) {
@@ -445,9 +445,9 @@ public class EastMoneyFund {
                 "MGRNAME"
         );
 
-        List<String[]> dataRows = JsonUtils.extractObjectData(jjjl, columnNames);
+        List<String[]> dataRows = JsonUtils.objectArrayWithKeys(jjjl, columnNames);
 
-        Table table = TableUtils.build(columnNames, dataRows);
+        Table table = TableUtils.build(dataRows);
 
         return table;
     }
@@ -463,13 +463,12 @@ public class EastMoneyFund {
                 "ISSUM"
         );
 
-        List<String[]> dataRows = JsonUtils.extractObjectData(jjgm, columnNames);
+        List<String[]> dataRows = JsonUtils.objectArrayWithKeys(jjgm, columnNames);
 
-        Table table = TableUtils.build(columnNames, dataRows);
+        Table table = TableUtils.build(dataRows);
         table.column("FSRQ").setName("date");
 
         return table;
-
     }
 
     public static Table fundUpdatePosition(String symbol) {
@@ -524,9 +523,9 @@ public class EastMoneyFund {
                 "DTYPE"
         );
 
-        List<String[]> dataRows = JsonUtils.extractObjectData(fhsp, columnNames);
+        List<String[]> dataRows = JsonUtils.objectArrayWithKeys(fhsp, columnNames);
 
-        Table table = TableUtils.build(columnNames, dataRows);
+        Table table = TableUtils.build(dataRows);
         table.column("FSRQ").setName("date");
 
         return table;
@@ -552,9 +551,9 @@ public class EastMoneyFund {
                 "INDEXNAME"// 股票行业
         );
 
-        List<String[]> dataRows = JsonUtils.extractObjectData(stocks, columnNames);
+        List<String[]> dataRows = JsonUtils.objectArrayWithKeys(stocks, columnNames);
 
-        Table table = TableUtils.build(columnNames, dataRows);
+        Table table = TableUtils.build(dataRows);
 
         return table;
     }
@@ -573,9 +572,9 @@ public class EastMoneyFund {
                 "ISBROKEN"
         );
 
-        List<String[]> dataRows = JsonUtils.extractObjectData(boods, columnNames);
+        List<String[]> dataRows = JsonUtils.objectArrayWithKeys(boods, columnNames);
 
-        Table table = TableUtils.build(columnNames, dataRows);
+        Table table = TableUtils.build(dataRows);
 
         return table;
     }
@@ -640,9 +639,9 @@ public class EastMoneyFund {
 
         Table table = null;
 
-        List<String[]> dataRows = JsonUtils.extractObjectData(assetAllocation, columnNames);
+        List<String[]> dataRows = JsonUtils.objectArrayWithKeys(assetAllocation, columnNames);
 
-        table = TableUtils.build(columnNames, dataRows);
+        table = TableUtils.build(dataRows);
 
         return table;
     }
@@ -670,9 +669,9 @@ public class EastMoneyFund {
 
         Table table = null;
 
-        List<String[]> dataRows = JsonUtils.extractObjectData(sectorAllocation, columnNames);
+        List<String[]> dataRows = JsonUtils.objectArrayWithKeys(sectorAllocation, columnNames);
 
-        table = TableUtils.build(columnNames, dataRows);
+        table = TableUtils.build(dataRows);
 
         return table;
     }
@@ -948,11 +947,11 @@ public class EastMoneyFund {
         JsonNode json = JsonUtils.json(result, "data", "diff");
 
         List<String> columnNames = JsonUtils.extractObjectColumnName(json);
-        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
+        List<String[]> dataRows = JsonUtils.objectArrayWithKeys(json, columnNames);
 
         columnNames.set(columnNames.indexOf("f12"), "code");
 
-        Table table = TableUtils.build(columnNames, dataRows);
+        Table table = TableUtils.build(dataRows);
 
         return table;
     }
@@ -1103,9 +1102,9 @@ public class EastMoneyFund {
                 "JZZZL"
         );
 
-        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
+        List<String[]> dataRows = JsonUtils.objectArrayWithKeys(json, columnNames);
 
-        Table table = TableUtils.build(columnNames, dataRows);
+        Table table = TableUtils.build(dataRows);
         table.column("FSRQ").setName("date");
         table.column("DWJZ").setName("net_worth");
         table.column("LJJZ").setName("accumulated_net_worth");
@@ -1156,9 +1155,9 @@ public class EastMoneyFund {
 //                "ISHAVEREDPACKET"
         );
 
-        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
+        List<String[]> dataRows = JsonUtils.objectArrayWithKeys(json, columnNames);
 
-        Table table = TableUtils.build(columnNames, dataRows);
+        Table table = TableUtils.build(dataRows);
         table.column("FCODE").setName("code");
         table.column("SHORTNAME").setName("name");
         // 上一个交易日的值
@@ -1193,9 +1192,9 @@ public class EastMoneyFund {
 
         List<String> columnNames = JsonUtils.extractObjectColumnName(json);
 
-        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
+        List<String[]> dataRows = JsonUtils.objectArrayWithKeys(json, columnNames);
 
-        Table table = TableUtils.build(columnNames, dataRows);
+        Table table = TableUtils.build(dataRows);
 
         return table;
     }
