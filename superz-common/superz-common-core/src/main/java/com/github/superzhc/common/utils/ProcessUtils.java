@@ -7,11 +7,9 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 /**
  * 进程工具类
@@ -22,7 +20,7 @@ import java.util.stream.Stream;
 public class ProcessUtils {
     private static final Logger log = LoggerFactory.getLogger(ProcessUtils.class);
 
-    public static int execCommnad(String command) {
+    public static int execCommand(String command) {
         StringTokenizer st = new StringTokenizer(command);
         List<String> cmdarray = new ArrayList<>(st.countTokens());
         while (st.hasMoreTokens()) {
@@ -45,7 +43,7 @@ public class ProcessUtils {
             public void accept(InputStream inputStream) {
                 // 获取当前操作系统的编码
                 String encoding = System.getProperty("sun.jnu.encoding");
-                log.info("当前系统编码：{}", encoding);
+                log.debug("当前系统编码：{}", encoding);
                 try (BufferedReader output = new BufferedReader(new InputStreamReader(inputStream, encoding))) {
                     StringBuilder result = new StringBuilder();
                     String line;

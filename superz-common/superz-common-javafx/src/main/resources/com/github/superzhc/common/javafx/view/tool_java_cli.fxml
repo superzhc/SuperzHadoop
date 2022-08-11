@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.superzhc.common.javafx.controller.ToolJavaCLIController">
+   <children>
+      <HBox prefHeight="35.0" prefWidth="600.0" spacing="3.0">
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+         <children>
+            <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="50.0" text="JAR包：" />
+            <TextField fx:id="txtJarPath" prefHeight="25.0" prefWidth="440.0" />
+            <Button mnemonicParsing="false" onAction="#btnChooseFile" prefHeight="25.0" text="选择文件" />
+         </children>
+      </HBox>
+      <HBox prefHeight="35.0" prefWidth="600.0" spacing="3.0">
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+         <children>
+            <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="50.0" text="Main：" />
+            <CheckBox fx:id="cbIsDefineMainClass" mnemonicParsing="false" prefHeight="25.0" prefWidth="110.0" text="是否JAR包指定" />
+            <TextField fx:id="txtMainClass" prefHeight="25.0" prefWidth="370.0" promptText="请手动输入Main函数的全类名" />
+         </children>
+      </HBox>
+      <HBox prefHeight="60.0" prefWidth="600.0" spacing="3.0">
+         <children>
+            <Label alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="50.0" text="属性：" />
+            <TextArea fx:id="txtProperties" prefHeight="50.0" prefWidth="540.0" promptText="请输入系统属性（多个属性之间使用空格进行分割；若属性值中包含空格，使用双引号括起来）,eg:-Dk1=&quot;v1&quot; -Dk2=v2" wrapText="true" />
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </HBox>
+      <HBox prefHeight="60.0" prefWidth="600.0" spacing="3.0">
+         <children>
+            <Label alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="50.0" text="参数：" />
+            <TextArea fx:id="txtMainArgs" prefHeight="50.0" prefWidth="540.0" promptText="请输入参数（多个参数之间使用空格进行分割；若参数中包含空格，使用双引号括起来）,eg:&quot;aaa&quot; &quot;bb cc&quot; dd" wrapText="true" />
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </HBox>
+      <HBox prefHeight="60.0" prefWidth="600.0" spacing="3.0">
+         <children>
+            <Label prefHeight="50.0" prefWidth="50.0" text="依赖JAR:" />
+            <TextArea fx:id="txtDependencies" prefHeight="50.0" prefWidth="480.0" promptText="指定类运行所依赖其他JAR，Windows上用分号分隔，Linux使用冒号分隔；不支持通配符。" />
+            <Button mnemonicParsing="false" onAction="#btnGetDependencies" prefHeight="25.0" text="获取" />
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </HBox>
+      <HBox prefHeight="35.0" prefWidth="600.0" spacing="3.0">
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+         <children>
+            <Button mnemonicParsing="false" onAction="#btnGenerateCLI" prefHeight="25.0" text="生成" />
+            <Button mnemonicParsing="false" onAction="#btnRunCLI" prefHeight="25.0" text="运行" />
+         </children>
+      </HBox>
+      <HBox prefHeight="25.0" prefWidth="600.0">
+         <children>
+            <Separator prefWidth="25.0">
+               <HBox.margin>
+                  <Insets top="12.0" />
+               </HBox.margin>
+            </Separator>
+            <Label prefHeight="25.0" prefWidth="25.0" text="输出" />
+            <Separator prefWidth="550.0">
+               <HBox.margin>
+                  <Insets top="12.0" />
+               </HBox.margin>
+            </Separator>
+         </children>
+      </HBox>
+      <HBox prefHeight="90.0" prefWidth="600.0">
+         <children>
+            <TextArea fx:id="txtOutput" editable="false" prefWidth="590.0" wrapText="true" />
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </HBox>
+   </children>
+</VBox>
