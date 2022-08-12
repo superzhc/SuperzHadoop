@@ -1,11 +1,11 @@
 package com.github.superzhc.common.javafx;
 
-import javafx.scene.control.Alert;
+import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.layout.AnchorPane;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Optional;
 
 /**
@@ -15,24 +15,32 @@ import java.util.Optional;
 public class DialogUtils {
     private static final String DEFAULT_TITLE = "消息";
 
-    public static void alert(String title, String content) {
-        Alert alert = new Alert(AlertType.NONE);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
+//    public static void alert(String title, String content) {
+//        Alert alert = new Alert(AlertType.NONE);
+//        alert.setTitle(title);
+//        alert.setHeaderText(null);
+//        alert.setContentText(content);
+//
+//        alert.showAndWait();
+//    }
 
-        alert.showAndWait();
+    public static void alert(String content) {
+        info(content);
     }
 
     public static void info(String content) {
-        info(DEFAULT_TITLE, content);
+        info(DEFAULT_TITLE, null, content);
     }
 
     public static void info(String title, String content) {
+        info(title, null, content);
+    }
+
+    public static void info(String title, String headerText, String content) {
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle(title);
         // 需要设置为null，不然会有默认值
-        alert.setHeaderText(null);
+        alert.setHeaderText(headerText);
         alert.setContentText(content);
 
         alert.showAndWait();
@@ -60,6 +68,27 @@ public class DialogUtils {
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);
+
+        alert.showAndWait();
+    }
+
+    public static void error(Throwable throwable) {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle(DEFAULT_TITLE);
+        alert.setHeaderText("发生异常");
+
+        // 获取错误异常的信息
+        StringWriter sw = new StringWriter();
+        PrintWriter pw = new PrintWriter(sw);
+        throwable.printStackTrace(pw);
+        String exceptionText = sw.toString();
+
+        TextArea textArea = new TextArea(exceptionText);
+        textArea.setEditable(false);
+        textArea.setWrapText(true);
+
+        AnchorPane pane = new AnchorPane(textArea);
+        alert.getDialogPane().setExpandableContent(pane);
 
         alert.showAndWait();
     }

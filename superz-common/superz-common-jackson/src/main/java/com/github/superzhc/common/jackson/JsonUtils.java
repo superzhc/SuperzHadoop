@@ -102,7 +102,7 @@ public class JsonUtils {
     public static JsonNode file(String path, String... paths) {
         try {
             JsonNode node = mapper.readTree(new File(path));
-            return json(node, paths);
+            return object(node, paths);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -111,13 +111,13 @@ public class JsonUtils {
     public static JsonNode json(String json, String... paths) {
         try {
             JsonNode node = mapper.readTree(json);
-            return json(node, paths);
+            return object(node, paths);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static JsonNode json(JsonNode json, String... paths) {
+    public static JsonNode object(JsonNode json, String... paths) {
         JsonNode node = json;
         for (String path : paths) {
             if (!path.startsWith("/")) {
@@ -134,12 +134,12 @@ public class JsonUtils {
     }
 
     public static String string(JsonNode node, String... paths) {
-        JsonNode childNode = json(node, paths);
+        JsonNode childNode = object(node, paths);
         return null == childNode ? null : childNode.asText();
     }
 
     public static String text(JsonNode node, String... paths) {
-        JsonNode childNode = json(node, paths);
+        JsonNode childNode = object(node, paths);
         if (null == childNode) {
             return null;
         } else if (childNode.isObject() || childNode.isArray()) {
@@ -150,22 +150,22 @@ public class JsonUtils {
     }
 
     public static Integer integer(JsonNode node, String... paths) {
-        JsonNode childNode = json(node, paths);
+        JsonNode childNode = object(node, paths);
         return null == childNode ? null : childNode.asInt();
     }
 
     public static Double aDouble(JsonNode node, String... paths) {
-        JsonNode childNode = json(node, paths);
+        JsonNode childNode = object(node, paths);
         return null == childNode ? null : childNode.asDouble();
     }
 
     public static Long aLong(JsonNode node, String... paths) {
-        JsonNode childNode = json(node, paths);
+        JsonNode childNode = object(node, paths);
         return null == childNode ? null : childNode.asLong();
     }
 
     public static Boolean bool(JsonNode node, String... paths) {
-        JsonNode childNode = json(node, paths);
+        JsonNode childNode = object(node, paths);
         return null == childNode ? Boolean.FALSE : childNode.asBoolean();
     }
 
@@ -178,7 +178,7 @@ public class JsonUtils {
     }
 
     public static String[] array(JsonNode node, String... paths) {
-        JsonNode childNode = json(node, paths);
+        JsonNode childNode = object(node, paths);
         String[] arr = new String[childNode.size()];
         for (int i = 0, len = childNode.size(); i < len; i++) {
             arr[i] = null == childNode.get(i) ? null : childNode.get(i).asText();
@@ -187,7 +187,7 @@ public class JsonUtils {
     }
 
     public static int[] intArray(JsonNode node, String... paths) {
-        JsonNode childNode = json(node, paths);
+        JsonNode childNode = object(node, paths);
         int[] arr = new int[childNode.size()];
         for (int i = 0, len = childNode.size(); i < len; i++) {
             arr[i] = null == childNode.get(i) ? null : childNode.get(i).asInt();
@@ -197,7 +197,7 @@ public class JsonUtils {
 
 
     public static long[] longArray(JsonNode node, String... paths) {
-        JsonNode childNode = json(node, paths);
+        JsonNode childNode = object(node, paths);
         long[] arr = new long[childNode.size()];
         for (int i = 0, len = childNode.size(); i < len; i++) {
             arr[i] = null == childNode.get(i) ? null : childNode.get(i).asLong();
@@ -206,7 +206,7 @@ public class JsonUtils {
     }
 
     public static LocalDateTime[] long2DateTimeArray(JsonNode node, String... paths) {
-        JsonNode childNode = json(node, paths);
+        JsonNode childNode = object(node, paths);
         LocalDateTime[] arr = new LocalDateTime[childNode.size()];
         for (int i = 0, len = childNode.size(); i < len; i++) {
             arr[i] = null == childNode.get(i) ? null : LocalDateTime.ofInstant(Instant.ofEpochMilli(childNode.get(i).asLong()), ZoneId.systemDefault());
@@ -215,7 +215,7 @@ public class JsonUtils {
     }
 
     public static double[] doubleArray(JsonNode node, String... paths) {
-        JsonNode childNode = json(node, paths);
+        JsonNode childNode = object(node, paths);
         double[] arr = new double[childNode.size()];
         for (int i = 0, len = childNode.size(); i < len; i++) {
             arr[i] = null == childNode.get(i) ? null : childNode.get(i).asDouble();
@@ -226,7 +226,7 @@ public class JsonUtils {
     public static String[] mapOneArray(JsonNode node, String key, String... paths) {
         JsonNode childNode = node;
         if (null != paths) {
-            childNode = json(node, paths);
+            childNode = object(node, paths);
         }
 
         String[] arr = new String[childNode.size()];
@@ -248,7 +248,7 @@ public class JsonUtils {
     public static Map<String, String>[] mapArray(JsonNode node, List<String> keys, String... paths) {
         JsonNode childNode = node;
         if (null != paths) {
-            childNode = json(node, paths);
+            childNode = object(node, paths);
         }
 
         Map<String, String>[] arr = new Map[childNode.size()];
@@ -270,7 +270,7 @@ public class JsonUtils {
     public static Map<String, String>[] mapArray(JsonNode node, String... paths) {
         JsonNode childNode = node;
         if (null != paths) {
-            childNode = json(node, paths);
+            childNode = object(node, paths);
         }
 
         Map<String, String>[] arr = new Map[childNode.size()];
@@ -294,7 +294,7 @@ public class JsonUtils {
     public static String[][] arrayArray(JsonNode node, String... paths) {
         JsonNode childNode = node;
         if (null != paths) {
-            childNode = json(node, paths);
+            childNode = object(node, paths);
         }
 
         String[][] arr = new String[childNode.size()][];
@@ -316,7 +316,7 @@ public class JsonUtils {
     public static String[] objectKeys(JsonNode node, String... paths) {
         JsonNode childNode = node;
         if (null != paths) {
-            childNode = json(node, paths);
+            childNode = object(node, paths);
         }
 
         List<String> keys = new ArrayList<>();
@@ -334,7 +334,7 @@ public class JsonUtils {
     public static String[] objectArrayKeys(JsonNode node, String[] paths, String[] childPaths) {
         JsonNode childNode = node;
         if (null != paths) {
-            childNode = json(node, paths);
+            childNode = object(node, paths);
         }
 
         // 保证列的顺序
@@ -343,7 +343,7 @@ public class JsonUtils {
         for (JsonNode item : childNode) {
             JsonNode childItem = item;
             if (null != childPaths) {
-                childItem = json(item, childPaths);
+                childItem = object(item, childPaths);
             }
             Iterator<String> fieldNames = childItem.fieldNames();
             while (fieldNames.hasNext()) {
@@ -372,7 +372,7 @@ public class JsonUtils {
     public static List<String[]> objectArray(JsonNode node, String[] paths, String[] childPaths) {
         JsonNode childNode = node;
         if (null != paths) {
-            childNode = json(node, paths);
+            childNode = object(node, paths);
         }
 
         List<String[]> table = new LinkedList<>();
@@ -386,12 +386,12 @@ public class JsonUtils {
         for (JsonNode item : childNode) {
             JsonNode childItem = item;
             if (null != childPaths) {
-                childItem = json(item, childPaths);
+                childItem = object(item, childPaths);
             }
             String[] dataRow = new String[columnLength];
             for (int i = 0; i < columnLength; i++) {
                 String columnName = columnNames[i];
-                JsonNode dataCell = json(childItem, columnName);
+                JsonNode dataCell = object(childItem, columnName);
                 dataRow[i] = text(dataCell);
             }
             table.add(dataRow);
@@ -426,7 +426,7 @@ public class JsonUtils {
     public static List<String[]> objectArrayWithKeys(JsonNode node, String[] paths, String[] childPaths, String[] columnNames) {
         JsonNode childNode = node;
         if (null != paths) {
-            childNode = json(node, paths);
+            childNode = object(node, paths);
         }
 
         List<String[]> table = new LinkedList<>();
@@ -435,12 +435,12 @@ public class JsonUtils {
         for (JsonNode item : childNode) {
             JsonNode childItem = item;
             if (null != childPaths) {
-                childItem = json(item, childPaths);
+                childItem = object(item, childPaths);
             }
             String[] dataRow = new String[columnLength];
             for (int i = 0; i < columnLength; i++) {
                 String columnName = columnNames[i];
-                JsonNode dataCell = json(childItem, columnName);
+                JsonNode dataCell = object(childItem, columnName);
                 dataRow[i] = text(dataCell);
             }
             table.add(dataRow);

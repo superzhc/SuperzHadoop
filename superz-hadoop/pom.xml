@@ -35,7 +35,11 @@
         <hive.version>3.1.2</hive.version>
         <hbase.version>2.2.3</hbase.version>
         <spark.version>3.0.0</spark.version>
-        <flink.version>1.12.2</flink.version>
+        <!--2022年8月12日 更新flink版本为1.15.1，注意1.15.1版本后的flink包去掉了_{scala.binary.version}命名-->
+        <!--1.15.1 发布公告翻译：https://developer.aliyun.com/article/908513-->
+        <!--1.15.1 运行时去掉了对 Scala 的依赖-->
+        <!--<flink.version>1.12.1</flink.version>-->
+        <flink.version>1.15.1</flink.version>
         <kafka.version>2.2.1</kafka.version>
         <elasticsearch.version>6.8.23</elasticsearch.version>
     </properties>

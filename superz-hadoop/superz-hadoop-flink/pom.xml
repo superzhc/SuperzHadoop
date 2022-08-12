@@ -20,53 +20,79 @@
         <!-- 从 1.11 版本开始，不管是 Java API 还是 Scala API，都需要引用下面的包 -->
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-clients_${scala.binary.version}</artifactId>
+            <artifactId>flink-clients</artifactId>
             <version>${flink.version}</version>
         </dependency>
         <!--Java接口-->
-        <dependency>
+        <!--<dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-java</artifactId>
             <version>${flink.version}</version>
+        </dependency>-->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-streaming-java</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+        <!--Scala接口，不支持2.11版本的scala-->
+        <!--<dependency>
+            <groupId>org.apache.flink</groupId>
+            &lt;!&ndash;<artifactId>flink-scala_${scala.binary.version}</artifactId>&ndash;&gt;
+            <artifactId>flink-scala_2.11</artifactId>
+            <version>${flink.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-streaming-java_${scala.binary.version}</artifactId>
+            <artifactId>flink-streaming-scala_2.11</artifactId>
             <version>${flink.version}</version>
-        </dependency>
-        <!--Scala接口-->
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-scala_${scala.binary.version}</artifactId>
-            <version>${flink.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-streaming-scala_${scala.binary.version}</artifactId>
-            <version>${flink.version}</version>
-        </dependency>
+        </dependency>-->
         <!--Table接口-->
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-table-api-java-bridge_${scala.binary.version}</artifactId>
+            <artifactId>flink-table-api-java</artifactId>
             <version>${flink.version}</version>
         </dependency>
+
+        <!--Table API+DataStream混合接口-->
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-table-planner-blink_${scala.binary.version}</artifactId>
+            <artifactId>flink-table-api-java-bridge</artifactId>
             <version>${flink.version}</version>
         </dependency>
+
         <!--CEP-->
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-cep_${scala.binary.version}</artifactId>
+            <artifactId>flink-cep</artifactId>
             <version>${flink.version}</version>
         </dependency>
+
+        <!--region 通过简单地执行主类来运行作业，需要添加如下的依赖包-->
+
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-runtime</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+
+        <!--对于 Table API-->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-table-runtime</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-table-planner-loader</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+
+        <!--endregion 通过简单地执行主类来运行作业，需要添加如下的依赖包-->
 
         <!--Flink 任务是可以在 Idea 中真正执行起来的，但是 WebUI 通常是无法打开的，会提示 `{errors:["Not found"]}`，这是因为缺少了相关的 jar 包，添加如下依赖即可使用 Web UI-->
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-runtime-web_${scala.binary.version}</artifactId>
+            <artifactId>flink-runtime-web</artifactId>
             <version>${flink.version}</version>
             <!--<scope>provided</scope>-->
         </dependency>
@@ -74,7 +100,12 @@
         <!--region connector-->
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-connector-kafka_2.11</artifactId>
+            <artifactId>flink-connector-base</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-connector-kafka</artifactId>
             <version>${flink.version}</version>
         </dependency>
         <!--2021年10月24日 github relase下载的jar包，Flink相关接口还是老的，存在问题，直接copy下来代码，引入javafaker依赖包-->
@@ -88,7 +119,7 @@
         <!--2021年10月25日 新增 JDBC 数据源操作-->
         <dependency>
             <groupId>org.apache.flink</groupId>
-            <artifactId>flink-connector-jdbc_${scala.binary.version}</artifactId>
+            <artifactId>flink-connector-jdbc</artifactId>
             <version>${flink.version}</version>
         </dependency>
         <dependency>
