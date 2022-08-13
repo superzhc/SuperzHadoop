@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
@@ -108,6 +109,10 @@ public class TableViewUtils {
         tv.getSelectionModel().setCellSelectionEnabled(true);
         tv.getSelectionModel().setSelectionMode(SelectionMode.SINGLE/*SelectionMode.MULTIPLE*/);
 
+        // 新增菜单功能
+        ContextMenu contextMenu = new ContextMenu();
+        tv.setContextMenu(contextMenu);
+
         // 右击复制
         MenuItem copyMenu = new MenuItem("copy");
         copyMenu.setOnAction(new EventHandler<ActionEvent>() {
@@ -128,10 +133,22 @@ public class TableViewUtils {
                 }
             }
         });
-
-        ContextMenu contextMenu = new ContextMenu();
         contextMenu.getItems().add(copyMenu);
-        tv.setContextMenu(contextMenu);
+
+//        // 保存菜单
+//        Menu saveMenu = new Menu("Save");
+//        MenuItem selectedRowSave = new MenuItem("Selected Row");
+//        selectedRowSave.setOnAction(new EventHandler<ActionEvent>() {
+//            @Override
+//            public void handle(ActionEvent event) {
+//                // 获取选中行
+//                Map<String, T> data = tv.getSelectionModel().getSelectedItem();
+//                DialogUtils.info(data.toString());
+//            }
+//        });
+//        saveMenu.getItems().add(selectedRowSave);
+//        contextMenu.getItems().add(saveMenu);
+
 
         // 绑定列
         List<TableColumn<Map<String, T>, T>> columns = createColumns(data);

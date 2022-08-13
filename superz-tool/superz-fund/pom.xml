@@ -66,6 +66,13 @@
             </exclusions>
         </dependency>-->
 
+        <!--RSS工具-->
+        <dependency>
+            <groupId>com.rometools</groupId>
+            <artifactId>rome</artifactId>
+            <version>1.18.0</version>
+        </dependency>
+
         <!--Java WebSocket-->
         <dependency>
             <groupId>org.java-websocket</groupId>

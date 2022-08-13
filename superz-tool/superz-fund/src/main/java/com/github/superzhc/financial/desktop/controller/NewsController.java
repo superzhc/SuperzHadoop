@@ -1,9 +1,6 @@
 package com.github.superzhc.financial.desktop.controller;
 
-import com.github.superzhc.financial.data.news.AnyKnew;
-import com.github.superzhc.financial.data.news.BJSouBang;
-import com.github.superzhc.financial.data.news.Jin10;
-import com.github.superzhc.financial.data.news.WallStreet;
+import com.github.superzhc.financial.data.news.*;
 import com.github.superzhc.financial.desktop.control.utils.TablesawViewUtils;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -17,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import tech.tablesaw.api.Table;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -26,6 +25,62 @@ import java.util.ResourceBundle;
  **/
 public class NewsController implements Initializable {
     private static final Logger log = LoggerFactory.getLogger(NewsController.class);
+
+    public static enum NewsSource {
+
+        Jin10("金十数据"), WallStreet(), WeiXin(0), WeiBo, ZhiHu, AnyKnew, CaiLianShe("财联社");
+
+        private int status = 1;
+        private String sourceName = null;
+
+        NewsSource() {
+        }
+
+        NewsSource(int status) {
+            this.status = status;
+        }
+
+        NewsSource(String sourceName) {
+            this.sourceName = sourceName;
+        }
+
+        NewsSource(String sourceName, int status) {
+            this.status = status;
+            this.sourceName = sourceName;
+        }
+
+        public boolean isAvailable() {
+            return this.status == 1;
+        }
+
+        public String getSourceName() {
+            return sourceName == null || sourceName.trim().length() == 0 ? name() : sourceName;
+        }
+
+        public static String[] availableNewsSource() {
+            NewsSource[] sources = values();
+
+            List<String> availableSource = new ArrayList<>();
+            for (NewsSource source : sources) {
+                if (source.isAvailable()) {
+                    availableSource.add(source.getSourceName());
+                }
+            }
+
+            return availableSource.toArray(new String[availableSource.size()]);
+        }
+
+        public static NewsSource fromSourceName(String sourceName) {
+            NewsSource[] sources = values();
+            for (NewsSource source : sources) {
+                if (source.getSourceName().equals(sourceName)) {
+                    return source;
+                }
+            }
+            return null;
+        }
+    }
+
     @FXML
     private ChoiceBox<String> cbSources;
 
@@ -34,7 +89,7 @@ public class NewsController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        cbSources.getItems().addAll("Jin10", "WallStreet", "WeiXin", "WeiBo", "ZhiHu", "XueQiu", "AnyKnew");
+        cbSources.getItems().addAll(NewsSource.availableNewsSource());
         cbSources.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
@@ -65,27 +120,29 @@ public class NewsController implements Initializable {
 
     private Table getData(String source) {
         Table table = null;
-        switch (source) {
-            case "Jin10":
+
+        NewsSource newsSource = NewsSource.fromSourceName(source);
+        switch (newsSource) {
+            case Jin10:
                 table = Jin10.news();
                 break;
-            case "WallStreet":
+            case WallStreet:
                 table = WallStreet.news();
                 break;
-            case "WeiXin":
+            case WeiXin:
                 table = BJSouBang.weixinHot();
                 break;
-            case "WeiBo":
+            case WeiBo:
                 table = AnyKnew.weibo();
                 break;
-            case "ZhiHu":
+            case ZhiHu:
                 table = AnyKnew.zhihu();
                 break;
-            case "XueQiu":
-                table = AnyKnew.xueqiu();
-                break;
-            case "AnyKnew":
+            case AnyKnew:
                 table = AnyKnew.finance();
+                break;
+            case CaiLianShe:
+                table = CailianShe.telegraph();
                 break;
         }
         return table;
