@@ -28,7 +28,7 @@ public class NewsController implements Initializable {
 
     public static enum NewsSource {
 
-        Jin10("金十数据"), WallStreet(), WeiXin(0), WeiBo, ZhiHu, AnyKnew, CaiLianShe("财联社");
+        Jin10("金十数据"), _36kr("36kr"), WallStreet(), WeiXin(0), WeiBo, ZhiHu, AnyKnew, CaiLianShe("财联社");
 
         private int status = 1;
         private String sourceName = null;
@@ -143,6 +143,9 @@ public class NewsController implements Initializable {
                 break;
             case CaiLianShe:
                 table = CailianShe.telegraph();
+                break;
+            case _36kr:
+                table = News36kr.latest();
                 break;
         }
         return table;
