@@ -19,6 +19,7 @@
             <TextField fx:id="txtBrokers" prefHeight="25.0" prefWidth="160.0" />
             <Button mnemonicParsing="false" onAction="#btnInitCbTopicsAction" prefHeight="25.0" text="获取主题" />
             <!--<Button mnemonicParsing="false" onAction="#btnGetALLGroupAction" prefHeight="25.0" text="消费者组" />-->
+            <Button mnemonicParsing="false" onAction="#btnCreateTopicAction" prefHeight="25.0" text="创建主题" />
          </children>
       </HBox>
       <HBox prefHeight="35.0" prefWidth="590.0" spacing="3.0">

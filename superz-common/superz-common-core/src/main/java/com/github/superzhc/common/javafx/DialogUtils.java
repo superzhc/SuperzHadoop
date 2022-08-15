@@ -1,11 +1,17 @@
 package com.github.superzhc.common.javafx;
 
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.*;
+import javafx.util.Callback;
+import javafx.util.Pair;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -15,17 +21,18 @@ import java.util.Optional;
 public class DialogUtils {
     private static final String DEFAULT_TITLE = "消息";
 
-//    public static void alert(String title, String content) {
-//        Alert alert = new Alert(AlertType.NONE);
-//        alert.setTitle(title);
-//        alert.setHeaderText(null);
-//        alert.setContentText(content);
-//
-//        alert.showAndWait();
-//    }
-
     public static void alert(String content) {
-        info(content);
+        alert(DEFAULT_TITLE, content);
+    }
+
+    public static void alert(String title, String content) {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setGraphic(null);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+
+        alert.showAndWait();
     }
 
     public static void info(String content) {
@@ -76,6 +83,7 @@ public class DialogUtils {
         Alert alert = new Alert(AlertType.ERROR);
         alert.setTitle(DEFAULT_TITLE);
         alert.setHeaderText("发生异常");
+        alert.setContentText(throwable.getLocalizedMessage());
 
         // 获取错误异常的信息
         StringWriter sw = new StringWriter();
@@ -83,14 +91,31 @@ public class DialogUtils {
         throwable.printStackTrace(pw);
         String exceptionText = sw.toString();
 
+        Label label = new Label("The exception stacktrace was:");
+
         TextArea textArea = new TextArea(exceptionText);
         textArea.setEditable(false);
         textArea.setWrapText(true);
 
-        AnchorPane pane = new AnchorPane(textArea);
-        alert.getDialogPane().setExpandableContent(pane);
+        textArea.setMaxWidth(Double.MAX_VALUE);
+        textArea.setMaxHeight(Double.MAX_VALUE);
+        GridPane.setVgrow(textArea, Priority.ALWAYS);
+        GridPane.setHgrow(textArea, Priority.ALWAYS);
+
+        GridPane expContent = new GridPane();
+        expContent.setMaxWidth(Double.MAX_VALUE);
+        expContent.add(label, 0, 0);
+        expContent.add(textArea, 0, 1);
+
+        // Set expandable Exception into the dialog pane.
+        alert.getDialogPane().setExpandableContent(expContent);
+        alert.getDialogPane().setExpanded(true);
 
         alert.showAndWait();
+    }
+
+    public static boolean confirm(String content) {
+        return confirm(DEFAULT_TITLE, content);
     }
 
     public static boolean confirm(String title, String content) {
@@ -103,13 +128,18 @@ public class DialogUtils {
         return ButtonType.OK == result.get();
     }
 
-    public static String prompt(String title, String msg) {
-        return prompt(title, msg, null);
+    public static String prompt(String msg) {
+        return prompt(null, msg, null);
+    }
+
+    public static String prompt(String msg, String defaultValue) {
+        return prompt(null, msg, defaultValue);
     }
 
     public static String prompt(String title, String msg, String defaultInput) {
         TextInputDialog dialog = new TextInputDialog(defaultInput);
         dialog.setTitle(title);
+        dialog.setGraphic(null);
         // dialog.setHeaderText("Look, a Text Input Dialog");
         dialog.setHeaderText(null);
         dialog.setContentText(msg);
@@ -122,10 +152,47 @@ public class DialogUtils {
     public static <T> T choice(String title, String msg, T... values) {
         ChoiceDialog<T> dialog = new ChoiceDialog<T>(null, values);
         dialog.setTitle(title);
+        dialog.setGraphic(null);
         dialog.setHeaderText(null);
         dialog.setContentText(msg);
 
         Optional<T> result = dialog.showAndWait();
         return result.orElse(null);
     }
+
+//    public static void form(String title, HBox... boxs) {
+//        Dialog<Map<String,Object>> dialog = new Dialog<Map<String,Object>>();
+//        dialog.setTitle(title);
+//
+//        final DialogPane dialogPane = dialog.getDialogPane();
+//        final GridPane gridPane = FormUtils.layout(300, 300, 1);
+//        for (int i = 0, len = boxs.length; i < len; i++) {
+//            FormUtils.addCell(gridPane, boxs[i], 0, i);
+//        }
+//
+//        dialogPane.setContent(gridPane);
+//        dialogPane.getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+//        dialog.setResultConverter(new Callback<ButtonType, Map<String,Object>>() {
+//            @Override
+//            public Map<String,Object> call(ButtonType buttonType) {
+//                ButtonBar.ButtonData data = buttonType == null ? null : buttonType.getButtonData();
+//                if (data == ButtonBar.ButtonData.OK_DONE) {
+//                    Map<String, Object> map = new HashMap<>();
+//
+//                    ObservableList<Node> nodes = gridPane.getChildren();
+//                    for (Node node : nodes) {
+//                        if (node instanceof HBox) {
+//                            HBox box = (HBox) node;
+//                            Pair<String, Object> pair = FormUtils.parse(box);
+//                            map.put(pair.getKey(), pair.getValue());
+//                        }
+//                    }
+//                    return map;
+//                }
+//                return null;
+//            }
+//        });
+//
+//        dialog.showAndWait();
+//    }
 }

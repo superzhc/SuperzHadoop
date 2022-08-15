@@ -1,13 +1,17 @@
 package com.github.superzhc.common.javafx;
 
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
+import javafx.util.Pair;
 import javafx.util.StringConverter;
 
 import java.time.LocalDate;
@@ -52,7 +56,7 @@ public class FormUtils {
     }
 
     public static GridPane addCell(GridPane gridPane, HBox cell, int columnIndex, int rowIndex) {
-        // 设置每个子件的宽度
+        // // 设置每个子件的宽度
         cell.prefWidthProperty().bind(gridPane.prefWidthProperty().multiply(gridPane.getColumnConstraints().get(columnIndex).getPercentWidth() / 100.0));
         gridPane.add(cell, columnIndex, rowIndex);
         return gridPane;
@@ -63,7 +67,7 @@ public class FormUtils {
     }
 
     public static HBox text(String text, Object value) {
-        TextField textField = new TextField(String.valueOf(value));
+        TextField textField = new TextField(null == value ? null : String.valueOf(value));
         return create(text, textField, SINGLE);
     }
 
@@ -72,7 +76,7 @@ public class FormUtils {
     }
 
     public static HBox textArea(String text, Object value) {
-        TextArea textArea = new TextArea(String.valueOf(value));
+        TextArea textArea = new TextArea(null == value ? null : String.valueOf(value));
         // 自动换行
         textArea.setWrapText(true);
         return create(text, textArea, DOUBLE);
@@ -106,7 +110,9 @@ public class FormUtils {
                 }
             }
         });
-        dp.setValue(date);
+        if (null != date) {
+            dp.setValue(date);
+        }
         return create(text, dp, SINGLE);
     }
 
@@ -131,6 +137,24 @@ public class FormUtils {
 
         hbox.getChildren().addAll(label, control);
         return hbox;
+    }
+
+    public static Pair<String, Object> parse(HBox box) {
+        ObservableList<Node> nodes = box.getChildren();
+        Label label = (Label) nodes.get(0);
+        Control control = (Control) nodes.get(1);
+
+        String key = label.getText();
+        key = key.substring(0, key.length() - 1);
+        Object value = null;
+        if (control instanceof TextField || control instanceof TextArea) {
+            value = ((TextInputControl) control).getText();
+        } else if (control instanceof ChoiceBox) {
+            value = ((ChoiceBox<?>) control).getValue();
+        } else if (control instanceof DatePicker) {
+            value = ((DatePicker) control).getValue();
+        }
+        return new Pair<>(key, value);
     }
 
     private static Label customLabel(String text) {
