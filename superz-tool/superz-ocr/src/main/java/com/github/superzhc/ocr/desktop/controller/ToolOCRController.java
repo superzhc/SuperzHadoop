@@ -88,9 +88,9 @@ public class ToolOCRController implements Initializable {
             // 使用自带方法读取报错
             // BufferedImage bi = SwingFXUtils.fromFXImage(imageView.getImage(), null);
             String result = instance.doOCR(bi);
-            validCode = DialogUtils.prompt("消息", "请输入验证码", result);
+            validCode = DialogUtils.prompt("请输入验证码", result);
         } catch (Exception e) {
-            validCode = DialogUtils.prompt("消息", "请输入验证码");
+            validCode = DialogUtils.prompt("请输入验证码");
         }
 
         Map<String, String> forms = new HashMap<>();

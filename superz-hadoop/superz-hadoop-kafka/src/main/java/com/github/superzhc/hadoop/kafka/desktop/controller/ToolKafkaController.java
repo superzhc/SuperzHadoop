@@ -85,6 +85,26 @@ public class ToolKafkaController implements Initializable {
         }
     }
 
+    @FXML
+    public void btnCreateTopicAction(ActionEvent actionEvent) {
+        String brokers = txtBrokers.getText();
+        if (null == brokers || brokers.trim().length() == 0) {
+            DialogUtils.error("消息", "请输入Brokers");
+            return;
+        }
+
+        String topic = DialogUtils.prompt("请输入主题名称");
+        if (null == topic || topic.trim().length() == 0) {
+            DialogUtils.error("请输入主题名称");
+            return;
+        }
+
+        try (MyAdminClient adminClient = new MyAdminClient(brokers)) {
+            adminClient.create(topic, 3, (short) 1, null);
+            DialogUtils.info("主题创建成功");
+        }
+    }
+
     /**
      * 获取 Kafka 集群的所有消费者组
      *
@@ -336,15 +356,18 @@ public class ToolKafkaController implements Initializable {
 
         StringBuilder sb = new StringBuilder();
         //获取每个分区的最新偏移量
+        Map<TopicPartition, Long> beginOffsets = consumer.beginningOffsets(assignment);
         Map<TopicPartition, Long> endOffsets = consumer.endOffsets(assignment);
         for (TopicPartition topicPartition : assignment) {
-            Long offset = endOffsets.get(topicPartition);
+            Long beginOffset = beginOffsets.get(topicPartition);
+            Long endOffset = endOffsets.get(topicPartition);
             // endOffset为0，说明此分区没有消息，跳过循环
-            if (offset == 0L) {
+            if (endOffset == 0L) {
                 continue;
             }
+
             // 指定消费分区最后一条消息
-            consumer.seek(topicPartition, offset > 10 ? (offset - 10) : 0);
+            consumer.seek(topicPartition, endOffset - beginOffset > 10 ? (endOffset - 10) : beginOffset);
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
             int j = 0;
             while (records.isEmpty() && j++ < 3) {
