@@ -45,12 +45,12 @@ public class FlinkSqlFakerMain {
             "        )";
 
     public static void main(String[] args) {
-        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        env.setParallelism(1);
-        EnvironmentSettings envSettings = EnvironmentSettings.newInstance().useBlinkPlanner().inStreamingMode().build();
-        TableEnvironment tableEnv = StreamTableEnvironment.create(env, envSettings);
-        tableEnv.executeSql(FLINK_TABLE_SOURCE_DDL);
-        Table table = tableEnv.sqlQuery("select * from superz where age>20 and age<35");
-        table.execute().print();
+//        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+//        env.setParallelism(1);
+//        EnvironmentSettings envSettings = EnvironmentSettings.newInstance().useBlinkPlanner().inStreamingMode().build();
+//        TableEnvironment tableEnv = StreamTableEnvironment.create(env, envSettings);
+//        tableEnv.executeSql(FLINK_TABLE_SOURCE_DDL);
+//        Table table = tableEnv.sqlQuery("select * from superz where age>20 and age<35");
+//        table.execute().print();
     }
 }

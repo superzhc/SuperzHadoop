@@ -337,6 +337,42 @@ public class ToolKafkaController implements Initializable {
             return;
         }
 
+        txtOutput.setText(consumer(brokers, groupId, topic, 10));
+    }
+
+    @FXML
+    public void btnConsumerAction2(ActionEvent actionEvent) {
+        String brokers = txtBrokers.getText();
+        if (null == brokers || brokers.trim().length() == 0) {
+            DialogUtils.error("消息", "请输入Brokers");
+            return;
+        }
+
+        String topic = cbTopics.getValue();
+        if (null == topic || topic.trim().length() == 0) {
+            DialogUtils.error("消息", "请选择主题");
+            return;
+        }
+
+        String groupId = txtGroupId.getText();
+        if (null == groupId || groupId.trim().length() == 0) {
+            DialogUtils.error("消息", "请输入消费者组");
+            return;
+        }
+
+        String numStr = DialogUtils.prompt("请输入消费条数", "10");
+        int num = 10;
+        try {
+            num = Integer.valueOf(numStr);
+        } catch (Exception ex) {
+            DialogUtils.error(ex);
+            return;
+        }
+
+        txtOutput.setText(consumer(brokers, groupId, topic, num));
+    }
+
+    private String consumer(String brokers, String groupId, String topic, Integer num) {
         Properties props = new Properties();
         props.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, brokers);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
@@ -367,7 +403,7 @@ public class ToolKafkaController implements Initializable {
             }
 
             // 指定消费分区最后一条消息
-            consumer.seek(topicPartition, endOffset - beginOffset > 10 ? (endOffset - 10) : beginOffset);
+            consumer.seek(topicPartition, endOffset - beginOffset > num ? (endOffset - num) : beginOffset);
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
             int j = 0;
             while (records.isEmpty() && j++ < 3) {
@@ -377,10 +413,11 @@ public class ToolKafkaController implements Initializable {
                 sb.append(ConsumerRecordUtils.human(record)).append("\n");
             }
         }
-        txtOutput.setText(sb.toString());
 
         // 解除订阅
         consumer.unsubscribe();
         consumer.close();
+
+        return sb.toString();
     }
 }

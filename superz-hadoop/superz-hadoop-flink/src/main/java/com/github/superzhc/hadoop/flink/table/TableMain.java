@@ -6,7 +6,7 @@ import org.apache.flink.table.api.EnvironmentSettings;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.TableEnvironment;
 import org.apache.flink.table.api.TableResult;
-import org.apache.flink.table.api.bridge.java.BatchTableEnvironment;
+//import org.apache.flink.table.api.bridge.java.BatchTableEnvironment;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
 import static org.apache.flink.table.api.Expressions.$;
@@ -57,7 +57,7 @@ public class TableMain {
                 // Planner 和 Model
 //                .useOldPlanner().inStreamingMode()//
 //                .useOldPlanner().inBatchMode()//
-                .useBlinkPlanner().inStreamingMode()//
+//                .useBlinkPlanner().inStreamingMode()//
 //                .useBlinkPlanner().inBatchMode()//
                 /* 如果/lib目录中只有一种计划器的 jar 包，则可以使用useAnyPlanner */
 //                .useAnyPlanner().inStreamingMode()

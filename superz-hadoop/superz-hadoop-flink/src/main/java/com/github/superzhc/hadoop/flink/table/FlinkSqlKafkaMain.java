@@ -29,17 +29,17 @@ public class FlinkSqlKafkaMain {
             ")";
 
     public static void main(String[] args) {
-        //构建StreamExecutionEnvironment
-        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-
-        //构建EnvironmentSettings 并指定Blink Planner
-        EnvironmentSettings bsSettings = EnvironmentSettings.newInstance().useBlinkPlanner().inStreamingMode().build();
-
-        //构建StreamTableEnvironment
-        StreamTableEnvironment tEnv = StreamTableEnvironment.create(env, bsSettings);
-
-        tEnv.executeSql(KAFKA_TABLE_SOURCE_DDL);
-
-        Table table=tEnv.sqlQuery("select * from user_behavior");
+//        //构建StreamExecutionEnvironment
+//        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+//
+//        //构建EnvironmentSettings 并指定Blink Planner
+//        EnvironmentSettings bsSettings = EnvironmentSettings.newInstance().useBlinkPlanner().inStreamingMode().build();
+//
+//        //构建StreamTableEnvironment
+//        StreamTableEnvironment tEnv = StreamTableEnvironment.create(env, bsSettings);
+//
+//        tEnv.executeSql(KAFKA_TABLE_SOURCE_DDL);
+//
+//        Table table=tEnv.sqlQuery("select * from user_behavior");
     }
 }

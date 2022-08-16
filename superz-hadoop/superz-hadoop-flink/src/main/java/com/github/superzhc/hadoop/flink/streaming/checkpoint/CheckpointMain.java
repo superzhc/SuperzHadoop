@@ -62,7 +62,7 @@ public class CheckpointMain {
         env.getCheckpointConfig().enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
 
         // 如果有更近的保存点时，是否将作业回退到该检查点
-        env.getCheckpointConfig().setPreferCheckpointForRecovery(true);
+//        env.getCheckpointConfig().setPreferCheckpointForRecovery(true);
 
         /**
          * 默认情况下，如果设置了 Checkpoint 选项，则 Flink 只保留最近成功生成的 1 个 Checkpoint，而当 Flink 程序失败时，可以从最近的这个 Checkpoint 来进行恢复。
