@@ -136,7 +136,8 @@ public class NewsController implements Initializable {
                 table = AnyKnew.weibo();
                 break;
             case ZhiHu:
-                table = AnyKnew.zhihu();
+                // table = AnyKnew.zhihu();
+                table = ZhiHu.news();
                 break;
             case AnyKnew:
                 table = AnyKnew.finance();

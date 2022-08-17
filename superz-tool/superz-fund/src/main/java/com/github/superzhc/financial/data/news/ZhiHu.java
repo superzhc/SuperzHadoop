@@ -81,7 +81,6 @@ public class ZhiHu {
      * total focus	science	car	    zvideo	fashion	depth	digital	sport	school	film
      *
      * @param category
-     *
      * @return
      */
     public static Table hot(String category) {
@@ -113,8 +112,70 @@ public class ZhiHu {
         return table;
     }
 
+    public static Table news() {
+        String url = "https://api.zhihu.com/pins/special/972884951192113152/moments";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("order_by", "newest");
+        params.put("reverse_order", "0");
+        params.put("limit", "50");
+
+        String result = HttpRequest.get(url, params).userAgent(UA_CHROME).body();
+        JsonNode data = JsonUtils.json(result, "data");
+        List<Map<String, Object>> dataRows = convert(data);
+        Table table = TableUtils.buildByMap(dataRows);
+        return table;
+    }
+
+    public static Table pinHot() {
+        String url = "https://api.zhihu.com/pins/hot_list";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("reverse_order", 0);
+
+        String result = HttpRequest.get(url, params).userAgent(UA_CHROME).body();
+        JsonNode data = JsonUtils.json(result, "data");
+        Table table = TableUtils.buildByMap(convert(data));
+        return table;
+    }
+
+    private static List<Map<String, Object>> convert(JsonNode data) {
+        List<Map<String, Object>> dataRows = new ArrayList<>();
+
+        for (JsonNode item : data) {
+            JsonNode target = item.has("target") ? JsonUtils.object(item, "target") : item;
+            Map<String, Object> dataRow = new LinkedHashMap<>();
+            dataRow.put("title", JsonUtils.string(target, "excerpt_title"));
+            dataRow.put("author", JsonUtils.string(target, "author", "name"));
+            dataRow.put("pubDate", JsonUtils.aLong(target, "created"));
+            dataRow.put("link", String.format("https://www.zhihu.com/pin/%s", JsonUtils.string(target, "id")));
+
+            StringBuilder sb = new StringBuilder();
+            JsonNode contents = JsonUtils.object(target, "content");
+            for (JsonNode content : contents) {
+                String type = JsonUtils.string(content, "type");
+                if ("text".equals(type)) {
+                    sb.append(JsonUtils.string(content, "content"));
+                } else if ("image".equals(type)) {
+                    sb.append(JsonUtils.string(content, "url"));
+                } else if ("video".equals(type)) {
+                    sb.append(JsonUtils.text(content));
+                } else if ("link".equals(type)) {
+                    sb.append("[").append(JsonUtils.string(content, "title")).append("]").append("(").append(JsonUtils.string(content, "url")).append(")");
+                } else {
+                    sb.append(JsonUtils.text(content));
+                }
+                sb.append("\n");
+            }
+            dataRow.put("content", sb.toString());
+            dataRows.add(dataRow);
+        }
+
+        return dataRows;
+    }
+
     public static void main(String[] args) {
-        Table table = hot();
+        Table table = pinHot();
         System.out.println(table.print());
         System.out.println(table.shape());
     }

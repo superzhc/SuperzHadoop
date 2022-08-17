@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
 
+import static com.github.superzhc.common.HttpConstant.UA_CHROME;
+
 /**
  * @author superz
  * @create 2022/4/20 0:27
@@ -75,8 +77,20 @@ public class WallStreet {
         return table;
     }
 
+    public static Table hot(){
+        String url="https://api-one-wscn.awtmt.com/apiv1/content/articles/hot";
+
+        Map<String,Object> params=new HashMap<>();
+        params.put("period","all");
+
+        String result=HttpRequest.get(url,params).userAgent(UA_CHROME).body();
+        System.out.println(result);
+
+        return Table.create();
+    }
+
     public static void main(String[] args) {
-        Table table = news();
+        Table table = hot();
         System.out.println(table.structure().printAll());
         System.out.println(table.print());
         System.out.println(table.shape());
