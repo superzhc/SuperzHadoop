@@ -22,6 +22,17 @@ public class ESDocument extends ESCommon {
         super(client);
     }
 
+    /**
+     * 查看索引的文档数量
+     * @param index
+     * @return
+     */
+    public String count(String index) {
+        String url = String.format("/_cat/count/%s", index);
+        Response response = client.get(url);
+        return ResponseUtils.getEntity(response);
+    }
+
     public String add(String index, String jsonData) {
         return add(index, null, jsonData);
     }

@@ -46,7 +46,7 @@ public class DBPipeline implements Pipeline {
         if (null == columns) {
             synchronized (this) {
                 if (null == columns) {
-                    columns = getJdbc().columns(table);
+                    columns = getJdbc().columnNames(table);
                 }
             }
         }

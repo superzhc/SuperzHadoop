@@ -85,7 +85,7 @@ public class ToolJdbcController {
 
             DialogUtils.info("连接成功");
         } catch (Exception e) {
-            DialogUtils.error("连接失败：" + e.getMessage());
+            DialogUtils.error(e);
         }
     }
 
@@ -107,7 +107,7 @@ public class ToolJdbcController {
 
             DialogUtils.info("关闭连接成功");
         } catch (Exception e) {
-            DialogUtils.error("断开连接失败：" + e.getMessage());
+            DialogUtils.error(e);
         }
     }
 
@@ -249,7 +249,7 @@ public class ToolJdbcController {
             }
 
             JdbcHelper.Page page = new JdbcHelper.Page(jdbc, table, 100);
-            String sql=page.sql();
+            String sql = page.sql();
             txtSQL.setText(sql);
             List<Map<String, Object>> data = jdbc.query(sql);
             if (null != data) {

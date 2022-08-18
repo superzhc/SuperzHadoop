@@ -117,6 +117,10 @@ public class ToolESController implements Initializable {
 
         try {
             client = ESClient.create(host, port, username, password);
+
+            // 初始化索引组件
+            addIndexComponent();
+
             isConnect = true;
             txtHost.setDisable(true);
             txtPort.setDisable(true);
@@ -124,13 +128,6 @@ public class ToolESController implements Initializable {
             txtPassword.setDisable(true);
             btnConnect.setDisable(true);
             btnDisconnect.setDisable(false);
-
-            // 初始化索引
-            ESIndex indexClient = new ESIndex(client);
-            List<String> indices = indexClient.indices();
-
-            cbIndices.setItems(FXCollections.observableList(indices));
-            ccbIndices.getItems().addAll(indices);
         } catch (Exception e) {
             DialogUtils.error("消息", "连接失败：" + e.getMessage());
         }
@@ -153,10 +150,7 @@ public class ToolESController implements Initializable {
             btnConnect.setDisable(false);
             btnDisconnect.setDisable(true);
 
-            cbIndices.setItems(null);
-            // 先清除所有已勾选的，再删除元素
-            ccbIndices.getCheckModel().clearChecks();
-            ccbIndices.getItems().clear();
+            clearIndexComponent();
         } catch (Exception e) {
             DialogUtils.error("消息", e.getMessage());
         }
@@ -198,8 +192,9 @@ public class ToolESController implements Initializable {
         txtResponse.setText(JsonUtils.format(result));
 
         // 更新索引
-        cbIndices.getItems().add(index);
-        ccbIndices.getItems().add(index);
+        // ObservableList<String> checkedIndices= ccbIndices.getCheckModel().getCheckedItems();
+        updateIndexComponent();
+        cbIndices.setValue(index);
     }
 
     @FXML
@@ -226,9 +221,8 @@ public class ToolESController implements Initializable {
         String result = indexClient.delete(index);
         txtResponse.setText(JsonUtils.format(result));
 
-        // TODO，删除有报错的情况
-//        cbIndices.getItems().remove(index);
-//        ccbIndices.getItems().remove(index);
+        // 更新索引
+        updateIndexComponent();
     }
 
     @FXML
@@ -371,6 +365,24 @@ public class ToolESController implements Initializable {
     }
 
     @FXML
+    public void btnGetDocumentCount(ActionEvent actionEvent) {
+        if (!isConnect) {
+            DialogUtils.error("消息", "请先连接Elasticsearch");
+            return;
+        }
+
+        String index = cbIndices.getValue();
+        if (null == index || index.trim().length() == 0) {
+            DialogUtils.error("消息", "请选择索引");
+            return;
+        }
+
+        ESDocument esDocument = new ESDocument(client);
+        String result = esDocument.count(index);
+        txtResponse.setText(result);
+    }
+
+    @FXML
     public void btnSearchAllAction(ActionEvent actionEvent) {
         if (!isConnect) {
             DialogUtils.error("消息", "请先连接Elasticsearch");
@@ -426,7 +438,7 @@ public class ToolESController implements Initializable {
             return;
         }
 
-        String type = DialogUtils.choice("消息", "模板类型", "match_all", "match","multi_match","term");
+        String type = DialogUtils.choice("消息", "模板类型", "match_all", "match", "multi_match", "term");
 
         String template = null;
         switch (type) {
@@ -437,10 +449,10 @@ public class ToolESController implements Initializable {
                 template = "{\"query\":{\"match\":{\"col1\":\"条件\"}}}";
                 break;
             case "multi_match":
-                template="{\"query\": {\"multi_match\": {\"query\": \"条件\",\"fields\": [\"col1\",\"col2\"]}}}";
+                template = "{\"query\": {\"multi_match\": {\"query\": \"条件\",\"fields\": [\"col1\",\"col2\"]}}}";
                 break;
             case "term":
-                template="{\"query\": {\"term\": {\"col1\": {\"value\": \"值\"}}}}";
+                template = "{\"query\": {\"term\": {\"col1\": {\"value\": \"值\"}}}}";
                 break;
         }
 
@@ -460,9 +472,13 @@ public class ToolESController implements Initializable {
             return;
         }
 
-        ESSql esSql = new ESSql(client);
-        String result = esSql.sql(sql);
-        txtResponse.setText(JsonUtils.format(result));
+        try {
+            ESSql esSql = new ESSql(client);
+            String result = esSql.sql(sql);
+            txtResponse.setText(JsonUtils.format(result));
+        } catch (Exception e) {
+            DialogUtils.error(e);
+        }
     }
 
     @FXML
@@ -504,5 +520,25 @@ public class ToolESController implements Initializable {
         ESAnalyzer analyzerClient = new ESAnalyzer(client);
         String result = analyzerClient.Analyzer(analyzer, body);
         txtResponse.setText(JsonUtils.format(result));
+    }
+
+    private void addIndexComponent(){
+        ESIndex indexClient = new ESIndex(client);
+        List<String> indices = indexClient.indices();
+
+        cbIndices.setItems(FXCollections.observableList(indices));
+        ccbIndices.getItems().addAll(indices);
+    }
+
+    private void updateIndexComponent(){
+        clearIndexComponent();
+        addIndexComponent();
+    }
+
+    private void clearIndexComponent(){
+        cbIndices.setItems(null);
+        // 先清除所有已勾选的，再删除元素
+        ccbIndices.getCheckModel().clearChecks();
+        ccbIndices.getItems().clear();
     }
 }
