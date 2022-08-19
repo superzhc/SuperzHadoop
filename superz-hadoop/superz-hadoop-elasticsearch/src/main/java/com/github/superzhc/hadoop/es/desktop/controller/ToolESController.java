@@ -3,8 +3,8 @@ package com.github.superzhc.hadoop.es.desktop.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.superzhc.common.faker.utils.ExpressionUtils;
-import com.github.superzhc.common.format.PlaceholderResolver;
 import com.github.superzhc.common.jackson.JsonUtils;
+import com.github.superzhc.common.javafx.Destroyable;
 import com.github.superzhc.common.javafx.DialogUtils;
 import com.github.superzhc.hadoop.es.ESClient;
 import com.github.superzhc.hadoop.es.document.ESDocument;
@@ -33,7 +33,7 @@ import java.util.ResourceBundle;
  * @author superz
  * @create 2022/7/27 10:22
  **/
-public class ToolESController implements Initializable {
+public class ToolESController implements Initializable, Destroyable {
     public static final String FXML_PATH = "tool_es.fxml";
 
     @FXML
@@ -80,6 +80,17 @@ public class ToolESController implements Initializable {
         txtHost.setText("10.90.15.142");
         txtUsername.setText("elastic");
         txtPassword.setText("xgxx@elastic");
+    }
+
+    @Override
+    public void destory() {
+        try {
+            if (isConnect) {
+                client.close();
+            }
+        } catch (Exception e) {
+            // ignore
+        }
     }
 
     /**
@@ -522,7 +533,7 @@ public class ToolESController implements Initializable {
         txtResponse.setText(JsonUtils.format(result));
     }
 
-    private void addIndexComponent(){
+    private void addIndexComponent() {
         ESIndex indexClient = new ESIndex(client);
         List<String> indices = indexClient.indices();
 
@@ -530,12 +541,12 @@ public class ToolESController implements Initializable {
         ccbIndices.getItems().addAll(indices);
     }
 
-    private void updateIndexComponent(){
+    private void updateIndexComponent() {
         clearIndexComponent();
         addIndexComponent();
     }
 
-    private void clearIndexComponent(){
+    private void clearIndexComponent() {
         cbIndices.setItems(null);
         // 先清除所有已勾选的，再删除元素
         ccbIndices.getCheckModel().clearChecks();

@@ -3,8 +3,6 @@ package com.github.superzhc.common.file.desktop;
 import com.github.superzhc.common.file.text.TextReader;
 import com.github.superzhc.common.javafx.DialogUtils;
 import com.github.superzhc.common.javafx.TableViewUtils;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -13,7 +11,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -172,7 +169,7 @@ public class ToolFileController implements Initializable {
 
         table.getColumns().add(TableViewUtils.numbers("行号"));
 
-        table.getColumns().addAll(TableViewUtils.bind(data));
+        table.getColumns().addAll(TableViewUtils.createColumns(data));
 
         table.setItems(FXCollections.observableList(data));
     }

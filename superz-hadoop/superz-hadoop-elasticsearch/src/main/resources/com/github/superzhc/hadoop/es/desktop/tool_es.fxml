@@ -13,7 +13,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="600.0" spacing="3.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.superzhc.hadoop.es.desktop.controller.ToolESController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" spacing="3.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.superzhc.hadoop.es.desktop.controller.ToolESController">
     <padding>
         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
     </padding>
@@ -97,6 +97,11 @@
                         <Font size="11.0" />
                     </font>
                 </Button>
+                <Button mnemonicParsing="false" onAction="#btnAnalyzerAction" text="分词器">
+                    <font>
+                        <Font size="11.0" />
+                    </font>
+                </Button>
             </children>
             <padding>
                 <Insets bottom="5.0" left="5.0" right="5.0" top="0.0" />
@@ -139,23 +144,13 @@
             </children>
         </HBox>
         <Separator prefWidth="590.0" />
-        <HBox prefHeight="35.0" prefWidth="590.0" spacing="3.0">
-            <padding>
-                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-            </padding>
-            <children>
-                <Label prefHeight="25.0" text="其他:" />
-                <Button mnemonicParsing="false" onAction="#btnAnalyzerAction" text="分词器" />
-            </children>
-        </HBox>
-        <Separator prefWidth="590.0" />
-        <VBox prefHeight="120.0" prefWidth="590.0">
+        <VBox prefHeight="110.0" prefWidth="590.0">
             <children>
                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="请求：" />
                 <TextArea fx:id="txtRequest" prefWidth="590.0" />
             </children>
         </VBox>
-        <VBox prefHeight="105.0" prefWidth="590.0">
+        <VBox prefHeight="100.0" prefWidth="590.0">
             <children>
                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="响应：" />
                 <TextArea fx:id="txtResponse" editable="false" prefWidth="590.0" />

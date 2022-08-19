@@ -80,9 +80,13 @@ public class DialogUtils {
     }
 
     public static void error(Throwable throwable) {
+        error("发生异常", throwable);
+    }
+
+    public static void error(String headerText, Throwable throwable) {
         Alert alert = new Alert(AlertType.ERROR);
         alert.setTitle(DEFAULT_TITLE);
-        alert.setHeaderText("发生异常");
+        alert.setHeaderText(headerText);
         alert.setContentText(throwable.getLocalizedMessage());
 
         // 获取错误异常的信息

@@ -10,6 +10,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.util.Callback;
@@ -53,6 +54,22 @@ public class TableViewUtils {
             }
         });
         return idColumn;
+    }
+
+    public static <T, S> TableColumn<T, S> checkbox(String title) {
+        TableColumn<T, S> checkboxColumn = new TableColumn<>(title);
+        checkboxColumn.setCellFactory(new Callback<TableColumn<T, S>, TableCell<T, S>>() {
+            @Override
+            public TableCell<T, S> call(TableColumn<T, S> param) {
+                CheckBoxTableCell<T, S> cell = new CheckBoxTableCell<>(null, null);
+                cell.setOnMouseClicked(event -> {
+                    T value = (T) cell.getTableRow().getItem();
+                    System.out.println(value);
+                });
+                return cell;
+            }
+        });
+        return checkboxColumn;
     }
 
     public static <T, S> TableColumn<T, S> hyperlink(TableColumn<T, S> column) {

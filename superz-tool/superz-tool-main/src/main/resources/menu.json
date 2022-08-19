@@ -1,0 +1,48 @@
+{
+  "Dev": {
+    "name": "开发者工具",
+    "hasChild": true,
+    "children": {
+      "JDBC": {
+        "name": "JDBC",
+        "title": "JDBC",
+        "controller": "com.github.superzhc.sql.desktop.controller.ToolJdbcController",
+        "path": "com/github/superzhc/sql/view/tool_jdbc.fxml"
+      },
+      "separator1": {
+        "isSeparator": true
+      },
+      "ES": {
+        "name": "ES",
+        "title": "Elasticsearch",
+        "controller": "com.github.superzhc.hadoop.es.desktop.controller.ToolESController",
+        "path": "com/github/superzhc/hadoop/es/desktop/tool_es.fxml",
+        "isNeedRelease": true
+      },
+      "Kafka": {
+        "name": "Kafka",
+        "title": "Kafka",
+        "controller": "com.github.superzhc.hadoop.kafka.desktop.controller.ToolKafkaController",
+        "path": "com/github/superzhc/hadoop/kafka/desktop/tool_kafka.fxml"
+      }
+    }
+  },
+  "News": {
+    "name": "News",
+    "hasChild": true,
+    "children": {
+      "MultiNewsSource": {
+        "name": "News",
+        "title": "News",
+        "controller": "com.github.superzhc.financial.desktop.controller.NewsController",
+        "path": "com/github/superzhc/financial/desktop/view/news.fxml"
+      },
+      "36kr": {
+        "name": "36kr",
+        "title": "36kr",
+        "controller": "com.github.superzhc.financial.desktop.controller.News36krController",
+        "path": "com/github/superzhc/financial/desktop/view/news_36kr.fxml"
+      }
+    }
+  }
+}
