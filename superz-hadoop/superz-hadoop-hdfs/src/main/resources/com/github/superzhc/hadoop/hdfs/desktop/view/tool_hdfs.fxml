@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+
+<VBox fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.github.superzhc.hadoop.hdfs.desktop.controller.ToolHdfsController">
+   <children>
+      <HBox prefHeight="35.0" prefWidth="600.0" spacing="3.0">
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+         <children>
+            <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="34.0" text="Host:" />
+            <TextField fx:id="txtHost" prefHeight="25.0" prefWidth="145.0" />
+            <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="30.0" text="Port:" />
+            <TextField fx:id="txtPort" prefHeight="25.0" prefWidth="45.0" text="9870" />
+            <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="30.0" text="User:" />
+            <TextField fx:id="txtUser" prefHeight="25.0" prefWidth="70.0" text="dr.who" />
+         </children>
+      </HBox>
+      <Separator prefWidth="600.0" />
+      <HBox prefHeight="35.0" prefWidth="600.0" spacing="3.0">
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+         <children>
+            <TextField fx:id="txtPath" prefHeight="25.0" prefWidth="368.0" text="/" />
+            <Button mnemonicParsing="false" onAction="#btnGoAction" prefHeight="25.0" text="Go!" />
+            <Button mnemonicParsing="false" onAction="#btnUploadAction" prefHeight="25.0" text="上传" />
+         </children>
+      </HBox>
+      <HBox prefHeight="310.0" prefWidth="600.0" spacing="3.0">
+         <children>
+            <TableView fx:id="tv" prefWidth="590.0" />
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </HBox>
+   </children>
+</VBox>
