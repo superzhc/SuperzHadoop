@@ -1,8 +1,10 @@
 package com.github.superzhc.hadoop.hdfs;
 
 import com.github.superzhc.common.http.HttpRequest;
+import com.github.superzhc.common.jackson.JsonUtils;
 import org.apache.hadoop.fs.permission.FsAction;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +14,7 @@ import static com.github.superzhc.common.http.HttpRequest.*;
 /**
  * WebHDFS 和 HttpFS 的接口相互兼容
  * <p>
- * 参考：https://hadoop.apache.org/docs/r2.4.1/hadoop-project-dist/hadoop-hdfs/WebHDFS.html
+ * 参考：https://hadoop.apache.org/docs/r3.2.2/hadoop-project-dist/hadoop-hdfs/WebHDFS.html
  *
  * @author superz
  * @create 2022/3/15 15:49
@@ -38,6 +40,24 @@ public class HdfsRestApi {
         this.host = host;
         this.port = port;
         this.user = user;
+    }
+
+    public String upload(String path, File file) {
+        path = String.format("%s/%s", path, file.getName());
+
+        /**
+         * 上传文件分两步：
+         * 第一步运行之后，在命令行会返回 namenode 的信息。然后我们根据返回的信息，重定向并针对适当的 datanode 执行 WebHDFS API
+         * 第二步根据上一步返回的Location，上传文件
+         */
+        Map<String, Object> params = new HashMap<>();
+        params.put("overwrite", true);
+        params.put("noredirect",true);
+        HttpRequest request = execute(METHOD_PUT, path, "CREATE", params);
+        String location = JsonUtils.string(request.body(),"Location");
+
+        HttpRequest request2 = HttpRequest.put(location).send(file);
+        return request2.body();
     }
 
     public InputStream open(String path) {

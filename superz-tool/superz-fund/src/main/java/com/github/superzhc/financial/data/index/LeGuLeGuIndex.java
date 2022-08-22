@@ -26,7 +26,7 @@ public class LeGuLeGuIndex {
         String result = HttpRequest.get(url).body();
         JsonNode json = JsonUtils.json(result, "data");
 
-        List<String> columnNames = JsonUtils.list(json, "fields");
+        List<String> columnNames = JsonUtils.stringArray2List(json, "fields");
         List<String[]> dataRows = JsonUtils.arrayArray2(json, "items");
 
         Table table = TableUtils.build(columnNames, dataRows);

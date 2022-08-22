@@ -121,7 +121,15 @@ public class TableViewUtils {
         return bind(tv, data);
     }
 
+    public static <T> TableView<Map<String, T>> bind(TableView<Map<String, T>> tv, Map<String, T>[] data) {
+        return bind(tv, FXCollections.observableArrayList(data));
+    }
+
     public static <T> TableView<Map<String, T>> bind(TableView<Map<String, T>> tv, List<Map<String, T>> data) {
+        return bind(tv, FXCollections.observableList(data));
+    }
+
+    public static <T> TableView<Map<String, T>> bind(TableView<Map<String, T>> tv, ObservableList<Map<String, T>> data) {
         // 可选中
         tv.getSelectionModel().setCellSelectionEnabled(true);
         tv.getSelectionModel().setSelectionMode(SelectionMode.SINGLE/*SelectionMode.MULTIPLE*/);
@@ -172,9 +180,10 @@ public class TableViewUtils {
         tv.getColumns().addAll(columns);
 
         // 绑定数据
-        tv.setItems(FXCollections.observableList(data));
+        tv.setItems(data);
         return tv;
     }
+
 
     public static <T> List<TableColumn<Map<String, T>, T>> createColumns(List<Map<String, T>> data) {
         List<TableColumn<Map<String, T>, T>> columns = new ArrayList<>();

@@ -5,10 +5,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -128,6 +131,11 @@ public class JsonUtils {
         return node;
     }
 
+    public static ArrayNode array(JsonNode json, String... paths) {
+        JsonNode childNode = object(json, paths);
+        return (ArrayNode) childNode;
+    }
+
     public static String string(String json, String... paths) {
         JsonNode childNode = json(json, paths);
         return string(childNode);
@@ -169,16 +177,16 @@ public class JsonUtils {
         return null == childNode ? Boolean.FALSE : childNode.asBoolean();
     }
 
-    public static List<String> list(JsonNode node, String... paths) {
-        return Arrays.asList(array(node, paths));
+    public static List<String> stringArray2List(JsonNode node, String... paths) {
+        return Arrays.asList(stringArray(node, paths));
     }
 
-    public static String[] array(String json, String... paths) {
-        return array(json(json), paths);
+    public static String[] stringArray(String json, String... paths) {
+        return stringArray(json(json), paths);
     }
 
-    public static String[] array(JsonNode node, String... paths) {
-        JsonNode childNode = object(node, paths);
+    public static String[] stringArray(JsonNode node, String... paths) {
+        ArrayNode childNode=array(node,paths);
         String[] arr = new String[childNode.size()];
         for (int i = 0, len = childNode.size(); i < len; i++) {
             arr[i] = null == childNode.get(i) ? null : childNode.get(i).asText();
@@ -187,7 +195,7 @@ public class JsonUtils {
     }
 
     public static int[] intArray(JsonNode node, String... paths) {
-        JsonNode childNode = object(node, paths);
+        ArrayNode childNode=array(node,paths);
         int[] arr = new int[childNode.size()];
         for (int i = 0, len = childNode.size(); i < len; i++) {
             arr[i] = null == childNode.get(i) ? null : childNode.get(i).asInt();
@@ -197,7 +205,7 @@ public class JsonUtils {
 
 
     public static long[] longArray(JsonNode node, String... paths) {
-        JsonNode childNode = object(node, paths);
+        ArrayNode childNode=array(node,paths);
         long[] arr = new long[childNode.size()];
         for (int i = 0, len = childNode.size(); i < len; i++) {
             arr[i] = null == childNode.get(i) ? null : childNode.get(i).asLong();
@@ -206,7 +214,7 @@ public class JsonUtils {
     }
 
     public static LocalDateTime[] long2DateTimeArray(JsonNode node, String... paths) {
-        JsonNode childNode = object(node, paths);
+        ArrayNode childNode=array(node,paths);
         LocalDateTime[] arr = new LocalDateTime[childNode.size()];
         for (int i = 0, len = childNode.size(); i < len; i++) {
             arr[i] = null == childNode.get(i) ? null : LocalDateTime.ofInstant(Instant.ofEpochMilli(childNode.get(i).asLong()), ZoneId.systemDefault());
@@ -215,7 +223,7 @@ public class JsonUtils {
     }
 
     public static double[] doubleArray(JsonNode node, String... paths) {
-        JsonNode childNode = object(node, paths);
+        ArrayNode childNode=array(node,paths);
         double[] arr = new double[childNode.size()];
         for (int i = 0, len = childNode.size(); i < len; i++) {
             arr[i] = null == childNode.get(i) ? null : childNode.get(i).asDouble();
@@ -224,11 +232,7 @@ public class JsonUtils {
     }
 
     public static String[] mapOneArray(JsonNode node, String key, String... paths) {
-        JsonNode childNode = node;
-        if (null != paths) {
-            childNode = object(node, paths);
-        }
-
+        ArrayNode childNode=array(node,paths);
         String[] arr = new String[childNode.size()];
         for (int i = 0, len = childNode.size(); i < len; i++) {
             JsonNode item = childNode.get(i);
@@ -241,11 +245,11 @@ public class JsonUtils {
         return arr;
     }
 
-    public static Map<String, String>[] mapArray(JsonNode node, String[] keys, String... paths) {
-        return mapArray(node, Arrays.asList(keys), paths);
+    public static Map<String, String>[] objectArray2Map(JsonNode node, String[] keys, String... paths) {
+        return objectArray2Map(node, Arrays.asList(keys), paths);
     }
 
-    public static Map<String, String>[] mapArray(JsonNode node, List<String> keys, String... paths) {
+    public static Map<String, String>[] objectArray2Map(JsonNode node, List<String> keys, String... paths) {
         JsonNode childNode = node;
         if (null != paths) {
             childNode = object(node, paths);
@@ -267,7 +271,7 @@ public class JsonUtils {
         return arr;
     }
 
-    public static Map<String, String>[] mapArray(JsonNode node, String... paths) {
+    public static Map<String, String>[] objectArray2Map(JsonNode node, String... paths) {
         JsonNode childNode = node;
         if (null != paths) {
             childNode = object(node, paths);
@@ -304,7 +308,7 @@ public class JsonUtils {
                 continue;
             }
 
-            arr[i] = array(item);
+            arr[i] = stringArray(item);
         }
         return arr;
     }
@@ -496,6 +500,5 @@ public class JsonUtils {
         Object[] objs3 = new Object[]{"MkEWBc", JsonUtils.asString(objs2), null, "generic"};
         Object[] objs4 = new Object[]{objs3};
         Object[] objs5 = new Object[]{objs4};
-        System.out.println(JsonUtils.asString(objs5));
     }
 }

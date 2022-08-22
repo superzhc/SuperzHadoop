@@ -58,7 +58,7 @@ public class YandexTranslator implements BaseTranslator {
                 .userAgent("ru.yandex.translate/3.20.2024")
                 .form(form)
                 .body();
-        return JsonUtils.array(result, "text")[0];
+        return JsonUtils.stringArray(result, "text")[0];
     }
 
     @Override

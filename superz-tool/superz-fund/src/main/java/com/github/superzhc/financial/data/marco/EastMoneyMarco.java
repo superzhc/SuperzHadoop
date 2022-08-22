@@ -246,7 +246,7 @@ public class EastMoneyMarco {
         try {
             String result = HttpRequest.get(url, params).body();
             result = result.substring(1, result.length() - 1);
-            String[] arr = JsonUtils.array(result);
+            String[] arr = JsonUtils.stringArray(result);
 
             List<String[]> dataRows = new ArrayList<>();
             for (String row : arr) {
