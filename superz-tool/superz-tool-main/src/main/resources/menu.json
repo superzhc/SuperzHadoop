@@ -12,6 +12,12 @@
       "separator1": {
         "isSeparator": true
       },
+      "HDFS": {
+        "name": "HDFS",
+        "title": "HDFS",
+        "controller": "com.github.superzhc.hadoop.hdfs.desktop.controller.ToolHdfsController",
+        "path": "com/github/superzhc/hadoop/hdfs/desktop/view/tool_hdfs.fxml"
+      },
       "ES": {
         "name": "ES",
         "title": "Elasticsearch",

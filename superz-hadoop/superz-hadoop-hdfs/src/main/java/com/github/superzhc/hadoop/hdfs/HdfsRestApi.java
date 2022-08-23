@@ -52,9 +52,9 @@ public class HdfsRestApi {
          */
         Map<String, Object> params = new HashMap<>();
         params.put("overwrite", true);
-        params.put("noredirect",true);
+        params.put("noredirect", true);
         HttpRequest request = execute(METHOD_PUT, path, "CREATE", params);
-        String location = JsonUtils.string(request.body(),"Location");
+        String location = JsonUtils.string(request.body(), "Location");
 
         HttpRequest request2 = HttpRequest.put(location).send(file);
         return request2.body();
@@ -118,6 +118,26 @@ public class HdfsRestApi {
 
     public String summary(String path) {
         HttpRequest request = execute(METHOD_GET, path, "GETCONTENTSUMMARY");
+        return request.body();
+    }
+
+    public String getHomeDirectory() {
+        HttpRequest request = execute(METHOD_GET, "", "GETHOMEDIRECTORY");
+        return request.body();
+    }
+
+    /**
+     * 设置文件、目录权限
+     *
+     * @param path
+     * @param permission 示例：755
+     * @return
+     */
+    public String setPermission(String path, String permission) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("permission", permission);
+
+        HttpRequest request = execute(METHOD_PUT, path, "SETPERMISSION", params);
         return request.body();
     }
 

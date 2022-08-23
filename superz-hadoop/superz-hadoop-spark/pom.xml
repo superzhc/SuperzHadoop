@@ -22,7 +22,7 @@
         <dependency>
             <groupId>com.github.superzhc</groupId>
             <artifactId>superz-common-core</artifactId>
-            <version>0.2.2</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
@@ -116,6 +116,18 @@
             <groupId>com.linkedin.sparktfrecord</groupId>
             <artifactId>spark-tfrecord_${scala.binary.version}</artifactId>
             <version>0.3.4</version>
+        </dependency>
+
+        <!--hudi-->
+        <dependency>
+            <groupId>org.apache.hudi</groupId>
+            <artifactId>hudi-spark3-bundle_${scala.binary.version}</artifactId>
+            <version>${hudi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-avro_${scala.binary.version}</artifactId>
+            <version>3.0.1</version>
         </dependency>
 
         <!--region scala-->

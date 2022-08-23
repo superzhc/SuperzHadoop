@@ -262,7 +262,7 @@ public class JsonUtils {
                 continue;
             }
 
-            Map<String, String> map = new HashMap<>();
+            Map<String, String> map = new LinkedHashMap<>();
             for (String key : keys) {
                 map.put(key, text(item, key));
             }
@@ -284,7 +284,7 @@ public class JsonUtils {
                 continue;
             }
 
-            Map<String, String> map = new HashMap<>();
+            Map<String, String> map = new LinkedHashMap<>();
             Iterator<String> fieldNames = item.fieldNames();
             while (fieldNames.hasNext()) {
                 String fieldName = fieldNames.next();

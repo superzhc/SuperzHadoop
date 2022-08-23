@@ -86,6 +86,13 @@
             <artifactId>trino-jdbc</artifactId>
             <version>379</version>
         </dependency>
+
+        <!--hudi-->
+        <dependency>
+            <groupId>org.apache.hudi</groupId>
+            <artifactId>hudi-hadoop-mr-bundle</artifactId>
+            <version>${hudi.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

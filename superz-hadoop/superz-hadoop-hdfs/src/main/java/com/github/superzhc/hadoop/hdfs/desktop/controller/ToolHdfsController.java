@@ -24,6 +24,8 @@ import java.util.ResourceBundle;
  * @create 2022/8/22 15:53
  **/
 public class ToolHdfsController implements Initializable {
+    public static final String FXML_PATH = "com/github/superzhc/hadoop/hdfs/desktop/view/tool_hdfs.fxml";
+
     @FXML
     private VBox root;
 
@@ -48,6 +50,8 @@ public class ToolHdfsController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File("D:\\downloads"));
+
+        txtHost.setText("log-platform03");
     }
 
     private Stage getStage() {
@@ -87,10 +91,59 @@ public class ToolHdfsController implements Initializable {
         try {
             String result = api.list(path);
             JsonNode fileStatus = JsonUtils.json(result, "FileStatuses", "FileStatus");
+            if (fileStatus == null) {
+                DialogUtils.warning(result);
+                return;
+            }
+
             Map<String, String>[] maps = JsonUtils.objectArray2Map(fileStatus);
-            TableViewUtils.bind(tv, maps);
+            TableViewUtils.clearAndBind(tv, maps);
         } catch (Exception e) {
             DialogUtils.error("Browse Directory Error", e);
+        }
+    }
+
+    @FXML
+    public void btnMkdirsAction(ActionEvent actionEvent) {
+        String host = txtHost.getText();
+        if (null == host || host.trim().length() == 0) {
+            DialogUtils.error("请输入NameNode Host");
+            return;
+        }
+
+        String port = txtPort.getText();
+        if (null == port || port.trim().length() == 0) {
+            DialogUtils.error("请输入NameNode Port");
+            return;
+        }
+
+        Integer iPort;
+        try {
+            iPort = Integer.valueOf(port);
+        } catch (Exception e) {
+            DialogUtils.error("请输入有效NameNode Port", e);
+            return;
+        }
+
+        String user = txtUser.getText();
+        HdfsRestApi api = new HdfsRestApi(host, iPort, (null == user || user.trim().length() == 0) ? null : user);
+
+        String path = txtPath.getText();
+        if (null == path || path.trim().length() == 0) {
+            path = "/";
+        }
+
+        String dirs = DialogUtils.prompt("请输入文件夹名称");
+        if (null == dirs || dirs.trim().length() == 0) {
+            return;
+        }
+
+        try {
+            String result = api.mkdirs(String.format("%s/%s", path, dirs));
+            boolean b = JsonUtils.bool(JsonUtils.json(result, "boolean"));
+            DialogUtils.info(b ? "创建目录成功" : "创建目录失败");
+        } catch (Exception e) {
+            DialogUtils.error("Make Dirs Error", e);
         }
     }
 
@@ -127,12 +180,48 @@ public class ToolHdfsController implements Initializable {
             }
 
             try {
-                api.upload(path, file);
+                String result = api.upload(path, file);
+                DialogUtils.info(result);
             } catch (Exception e) {
                 DialogUtils.error("Browse Directory Error", e);
             }
         }
     }
 
-
+//    // 下载文件
+//    @FXML
+//    public void btnDownloadAction(ActionEvent actionEvent) {
+//        String host = txtHost.getText();
+//        if (null == host || host.trim().length() == 0) {
+//            DialogUtils.error("请输入NameNode Host");
+//            return;
+//        }
+//
+//        String port = txtPort.getText();
+//        if (null == port || port.trim().length() == 0) {
+//            DialogUtils.error("请输入NameNode Port");
+//            return;
+//        }
+//
+//        Integer iPort;
+//        try {
+//            iPort = Integer.valueOf(port);
+//        } catch (Exception e) {
+//            DialogUtils.error("请输入有效NameNode Port", e);
+//            return;
+//        }
+//
+//        String user = txtUser.getText();
+//        File file = fileChooser.showSaveDialog(getStage());
+//        if (null != file) {
+//            String path = txtPath.getText();
+//            if (null == path || path.trim().length() == 0) {
+//                DialogUtils.error("请填写下载文件的路径");
+//                return;
+//            }
+//
+//            HdfsRestApi api = new HdfsRestApi(host, iPort, (null == user || user.trim().length() == 0) ? null : user);
+//
+//        }
+//    }
 }

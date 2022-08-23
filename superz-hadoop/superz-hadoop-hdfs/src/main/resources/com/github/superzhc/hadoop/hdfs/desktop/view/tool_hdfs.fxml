@@ -20,9 +20,9 @@
             <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="34.0" text="Host:" />
             <TextField fx:id="txtHost" prefHeight="25.0" prefWidth="145.0" />
             <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="30.0" text="Port:" />
-            <TextField fx:id="txtPort" prefHeight="25.0" prefWidth="45.0" text="9870" />
+            <TextField fx:id="txtPort" prefHeight="25.0" prefWidth="45.0" text="50070" />
             <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="30.0" text="User:" />
-            <TextField fx:id="txtUser" prefHeight="25.0" prefWidth="70.0" text="dr.who" />
+            <TextField fx:id="txtUser" prefHeight="25.0" prefWidth="70.0" />
          </children>
       </HBox>
       <Separator prefWidth="600.0" />
@@ -33,7 +33,8 @@
          <children>
             <TextField fx:id="txtPath" prefHeight="25.0" prefWidth="368.0" text="/" />
             <Button mnemonicParsing="false" onAction="#btnGoAction" prefHeight="25.0" text="Go!" />
-            <Button mnemonicParsing="false" onAction="#btnUploadAction" prefHeight="25.0" text="上传" />
+            <Button mnemonicParsing="false" onAction="#btnMkdirsAction" prefHeight="25.0" text="创建目录" />
+            <Button mnemonicParsing="false" onAction="#btnUploadAction" prefHeight="25.0" text="上传文件" />
          </children>
       </HBox>
       <HBox prefHeight="310.0" prefWidth="600.0" spacing="3.0">
