@@ -20,6 +20,7 @@
         <module>superz-data-warehouse</module>
         <module>superz-web</module>
         <module>superz-sql</module>
+        <module>superz-data</module>
     </modules>
 
     <properties>

@@ -9,13 +9,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>superz-tool</artifactId>
+    <artifactId>superz-data</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>superz-tool-main</module>
-        <module>superz-fund</module>
-        <module>superz-translate</module>
-        <module>superz-ocr</module>
+        <module>superz-data-core</module>
     </modules>
 
     <properties>
