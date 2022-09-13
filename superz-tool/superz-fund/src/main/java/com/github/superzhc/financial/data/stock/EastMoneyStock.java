@@ -18,47 +18,9 @@ import java.util.Map;
  **/
 public class EastMoneyStock {
     public static Table newShares() {
-        String url = "https://datainterface.eastmoney.com/EM_DataCenter/JS.aspx";
+        List<Map<String, Object>> dataRows = com.github.superzhc.data.stock.EastMoneyStock.newShares();
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("st", "16");
-        params.put("sr", "-1");
-        params.put("ps", "50000");
-        params.put("p", "1");
-        params.put("type", "NS");
-        params.put("sty", "NSDXSYL");
-        params.put("js", "({data:[(x)],pages:(pc)})");
-
-        String result = HttpRequest.get(url, params).body();
-        result = result.substring(1, result.length() - 1);
-        JsonNode json = JsonUtils.json(result, "data");
-
-        /*"股票代码",
-        "股票简称",
-        "发行价",
-        "最新价",
-        "网上-发行中签率",
-        "网上-有效申购股数",
-        "网上-有效申购户数",
-        "网上-超额认购倍数",
-        "网下-配售中签率",
-        "网下-有效申购股数",
-        "网下-有效申购户数",
-        "网下-配售认购倍数",
-        "总发行数量",
-        "开盘溢价",
-        "首日涨幅",
-        "打新收益",
-        "上市日期",
-        "-" */
-        List<String> columnNames = ColumnUtils.transform("_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_", "_");
-        List<String[]> dataRows = new ArrayList<>();
-        for (JsonNode item : json) {
-            String str = JsonUtils.string(item);
-            dataRows.add(str.split(",", -1));
-        }
-
-        Table table = TableUtils.build(columnNames, dataRows);
+        Table table = TableUtils.buildByMap(dataRows);
         return table;
     }
 

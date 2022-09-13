@@ -50,21 +50,11 @@
             <artifactId>superz-common-html</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--<dependency>
+        <dependency>
             <groupId>com.github.superzhc</groupId>
-            <artifactId>superz-data</artifactId>
+            <artifactId>superz-data-core</artifactId>
             <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.module</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.fasterxml.jackson.core</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>-->
+        </dependency>
 
         <!--RSS工具-->
         <dependency>
