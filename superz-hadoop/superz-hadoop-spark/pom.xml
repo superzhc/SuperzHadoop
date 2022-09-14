@@ -24,12 +24,17 @@
             <artifactId>superz-common-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
+            <groupId>com.github.superzhc</groupId>
+            <artifactId>superz-data-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!--<dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-client</artifactId>
             <version>${hadoop.version}</version>
-            <!--排除掉 Jackson，不然会出现多版本问题，造成 Spark 报错-->
+            &lt;!&ndash;排除掉 Jackson，不然会出现多版本问题，造成 Spark 报错&ndash;&gt;
             <exclusions>
                 <exclusion>
                     <groupId>com.fasterxml.jackson.module</groupId>
@@ -70,7 +75,7 @@
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
+        </dependency>-->
 
         <!--guava 冲突，需要使用该版本-->
         <!--<dependency>
@@ -112,11 +117,11 @@
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-tensorflow-connector_${scala.binary.version}</artifactId>
         </dependency>-->
-        <dependency>
+        <!--<dependency>
             <groupId>com.linkedin.sparktfrecord</groupId>
             <artifactId>spark-tfrecord_${scala.binary.version}</artifactId>
             <version>0.3.4</version>
-        </dependency>
+        </dependency>-->
 
         <!--hudi-->
         <dependency>
@@ -135,19 +140,19 @@
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-compiler</artifactId>
             <version>${scala.version}</version>
-            <!--<scope>provided</scope>-->
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-reflect</artifactId>
             <version>${scala.version}</version>
-            <!--<scope>provided</scope>-->
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
             <version>${scala.version}</version>
-            <!--<scope>provided</scope>-->
+            <scope>provided</scope>
         </dependency>
         <!-- 已被废弃
         <dependency>
@@ -163,12 +168,6 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.47</version>
         </dependency>
-        <!--读取Excel文件-->
-        <!--<dependency>
-            <groupId>com.crealytics</groupId>
-            <artifactId>spark-excel_2.11</artifactId>
-            <version>0.13.7</version>
-        </dependency>-->
     </dependencies>
 
     <build>
