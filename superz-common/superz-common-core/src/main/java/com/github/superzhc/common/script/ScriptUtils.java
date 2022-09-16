@@ -157,7 +157,10 @@ public class ScriptUtils {
             Object value = array.getSlot(i);
             if (value instanceof ScriptObjectMirror) {
                 ScriptObjectMirror v2 = (ScriptObjectMirror) value;
-                if (v2.isArray()) {
+                // 2022年9月14日 修复时间获取不到值的问题
+                if ("Date".equals(v2.getClassName())) {
+                    lst.add(v2.callMember("toISOString"));
+                } else if (v2.isArray()) {
                     lst.add(getArray(v2));
                 } else {
                     lst.add(getObject(v2));
@@ -176,7 +179,10 @@ public class ScriptUtils {
             Object value = item.getValue();
             if (value instanceof ScriptObjectMirror) {
                 ScriptObjectMirror v2 = (ScriptObjectMirror) value;
-                if (v2.isArray()) {
+                // 2022年9月14日 修复时间获取不到值的问题
+                if ("Date".equals(v2.getClassName())) {
+                    map.put(key, v2.callMember("toISOString"));
+                } else if (v2.isArray()) {
                     map.put(key, getArray(v2));
                 } else {
                     map.put(key, getObject(v2));

@@ -83,6 +83,20 @@ public class YarnRestApi {
         return result;
     }
 
+    public String appAttempts(String applicationId){
+        String url=uri(String.format("/cluster/apps/%s/appattempts", applicationId));
+
+        String result = HttpRequest.get(url).body();
+        return result;
+    }
+
+    public String logs(String containerId){
+        String url=uri(String.format("/node/containers/%s/logs", containerId));
+
+        String result = HttpRequest.get(url).body();
+        return result;
+    }
+
     private String uri(String resourcepath) {
         if (resourcepath.trim().startsWith("/")) {
             resourcepath = resourcepath.substring(1);
