@@ -13,8 +13,7 @@ import java.util.concurrent.Future;
 /**
  * 2020年04月26日 superz add
  */
-public class MyProducer extends KafkaBrokers implements Closeable
-{
+public class MyProducer extends KafkaBrokers implements Closeable {
     private Producer<String, String> producer;
 
     public MyProducer(String brokers) {
@@ -26,8 +25,8 @@ public class MyProducer extends KafkaBrokers implements Closeable
     }
 
     private MyProducer(String brokers,
-                      Object kerberosSASL,// KerberosSASL kerberosSASL, //2021年3月17日 该类没有了，去掉
-                      Map<String, String> properties) {
+                       Object kerberosSASL,// KerberosSASL kerberosSASL, //2021年3月17日 该类没有了，去掉
+                       Map<String, String> properties) {
         super(brokers);
 
         Properties props = new Properties();
@@ -36,8 +35,7 @@ public class MyProducer extends KafkaBrokers implements Closeable
         if (null == properties) {
             props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
             props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        }
-        else {
+        } else {
             props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, properties
                     .getOrDefault(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName()));
             props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, properties
@@ -55,22 +53,22 @@ public class MyProducer extends KafkaBrokers implements Closeable
         producer = new KafkaProducer<String, String>(props);
     }
 
-    // public Future<RecordMetadata> sendAsync(String topic, String value, Callback
-    // callback) {
-    // ProducerRecord<String, String> record = new ProducerRecord<>(topic, value);
-    // return producer.send(record, callback);
-    // }
+    public Future<RecordMetadata> sendAsync(String topic, String value, Callback
+            callback) {
+        ProducerRecord<String, String> record = new ProducerRecord<>(topic, value);
+        return producer.send(record, callback);
+    }
 
     public Future<RecordMetadata> sendAsync(String topic, String key, String value, Callback callback) {
         ProducerRecord<String, String> record = new ProducerRecord<>(topic, key, value);
         return producer.send(record, callback);
     }
 
-    // public RecordMetadata send(String topic, String value) throws
-    // ExecutionException, InterruptedException {
-    // ProducerRecord<String, String> record = new ProducerRecord<>(topic, value);
-    // return producer.send(record).get();
-    // }
+    public RecordMetadata send(String topic, String value) throws
+            ExecutionException, InterruptedException {
+        ProducerRecord<String, String> record = new ProducerRecord<>(topic, value);
+        return producer.send(record).get();
+    }
 
     public RecordMetadata send(String topic, String key, String value) throws ExecutionException, InterruptedException {
         ProducerRecord<String, String> record = new ProducerRecord<>(topic, key, value);

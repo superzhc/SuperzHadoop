@@ -13,6 +13,8 @@ import java.util.regex.Pattern;
 
 /**
  * 参考：https://github.com/hellysmile/fake-useragent
+ * <p>
+ * 2022年9月20日 访问地址发生迁移，匹配正则也发生变化
  *
  * @author superz
  * @create 2022/1/10 15:47
@@ -41,7 +43,7 @@ public class UserAgent {
         }
     }
 
-    public static final String BROWSER_BASE_PAGE = "http://useragentstring.com/pages/useragentstring.php?name=%s";
+    public static final String BROWSER_BASE_PAGE = "https://useragentstring.com/pages/useragentstring.php?name=%s";
 
     private static Map<String, List<String>> cache = new ConcurrentHashMap<>();
 
@@ -69,7 +71,7 @@ public class UserAgent {
                         // }
                         String result = HttpRequest.get(String.format(BROWSER_BASE_PAGE, browserType.value())).body();
                         // String regex = "<li><a href=(['\"])\\/index\\.php\\?id=(\\d*)(['\"])>([\\s\\S]*?)<\\/a><\\/li>";
-                        String regex = "<a href=(['\"])\\/index\\.php\\?id=(\\d*)(['\"])>([\\s\\S]*?)<\\/a>";
+                        String regex = "<a href=(['\"])([\\s\\S]*?)(['\"])>([\\s\\S]*?)<\\/a>";
                         Pattern pattern = Pattern.compile(regex);
                         Matcher matcher = pattern.matcher(result);
                         while (matcher.find()) {
@@ -138,8 +140,8 @@ public class UserAgent {
     }
 
     public static void main(String[] args) throws Exception {
-        List<String> lst=new UserAgent().get();
-        for(String str:lst){
+        List<String> lst = new UserAgent().get();
+        for (String str : lst) {
             System.out.println(str);
             System.out.println("-----------------------------------------");
         }

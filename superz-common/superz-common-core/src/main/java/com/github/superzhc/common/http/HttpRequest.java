@@ -1827,7 +1827,7 @@ public class HttpRequest {
     public HttpRequest header(final String name, final String value) {
         HttpURLConnection conn = getConnection();
         if (log.isDebugEnabled() &&
-                ("Cookie".equalsIgnoreCase(name))) {
+                (HEADER_USER_AGENT.equals(name) || "Cookie".equalsIgnoreCase(name))) {
             log.debug("[{}] header:{}={}", requestMethod, name, value);
         }
         conn.setRequestProperty(name, value);

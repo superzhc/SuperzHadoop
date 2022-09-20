@@ -24,6 +24,11 @@
         </dependency>
         <dependency>
             <groupId>com.github.superzhc</groupId>
+            <artifactId>superz-data-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.superzhc</groupId>
             <artifactId>superz-common-javafx</artifactId>
             <version>${project.version}</version>
         </dependency>
