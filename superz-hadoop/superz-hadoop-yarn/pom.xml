@@ -20,7 +20,12 @@
         <dependency>
             <groupId>com.github.superzhc</groupId>
             <artifactId>superz-common-core</artifactId>
-            <version>0.2.2</version>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.superzhc</groupId>
+            <artifactId>superz-common-ssh</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>

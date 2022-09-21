@@ -207,6 +207,11 @@ public class HttpRequest {
     public static final String HEADER_USER_AGENT = "User-Agent";
 
     /**
+     * 'Cookie' header name
+     */
+    public static final String HEADER_COOKIE="Cookie";
+
+    /**
      * 'DELETE' request method
      */
     public static final String METHOD_DELETE = "DELETE";
@@ -1520,9 +1525,12 @@ public class HttpRequest {
                         .replaceAll("          ", " ")
                         .replaceAll("         ", " ")
                         .replaceAll("        ", " ")
+                        .replaceAll("       "," ")
+                        .replaceAll("      "," ")
+                        .replaceAll("     "," ")
                         .replaceAll("    ", " ")
-                        .replaceAll("  ", " ")
-                        .replaceAll(" ", " ");
+                        .replaceAll("   "," ")
+                        .replaceAll("  ", " ");
                 log.debug("[{}] response:{}", requestMethod, str.length() > 512 ? str.substring(0, 512) + "..." : str);
             }
             return resp;
@@ -1827,7 +1835,7 @@ public class HttpRequest {
     public HttpRequest header(final String name, final String value) {
         HttpURLConnection conn = getConnection();
         if (log.isDebugEnabled() &&
-                (HEADER_USER_AGENT.equals(name) || "Cookie".equalsIgnoreCase(name))) {
+                (HEADER_USER_AGENT.equals(name) || HEADER_COOKIE.equalsIgnoreCase(name))) {
             log.debug("[{}] header:{}={}", requestMethod, name, value);
         }
         conn.setRequestProperty(name, value);
@@ -1967,7 +1975,7 @@ public class HttpRequest {
 
     public HttpRequest cookies(String value) {
         if (null != value && value.trim().length() > 0) {
-            header("Cookie", value);
+            header(HEADER_COOKIE, value);
         }
         return this;
     }
@@ -2997,7 +3005,7 @@ public class HttpRequest {
             output.write('=');
             if (value != null)
                 output.write(URLEncoder.encode(value.toString(), charset));
-            log.debug("[{}] form: {}={}", requestMethod, URLEncoder.encode(name.toString(), charset), (null == value ? null : URLEncoder.encode(value.toString(), charset)));
+            log.debug("form body: {}={}", requestMethod, URLEncoder.encode(name.toString(), charset), (null == value ? null : URLEncoder.encode(value.toString(), charset)));
         } catch (IOException e) {
             throw new HttpRequestException(e);
         }
@@ -3114,7 +3122,7 @@ public class HttpRequest {
         try {
             openOutput();
             output.write(json);
-            log.debug("[{}] json:{}", requestMethod, json);
+            log.debug("json body:{}", requestMethod, json);
         } catch (IOException e) {
             throw new HttpRequestException(e);
         }

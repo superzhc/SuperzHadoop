@@ -1,11 +1,8 @@
-package com.github.superzhc.hadoop.flink;
+package com.github.superzhc.hadoop.flink.api;
 
-import okhttp3.*;
+import com.github.superzhc.common.http.HttpRequest;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ObjectNode;
-
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 版本：1.12
@@ -14,12 +11,6 @@ import java.util.concurrent.TimeUnit;
  * @create 2021/10/28 15:43
  */
 public class FlinkRestAPI {
-    private static final OkHttpClient okHttpClient = new OkHttpClient.Builder()
-            .connectTimeout(120, TimeUnit.SECONDS)
-            .readTimeout(120, TimeUnit.SECONDS)
-            .writeTimeout(120, TimeUnit.SECONDS)
-            .build();
-
     private String url;
 
     public FlinkRestAPI(String url) {
@@ -27,35 +18,17 @@ public class FlinkRestAPI {
     }
 
     protected String get(String path) {
-        Request request = new Request.Builder().url(fullUrl(path)).get().build();
-        return execute(request);
+        return HttpRequest.get(fullUrl(path)).body();
     }
 
     protected String post(String path, String reqBody) {
-        Request.Builder builder = new Request.Builder();
-        builder.url(fullUrl(path));
-
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), reqBody);
-        Request request = builder.post(requestBody).build();
-
-        return execute(request);
+        return HttpRequest.post(fullUrl(path)).json(reqBody).body();
     }
 
     private String fullUrl(String path) {
         return String.format("%s/v1%s", url, path);
     }
 
-    private String execute(Request request) {
-        try (Response response = okHttpClient.newCall(request).execute()) {
-            if (response.isSuccessful()) {
-                return response.body().string();
-            } else {
-                return response.message();
-            }
-        } catch (IOException e) {
-            return "Request Error:" + e.getMessage();
-        }
-    }
 
     public static class Overview extends FlinkRestAPI {
 

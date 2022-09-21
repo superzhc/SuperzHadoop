@@ -1,12 +1,18 @@
 package com.github.superzhc.common.ssh;
 
 import com.jcraft.jsch.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
 
 /**
  * @author superz
  * @create 2022/3/15 9:26
  **/
-public class JschTool {
+public class JschTool implements Closeable {
+    private static final Logger log = LoggerFactory.getLogger(JschTool.class);
+
     private String host;
     private Integer port;
     private String username;
@@ -38,7 +44,7 @@ public class JschTool {
      * @return
      */
     public Session getSession() {
-        if (null == session) {
+        if (null == session || !session.isConnected()) {
             session = connect();
         }
         return session;
@@ -91,9 +97,106 @@ public class JschTool {
             session.setConfig("StrictHostKeyChecking", "no");
             //设置登录超时时间
             session.connect(3000);
+            log.info("登录成功，服务器信息：{}", session.getServerVersion());
             return session;
         } catch (Exception e) {
-            return null;
+            log.error("登录失败【Host={}:{}，Username={}】", host, port, username, e);
+            throw new RuntimeException("登录失败");
+        }
+    }
+
+    public String executes(String... commands) {
+        return executes(getSession(), commands);
+    }
+
+    public String executes(Session session, String... commands) {
+        return execute(session, commands);
+    }
+
+    public String execute(String[] commands) {
+        return execute(getSession(), commands);
+    }
+
+    public String execute(Session session, String[] commands) {
+        Channel channel = null;
+        try {
+            // log.debug("执行命令：{}", String.join("\n", commands));
+            channel = session.openChannel("shell");
+            ChannelShell shell = (ChannelShell) channel;
+            shell.connect();
+
+            StringBuilder result = new StringBuilder();
+            try (InputStream in = shell.getInputStream()) {
+                // 输入多条命令
+                OutputStream outputStream = shell.getOutputStream();
+                // 使用 PrintWriter 可以不用在每条命令后面输入换行符
+                PrintWriter writer = new PrintWriter(outputStream);
+                for (String command : commands) {
+                    writer.println(command);
+                }
+                // 结束本次shell交互命令
+                writer.println("exit");
+                writer.flush();
+
+                try (InputStreamReader iReader = new InputStreamReader(in)) {
+                    try (BufferedReader reader = new BufferedReader(iReader)) {
+                        String line = null;
+                        while ((line = reader.readLine()) != null) {
+                            result.append(line).append("\n");
+                        }
+                    }
+                }
+            }
+            return result.toString();
+        } catch (Exception e) {
+            log.error("执行命令异常！", e);
+            throw new RuntimeException(e);
+        } finally {
+            if (null != channel && channel.isConnected()) {
+                channel.disconnect();
+            }
+        }
+    }
+
+    public String execute(String command) {
+        return execute(getSession(), command);
+    }
+
+    public String execute(Session session, String command) {
+        Channel channel = null;
+        try {
+            log.debug("执行命令：{}", command);
+            channel = session.openChannel("exec");
+            ChannelExec channelExec = (ChannelExec) channel;
+            channelExec.setCommand(command);
+            channelExec.connect(3 * 1000);
+
+            StringBuilder result = new StringBuilder();
+            // 注意：响应结果可能并不会第一时间就返回，做个兼容，尝试三次
+            try (InputStream in = channelExec.getInputStream()) {
+                int counter = 0;
+                while ((in.available() == 0) && counter < 3) {
+                    Thread.sleep(3 * 1000);
+                    counter++;
+                }
+
+                try (InputStreamReader iReader = new InputStreamReader(in)) {
+                    try (BufferedReader reader = new BufferedReader(iReader)) {
+                        String line = null;
+                        while ((line = reader.readLine()) != null) {
+                            result.append(line).append("\n");
+                        }
+                    }
+                }
+            }
+            return result.toString();
+        } catch (Exception e) {
+            log.error("执行命令异常！", e);
+            throw new RuntimeException(e);
+        } finally {
+            if (null != channel && channel.isConnected()) {
+                channel.disconnect();
+            }
         }
     }
 
@@ -150,6 +253,13 @@ public class JschTool {
             return channel;
         } catch (JSchException e) {
             return null;
+        }
+    }
+
+    @Override
+    public void close() throws IOException {
+        if (null != session && session.isConnected()) {
+            session.disconnect();
         }
     }
 }

@@ -1,8 +1,6 @@
 package com.github.superzhc.hadoop.flink.streaming.demo.fund;
 
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import com.github.superzhc.common.http.HttpRequest;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ObjectNode;
@@ -28,12 +26,6 @@ public class FlinkFundSource extends RichSourceFunction<String> {
     private static final LocalTime time1500 = LocalTime.of(15, 0, 0);
 
     private volatile boolean cancelled = false;
-
-    private static final OkHttpClient okHttpClient = new OkHttpClient.Builder()
-            .connectTimeout(120, TimeUnit.SECONDS)
-            .readTimeout(120, TimeUnit.SECONDS)
-            .writeTimeout(120, TimeUnit.SECONDS)
-            .build();
 
     private String[] codes;
     private String[] urls;
@@ -67,36 +59,29 @@ public class FlinkFundSource extends RichSourceFunction<String> {
             for (int i = 0, len = urls.length; i < len; i++) {
                 /* 添加时间戳，保证数据获取最新的 */
                 String url = urls[i] + nextReadTime;
-                Request request = new Request.Builder().url(url).build();
-                try (Response response = okHttpClient.newCall(request).execute()) {
-                    if (response.isSuccessful()) {
-                        String body = response.body().string();
-                        String json = body.substring(8, body.length() - 2);
+                String body = HttpRequest.get(url).body();
+                String json = body.substring(8, body.length() - 2);
 
-                        // 对字段进行重命名，原首字母简写比较费解
-                        ObjectNode node = (ObjectNode) mapper.readTree(json);
-                        // 净值日期
-                        node.put("net_worth_date", node.get("jzrq").asText());
-                        node.remove("jzrq");
-                        // 当日净值
-                        node.put("net_worth", node.get("dwjz").asText());
-                        node.remove("dwjz");
-                        // 估算净值
-                        node.put("valuation", node.get("gsz").asText());
-                        node.remove("gsz");
-                        // 估算涨幅百分比，注意百分比单位
-                        node.put("valuation_per", node.get("gszzl").asText());
-                        node.remove("gszzl");
-                        // 估值时间
-                        node.put("valuation_datetime", node.get("gztime").asText());
-                        node.remove("gztime");
+                // 对字段进行重命名，原首字母简写比较费解
+                ObjectNode node = (ObjectNode) mapper.readTree(json);
+                // 净值日期
+                node.put("net_worth_date", node.get("jzrq").asText());
+                node.remove("jzrq");
+                // 当日净值
+                node.put("net_worth", node.get("dwjz").asText());
+                node.remove("dwjz");
+                // 估算净值
+                node.put("valuation", node.get("gsz").asText());
+                node.remove("gsz");
+                // 估算涨幅百分比，注意百分比单位
+                node.put("valuation_per", node.get("gszzl").asText());
+                node.remove("gszzl");
+                // 估值时间
+                node.put("valuation_datetime", node.get("gztime").asText());
+                node.remove("gztime");
 
 
-                        ctx.collect(mapper.writeValueAsString(node));
-                    } else {
-                        ctx.collect(response.message());
-                    }
-                }
+                ctx.collect(mapper.writeValueAsString(node));
             }
 
             LocalDate nowDate = now.toLocalDate();

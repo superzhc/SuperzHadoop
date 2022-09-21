@@ -1,6 +1,6 @@
 package com.github.superzhc.hadoop.flink.streaming.checkpoint;
 
-import com.github.superzhc.hadoop.flink.FlinkRestAPI;
+import com.github.superzhc.hadoop.flink.api.FlinkRestAPI;
 import com.github.superzhc.hadoop.flink.streaming.connector.customsource.JavaFakerSource;
 import com.github.superzhc.hadoop.flink.streaming.state.StateMain;
 import com.github.superzhc.hadoop.flink.utils.FakerUtils;
