@@ -25,7 +25,7 @@ public class JavaHttpSource extends RichSourceFunction<String> {
 
     public static final String CONNECT_TIMEOUT = "connect.timeout";
     public static final String READ_TIMEOUT = "read.timeout";
-    public static final String WRITE_TIMEOUT = "write.timeout";
+    // public static final String WRITE_TIMEOUT = "write.timeout";
 
     public static final String URL = "url";
     public static final String METHOD = "method";
@@ -192,117 +192,10 @@ public class JavaHttpSource extends RichSourceFunction<String> {
 
     @Override
     public void cancel() {
-        cancelled = false;
+        cancelled = true;
     }
 
     public static void main(String[] args) throws Exception {
-//        final ObjectMapper mapper = new ObjectMapper();
-//        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-//        env.setParallelism(1);
-//
-//        DataStream<String> ds = null/*env.fromCollection(Collections.singletonList(""))*/;
-//
-////        // 获取所有类型[error:过多的类型会生成source报错Insufficient number of network buffers]
-////        String moFishAllTypeUrl = "https://api.tophub.fun/GetAllType";
-////        String allTypes = HttpRequest.get(moFishAllTypeUrl).body();
-////        JsonNode allTypeRNode = mapper.readTree(allTypes);
-////        JsonNode types = allTypeRNode.get("Data").get("全部");
-////        for (JsonNode type : types) {
-////            String id = type.get("id").asText();
-////            String name = type.get("name").asText();
-//        Map<String, String> idAndSources = new HashMap<>();
-//        idAndSources.put("1", "知乎热榜");
-//        idAndSources.put("142", "acFun热榜");
-//        idAndSources.put("1066", "淘宝综合榜");
-//        idAndSources.put("151", "Zaker热榜");
-//        idAndSources.put("110", "抽屉热榜");
-//        idAndSources.put("1029", "羊毛绒榜");
-//        idAndSources.put("85", "Github热榜");
-//        idAndSources.put("11", "微信热榜");
-//        idAndSources.put("56", "贴吧热榜");
-//        idAndSources.put("58", "微博热搜");
-////        idAndSources.put("","");
-//        for (Map.Entry<String, String> idAndSource : idAndSources.entrySet()) {
-//            String id = idAndSource.getKey();
-//            String name = idAndSource.getValue();
-//            DataStream<String> typeDs = env.addSource(JavaHttpSource.get(String.format("https://api.tophub.fun/v2/GetAllInfoGzip?id=%s&page=0&type=pc", id)));
-//            typeDs = typeDs.flatMap(new FlatMapFunction<String, String>() {
-//                @Override
-//                public void flatMap(String s, Collector<String> collector) throws Exception {
-//                    JsonNode node = mapper.readTree(s);
-//                    JsonNode datas = node.get("Data").get("data");
-//                    for (JsonNode data : datas) {
-//                        ObjectNode data2 = (ObjectNode) data;
-//                        data2.put("source", name);
-//                        // id 为空的不进行采集
-//                        if (null != data2.get("id")) {
-//                            collector.collect(mapper.writeValueAsString(data2));
-//                        }
-//                    }
-//                }
-//            });
-//
-//            if (ds != null) {
-//                ds = ds.union(typeDs);
-//            } else {
-//                ds = typeDs;
-//            }
-//        }
-//
-//        ds.addSink(JdbcSink.sink(
-//                "INSERT INTO mo_fish(id,title,create_time,type_name,url,approval_num,comment_num,hot_desc,description,img_url,is_rss,is_agree,source_name) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)" +
-//                        " ON DUPLICATE KEY UPDATE id=?,title=?,create_time=?,type_name=?,url=?,approval_num=?,comment_num=?,hot_desc=?,description=?,img_url=?,is_rss=?,is_agree=?,source_name=?"
-//                ,
-//                new JdbcStatementBuilder<String>() {
-//                    @Override
-//                    public void accept(PreparedStatement preparedStatement, String data) throws SQLException {
-//                        try {
-//                            JsonNode item = mapper.readTree(data);
-//                            preparedStatement.setInt(1, item.get("id").asInt());
-//                            preparedStatement.setString(2, null == item.get("Title") ? null : item.get("Title").asText());
-//                            preparedStatement.setTimestamp(3, new Timestamp(null == item.get("CreateTime") ? System.currentTimeMillis() : item.get("CreateTime").asLong() * 1000));
-//                            preparedStatement.setString(4, null == item.get("TypeName") ? null : item.get("TypeName").asText());
-//                            preparedStatement.setString(5, null == item.get("Url") ? null : item.get("Url").asText());
-//                            preparedStatement.setInt(6, null == item.get("approvalNum") ? null : item.get("approvalNum").asInt());
-//                            preparedStatement.setInt(7, null == item.get("commentNum") ? null : item.get("commentNum").asInt());
-//                            preparedStatement.setString(8, null == item.get("hotDesc") ? null : item.get("hotDesc").asText());
-//                            preparedStatement.setString(9, null == item.get("Desc") ? null : item.get("Desc").asText());
-//                            preparedStatement.setString(10, null == item.get("imgUrl") ? null : item.get("imgUrl").asText());
-//                            preparedStatement.setString(11, null == item.get("isRss") ? null : item.get("isRss").asText());
-//                            preparedStatement.setInt(12, null == item.get("is_agree") ? null : item.get("is_agree").asInt());
-//                            preparedStatement.setString(13, item.get("source").asText());
-//                            // upsert 需要重复设置一遍数据
-//                            preparedStatement.setInt(14, item.get("id").asInt());
-//                            preparedStatement.setString(15, null == item.get("Title") ? null : item.get("Title").asText());
-//                            preparedStatement.setTimestamp(16, new Timestamp(null == item.get("CreateTime") ? System.currentTimeMillis() : item.get("CreateTime").asLong() * 1000));
-//                            preparedStatement.setString(17, null == item.get("TypeName") ? null : item.get("TypeName").asText());
-//                            preparedStatement.setString(18, null == item.get("Url") ? null : item.get("Url").asText());
-//                            preparedStatement.setInt(19, null == item.get("approvalNum") ? null : item.get("approvalNum").asInt());
-//                            preparedStatement.setInt(20, null == item.get("commentNum") ? null : item.get("commentNum").asInt());
-//                            preparedStatement.setString(21, null == item.get("hotDesc") ? null : item.get("hotDesc").asText());
-//                            preparedStatement.setString(22, null == item.get("Desc") ? null : item.get("Desc").asText());
-//                            preparedStatement.setString(23, null == item.get("imgUrl") ? null : item.get("imgUrl").asText());
-//                            preparedStatement.setString(24, null == item.get("isRss") ? null : item.get("isRss").asText());
-//                            preparedStatement.setInt(25, null == item.get("is_agree") ? null : item.get("is_agree").asInt());
-//                            preparedStatement.setString(26, item.get("source").asText());
-//                        } catch (Exception e) {
-//                            System.out.println("解析data异常：" + data);
-//                            return;
-//                        }
-//                    }
-//                },
-//                new JdbcExecutionOptions.Builder()
-//                        // 默认每5000条一批提交，测试为了方便查看，将此处设置为10条
-//                        .withBatchSize(100)
-//                        .build(),
-//                new JdbcConnectionOptions.JdbcConnectionOptionsBuilder()
-//                        .withDriverName("com.mysql.cj.jdbc.Driver")
-//                        .withUrl("jdbc:mysql://localhost:3306/news_dw?useSSL=false&useUnicode=true&characterEncoding=utf-8")
-//                        .withUsername("root")
-//                        .withPassword("123456")
-//                        .build()
-//        ));
-
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
 
