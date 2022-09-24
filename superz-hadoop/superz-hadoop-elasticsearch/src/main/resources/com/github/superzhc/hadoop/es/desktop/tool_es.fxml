@@ -59,16 +59,6 @@
                         <Font size="11.0" />
                     </font>
                 </Button>
-                <Button mnemonicParsing="false" onAction="#btnGetIndexInfoAction" prefHeight="25.0" text="索引信息">
-                    <font>
-                        <Font size="11.0" />
-                    </font>
-                </Button>
-                <Button mnemonicParsing="false" onAction="#btnGetIndexMappingsAction" prefHeight="25.0" text="索引映射">
-                    <font>
-                        <Font size="11.0" />
-                    </font>
-                </Button>
                 <Button mnemonicParsing="false" onAction="#btnAddDocumentTemplateAction" prefHeight="25.0" text="新增模板">
                     <font>
                         <Font size="11.0" />
@@ -92,6 +82,16 @@
         <HBox prefHeight="30.0" prefWidth="590.0" spacing="3.0">
             <children>
             <Label alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="28.0" />
+                <Button mnemonicParsing="false" onAction="#btnGetIndexInfoAction" prefHeight="25.0" text="索引信息">
+                    <font>
+                        <Font size="11.0" />
+                    </font>
+                </Button>
+                <Button mnemonicParsing="false" onAction="#btnGetIndexMappingsAction" prefHeight="25.0" text="索引映射">
+                    <font>
+                        <Font size="11.0" />
+                    </font>
+                </Button>
                 <Button mnemonicParsing="false" onAction="#btnGetDocumentCount" prefHeight="25.0" text="文档数量">
                     <font>
                         <Font size="11.0" />
