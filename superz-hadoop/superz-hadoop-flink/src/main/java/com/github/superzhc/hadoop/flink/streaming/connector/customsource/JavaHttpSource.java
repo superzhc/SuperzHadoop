@@ -20,6 +20,7 @@ import static com.github.superzhc.common.http.HttpRequest.*;
  * @author superz
  * @create 2022/2/21 10:52
  */
+@Deprecated
 public class JavaHttpSource extends RichSourceFunction<String> {
     private static final Logger log = LoggerFactory.getLogger(JavaHttpSource.class);
 

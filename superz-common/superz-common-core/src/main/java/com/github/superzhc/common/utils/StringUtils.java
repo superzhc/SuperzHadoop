@@ -1,10 +1,12 @@
 package com.github.superzhc.common.utils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 2020年06月11日 superz add
  */
-public class StringUtils
-{
+public class StringUtils {
     public static boolean isBlank(String str) {
         return (str == null || "".equals(str.trim()));
     }
@@ -15,6 +17,7 @@ public class StringUtils
 
     /**
      * 字符长度计算，直接使用str.length对中文计算的时候不够准确
+     *
      * @param value
      * @return
      */
@@ -30,12 +33,62 @@ public class StringUtils
             if (temp.matches(doubleChar)) {
                 /* 中文字符长度为2 */
                 valueLength += 2;
-            }
-            else {
+            } else {
                 /* 其他字符长度为1 */
                 valueLength += 1;
             }
         }
         return valueLength;
+    }
+
+    public static String[] escapeSplit(String str, char delimiter) {
+        if (null == str || str.trim().length() == 0) {
+            return null;
+        }
+
+        List<String> subStrs = new ArrayList<>();
+
+        int len = str.length();
+        boolean isEscape = false;
+        StringBuilder subStr = new StringBuilder();
+        for (int i = 0; i < len; i++) {
+            char c = str.charAt(i);
+            // 未转义
+            if (!isEscape) {
+                if (c == '\\') {
+                    isEscape = true;
+                } else if (c == delimiter) {
+                    subStrs.add(subStr.toString());
+                    subStr.setLength(0);
+                } else {
+                    subStr.append(c);
+                }
+            } else {
+                // 前一个字符是转义符，下一个字符还是转义符保持转义状态为真；其他状态下都为false
+                if (c == '\\') {
+                    // 将上一个非转义含义的字符添加到字串中
+                    subStr.append('\\');
+                    isEscape = true;
+                } else if (c == delimiter) {
+                    subStr.append(c);
+                    isEscape = false;
+                } else {
+                    // 上一个字符是非转义字符的意义，因此也要加上
+                    subStr.append('\\').append(c);
+                    isEscape = false;
+                }
+            }
+        }
+
+        if (subStr.length() > 0) {
+            subStrs.add(subStr.toString());
+        }
+
+        String[] arr = subStrs.toArray(new String[subStrs.size()]);
+        return arr;
+    }
+
+    public static void main(String[] args) {
+        escapeSplit("\\.xxx.yy\\\\.mm\\.nn.zz", '.');
     }
 }
