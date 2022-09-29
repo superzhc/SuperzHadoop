@@ -12,6 +12,8 @@ import java.util.Properties;
 
 /**
  * Kafka数据源
+ * <p>
+ * 2022年9月28日 FlinkKafkaConsumer 已废除，待优化
  */
 public class KafkaSourceDemo {
     private static final Logger log = LoggerFactory.getLogger(KafkaSourceDemo.class);

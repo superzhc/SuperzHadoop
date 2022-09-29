@@ -64,6 +64,10 @@ public class FakerUtils {
         return new BigDecimal(value);
     }
 
+    /**
+     * 使用：com.github.superzhc.common.faker.utils.ExpressionUtils
+     */
+    @Deprecated
     public static class Expression {
         private static final String EXPRESSION_TEMPLATE = "#{%s %s}";
 

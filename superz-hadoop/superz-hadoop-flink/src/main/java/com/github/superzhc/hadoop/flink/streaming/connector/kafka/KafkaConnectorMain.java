@@ -20,6 +20,7 @@ import java.util.Properties;
  * @author superz
  * @create 2021/10/12 10:48
  */
+@Deprecated
 public class KafkaConnectorMain {
     private static final String LOCAL_BROKERS = "localhost:19092";
 

@@ -1,13 +1,11 @@
 package com.github.superzhc.hadoop.flink.streaming.window;
 
 import com.github.superzhc.hadoop.flink.streaming.connector.kafka.KafkaConnectorMain;
-import com.github.superzhc.hadoop.flink.streaming.demo.fund.FlinkFundSource;
 import org.apache.flink.api.common.functions.AggregateFunction;
 import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.common.state.KeyedStateStore;
 import org.apache.flink.api.common.state.ValueState;
 import org.apache.flink.api.common.state.ValueStateDescriptor;
-import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.flink.streaming.api.datastream.*;
@@ -26,7 +24,6 @@ import org.apache.flink.util.OutputTag;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 /**
