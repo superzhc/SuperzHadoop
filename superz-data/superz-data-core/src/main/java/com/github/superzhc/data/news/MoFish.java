@@ -286,7 +286,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> zDM() {
+    public static List<Map<String, String>> smzdm() {
         return execute(117);
     }
 
@@ -1843,7 +1843,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> zDMNew() {
+    public static List<Map<String, String>> smzdmNew() {
         return execute(151079);
     }
 

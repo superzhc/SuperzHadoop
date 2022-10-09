@@ -1,8 +1,6 @@
-package com.github.superzhc.hadoop.spark.java;
+package com.github.superzhc.hadoop.spark.java.other;
 
 import com.github.superzhc.common.http.HttpRequest;
-
-import java.io.File;
 
 /**
  * @author superz

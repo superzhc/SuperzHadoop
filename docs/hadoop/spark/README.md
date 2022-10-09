@@ -5,11 +5,8 @@ Spark 最初由美国加州大学伯克利分校（UC Berkeley）的 AMP 实验�
 Spark 具有如下几个主要特点：
 
 - **运行速度快**：Spark 使用先进的 **有向无环图（Directed Acyclic Graph，DAG）** 执行引擎，以支持循环数据流与内存计算，基于内存计算的执行速度比 MapReduce 快上百倍，基于磁盘的执行速度也能快上十倍【备注:[Spark比MapReduce快的原因](hadoop/spark/Spark比MapReduce快的原因.md)】
-
 - **容易使用**：Spark 支持使用 Scala、Java、Python 和 R 语言进行编程，简洁的 API 设计有助于用户轻松构建并行程序，并且可以通过 Spark Shell 进行交互式编程
-
 - **通用性**：Spark 提供了完整而强大的技术栈，包括 SQL 查询、流式计算、机器学习和图算法组件，这些组件可以无缝整合在同一个应用中，足以应对复杂的计算
-
 - **运行模式多样**：Spark 可运行于独立的集群模式中，或者运行于 Hadoop 中，也可运行在云环境中，并且可以访问 HDFS、Cassandra、HBase、Hive 等多种数据源
 
 ## Spark 生态系统
@@ -62,7 +59,7 @@ Driver program 通过 SparkContext 连接到集群管理器来实现对集群中
 
 Driver 与 Master、Worker 协作完成 Application 进程的启动、DAG划分、计算任务封装、分配 task 到 Executor上、计算资源的分配等调度执行作业等
 
-Driver 调度 task 给 Executor 执行，所以 Driver 最好和 Spark 集群在一片网络内，以便通信
+Driver 调度 Task 给 Executor 执行，所以 Driver 最好和 Spark 集群在一片网络内，以便通信
 
 Driver 进程通常在 Worker 节点中，和 Cluster Manager 不在同一个节点上
 
@@ -141,7 +138,7 @@ Spark 运行架构指的也就是 Spark Core 的运行架构。
 
 ## Spark 开发
 
-> 应用开发者可以用标准的 API 接口创建基于 Spark 的应用，目前 Spark 提供了 [Scala](https://link.juejin.im/?target=http%3A%2F%2Fspark.apache.org%2Fdocs%2Flatest%2Fapi%2Fscala%2Findex.html%23org.apache.spark.package)，[Java](https://link.juejin.im/?target=http%3A%2F%2Fspark.apache.org%2Fdocs%2Flatest%2Fapi%2Fjava%2Findex.html"Java") 和 [Python](https://link.juejin.im/?target=http%3A%2F%2Fspark.apache.org%2Fdocs%2Flatest%2Fapi%2Fpython%2Findex.html"Python") 三种程序设计语言的 API。
+> 应用开发者可以用标准的 API 接口创建基于 Spark 的应用，目前 Spark 提供了 Scala,Java,Python 三种程序设计语言的 API。
 
  [Spark引入](hadoop/spark/Spark引入.md) 
 
@@ -152,7 +149,6 @@ Spark 运行架构指的也就是 Spark Core 的运行架构。
 Spark资源调度流程图：
 
 ![Spark 资源调度和任务调度](images/v2-900ae312aaa5cf72a437961f70a979db_r.jpg)
-
 
 流程详解如下：
 
@@ -173,7 +169,7 @@ TaskScheduler 不仅能重试失败的 task，还会重试 straggling（落后�
 1. 对于ETL类型要入数据库的业务要关闭推测执行机制，这样就不会有重复的数据入库
 2. 如果遇到数据倾斜的情况，开启推测机制则有可能导致一直会有task重新启动处理相同的逻辑，任务可能一直处于处理不完的状态
 
-二、粗粒度资源申请和细粒度资源申请
+~~**粗粒度资源申请和细粒度资源申请**~~
 
 粗粒度资源申请（Spark）：
 

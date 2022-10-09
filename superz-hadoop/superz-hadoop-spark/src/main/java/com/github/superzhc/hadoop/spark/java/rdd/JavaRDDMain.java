@@ -1,10 +1,15 @@
-package com.github.superzhc.hadoop.spark.rdd;
+package com.github.superzhc.hadoop.spark.java.rdd;
 
+import com.github.superzhc.common.jackson.JsonUtils;
+import com.github.superzhc.common.utils.MapUtils;
+import com.github.superzhc.data.news.BiCiDo;
+import com.github.superzhc.data.news.MoFish;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * RDD
@@ -21,7 +26,11 @@ public class JavaRDDMain {
         conf.setAppName("superz").setMaster("local[1]");
         JavaSparkContext jsc = new JavaSparkContext(conf);
 
-
+        List<Map<String,String>> data= MoFish.taobaoAll();
+        System.out.println(MapUtils.print(data));
+        JavaRDD<Map<String,String>> rdd= jsc.parallelize(data);
+        List<Map<String,String>> lst=rdd.filter(row->row.get("Title").contains("家用")).collect();
+        System.out.println(JsonUtils.format(lst));
     }
 
     /**

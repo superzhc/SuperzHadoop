@@ -1,4 +1,4 @@
-package com.github.superzhc.hadoop.spark.udaf;
+package com.github.superzhc.hadoop.spark.java.udf.udaf;
 
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.expressions.MutableAggregationBuffer;

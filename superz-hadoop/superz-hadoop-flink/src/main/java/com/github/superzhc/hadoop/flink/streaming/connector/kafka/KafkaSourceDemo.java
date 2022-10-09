@@ -1,10 +1,14 @@
 package com.github.superzhc.hadoop.flink.streaming.connector.kafka;
 
+import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
+import org.apache.flink.connector.kafka.source.KafkaSource;
+import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsInitializer;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.OffsetResetStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,19 +29,30 @@ public class KafkaSourceDemo {
 //        //设置并行度（使用几个CPU核心）
 //        env.setParallelism(2);
 
-        //1.消费者客户端连接到kafka
-        Properties props = new Properties();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BROKERS);
-        props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 5000);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "consumer-flink-user:superz");
-        FlinkKafkaConsumer<String> consumer = new FlinkKafkaConsumer<>(
-                "superz-test"
-                , new SimpleStringSchema()
-                , props);
-        consumer.setStartFromLatest();
+        /* 废弃 */
+//        //1.消费者客户端连接到kafka
+//        Properties props = new Properties();
+//        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, BROKERS);
+//        props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 5000);
+//        props.put(ConsumerConfig.GROUP_ID_CONFIG, "consumer-flink-user:superz");
+//        FlinkKafkaConsumer<String> consumer = new FlinkKafkaConsumer<>(
+//                "superz-test"
+//                , new SimpleStringSchema()
+//                , props);
+//        consumer.setStartFromLatest();
+//
+//        //2.在算子中进行处理
+//        DataStream<String> ds = env.addSource(consumer);
+//        ds.print();
 
-        //2.在算子中进行处理
-        DataStream<String> ds = env.addSource(consumer);
+        KafkaSource<String> source = KafkaSource.<String>builder()
+                .setBootstrapServers(BROKERS)
+                .setTopics("superz-test")
+                .setGroupId("consumer-flink-user:superz")
+                .setStartingOffsets(OffsetsInitializer.committedOffsets(OffsetResetStrategy.EARLIEST))
+                .setValueOnlyDeserializer(new SimpleStringSchema())
+                .build();
+        DataStream<String> ds = env.fromSource(source, WatermarkStrategy.noWatermarks(), "Kafka Source");
         ds.print();
 
         //3.执行

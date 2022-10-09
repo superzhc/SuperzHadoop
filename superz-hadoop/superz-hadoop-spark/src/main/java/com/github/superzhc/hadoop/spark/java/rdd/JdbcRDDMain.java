@@ -1,23 +1,20 @@
-package com.github.superzhc.hadoop.spark.rdd;
+package com.github.superzhc.hadoop.spark.java.rdd;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.JavaRDD$;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.Function2;
 import org.apache.spark.rdd.JdbcRDD;
-import scala.Function1;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 
 /**
  * 2020年10月10日 superz add
  */
-public class JdbcRDDDemo {
+public class JdbcRDDMain {
     public static void main(String[] args) {
         SparkConf conf = new SparkConf();
         conf.setAppName("superz").setMaster("local[1]");

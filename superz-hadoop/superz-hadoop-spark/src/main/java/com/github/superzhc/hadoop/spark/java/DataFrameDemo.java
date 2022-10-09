@@ -1,6 +1,6 @@
 package com.github.superzhc.hadoop.spark.java;
 
-import org.apache.spark.sql.Encoder;
+import org.apache.spark.SparkConf;
 import org.apache.spark.sql.SparkSession;
 import scala.Tuple3;
 
@@ -13,7 +13,13 @@ import java.util.List;
 public class DataFrameDemo
 {
     public static void main(String[] args) {
-        SparkSession spark= SparkSession.builder().getOrCreate();
+        /*创建SparkSession*/
+        SparkConf conf = new SparkConf();
+        SparkSession spark = SparkSession.builder()
+                .appName("SparkSessionDemo")
+                .master("local")
+                .config(conf)
+                .getOrCreate();
 
         List<Tuple3<String,Integer,Integer>> lst=new ArrayList<>();
         lst.add(new Tuple3<>("A",2020,1));

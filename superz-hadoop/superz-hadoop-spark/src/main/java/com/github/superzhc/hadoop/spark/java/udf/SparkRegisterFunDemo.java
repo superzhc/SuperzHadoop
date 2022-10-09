@@ -1,6 +1,6 @@
-package com.github.superzhc.hadoop.spark.java;
+package com.github.superzhc.hadoop.spark.java.udf;
 
-import com.github.superzhc.hadoop.spark.udaf.AverageUdafDemo;
+import com.github.superzhc.hadoop.spark.java.udf.udaf.AverageUdafDemo;
 import org.apache.spark.SparkConf;
 import org.apache.spark.sql.SparkSession;
 
@@ -11,8 +11,10 @@ public class SparkRegisterFunDemo
 {
     public static void main(String[] args) {
         SparkConf conf = new SparkConf();
-
-        SparkSession sparkSession = SparkSession.builder().appName("SparkSessionDemo").master("local").config(conf)
+        SparkSession sparkSession = SparkSession.builder()
+                .appName("SparkSessionDemo")
+                .master("local")
+                .config(conf)
                 .getOrCreate();
 
         /* 注册自定义聚合函数 */
