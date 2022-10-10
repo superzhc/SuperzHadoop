@@ -4,6 +4,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 2020年11月23日 superz add
@@ -147,17 +149,32 @@ public class MapUtils {
 
     private static String rightPad(String str, int maxLength) {
         int len = length(str);
+        StringBuilder sb = new StringBuilder(null == str ? "" : str);
         for (int i = 0; i < ((maxLength - len) + 1); i++) {
-            str += " ";
+            sb.append(' ');
         }
-        return str;
+        return sb.toString();
     }
 
     private static int length(String str) {
-        int valueLength = 0;
+        if (null == str) {
+            return 0;
+        }
+
         // String chinese = "[\u0391-\uFFE5]";//匹配中文字符的正则表达式： [\u4e00-\u9fa5]
         // String doubleChar = "[^\\x00-\\xff]";// 匹配双字节字符(包括汉字在内)：[^\x00-\xff]
-        String doubleChar = "[\u1100-\u115F\u2E80-\uA4CF\uAC00-\uD7A3\uF900-\uFAFF\uFE10-\uFE19\uFE30-\uFE6F\uFF00-\uFF60\uFFE0-\uFFE6]";
+        String doubleChar = "[" +
+                "\u1100-\u115F" +
+                "\u2E80-\uA4CF" +
+                "\uAC00-\uD7A3" +
+                "\uF900-\uFAFF" +
+                "\uFE10-\uFE19" +
+                "\uFE30-\uFE6F" +
+                "\uFF00-\uFF60" +
+                "\uFFE0-\uFFE6" +
+                "]";
+
+        int valueLength = 0;
         /* 获取字段值的长度，如果含中文字符，则每个中文字符长度为2，否则为1 */
         for (int i = 0; i < str.length(); i++) {
             /* 获取一个字符 */

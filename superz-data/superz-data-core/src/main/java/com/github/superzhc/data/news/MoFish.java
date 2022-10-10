@@ -3,6 +3,7 @@ package com.github.superzhc.data.news;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.http.HttpRequest;
 import com.github.superzhc.common.jackson.JsonUtils;
+import com.github.superzhc.common.utils.MapUtils;
 
 import java.util.*;
 
@@ -196,7 +197,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> cSDN() {
+    public static List<Map<String, String>> csdn() {
         return execute(104);
     }
 
@@ -214,7 +215,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> nGA() {
+    public static List<Map<String, String>> NGA() {
         return execute(106);
     }
 
@@ -259,7 +260,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> oSChina() {
+    public static List<Map<String, String>> OSChina() {
         return execute(114);
     }
 
@@ -1864,9 +1865,16 @@ public class MoFish {
         params.put("page", 0);
         params.put("type", "pc");
 
-        String result = HttpRequest.get(url, params).body();
-        JsonNode data = JsonUtils.json(result, "Data", "data");
-        List<Map<String, String>> dataRows = Arrays.asList(JsonUtils.objectArray2Map(data));
+        List<Map<String, String>> dataRows = new ArrayList<>();
+
+        // 取3页
+        for (int i = 0; i < 3; i++) {
+            params.put("page", i);
+
+            String result = HttpRequest.get(url, params).body();
+            JsonNode data = JsonUtils.json(result, "Data", "data");
+            dataRows.addAll(Arrays.asList(JsonUtils.objectArray2Map(data)));
+        }
         return dataRows;
     }
 
@@ -1925,6 +1933,6 @@ public class MoFish {
 
     public static void main(String[] args) {
 //        generateCode();
-        System.out.println(taobao4094());
+        System.out.println(MapUtils.print(taobao4094()));
     }
 }
