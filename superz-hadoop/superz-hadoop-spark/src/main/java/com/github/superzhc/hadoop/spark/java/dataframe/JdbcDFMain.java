@@ -5,6 +5,7 @@ import org.apache.spark.api.java.function.Function;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
+import scala.Tuple2;
 
 import java.sql.Timestamp;
 import java.util.HashMap;
@@ -42,6 +43,12 @@ public class JdbcDFMain {
                     @Override
                     public String call(Row v1) throws Exception {
                         return v1.getAs("device_id");
+                    }
+                })
+                .map(new Function<Tuple2<String, Iterable<Row>>, Tuple2<String,Double>>() {
+                    @Override
+                    public Tuple2<String, Double> call(Tuple2<String, Iterable<Row>> v1) throws Exception {
+                        return null;
                     }
                 })
         // 考虑：先过滤一部分字段数据会不会更好点
