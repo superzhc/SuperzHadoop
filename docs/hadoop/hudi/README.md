@@ -1,152 +1,65 @@
 # Hudi
 
-## Spark 数据源
+> Hudi 是一种针对分析型业务的、扫描优化的数据存储抽象，它能够使HDFS数据集在分钟级的时延内支持变更，也支持下游系统对这个数据集的增量处理。
 
-### 写选项
+## 架构设计
 
-#### TABLE_NAME_OPT_KEY
+Hudi将数据集组织到一个basepath下的分区目录结构中，类似于传统的Hive表。数据集被分成多个分区，这些分区是包含该分区数据文件的目录。每个分区都由相对于基本路径的partitionpath唯一标识。在每个分区中，记录分布到多个数据文件中。每个数据文件都由唯一的fileId和生成该文件的commit来标识。在更新的情况下，多个数据文件可以共享在不同commit时写入的相同fileId。
 
-属性：`hoodie.datasource.write.table.name` [必须]
+每条记录都由记录键唯一标识，并映射到fileId。一旦记录的第一个版本被写入到文件中，记录键和fileId之间的映射是永久的。简而言之，fileId标识一组文件，其中包含一组记录的所有版本。
 
-Hive表名，用于将数据集注册到其中。
+Hudi存储由三个不同的部分组成:
 
-#### OPERATION_OPT_KEY 
+1. 元数据:Hudi将数据集上执行的所有活动的元数据作为时间轴维护，这支持数据集的瞬时视图。它存储在基路径的元数据目录下。下面我们概述了时间轴中的行动类型:
+   - 提交:单个提交捕获关于将一批记录原子写入数据集的信息。提交由一个单调递增的时间戳标识，这表示写操作的开始。
+   - 清除:清除数据集中不再在运行查询中使用的旧版本文件的后台活动。
+   - 压缩:协调Hudi内不同数据结构的后台活动(例如，将更新从基于行的日志文件移动到柱状格式)。
+2. Index: Hudi维护一个索引来快速将传入的记录键映射到fileId，如果记录键已经存在。索引实现是可插拔的，以下是当前可用的选项:
+   - 存储在每个数据文件页脚中的Bloom过滤器:首选的默认选项，因为它不依赖于任何外部系统。数据和索引总是彼此一致的。
+   - Apache HBase:对一小批keys的高效查找。这个选项可能会在索引标记期间节省几秒钟的时间。
+3. 数据:Hudi以两种不同的存储格式存储所有输入的数据。实际使用的格式是可插拔的，但基本上需要以下特征:
+   - 扫描优化的柱状存储格式(ROFormat)。默认为Apache Parquet。
+   - 写优化的基于行的存储格式(WOFormat)。默认是Apache Avro。
 
-属性：`hoodie.datasource.write.operation`, 默认值：`upsert`
+![](images/README-20221011005842.png)
 
-是否为写操作进行插入更新、插入或批量插入。
+## 表类型
 
-使用`bulkinsert`将新数据加载到表中，之后使用`upsert`或`insert`。 
+Hudi支持以下表类型：
 
-批量插入使用基于磁盘的写入路径来扩展以加载大量输入，而无需对其进行缓存。
+1. Copy on write(**COW**): 仅使用列式文件格式(如parquet)存储数据。 通过在写入期间执行同步合并，简单地更新版本和重写文件。
+2. Merge on read(**MOR**)：使用基于列(如parquet)+基于行(如avro)的文件格式的组合存储数据。 更新被记录到增量文件中（基于行），然后被压缩以同步或异步地生成新版本的列式文件。
 
-#### STORAGE_TYPE_OPT_KEY 
+## 查询类型
 
-属性：`hoodie.datasource.write.storage.type`, 默认值：`COPY_ON_WRITE`
+Hudi支持如下查询类型：
 
-此写入的基础数据的存储类型。两次写入之间不能改变。
+1. 快照查询：查询查看给定提交或压缩操作时表的最新快照。 对于读表上的merge，它通过动态合并最新文件片的基文件和增量文件来获取接近实时的数据(几分钟)。 对于写表上的复制，它提供了现有parquet表的临时替代，同时提供了插入/删除和其他写侧功能。
+2. 增量查询：根据给定的提交/压缩，查询只要查询写入表的新数据。 这有效地提供了更改流来支持增量数据管道。
+3. 读优化查询：查询给定提交/压缩操作时的表的最新快照。 仅公开最新文件片中的基/列文件，并保证与非hudi列表相比具有相同的列查询性能。
 
-#### PRECOMBINE_FIELD_OPT_KEY 
+## 写操作
 
-属性：`hoodie.datasource.write.precombine.field`, 默认值：`ts`
+在hudi中的写操作分为三种，分别是upsert、insert以及bulk-insert。
 
-实际写入之前在preCombining中使用的字段。 
+- upsert：是 *默认的写操作*，通过查找索引，输入记录首先被标记为插入或者更新，并最终在运行启发式操作后写入记录，以确定如何最好地将他们打包到存储上，以优化诸如文件大小之类的事情。这个操作推荐用于数据库更改捕获这样的用例，因为输入几乎肯定包含更新。
+- insert：这个操作在启发式/文件大小方面与upsert非常相似，但完全跳过了索引查找步骤。 因此，对于日志重复删除之类的用例，它可能比upserts快得多(结合下面提到的过滤重复项的选项)。 这也适用于数据集可以容忍重复，但只需要Hudi的事务性写/增量拉取/存储管理功能的用例。
+- bulk insert：upsert和insert操作都将输入记录保存在内存中，以加快存储启发式计算的速度(以及其他一些事情)，因此对于最初加载/引导一个Hudi数据集可能会很麻烦。 bulk insert提供了与insert相同的语义，同时实现了基于排序的数据写入算法，该算法可以很好地扩展到几百tb的初始负载。 然而，与像insert /upserts那样保证文件大小相比，这只是在调整文件大小方面做了最大的努力。
 
-当两个记录具有相同的键值时，将使用Object.compareTo(..)从precombine字段中选择一个值最大的记录。
+## 压缩
 
-#### PAYLOAD_CLASS_OPT_KEY
+压缩（compaction）是hudi本身的一个操作，用于合并日志文件片，生成一个新的压缩文件。压缩只适用于MOR类型的表，且什么样的文件片被压缩是在写操作之后由压缩算法决定的（默认是选择具有最大未压缩日志文件大小的文件片）
 
-属性：`hoodie.datasource.write.payload.class`, 默认值：`org.apache.hudi.OverwriteWithLatestAvroPayload`
+从高层次来说，有两种类型的压缩方法，一种是同步的，另一种则是异步的。
 
-使用的有效载荷类。如果您想在插入更新或插入时使用自己的合并逻辑，请重写此方法。 这将使得`PRECOMBINE_FIELD_OPT_VAL`设置的任何值无效
+- Synchronous compaction：在这里，压缩是由写入进程本身在每次写入之后同步执行的，也就是说，只有压缩完成，下一个写入操作才能开始。 就操作而言，这是最简单的，因为不需要调度单独的压缩过程，但数据新鲜度保证较低。 然而，这种风格在某些情况下仍然非常有用，比如可以在每次写操作时压缩最新的表分区，同时延迟对晚到/老的分区的压缩。
+- Asynchronous compaction：在这种风格中，压缩过程可以通过写操作并发和异步运行。 这样做的明显好处是压缩不会阻塞下一批写操作，从而产生接近实时的数据新鲜度。 像Hudi DeltaStreamer这样的工具支持一种方便的连续模式，在这种模式下，压缩和写入操作以这种方式在单个spark运行时集群中进行。
 
-#### RECORDKEY_FIELD_OPT_KEY 
+## 清理
 
-属性：`hoodie.datasource.write.recordkey.field`, 默认值：`uuid`
+清理（cleaning）是hudi本身的一个操作，用于删除旧的文件片，以及限制表空间的增长，清理操作在每次写操作之后自动被执行。同时利用缓存在timelineserver上的timeline metadata来防止扫描整个表。
 
-记录键字段。用作`HoodieKey`中`recordKey`部分的值。 实际值将通过在字段值上调用`.toString()`来获得。可以使用点符号指定嵌套字段，例如：`a.b.c`
+清理操作支持如下两种方式：
 
-#### PARTITIONPATH_FIELD_OPT_KEY
-
-属性：`hoodie.datasource.write.partitionpath.field`, 默认值：`partitionpath`
-
-分区路径字段。用作`HoodieKey`中`partitionPath`部分的值。 通过调用`.toString()`获得实际的值
-
-#### HIVE_STYLE_PARTITIONING_OPT_KEY
-
-属性：`hoodie.datasource.write.hive_style_partitioning`, 默认值：`false`
-
-如果设置为true，则生成基于Hive格式的partition目录：`partition_column_name=partition_value`
-
-#### KEYGENERATOR_CLASS_OPT_KEY
-
-属性：`hoodie.datasource.write.keygenerator.class`
-
-键生成器类，实现从输入的`Row`对象中提取键。该配置优先级大于 `hoodie.datasource.write.keygenerator.type`, 用于使用用户自定义键生成器
-
-#### KEYGENERATOR_TYPE_OPT_KEY
-
-属性: `hoodie.datasource.write.keygenerator.type`, 默认值: `SIMPLE`
-
-键生成器类型，默认 `SIMPLE` 类型，该配置优先级低于 `hoodie.datasource.write.keygenerator.class`, 是推荐使用的配置方式
-
-#### COMMIT_METADATA_KEYPREFIX_OPT_KEY 
-
-属性：`hoodie.datasource.write.commitmeta.key.prefix`, 默认值：`_`
-
-以该前缀开头的选项键会自动添加到提交/增量提交的元数据中。 这对于与hudi时间轴一致的方式存储检查点信息很有用
-
-#### INSERT_DROP_DUPS_OPT_KEY
-
-属性：`hoodie.datasource.write.insert.drop.duplicates`, 默认值：`false`
-
-如果设置为true，则在插入操作期间从传入DataFrame中过滤掉所有重复记录。
-
-#### HIVE_SYNC_ENABLED_OPT_KEY 
-
-属性：`hoodie.datasource.hive_sync.enable`, 默认值：`false`
-
-设置为true时，将数据集注册并同步到Apache Hive Metastore
-
-#### HIVE_DATABASE_OPT_KEY 
-
-属性：`hoodie.datasource.hive_sync.database`, 默认值：`default`
-
-要同步到的数据库
-
-#### HIVE_TABLE_OPT_KEY 
-
-属性：`hoodie.datasource.hive_sync.table`, [Required]
-
-要同步到的表
-
-#### HIVE_USER_OPT_KEY 
-
-属性：`hoodie.datasource.hive_sync.username`, 默认值：`hive`
-
-要使用的Hive用户名
-
-#### HIVE_PASS_OPT_KEY 
-
-属性：`hoodie.datasource.hive_sync.password`, 默认值：`hive`
-
-要使用的Hive密码
-
-#### HIVE_URL_OPT_KEY 
-
-属性：`hoodie.datasource.hive_sync.jdbcurl`, 默认值：`jdbc:hive2://localhost:10000`
-
-Hive metastore url
-
-#### HIVE_PARTITION_FIELDS_OPT_KEY 
-
-属性：`hoodie.datasource.hive_sync.partition_fields`, 默认值：` `
-
-数据集中用于确定Hive分区的字段。
-
-#### HIVE_PARTITION_EXTRACTOR_CLASS_OPT_KEY 
-
-属性：`hoodie.datasource.hive_sync.partition_extractor_class`, 默认值：`org.apache.hudi.hive.SlashEncodedDayPartitionValueExtractor`
-
-用于将分区字段值提取到Hive分区列中的类。
-
-#### HIVE_ASSUME_DATE_PARTITION_OPT_KEY 
-
-属性：`hoodie.datasource.hive_sync.assume_date_partitioning`, 默认值：`false`
-
-假设分区格式是yyyy/mm/dd
-
-### 读选项
-
-#### VIEW_TYPE_OPT_KEY
-
-属性：`hoodie.datasource.view.type`, 默认值：`read_optimized`
-
-是否需要以某种模式读取数据，增量模式（自InstantTime以来的新数据） （或）读优化模式（基于列数据获取最新视图） （或）实时模式（基于行和列数据获取最新视图）
-
-#### BEGIN_INSTANTTIME_OPT_KEY
-
-属性：`hoodie.datasource.read.begin.instanttime`, [在增量模式下必须]
-
-开始增量提取数据的即时时间。这里的instanttime不必一定与时间轴上的即时相对应。 取出以`instant_time > BEGIN_INSTANTTIME`写入的新数据。 例如：'20170901080000'将获取2017年9月1日08:00 AM之后写入的所有新数据。#### END_INSTANTTIME_OPT_KEY 属性：`hoodie.datasource.read.end.instanttime`, 默认值：最新即时（即从开始即时获取所有新数据）
-限制增量提取的数据的即时时间。取出以`instant_time <= END_INSTANTTIME`写入的新数据。
+- Clean by commits/deltacommits：这是增量查询中最常见和必须使用的模式。 在这种风格中，cleaner保留了在最近N次commits/delta commits中写入的所有文件片，从而有效地提供了跨这些操作增量查询任何范围的能力。 虽然这对于增量查询很有用，但在一些高写工作负载上可能需要更大的存储空间，因为它为配置范围保留了所有版本的文件片。
+- Clean by file-slices retained：这是一种更简单的清理风格，我们只保留每个文件组中的最后N个文件片。 像Apache hive这样的查询引擎处理非常大的查询，可能需要几个小时才能完成,在这种情况下,需要将N设置足够大,这样才能够防止需要查询的文件片被删除。
