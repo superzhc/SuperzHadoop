@@ -1,4 +1,4 @@
-package com.github.superzhc.hadoop.spark.scala
+package com.github.superzhc.hadoop.spark.scala.deploy
 
 import org.apache.spark.sql.{DataFrame, SparkSession}
 

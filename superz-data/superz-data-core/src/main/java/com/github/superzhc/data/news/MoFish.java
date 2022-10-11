@@ -17,7 +17,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> zhiHu() {
+    public static List<Map<String, Object>> zhiHu() {
         return execute(1);
     }
 
@@ -26,7 +26,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> huPu() {
+    public static List<Map<String, Object>> huPu() {
         return execute(2);
     }
 
@@ -35,7 +35,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> mSN() {
+    public static List<Map<String, Object>> mSN() {
         return execute(3);
     }
 
@@ -44,7 +44,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> tianYa() {
+    public static List<Map<String, Object>> tianYa() {
         return execute(6);
     }
 
@@ -53,7 +53,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> zHDaily() {
+    public static List<Map<String, Object>> zHDaily() {
         return execute(7);
     }
 
@@ -62,7 +62,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> huXiu() {
+    public static List<Map<String, Object>> huXiu() {
         return execute(8);
     }
 
@@ -71,7 +71,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> waterAndWood() {
+    public static List<Map<String, Object>> waterAndWood() {
         return execute(9);
     }
 
@@ -80,7 +80,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> wYNews() {
+    public static List<Map<String, Object>> wYNews() {
         return execute(10);
     }
 
@@ -89,7 +89,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> weiXin() {
+    public static List<Map<String, Object>> weiXin() {
         return execute(11);
     }
 
@@ -98,7 +98,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> a36Kr() {
+    public static List<Map<String, Object>> a36Kr() {
         return execute(12);
     }
 
@@ -107,7 +107,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> tieBa() {
+    public static List<Map<String, Object>> tieBa() {
         return execute(56);
     }
 
@@ -116,7 +116,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> douBan() {
+    public static List<Map<String, Object>> douBan() {
         return execute(57);
     }
 
@@ -125,7 +125,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> weiBo() {
+    public static List<Map<String, Object>> weiBo() {
         return execute(58);
     }
 
@@ -134,7 +134,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> v2EX() {
+    public static List<Map<String, Object>> v2EX() {
         return execute(59);
     }
 
@@ -143,7 +143,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> segmentfault() {
+    public static List<Map<String, Object>> segmentfault() {
         return execute(60);
     }
 
@@ -152,7 +152,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> hacPai() {
+    public static List<Map<String, Object>> hacPai() {
         return execute(62);
     }
 
@@ -161,7 +161,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> baidu() {
+    public static List<Map<String, Object>> baidu() {
         return execute(83);
     }
 
@@ -170,7 +170,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> gitHub() {
+    public static List<Map<String, Object>> gitHub() {
         return execute(85);
     }
 
@@ -179,7 +179,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> guoKr() {
+    public static List<Map<String, Object>> guoKr() {
         return execute(86);
     }
 
@@ -188,7 +188,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> myZaker() {
+    public static List<Map<String, Object>> myZaker() {
         return execute(90);
     }
 
@@ -197,7 +197,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> csdn() {
+    public static List<Map<String, Object>> csdn() {
         return execute(104);
     }
 
@@ -206,7 +206,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> kD() {
+    public static List<Map<String, Object>> kD() {
         return execute(105);
     }
 
@@ -215,7 +215,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> NGA() {
+    public static List<Map<String, Object>> NGA() {
         return execute(106);
     }
 
@@ -224,7 +224,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> chiphell() {
+    public static List<Map<String, Object>> chiphell() {
         return execute(109);
     }
 
@@ -233,7 +233,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> chouTi() {
+    public static List<Map<String, Object>> chouTi() {
         return execute(110);
     }
 
@@ -242,7 +242,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> jianDan() {
+    public static List<Map<String, Object>> jianDan() {
         return execute(111);
     }
 
@@ -251,7 +251,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> iTHome() {
+    public static List<Map<String, Object>> iTHome() {
         return execute(112);
     }
 
@@ -260,7 +260,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> OSChina() {
+    public static List<Map<String, Object>> OSChina() {
         return execute(114);
     }
 
@@ -269,7 +269,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> bilibili() {
+    public static List<Map<String, Object>> bilibili() {
         return execute(115);
     }
 
@@ -278,7 +278,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> sSPAI() {
+    public static List<Map<String, Object>> sSPAI() {
         return execute(116);
     }
 
@@ -287,7 +287,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> smzdm() {
+    public static List<Map<String, Object>> smzdm() {
         return execute(117);
     }
 
@@ -296,7 +296,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> carModel() {
+    public static List<Map<String, Object>> carModel() {
         return execute(118);
     }
 
@@ -305,7 +305,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> leiKeJi() {
+    public static List<Map<String, Object>> leiKeJi() {
         return execute(119);
     }
 
@@ -314,7 +314,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> thePaper() {
+    public static List<Map<String, Object>> thePaper() {
         return execute(120);
     }
 
@@ -323,7 +323,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> iyiou() {
+    public static List<Map<String, Object>> iyiou() {
         return execute(121);
     }
 
@@ -332,7 +332,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> gouHuo() {
+    public static List<Map<String, Object>> gouHuo() {
         return execute(122);
     }
 
@@ -341,7 +341,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> guanCha() {
+    public static List<Map<String, Object>> guanCha() {
         return execute(123);
     }
 
@@ -350,7 +350,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> cbnData() {
+    public static List<Map<String, Object>> cbnData() {
         return execute(124);
     }
 
@@ -359,7 +359,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> a52pojie() {
+    public static List<Map<String, Object>> a52pojie() {
         return execute(125);
     }
 
@@ -368,7 +368,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> iFeng() {
+    public static List<Map<String, Object>> iFeng() {
         return execute(126);
     }
 
@@ -377,7 +377,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> qQTech() {
+    public static List<Map<String, Object>> qQTech() {
         return execute(127);
     }
 
@@ -386,7 +386,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> jieMian() {
+    public static List<Map<String, Object>> jieMian() {
         return execute(128);
     }
 
@@ -395,7 +395,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> gcores() {
+    public static List<Map<String, Object>> gcores() {
         return execute(129);
     }
 
@@ -404,7 +404,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> maFengWo() {
+    public static List<Map<String, Object>> maFengWo() {
         return execute(130);
     }
 
@@ -413,7 +413,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> pedaily() {
+    public static List<Map<String, Object>> pedaily() {
         return execute(131);
     }
 
@@ -422,7 +422,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> dgtle() {
+    public static List<Map<String, Object>> dgtle() {
         return execute(132);
     }
 
@@ -431,7 +431,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> gPark() {
+    public static List<Map<String, Object>> gPark() {
         return execute(133);
     }
 
@@ -440,7 +440,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> mTime() {
+    public static List<Map<String, Object>> mTime() {
         return execute(134);
     }
 
@@ -449,7 +449,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> img() {
+    public static List<Map<String, Object>> img() {
         return execute(135);
     }
 
@@ -458,7 +458,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> gif() {
+    public static List<Map<String, Object>> gif() {
         return execute(136);
     }
 
@@ -467,7 +467,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> fengNiao() {
+    public static List<Map<String, Object>> fengNiao() {
         return execute(138);
     }
 
@@ -476,7 +476,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> tED() {
+    public static List<Map<String, Object>> tED() {
         return execute(139);
     }
 
@@ -485,7 +485,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> readHub() {
+    public static List<Map<String, Object>> readHub() {
         return execute(141);
     }
 
@@ -494,7 +494,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> acFun() {
+    public static List<Map<String, Object>> acFun() {
         return execute(142);
     }
 
@@ -503,7 +503,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> sanDi() {
+    public static List<Map<String, Object>> sanDi() {
         return execute(143);
     }
 
@@ -512,7 +512,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> a8btc() {
+    public static List<Map<String, Object>> a8btc() {
         return execute(144);
     }
 
@@ -521,7 +521,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> huoXing() {
+    public static List<Map<String, Object>> huoXing() {
         return execute(146);
     }
 
@@ -530,7 +530,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> oDaily() {
+    public static List<Map<String, Object>> oDaily() {
         return execute(147);
     }
 
@@ -539,7 +539,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> douYin() {
+    public static List<Map<String, Object>> douYin() {
         return execute(148);
     }
 
@@ -548,7 +548,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> liVideo() {
+    public static List<Map<String, Object>> liVideo() {
         return execute(149);
     }
 
@@ -557,7 +557,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> touTiao() {
+    public static List<Map<String, Object>> touTiao() {
         return execute(150);
     }
 
@@ -566,7 +566,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> newMyZaker() {
+    public static List<Map<String, Object>> newMyZaker() {
         return execute(151);
     }
 
@@ -575,7 +575,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> jianShu() {
+    public static List<Map<String, Object>> jianShu() {
         return execute(152);
     }
 
@@ -584,7 +584,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> dili360() {
+    public static List<Map<String, Object>> dili360() {
         return execute(153);
     }
 
@@ -593,7 +593,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> jueJin() {
+    public static List<Map<String, Object>> jueJin() {
         return execute(154);
     }
 
@@ -602,7 +602,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> jFdaily() {
+    public static List<Map<String, Object>> jFdaily() {
         return execute(155);
     }
 
@@ -611,7 +611,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> daPenTi() {
+    public static List<Map<String, Object>> daPenTi() {
         return execute(156);
     }
 
@@ -620,7 +620,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> xinLi() {
+    public static List<Map<String, Object>> xinLi() {
         return execute(157);
     }
 
@@ -629,7 +629,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> shouQu() {
+    public static List<Map<String, Object>> shouQu() {
         return execute(159);
     }
 
@@ -638,7 +638,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> a360Doc() {
+    public static List<Map<String, Object>> a360Doc() {
         return execute(160);
     }
 
@@ -647,7 +647,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> kanKan() {
+    public static List<Map<String, Object>> kanKan() {
         return execute(161);
     }
 
@@ -656,7 +656,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> todayFocus() {
+    public static List<Map<String, Object>> todayFocus() {
         return execute(162);
     }
 
@@ -665,7 +665,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> bJnews() {
+    public static List<Map<String, Object>> bJnews() {
         return execute(164);
     }
 
@@ -674,7 +674,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> iFanr() {
+    public static List<Map<String, Object>> iFanr() {
         return execute(1007);
     }
 
@@ -683,7 +683,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> infoQTop() {
+    public static List<Map<String, Object>> infoQTop() {
         return execute(1008);
     }
 
@@ -692,7 +692,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> infoQDaily() {
+    public static List<Map<String, Object>> infoQDaily() {
         return execute(1009);
     }
 
@@ -701,7 +701,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> baiDuDaily() {
+    public static List<Map<String, Object>> baiDuDaily() {
         return execute(1010);
     }
 
@@ -710,7 +710,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> bHSB() {
+    public static List<Map<String, Object>> bHSB() {
         return execute(1011);
     }
 
@@ -719,7 +719,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> feng() {
+    public static List<Map<String, Object>> feng() {
         return execute(1012);
     }
 
@@ -728,7 +728,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> kePuChina() {
+    public static List<Map<String, Object>> kePuChina() {
         return execute(1013);
     }
 
@@ -737,7 +737,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> zol() {
+    public static List<Map<String, Object>> zol() {
         return execute(1014);
     }
 
@@ -746,7 +746,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> tMTPost() {
+    public static List<Map<String, Object>> tMTPost() {
         return execute(1015);
     }
 
@@ -755,7 +755,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> vMovier() {
+    public static List<Map<String, Object>> vMovier() {
         return execute(1016);
     }
 
@@ -764,7 +764,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> bArticle() {
+    public static List<Map<String, Object>> bArticle() {
         return execute(1017);
     }
 
@@ -773,7 +773,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> cnBeta() {
+    public static List<Map<String, Object>> cnBeta() {
         return execute(1018);
     }
 
@@ -782,7 +782,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> zcool() {
+    public static List<Map<String, Object>> zcool() {
         return execute(1019);
     }
 
@@ -791,7 +791,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> flyerTea() {
+    public static List<Map<String, Object>> flyerTea() {
         return execute(1020);
     }
 
@@ -800,7 +800,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> digitalingDay() {
+    public static List<Map<String, Object>> digitalingDay() {
         return execute(1021);
     }
 
@@ -809,7 +809,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> digitaling() {
+    public static List<Map<String, Object>> digitaling() {
         return execute(1022);
     }
 
@@ -818,7 +818,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> robotHeartDay() {
+    public static List<Map<String, Object>> robotHeartDay() {
         return execute(1024);
     }
 
@@ -827,7 +827,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> robotHeart() {
+    public static List<Map<String, Object>> robotHeart() {
         return execute(1025);
     }
 
@@ -836,7 +836,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> jinSe() {
+    public static List<Map<String, Object>> jinSe() {
         return execute(1027);
     }
 
@@ -845,7 +845,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> taobao() {
+    public static List<Map<String, Object>> taobao() {
         return execute(1028);
     }
 
@@ -854,7 +854,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> mMM() {
+    public static List<Map<String, Object>> mMM() {
         return execute(1029);
     }
 
@@ -863,7 +863,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> taobaoAll() {
+    public static List<Map<String, Object>> taobaoAll() {
         return execute(1031);
     }
 
@@ -872,7 +872,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> wXRead() {
+    public static List<Map<String, Object>> wXRead() {
         return execute(1033);
     }
 
@@ -881,7 +881,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> kFTT() {
+    public static List<Map<String, Object>> kFTT() {
         return execute(1034);
     }
 
@@ -890,7 +890,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> cNLinux() {
+    public static List<Map<String, Object>> cNLinux() {
         return execute(1035);
     }
 
@@ -899,7 +899,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> jingdong() {
+    public static List<Map<String, Object>> jingdong() {
         return execute(1036);
     }
 
@@ -908,7 +908,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> jdSeckill() {
+    public static List<Map<String, Object>> jdSeckill() {
         return execute(1037);
     }
 
@@ -917,7 +917,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> jdAssemble() {
+    public static List<Map<String, Object>> jdAssemble() {
         return execute(1038);
     }
 
@@ -926,7 +926,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> jdzyrx() {
+    public static List<Map<String, Object>> jdzyrx() {
         return execute(1039);
     }
 
@@ -935,7 +935,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> jdzyms() {
+    public static List<Map<String, Object>> jdzyms() {
         return execute(1040);
     }
 
@@ -944,7 +944,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> dqd() {
+    public static List<Map<String, Object>> dqd() {
         return execute(1042);
     }
 
@@ -953,7 +953,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> hupuNBA() {
+    public static List<Map<String, Object>> hupuNBA() {
         return execute(1044);
     }
 
@@ -962,7 +962,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> snowBall() {
+    public static List<Map<String, Object>> snowBall() {
         return execute(1045);
     }
 
@@ -971,7 +971,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> kkj() {
+    public static List<Map<String, Object>> kkj() {
         return execute(1048);
     }
 
@@ -980,7 +980,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> lsj() {
+    public static List<Map<String, Object>> lsj() {
         return execute(1049);
     }
 
@@ -989,7 +989,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> taobaoFood() {
+    public static List<Map<String, Object>> taobaoFood() {
         return execute(1050);
     }
 
@@ -998,7 +998,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> taobaoIT() {
+    public static List<Map<String, Object>> taobaoIT() {
         return execute(1051);
     }
 
@@ -1007,7 +1007,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> freeBuf() {
+    public static List<Map<String, Object>> freeBuf() {
         return execute(1052);
     }
 
@@ -1016,7 +1016,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> zhiHuRecommend() {
+    public static List<Map<String, Object>> zhiHuRecommend() {
         return execute(1053);
     }
 
@@ -1025,7 +1025,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> weiBoHot() {
+    public static List<Map<String, Object>> weiBoHot() {
         return execute(1054);
     }
 
@@ -1034,7 +1034,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> pingWest() {
+    public static List<Map<String, Object>> pingWest() {
         return execute(1055);
     }
 
@@ -1043,7 +1043,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> qBitai() {
+    public static List<Map<String, Object>> qBitai() {
         return execute(1056);
     }
 
@@ -1052,7 +1052,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> renJian() {
+    public static List<Map<String, Object>> renJian() {
         return execute(1057);
     }
 
@@ -1061,7 +1061,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> a3dmGame() {
+    public static List<Map<String, Object>> a3dmGame() {
         return execute(1058);
     }
 
@@ -1070,7 +1070,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> longTeng() {
+    public static List<Map<String, Object>> longTeng() {
         return execute(1059);
     }
 
@@ -1079,7 +1079,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> a52pojieRenQiHot() {
+    public static List<Map<String, Object>> a52pojieRenQiHot() {
         return execute(1060);
     }
 
@@ -1088,7 +1088,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> qQTiYU() {
+    public static List<Map<String, Object>> qQTiYU() {
         return execute(1061);
     }
 
@@ -1097,7 +1097,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> taobaoJHS() {
+    public static List<Map<String, Object>> taobaoJHS() {
         return execute(1062);
     }
 
@@ -1106,7 +1106,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> taobaoMall() {
+    public static List<Map<String, Object>> taobaoMall() {
         return execute(1063);
     }
 
@@ -1115,7 +1115,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> taobaoHigh() {
+    public static List<Map<String, Object>> taobaoHigh() {
         return execute(1064);
     }
 
@@ -1124,7 +1124,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> fish() {
+    public static List<Map<String, Object>> fish() {
         return execute(1065);
     }
 
@@ -1133,7 +1133,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> taobao3756() {
+    public static List<Map<String, Object>> taobao3756() {
         return execute(1066);
     }
 
@@ -1142,7 +1142,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> taobao3760() {
+    public static List<Map<String, Object>> taobao3760() {
         return execute(1067);
     }
 
@@ -1151,7 +1151,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> taobao3765() {
+    public static List<Map<String, Object>> taobao3765() {
         return execute(1068);
     }
 
@@ -1160,7 +1160,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> taobao3764() {
+    public static List<Map<String, Object>> taobao3764() {
         return execute(1069);
     }
 
@@ -1169,7 +1169,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> taobao3763() {
+    public static List<Map<String, Object>> taobao3763() {
         return execute(1070);
     }
 
@@ -1178,7 +1178,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> taobao3762() {
+    public static List<Map<String, Object>> taobao3762() {
         return execute(1071);
     }
 
@@ -1187,7 +1187,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> taobao3759() {
+    public static List<Map<String, Object>> taobao3759() {
         return execute(1072);
     }
 
@@ -1196,7 +1196,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> taobao3758() {
+    public static List<Map<String, Object>> taobao3758() {
         return execute(1073);
     }
 
@@ -1205,7 +1205,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> taobao3761() {
+    public static List<Map<String, Object>> taobao3761() {
         return execute(1074);
     }
 
@@ -1214,7 +1214,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> taobao3766() {
+    public static List<Map<String, Object>> taobao3766() {
         return execute(1075);
     }
 
@@ -1223,7 +1223,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> taobao3767() {
+    public static List<Map<String, Object>> taobao3767() {
         return execute(1076);
     }
 
@@ -1232,7 +1232,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> taobao4094() {
+    public static List<Map<String, Object>> taobao4094() {
         return execute(1077);
     }
 
@@ -1241,7 +1241,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> saraba1st() {
+    public static List<Map<String, Object>> saraba1st() {
         return execute(1078);
     }
 
@@ -1250,7 +1250,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> anquanke() {
+    public static List<Map<String, Object>> anquanke() {
         return execute(1079);
     }
 
@@ -1259,7 +1259,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> kdslife() {
+    public static List<Map<String, Object>> kdslife() {
         return execute(1080);
     }
 
@@ -1268,7 +1268,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> shejipi() {
+    public static List<Map<String, Object>> shejipi() {
         return execute(1081);
     }
 
@@ -1277,7 +1277,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> techSina() {
+    public static List<Map<String, Object>> techSina() {
         return execute(1082);
     }
 
@@ -1286,7 +1286,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> doNews() {
+    public static List<Map<String, Object>> doNews() {
         return execute(1083);
     }
 
@@ -1295,7 +1295,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> cJDBY() {
+    public static List<Map<String, Object>> cJDBY() {
         return execute(1085);
     }
 
@@ -1304,7 +1304,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> yXW() {
+    public static List<Map<String, Object>> yXW() {
         return execute(1086);
     }
 
@@ -1313,7 +1313,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> a17173() {
+    public static List<Map<String, Object>> a17173() {
         return execute(1087);
     }
 
@@ -1322,7 +1322,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> dw() {
+    public static List<Map<String, Object>> dw() {
         return execute(1088);
     }
 
@@ -1331,7 +1331,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> ymxk() {
+    public static List<Map<String, Object>> ymxk() {
         return execute(1089);
     }
 
@@ -1340,7 +1340,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> bhmt() {
+    public static List<Map<String, Object>> bhmt() {
         return execute(1090);
     }
 
@@ -1349,7 +1349,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> zhjsw() {
+    public static List<Map<String, Object>> zhjsw() {
         return execute(1096);
     }
 
@@ -1358,7 +1358,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> xlw() {
+    public static List<Map<String, Object>> xlw() {
         return execute(1097);
     }
 
@@ -1367,7 +1367,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> zgjw() {
+    public static List<Map<String, Object>> zgjw() {
         return execute(1098);
     }
 
@@ -1376,7 +1376,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> txw() {
+    public static List<Map<String, Object>> txw() {
         return execute(1099);
     }
 
@@ -1385,7 +1385,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> txyx() {
+    public static List<Map<String, Object>> txyx() {
         return execute(1100);
     }
 
@@ -1394,7 +1394,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> laravelChina() {
+    public static List<Map<String, Object>> laravelChina() {
         return execute(1101);
     }
 
@@ -1403,7 +1403,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> goyyzww() {
+    public static List<Map<String, Object>> goyyzww() {
         return execute(1102);
     }
 
@@ -1412,7 +1412,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> youjiuw() {
+    public static List<Map<String, Object>> youjiuw() {
         return execute(1103);
     }
 
@@ -1421,7 +1421,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 科技() {
+    public static List<Map<String, Object>> 科技() {
         return execute(1104);
     }
 
@@ -1430,7 +1430,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 搞笑() {
+    public static List<Map<String, Object>> 搞笑() {
         return execute(1105);
     }
 
@@ -1439,7 +1439,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 开发() {
+    public static List<Map<String, Object>> 开发() {
         return execute(1107);
     }
 
@@ -1448,7 +1448,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 数码() {
+    public static List<Map<String, Object>> 数码() {
         return execute(1108);
     }
 
@@ -1457,7 +1457,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 财经() {
+    public static List<Map<String, Object>> 财经() {
         return execute(1109);
     }
 
@@ -1466,7 +1466,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 文化() {
+    public static List<Map<String, Object>> 文化() {
         return execute(1110);
     }
 
@@ -1475,7 +1475,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 情感() {
+    public static List<Map<String, Object>> 情感() {
         return execute(1111);
     }
 
@@ -1484,7 +1484,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 美食() {
+    public static List<Map<String, Object>> 美食() {
         return execute(1112);
     }
 
@@ -1493,7 +1493,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 职场() {
+    public static List<Map<String, Object>> 职场() {
         return execute(1113);
     }
 
@@ -1502,7 +1502,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 运动() {
+    public static List<Map<String, Object>> 运动() {
         return execute(1114);
     }
 
@@ -1511,7 +1511,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 教育() {
+    public static List<Map<String, Object>> 教育() {
         return execute(1115);
     }
 
@@ -1520,7 +1520,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 科学() {
+    public static List<Map<String, Object>> 科学() {
         return execute(1116);
     }
 
@@ -1529,7 +1529,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 游戏() {
+    public static List<Map<String, Object>> 游戏() {
         return execute(1117);
     }
 
@@ -1538,7 +1538,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 汽车() {
+    public static List<Map<String, Object>> 汽车() {
         return execute(1118);
     }
 
@@ -1547,7 +1547,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 房产() {
+    public static List<Map<String, Object>> 房产() {
         return execute(1119);
     }
 
@@ -1556,7 +1556,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 孕妇() {
+    public static List<Map<String, Object>> 孕妇() {
         return execute(1120);
     }
 
@@ -1565,7 +1565,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 动漫() {
+    public static List<Map<String, Object>> 动漫() {
         return execute(1121);
     }
 
@@ -1574,7 +1574,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 品牌() {
+    public static List<Map<String, Object>> 品牌() {
         return execute(1122);
     }
 
@@ -1583,7 +1583,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 营销() {
+    public static List<Map<String, Object>> 营销() {
         return execute(1123);
     }
 
@@ -1592,7 +1592,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 家居() {
+    public static List<Map<String, Object>> 家居() {
         return execute(1124);
     }
 
@@ -1601,7 +1601,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 宗教() {
+    public static List<Map<String, Object>> 宗教() {
         return execute(1125);
     }
 
@@ -1610,7 +1610,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 星座() {
+    public static List<Map<String, Object>> 星座() {
         return execute(1126);
     }
 
@@ -1619,7 +1619,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 宠物() {
+    public static List<Map<String, Object>> 宠物() {
         return execute(1127);
     }
 
@@ -1628,7 +1628,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 政务() {
+    public static List<Map<String, Object>> 政务() {
         return execute(1128);
     }
 
@@ -1637,7 +1637,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 媒体() {
+    public static List<Map<String, Object>> 媒体() {
         return execute(1129);
     }
 
@@ -1646,7 +1646,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 百科() {
+    public static List<Map<String, Object>> 百科() {
         return execute(1130);
     }
 
@@ -1655,7 +1655,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 时尚() {
+    public static List<Map<String, Object>> 时尚() {
         return execute(1131);
     }
 
@@ -1664,7 +1664,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 影视() {
+    public static List<Map<String, Object>> 影视() {
         return execute(1132);
     }
 
@@ -1673,7 +1673,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 摄影() {
+    public static List<Map<String, Object>> 摄影() {
         return execute(1133);
     }
 
@@ -1682,7 +1682,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 健康() {
+    public static List<Map<String, Object>> 健康() {
         return execute(1134);
     }
 
@@ -1691,7 +1691,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 旅游() {
+    public static List<Map<String, Object>> 旅游() {
         return execute(1135);
     }
 
@@ -1700,7 +1700,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 军事() {
+    public static List<Map<String, Object>> 军事() {
         return execute(1136);
     }
 
@@ -1709,7 +1709,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 人文() {
+    public static List<Map<String, Object>> 人文() {
         return execute(1137);
     }
 
@@ -1718,7 +1718,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> 文摘() {
+    public static List<Map<String, Object>> 文摘() {
         return execute(1138);
     }
 
@@ -1727,7 +1727,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> qiLe() {
+    public static List<Map<String, Object>> qiLe() {
         return execute(2719);
     }
 
@@ -1736,7 +1736,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> iT199() {
+    public static List<Map<String, Object>> iT199() {
         return execute(2720);
     }
 
@@ -1745,7 +1745,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> hostLoc() {
+    public static List<Map<String, Object>> hostLoc() {
         return execute(2721);
     }
 
@@ -1754,7 +1754,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> expreview() {
+    public static List<Map<String, Object>> expreview() {
         return execute(2722);
     }
 
@@ -1763,7 +1763,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> geekhub() {
+    public static List<Map<String, Object>> geekhub() {
         return execute(2723);
     }
 
@@ -1772,7 +1772,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> dongCheDi() {
+    public static List<Map<String, Object>> dongCheDi() {
         return execute(2724);
     }
 
@@ -1781,7 +1781,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> zhigu() {
+    public static List<Map<String, Object>> zhigu() {
         return execute(2725);
     }
 
@@ -1790,7 +1790,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> caixin() {
+    public static List<Map<String, Object>> caixin() {
         return execute(2726);
     }
 
@@ -1799,7 +1799,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> xiaozhong() {
+    public static List<Map<String, Object>> xiaozhong() {
         return execute(2727);
     }
 
@@ -1808,7 +1808,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> favicon() {
+    public static List<Map<String, Object>> favicon() {
         return execute(2728);
     }
 
@@ -1817,7 +1817,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> allNow() {
+    public static List<Map<String, Object>> allNow() {
         return execute(2778);
     }
 
@@ -1826,7 +1826,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> fishNice() {
+    public static List<Map<String, Object>> fishNice() {
         return execute(5000);
     }
 
@@ -1835,7 +1835,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> shejipiNew() {
+    public static List<Map<String, Object>> shejipiNew() {
         return execute(151064);
     }
 
@@ -1844,7 +1844,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> smzdmNew() {
+    public static List<Map<String, Object>> smzdmNew() {
         return execute(151079);
     }
 
@@ -1853,11 +1853,11 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, String>> cnBetaNew() {
+    public static List<Map<String, Object>> cnBetaNew() {
         return execute(151102);
     }
 
-    public static List<Map<String, String>> execute(Integer id) {
+    public static List<Map<String, Object>> execute(Integer id) {
         String url = "https://api.tophub.fun/v2/GetAllInfoGzip";
 
         Map<String, Object> params = new HashMap<>();
@@ -1865,7 +1865,7 @@ public class MoFish {
         params.put("page", 0);
         params.put("type", "pc");
 
-        List<Map<String, String>> dataRows = new ArrayList<>();
+        List<Map<String, Object>> dataRows = new ArrayList<>();
 
         // 取3页
         for (int i = 0; i < 3; i++) {
@@ -1873,7 +1873,7 @@ public class MoFish {
 
             String result = HttpRequest.get(url, params).body();
             JsonNode data = JsonUtils.json(result, "Data", "data");
-            dataRows.addAll(Arrays.asList(JsonUtils.objectArray2Map(data)));
+            dataRows.addAll(Arrays.asList(JsonUtils.newObjectArray(data)));
         }
         return dataRows;
     }
@@ -1921,7 +1921,7 @@ public class MoFish {
                 "     * [%s]%s\n" +
                 "     * @return\n" +
                 "     */\n" +
-                "    public static List<Map<String,String>> %s(){\n" +
+                "    public static List<Map<String,Object>> %s(){\n" +
                 "        return execute(%d);\n" +
                 "    }";
 

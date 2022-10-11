@@ -33,6 +33,13 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.47</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!--日志模块-->
         <dependency>
             <groupId>org.slf4j</groupId>

@@ -99,7 +99,7 @@ dagScheduler.submitMissingTasks(stage: Stage, jobId: Int)
 ```
 
 
-### 2. HttpBroadcast
+### 2. ~~HttpBroadcast~~
 
 > spark 2.2 的Broadcast package中已经去除了HttpBroadcast,只留下了TorrentBroadcast。
 
@@ -110,7 +110,6 @@ HttpBroadcast 最大的问题就是 driver 所在的节点可能会出现网络�
 ### 3. TorrentBroadcast
 
 为了解决 HttpBroadast 中 driver 单点网络瓶颈的问题，Spark 又设计了一种 broadcast 的方法称为 TorrentBroadcast，这个类似于大家常用的 BitTorrent 技术。基本思想就是将 data 分块成 data blocks，然后假设有 executor fetch 到了一些 data blocks，那么这个 executor 就可以被当作 data server 了，随着 fetch 的 executor 越来越多，有更多的 data server 加入，data 就很快能传播到全部的 executor 那里去了。
-
 
 ## F&Q
 

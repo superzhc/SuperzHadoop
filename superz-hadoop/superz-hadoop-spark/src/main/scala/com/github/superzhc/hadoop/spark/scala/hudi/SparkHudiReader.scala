@@ -1,4 +1,4 @@
-package com.github.superzhc.hadoop.spark.scala
+package com.github.superzhc.hadoop.spark.scala.hudi
 
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
@@ -12,7 +12,7 @@ object SparkHudiReader {
 
     val spark: SparkSession = SparkSession.builder().config(conf).getOrCreate()
 
-    val tableName="superz_s_ne_history_origin"
+    val tableName = "superz_s_ne_history_origin"
     spark.read.format("hudi").load(s"/user/superz/hudi/$tableName/*").show()
   }
 }

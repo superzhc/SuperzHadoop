@@ -73,7 +73,8 @@ object RDDMain {
     val conf: SparkConf = new SparkConf().setAppName("rdd demo").setMaster("local[*]")
     val spark: SparkSession = SparkSession.builder().config(conf).getOrCreate()
     val sc: SparkContext = spark.sparkContext
-    sc.setLogLevel("debug")
+    // 这个设置没啥作用，fixme
+    // sc.setLogLevel("debug")
 
     collection(sc).foreach(println)
 

@@ -1,8 +1,6 @@
-package com.github.superzhc.hadoop.spark.scala
+package com.github.superzhc.hadoop.spark.scala.deploy
 
 import org.apache.spark.sql.{DataFrame, SparkSession}
-
-import java.io.File
 
 /**
  * 本地调试，将任务提交到 Yarn 上

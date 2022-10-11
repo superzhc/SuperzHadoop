@@ -22,15 +22,15 @@ import java.util.Map;
  */
 public class JavaRDDMain {
     public static void main(String[] args) {
-        SparkConf conf = new SparkConf();
-        conf.setAppName("superz").setMaster("local[1]");
-        JavaSparkContext jsc = new JavaSparkContext(conf);
+//        SparkConf conf = new SparkConf();
+//        conf.setAppName("superz").setMaster("local[1]");
+//        JavaSparkContext jsc = new JavaSparkContext(conf);
 
         List<Map<String,String>> data= MoFish.taobaoAll();
         System.out.println(MapUtils.print(data));
-        JavaRDD<Map<String,String>> rdd= jsc.parallelize(data);
-        List<Map<String,String>> lst=rdd.filter(row->row.get("Title").contains("家用")).collect();
-        System.out.println(JsonUtils.format(lst));
+//        JavaRDD<Map<String,String>> rdd= jsc.parallelize(data);
+//        List<Map<String,String>> lst=rdd.filter(row->row.get("Title").contains("家用")).collect();
+//        System.out.println(JsonUtils.format(lst));
     }
 
     /**

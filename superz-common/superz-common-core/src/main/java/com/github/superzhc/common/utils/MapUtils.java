@@ -71,6 +71,65 @@ public class MapUtils {
         return map;
     }
 
+    public static <T> String[] keys(Map<String, T>... maps) {
+        if (null == maps || maps.length == 0) {
+            return null;
+        }
+
+        return keys(Arrays.asList(maps));
+    }
+
+    public static <T> T getIgnoreCase(Map<String, T> map, String key) {
+        return get(map, key, true);
+    }
+
+    public static <T> T get(Map<String, T> map, String key, boolean ignoreCase) {
+        if (null == map) {
+            return null;
+        }
+
+        if (!ignoreCase) {
+            return map.get(key);
+        } else {
+            for (String k : map.keySet()) {
+                if (key.equalsIgnoreCase(k)) {
+                    return map.get(key);
+                }
+            }
+
+            return null;
+        }
+    }
+
+    public static <T> String[] keys(List<Map<String, T>> maps) {
+        Set<String> set = new HashSet<>();
+        for (Map<String, T> map : maps) {
+            set.addAll(map.keySet());
+        }
+
+        return set.toArray(new String[set.size()]);
+    }
+
+    public static <T> List<List<T>> values(List<Map<String, T>> maps, String... keys) {
+        if (null == maps) {
+            return null;
+        }
+
+        if (null == keys || keys.length == 0) {
+            return null;
+        }
+
+        List<List<T>> data = new ArrayList<>(maps.size());
+        for (Map<String, T> map : maps) {
+            List<T> item = new ArrayList<>();
+            for (String key : keys) {
+                item.add(map.get(key));
+            }
+            data.add(item);
+        }
+        return data;
+    }
+
     public static <T> Map<String, T> replaceKey(Map<String, T> map, String key, String newKey) {
         map.put(newKey, map.get(key));
         map.remove(key);

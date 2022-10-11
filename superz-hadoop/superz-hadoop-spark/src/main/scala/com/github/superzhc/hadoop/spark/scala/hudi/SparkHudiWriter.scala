@@ -1,4 +1,4 @@
-package com.github.superzhc.hadoop.spark.scala
+package com.github.superzhc.hadoop.spark.scala.hudi
 
 import org.apache.hudi.DataSourceWriteOptions._
 import org.apache.hudi.config.HoodieWriteConfig.TBL_NAME
@@ -16,12 +16,11 @@ object SparkHudiWriter {
       .setAppName("hudi demo")
       .setMaster("local[*]")
       .set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
-    //// 扩展Spark SQL，使Spark SQL支持Hudi
+    //// 扩展Spark SQL，使Spark SQL支持Hudi[作用是什么？？]
     //.set("spark.sql.extensions", "org.apache.spark.sql.hudi.HoodieSparkSessionExtension")
 
     val spark: SparkSession = SparkSession.builder().config(conf).getOrCreate()
     val sc: SparkContext = spark.sparkContext
-    // sc.setLogLevel("debug")
 
     // val stocks = SinaStock.stocks()
 
@@ -34,19 +33,19 @@ object SparkHudiWriter {
 
     val data = new Array[scala.collection.immutable.Map[String, Long]](100)
     for (i <- 0 until 100) {
-      val map:Map[String,Long] = scala.collection.immutable.Map("ts" -> System.currentTimeMillis(), "id" -> i, "name" -> i * 1000)
+      val map: Map[String, Long] = scala.collection.immutable.Map("ts" -> System.currentTimeMillis(), "id" -> i, "name" -> i * 1000)
       data(i) = map
     }
 
-    val rdd=sc.parallelize(data)
-    val df=rdd.map(row=>(row.get("ts"),row.get("id"),row.get("name")))
-      .toDF("ts","id","name")
+    val rdd = sc.parallelize(data)
+    val df = rdd.map(row => (row.get("ts"), row.get("id"), row.get("name")))
+      .toDF("ts", "id", "name")
 
-//    val df = rdd.map(row => (System.currentTimeMillis(), row.get("code"), row.get("open"), row.get("high"), row.get("low"), row.get("volume"), row.get("amount"), row.get("turnoverratio")))
-//      .toDF("ts", "c", "o", "h", "l", "v", "a", "t")
-//
-//    df.printSchema()
-//
+    //    val df = rdd.map(row => (System.currentTimeMillis(), row.get("code"), row.get("open"), row.get("high"), row.get("low"), row.get("volume"), row.get("amount"), row.get("turnoverratio")))
+    //      .toDF("ts", "c", "o", "h", "l", "v", "a", "t")
+    //
+    //    df.printSchema()
+    //
     val tableName = "t_996121291814092801_hudi_test1"
 
     df.write
@@ -60,10 +59,10 @@ object SparkHudiWriter {
       .option(RECORDKEY_FIELD.key, "id") // 主键字段
       // 更新数据时，如果存在两个具有相同主键的记录，则此列中的值将决定更新哪个记录。选择诸如时间戳记的列将确保选择具有最新时间戳记的记录。
       .option(PRECOMBINE_FIELD.key, "ts") // 预合并字段
-       .option(PARTITIONPATH_FIELD.key, "") // 分区字段
+      .option(PARTITIONPATH_FIELD.key, "") // 分区字段
       .option(OPERATION.key(), BULK_INSERT_OPERATION_OPT_VAL) // 定义写操作类型。值可以为upsert，insert，bulk_insert和delete，默认值为upsert
-            // 下面的参数和同步hive元数据，查询hive有关
-            .option(META_SYNC_ENABLED.key, true)
+      // 下面的参数和同步hive元数据，查询hive有关
+      .option(META_SYNC_ENABLED.key, true)
       //      .option(HIVE_USE_JDBC.key, false)
       //      .option(HIVE_DATABASE.key, databaseName)
       //      .option(HIVE_AUTO_CREATE_DATABASE.key, true)

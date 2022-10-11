@@ -2,15 +2,15 @@
 
 ## RDD
 
-> 注意：并不是由任意类型对象组成的RDD都可以转化为DataFrame对象，只有当组成`RDD[T]`的每一个T对象内部具有公有且鲜明的字段结构时，才能隐式或显式地总结出创建DataFrame对象所必要的结构信息（Schema）进行转化。
+> 注意：并不是由任意类型对象组成的RDD都可以转化为DataFrame对象，只有当组成`RDD[T]`的每一个 `T` 对象内部具有公有且鲜明的字段结构时，才能隐式或显式地总结出创建 DataFrame 对象所必要的结构信息（Schema）进行转化。
 
 Spark SQL支持将现有RDD转换为DataFrame的两种不同方法，其实也就是**隐式推断**或者**显式指定DataFrame对象的Schema**。
 
 1. 使用反射机制（Reflection）推理出Schema（结构信息）
-    采用这种方式转化为DataFrame对象，要求被转化的RDD[T]的类型T具有典型一维表的字段结构对象。
+    采用这种方式转化为DataFrame对象，要求被转化的 `RDD[T]` 的类型T具有典型一维表的字段结构对象。
     Spark SQL的Scala接口支持自动将包含样例类对象的RDD转换为DataFrame对象。在样例类的声明中已预先定义了表的结构信息，内部通过反射机制即可读取样例类的参数的名称、类型，转化为DataFrame对象的Schema。
 2. 由开发者指定Schema
-    先构建一个Schema，然后将其应用到现有的 `RDD[Row]`。这种方式可以根据需求和数据结构构建Schema，而且需要将 `RDD[T]` 转化为Row对象组成的RDD(RDD[Row])，这种方法的代码虽然多了点，但也提供了更高的自由度和灵活度。
+    先构建一个Schema，然后将其应用到现有的 `RDD[Row]`。这种方式可以根据需求和数据结构构建Schema，而且需要将 `RDD[T]` 转化为Row对象组成的RDD(`RDD[Row]`)，这种方法的代码虽然多了点，但也提供了更高的自由度和灵活度。
 
 自定义指定Schema的步骤：
 

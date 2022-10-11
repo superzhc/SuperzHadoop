@@ -128,6 +128,11 @@ public class JsonUtils {
         }
     }
 
+    public static String simpleString(String json, String... paths) {
+        JsonNode childNode = json(json, paths);
+        return text(childNode);
+    }
+
     public static JsonNode object(JsonNode json, String... paths) {
         JsonNode node = json;
         for (String path : paths) {
@@ -144,9 +149,57 @@ public class JsonUtils {
         return (ArrayNode) childNode;
     }
 
+    public static Object object2(JsonNode json, String... paths) {
+        JsonNode childNode = object(json, paths);
+        if (null == childNode) {
+            return null;
+        }
+
+        if (!childNode.isValueNode()) {
+            return asString(childNode);
+        }
+
+        if (childNode.isShort()) {
+            return childNode.shortValue();
+        } else if (childNode.isInt()) {
+            return childNode.intValue();
+        } else if (childNode.isLong()) {
+            return childNode.longValue();
+        } else if (childNode.isFloat()) {
+            return childNode.floatValue();
+        } else if (childNode.isDouble()) {
+            return childNode.doubleValue();
+        } else if (childNode.isBigDecimal()) {
+            return childNode.decimalValue();
+        } else if (childNode.isBigInteger()) {
+            return childNode.bigIntegerValue();
+        } else if (childNode.isBoolean()) {
+            return childNode.booleanValue();
+        } else if (childNode.isBinary()) {
+            try {
+                return childNode.binaryValue();
+            } catch (Exception e) {
+                log.error("转换binary异常！", e);
+                return null;
+            }
+        } else if (childNode.isTextual()) {
+            return childNode.textValue();
+        } else {
+            log.debug("数据【{}】未知类型", asString(childNode));
+            return null;
+        }
+    }
+
+    /**
+     * 见 simpleString 函数
+     *
+     * @param json
+     * @param paths
+     * @return
+     */
+    @Deprecated
     public static String string(String json, String... paths) {
-        JsonNode childNode = json(json, paths);
-        return string(childNode);
+        return simpleString(json, paths);
     }
 
     public static String string(JsonNode node, String... paths) {
@@ -235,6 +288,30 @@ public class JsonUtils {
         double[] arr = new double[childNode.size()];
         for (int i = 0, len = childNode.size(); i < len; i++) {
             arr[i] = null == childNode.get(i) ? null : childNode.get(i).asDouble();
+        }
+        return arr;
+    }
+
+    public static Map<String, Object>[] newObjectArray(JsonNode node, String... paths) {
+        JsonNode childNode = node;
+        if (null != paths) {
+            childNode = object(node, paths);
+        }
+
+        Map<String, Object>[] arr = new Map[childNode.size()];
+        for (int i = 0, len = childNode.size(); i < len; i++) {
+            JsonNode item = childNode.get(i);
+            if (null == item) {
+                continue;
+            }
+
+            Map<String, Object> map = new LinkedHashMap<>();
+            Iterator<String> fieldNames = item.fieldNames();
+            while (fieldNames.hasNext()) {
+                String fieldName = fieldNames.next();
+                map.put(fieldName, object2(item, fieldName));
+            }
+            arr[i] = map;
         }
         return arr;
     }
