@@ -1630,6 +1630,12 @@ public class HttpRequest {
                 throw new HttpRequestException(e);
             }
         else {
+            try {
+                log.error("[{}] message:{}", requestMethod, getConnection().getResponseMessage());
+            }catch (IOException e){
+                throw new HttpRequestException(e);
+            }
+
             stream = getConnection().getErrorStream();
             if (stream == null)
                 try {
