@@ -10,7 +10,7 @@ object ScalaRDDMain {
     val spark: SparkSession = SparkSession.builder().config(conf).getOrCreate()
     val sc: SparkContext = spark.sparkContext
 
-    val data: java.util.List[java.util.Map[String, String]] = MoFish.taobao3761()
+    val data: java.util.List[java.util.Map[String, Object]] = MoFish.taobao3761()
 
     import scala.collection.JavaConverters._
     sc.parallelize(data.asScala)

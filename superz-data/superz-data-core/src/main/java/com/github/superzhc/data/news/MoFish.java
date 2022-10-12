@@ -1878,6 +1878,13 @@ public class MoFish {
         return dataRows;
     }
 
+    public static List<Map<String, Object>> allTypes() {
+        String url = "https://api.tophub.fun/GetAllType";
+        String result = HttpRequest.get(url).body();
+        JsonNode json = JsonUtils.json(result, "Data", "全部");
+        return Arrays.asList(JsonUtils.newObjectArray(json));
+    }
+
     public static void generateCode() {
         String url = "https://api.tophub.fun/GetAllType";
         String result = HttpRequest.get(url).body();

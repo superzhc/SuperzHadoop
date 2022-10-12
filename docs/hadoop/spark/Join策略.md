@@ -8,7 +8,7 @@
 - Shuffle-and-replicate nested loop join，又称笛卡尔积(Cartesian product join)
 - Broadcast nested loop join (BNLJ)
 
-其中 BHJ 和 SMJ 这两种 Join 策略是我们运行 Spark 作业最常见的。JoinSelection 会先根据 Join 的 Key 为等值 Join 来选择 Broadcast Hash Join、Shuffle Hash Join 以及 Shuffle sort merge join 中的一个；如果 Join 的 Key 为不等值 Join 或者没有指定 Join 条件，则会选择 Broadcast nested loop join 或 Shuffle-and-replicate nested loop join。
+其中 BHJ 和 SMJ 这两种 Join 策略是运行 Spark 作业最常见的。JoinSelection 会先根据 Join 的 Key 为等值 Join 来选择 Broadcast Hash Join、Shuffle Hash Join 以及 Shuffle sort merge join 中的一个；如果 Join 的 Key 为不等值 Join 或者没有指定 Join 条件，则会选择 Broadcast nested loop join 或 Shuffle-and-replicate nested loop join。
 
 ## Broadcast Hash Join (BHJ)
 
