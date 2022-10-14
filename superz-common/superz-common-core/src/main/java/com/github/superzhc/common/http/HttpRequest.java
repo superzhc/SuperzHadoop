@@ -75,6 +75,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
 import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.HostnameVerifier;
@@ -1715,6 +1716,31 @@ public class HttpRequest {
     }
 
     /**
+     * 下载响应内容到文件
+     *
+     * @param path 文件夹地址、文件夹地址+自定义文件名；注意文件夹地址必须存在，不提供自动创建
+     * @return
+     * @throws HttpRequestException
+     */
+    public HttpRequest download(final String path) throws HttpRequestException {
+        String downloadPath = path;
+        downloadPath = downloadPath.replaceAll("[/\\\\]", Matcher.quoteReplacement(File.separator));
+
+        File file = new File(path);
+        if (file.exists() && file.isDirectory()) {
+            String u = this.url().getPath();
+            String fileName = u.substring(u.lastIndexOf("/") + 1);
+            if (path.endsWith(File.separator)) {
+                downloadPath = path + fileName;
+            } else {
+                downloadPath = path + File.separator + fileName;
+            }
+        }
+
+        return receive(new File(downloadPath));
+    }
+
+    /**
      * Stream response body to file
      *
      * @param file
@@ -1722,6 +1748,7 @@ public class HttpRequest {
      * @throws HttpRequestException
      */
     public HttpRequest receive(final File file) throws HttpRequestException {
+        log.debug("[{}] download:{}", requestMethod, file.getAbsolutePath());
         final OutputStream output;
         try {
             output = new BufferedOutputStream(new FileOutputStream(file), bufferSize);
@@ -1840,8 +1867,11 @@ public class HttpRequest {
      */
     public HttpRequest header(final String name, final String value) {
         HttpURLConnection conn = getConnection();
-        if (log.isDebugEnabled() &&
-                (HEADER_USER_AGENT.equals(name) || HEADER_COOKIE.equalsIgnoreCase(name))) {
+        if (log.isDebugEnabled()
+                && (HEADER_USER_AGENT.equals(name)
+                || HEADER_COOKIE.equalsIgnoreCase(name))
+                || HEADER_CONTENT_TYPE.equalsIgnoreCase(name)
+        ) {
             log.debug("[{}] header:{}={}", requestMethod, name, value);
         }
         conn.setRequestProperty(name, value);
@@ -3011,7 +3041,7 @@ public class HttpRequest {
             output.write('=');
             if (value != null)
                 output.write(URLEncoder.encode(value.toString(), charset));
-            log.debug("form body: {}={}", requestMethod, URLEncoder.encode(name.toString(), charset), (null == value ? null : URLEncoder.encode(value.toString(), charset)));
+            log.debug("[{}] form body: {}={}", requestMethod, URLEncoder.encode(name.toString(), charset), (null == value ? null : URLEncoder.encode(value.toString(), charset)));
         } catch (IOException e) {
             throw new HttpRequestException(e);
         }

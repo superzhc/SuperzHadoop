@@ -189,7 +189,7 @@ public class JdbcHelper implements Closeable {
         }
     }
 
-    //    /* 定义数据库的配置信息 */
+    /* 定义数据库的配置信息 */
     private String driver;
     private String url;
     private String username;

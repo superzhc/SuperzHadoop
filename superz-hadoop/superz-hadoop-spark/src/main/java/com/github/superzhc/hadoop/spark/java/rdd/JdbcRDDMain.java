@@ -1,5 +1,6 @@
 package com.github.superzhc.hadoop.spark.java.rdd;
 
+import com.github.superzhc.common.jdbc.ResultSetUtils;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -10,6 +11,8 @@ import org.apache.spark.rdd.JdbcRDD;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 2020年10月10日 superz add
@@ -20,33 +23,27 @@ public class JdbcRDDMain {
         conf.setAppName("superz").setMaster("local[1]");
         JavaSparkContext jsc = new JavaSparkContext(conf);
 
-        JavaRDD<Integer> rdd = JdbcRDD.create(jsc, new JdbcRDD.ConnectionFactory() {
+        // 读取mysql数据到RDD
+        JavaRDD<List<Map<String, Object>>> rdd = JdbcRDD.create(jsc, new JdbcRDD.ConnectionFactory() {
             @Override
             public Connection getConnection() throws Exception {
                 // 加载MySql驱动
-                // Class.forName("com.mysql.jdbc.Driver");
-                Class.forName("com.mysql.cj.jdbc.Driver");
-                return DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/superz?zeroDateTimeBehavior=convertToNull&serverTimezone=GMT%2b8&useSSL=true", "root", "123456");
+                Class.forName("com.mysql.jdbc.Driver");
+                // MySQL8.0+驱动
+                // Class.forName("com.mysql.cj.jdbc.Driver");
+                return DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/news_dw?zeroDateTimeBehavior=convertToNull&serverTimezone=GMT%2b8&useSSL=false", "root", "123456");
             }
-        }, "select * from json_data_generator where id>=? and id<=?", 1, 10000, 10, new Function<ResultSet, Integer>() {
+        }, "select * from mofish_20221011 where iid>=? and iid<?", 1, 2000, 10, new Function<ResultSet, List<Map<String, Object>>>() {
             @Override
-            public Integer call(ResultSet rs) throws Exception {
-                int num = 0;
-                while (rs.next()) {
-                    num++;
-                }
-                System.out.println("记录数：" + num);
-                return num;
+            public List<Map<String, Object>> call(ResultSet rs) throws Exception {
+                return ResultSetUtils.Result2ListMap(rs);
             }
         });
 
-        Integer sum = rdd.reduce(new Function2<Integer, Integer, Integer>() {
-            @Override
-            public Integer call(Integer v1, Integer v2) throws Exception {
-                return v1 + v2;
-            }
-        });
+        System.out.println(rdd.count());
 
-        System.out.println(sum);
+        rdd.foreach(d-> System.out.println(d));
+
+        jsc.stop();
     }
 }
