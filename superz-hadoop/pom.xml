@@ -23,6 +23,7 @@
         <module>superz-hadoop-kafka</module>
         <module>superz-hadoop-zookeeper</module>
         <module>superz-hadoop-install</module>
+        <module>superz-hadoop-storm</module>
     </modules>
 
     <properties>
