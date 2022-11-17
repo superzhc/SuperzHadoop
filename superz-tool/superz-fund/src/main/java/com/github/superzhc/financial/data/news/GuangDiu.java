@@ -23,7 +23,9 @@ public class GuangDiu {
      * @return
      */
     public static Table daily() {
-        return execute("k=daily");
+        List<Map<String, Object>> dataRows = com.github.superzhc.data.shopping.GuangDiu.daily();
+        Table table = TableUtils.buildByMap(dataRows);
+        return table;
     }
 
     /**
@@ -32,15 +34,21 @@ public class GuangDiu {
      * @return
      */
     public static Table electrical() {
-        return execute("k=electrical");
+        List<Map<String, Object>> dataRows = com.github.superzhc.data.shopping.GuangDiu.electrical();
+        Table table = TableUtils.buildByMap(dataRows);
+        return table;
     }
 
     public static Table food() {
-        return execute("k=food");
+        List<Map<String, Object>> dataRows = com.github.superzhc.data.shopping.GuangDiu.food();
+        Table table = TableUtils.buildByMap(dataRows);
+        return table;
     }
 
     public static Table personCare() {
-        return execute("k=pcare");
+        List<Map<String, Object>> dataRows = com.github.superzhc.data.shopping.GuangDiu.personCare();
+        Table table = TableUtils.buildByMap(dataRows);
+        return table;
     }
 
     /**
@@ -49,7 +57,9 @@ public class GuangDiu {
      * @return
      */
     public static Table accessory() {
-        return execute("k=accessory");
+        List<Map<String, Object>> dataRows = com.github.superzhc.data.shopping.GuangDiu.accessory();
+        Table table = TableUtils.buildByMap(dataRows);
+        return table;
     }
 
     /**
@@ -58,7 +68,9 @@ public class GuangDiu {
      * @return
      */
     public static Table furniture() {
-        return execute("k=furniture");
+        List<Map<String, Object>> dataRows = com.github.superzhc.data.shopping.GuangDiu.furniture();
+        Table table = TableUtils.buildByMap(dataRows);
+        return table;
     }
 
     /**
@@ -67,7 +79,9 @@ public class GuangDiu {
      * @return
      */
     public static Table medical() {
-        return execute("k=medical");
+        List<Map<String, Object>> dataRows = com.github.superzhc.data.shopping.GuangDiu.medical();
+        Table table = TableUtils.buildByMap(dataRows);
+        return table;
     }
 
     /**
@@ -76,7 +90,9 @@ public class GuangDiu {
      * @return
      */
     public static Table menswear() {
-        return execute("k=menswear");
+        List<Map<String, Object>> dataRows = com.github.superzhc.data.shopping.GuangDiu.menswear();
+        Table table = TableUtils.buildByMap(dataRows);
+        return table;
     }
 
     /**
@@ -85,51 +101,19 @@ public class GuangDiu {
      * @return
      */
     public static Table mensshoes() {
-        return execute("k=mensshoes");
+        List<Map<String, Object>> dataRows = com.github.superzhc.data.shopping.GuangDiu.mensshoes();
+        Table table = TableUtils.buildByMap(dataRows);
+        return table;
     }
 
     public static Table sport() {
-        return execute("k=sport");
+        List<Map<String, Object>> dataRows = com.github.superzhc.data.shopping.GuangDiu.sport();
+        Table table = TableUtils.buildByMap(dataRows);
+        return table;
     }
 
     public static Table all() {
-        return execute(null);
-    }
-
-    private static Table execute(String query) {
-        String host = "https://guangdiu.com";
-
-        String url = host;
-        if (null != query && query.trim().length() > 0) {
-            url = String.format("%s/cate.php?%s", host, query);
-        }
-
-        String html = HttpRequest.get(url).userAgent(UA_CHROME).body();
-        Document document = Jsoup.parse(html);
-
-        List<Map<String, Object>> dataRows = new ArrayList<>();
-
-        Elements goods = document.select("#mainleft > div.zkcontent > div.gooditem");
-        for (Element good : goods) {
-            String title = good.selectFirst("a.goodname").ownText();
-            String price = good.selectFirst("a.goodname span.emphricepart").text();
-            String image = good.selectFirst("img.imgself").attr("src");
-            String link = good.selectFirst("div.iteminfoarea > h2 > a").attr("href");
-            // String syncPlatform = good.selectFirst("div.infofrom").text();
-            String actUrl = good.selectFirst("a.innergototobuybtn").attr("href");
-            String platform = good.selectFirst("a.rightmallname").text();
-
-            Map<String, Object> dataRow = new LinkedHashMap<>();
-            dataRow.put("title", title);
-            dataRow.put("price", price);
-            // dataRow.put("sync", syncPlatform);
-            dataRow.put("platform", platform);
-            dataRow.put("url", actUrl);
-            dataRow.put("image", image);
-            dataRow.put("link", link);
-            dataRows.add(dataRow);
-        }
-
+        List<Map<String, Object>> dataRows = com.github.superzhc.data.shopping.GuangDiu.all();
         Table table = TableUtils.buildByMap(dataRows);
         return table;
     }

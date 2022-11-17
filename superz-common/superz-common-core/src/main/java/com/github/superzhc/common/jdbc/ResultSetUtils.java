@@ -221,10 +221,14 @@ public class ResultSetUtils {
         for (int i = 0; i < ((maxLength - len) + 1); i++) {
             str += " ";
         }
-        return str;
+        return null == str ? "" : str;
     }
 
     private static int length(String str) {
+        if (null == str) {
+            return 0;
+        }
+
         int valueLength = 0;
         // String chinese = "[\u0391-\uFFE5]";//匹配中文字符的正则表达式： [\u4e00-\u9fa5]
         // String doubleChar = "[^\\x00-\\xff]";// 匹配双字节字符(包括汉字在内)：[^\x00-\xff]

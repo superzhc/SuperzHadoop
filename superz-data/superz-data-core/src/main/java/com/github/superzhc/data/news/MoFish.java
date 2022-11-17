@@ -35,7 +35,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, Object>> mSN() {
+    public static List<Map<String, Object>> MSN() {
         return execute(3);
     }
 
@@ -53,7 +53,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, Object>> zHDaily() {
+    public static List<Map<String, Object>> ZHDaily() {
         return execute(7);
     }
 

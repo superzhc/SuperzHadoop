@@ -565,7 +565,7 @@ public class JdbcHelper implements Closeable {
             return result;
         } catch (Exception e) {
             log.error("DDL异常", e);
-            return -1;
+            throw new RuntimeException(e);
         } finally {
             free(null, stmt, null);
         }
@@ -716,7 +716,8 @@ public class JdbcHelper implements Closeable {
             return result;
         } catch (SQLException ex) {
             log.error("DML异常", ex);
-            return -1;
+            //return -1;
+            throw new RuntimeException(ex);
         } finally {
             free(null, pstmt, null);
         }

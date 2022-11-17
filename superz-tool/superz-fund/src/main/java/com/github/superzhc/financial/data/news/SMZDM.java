@@ -117,40 +117,7 @@ public class SMZDM {
     }
 
     public static Table search(String keyword) {
-        /**
-         * 该地址响应：301 Moved Permanently
-         */
-        String url = "http://search.smzdm.com/";
-
-        Map<String, Object> param = new HashMap<>();
-        param.put("c", "home");
-        param.put("s", keyword);
-        param.put("order", "time");
-        param.put("v", "b");
-
-        String html = HttpRequest.get(url, param, true).userAgent(UA_CHROME).body();
-        Document document = Jsoup.parse(html);
-
-        List<Map<String, Object>> dataRows = new ArrayList<>();
-        Elements eles = document.select(".feed-row-wide");
-        for (Element ele : eles) {
-            Elements eleItems = ele.select(".feed-block-title a");
-            String title = String.format("%s - %s", eleItems.get(0).text().trim(), eleItems.get(1).text().trim());
-            String link = eleItems.get(0).attr("href");
-            String pubdate = ele.selectFirst(".feed-block-extras").html();
-            String description = ele.selectFirst(".feed-block-descripe").html();
-            String description2 = ele.selectFirst(".feed-block-extras span").text();
-            String img = ele.selectFirst(".z-feed-img img").attr("src");
-
-            Map<String, Object> dataRow = new LinkedHashMap<>();
-            dataRow.put("title", title);
-            dataRow.put("link", link);
-            dataRow.put("pubdate", pubdate);
-            dataRow.put("desc", description);
-            dataRow.put("desc2", description2);
-            dataRow.put("img", img);
-            dataRows.add(dataRow);
-        }
+        List<Map<String, Object>> dataRows = com.github.superzhc.data.shopping.SMZDM.search(keyword);
 
         Table table = TableUtils.buildByMap(dataRows);
         return table;

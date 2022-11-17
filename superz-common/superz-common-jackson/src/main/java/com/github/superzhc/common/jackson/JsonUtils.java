@@ -119,6 +119,10 @@ public class JsonUtils {
         }
     }
 
+    public static JsonNode loads(String json, String... paths) {
+        return json(json, paths);
+    }
+
     public static JsonNode json(String json, String... paths) {
         try {
             JsonNode node = mapper.readTree(json);

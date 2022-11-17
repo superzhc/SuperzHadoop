@@ -53,6 +53,10 @@ public class MyProducer extends KafkaBrokers implements Closeable {
         producer = new KafkaProducer<String, String>(props);
     }
 
+    public Producer<String, String> getProducer() {
+        return producer;
+    }
+
     public Future<RecordMetadata> sendAsync(String topic, String value, Callback
             callback) {
         ProducerRecord<String, String> record = new ProducerRecord<>(topic, value);
