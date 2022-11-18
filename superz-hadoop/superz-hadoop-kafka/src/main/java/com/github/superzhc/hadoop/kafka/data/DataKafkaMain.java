@@ -53,6 +53,13 @@ public class DataKafkaMain {
         addJob(scheduler, "guangdiu", type, GuangDiuJob.class, jobDataMap, "40 0/5 * * * ? *");
 
 
+        JobDataMap jobDataMap2=new JobDataMap();
+        jobDataMap2.put("isNeedInit",true);
+        jobDataMap2.put("brokers","127.0.0.1:19092");
+        jobDataMap2.put("topic","fund_eastmoney_real_net");
+        jobDataMap2.put("codes","000478,160119,519671,001594,001595,160716,501050,004752,501009,012820,519915,001180,000071,012348,090010,164402,006327,164906");
+        addJob(scheduler,"fund","eastmoney_real_net",FundRealNetJob.class,jobDataMap2,"0/5 * 9-14 ? * MON-FRI");
+
         scheduler.start();
         // 在调用 scheduler.shutdown() 之前，scheduler 不会终止，还有活跃的线程在执行
         // scheduler.shutdown();

@@ -727,6 +727,7 @@ public class JdbcHelper implements Closeable {
         return select(table, columns, null);
     }
 
+    @Deprecated
     public List<Map<String, Object>> select(String table, String[] columns, String conditions) {
         if (null != conditions && conditions.trim().length() > 0) {
             String str = conditions.trim().substring(0, 3);
@@ -756,6 +757,21 @@ public class JdbcHelper implements Closeable {
                 return ResultSetUtils.Result2ListMap(rs);
             }
         });
+    }
+
+    public Map<String, Object> queryFirst(String sql, Object... params) {
+        List<Map<String, Object>> data = dqlExecute(sql, params, new Function<ResultSet, List<Map<String, Object>>>() {
+            @Override
+            public List<Map<String, Object>> apply(ResultSet rs) {
+                return ResultSetUtils.Result2ListMap(rs);
+            }
+        });
+
+        if (null == data || data.size() == 0) {
+            return null;
+        }
+
+        return data.get(0);
     }
 
     public <T> List<T> queryBeans(String sql, Class<T> beanClass, Object... params) {
