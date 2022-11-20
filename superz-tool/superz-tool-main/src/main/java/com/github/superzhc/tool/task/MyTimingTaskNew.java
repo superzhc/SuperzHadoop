@@ -4,6 +4,7 @@ import com.github.superzhc.common.jdbc.JdbcHelper;
 import com.github.superzhc.common.utils.PathUtils;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
+import org.quartz.impl.calendar.CronCalendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +48,7 @@ public class MyTimingTaskNew {
                     String group = (String) job.get("_group");
                     String name = (String) job.get("_name");
                     Class<? extends Job> clazz = (Class<? extends Job>) Class.forName((String) job.get("_class"));
-                    String cron = (String) job.get("_cron");
+                    String crons = (String) job.get("_cron");
                     String description = (String) job.get("_description");
 
                     JobDetail jobDetail = JobBuilder.newJob(clazz)
@@ -65,9 +66,23 @@ public class MyTimingTaskNew {
                     }
                     jobDetail.getJobDataMap().putAll(jobDataMap);
 
+                    String[] cronArr = crons.split(";");
+                    String cron = cronArr[0];
+                    String calendarName = null;
+                    int len = cronArr.length;
+                    if (len > 1) {
+                        calendarName = jobDetail.getKey().toString() + ".calendar";
+                        Calendar calendar = null;
+                        for (int i = 1; i < len; i++) {
+                            calendar = new CronCalendar(calendar, cronArr[i]);
+                        }
+                        getScheduler().addCalendar(calendarName, calendar, false, false);
+                    }
+
                     Trigger trigger = TriggerBuilder.newTrigger()
                             .withIdentity(name, group)
                             .withSchedule(CronScheduleBuilder.cronSchedule(cron))
+                            .modifiedByCalendar(calendarName)
                             .withDescription(description)
                             .build();
 

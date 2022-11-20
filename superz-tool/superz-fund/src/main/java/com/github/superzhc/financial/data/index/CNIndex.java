@@ -16,23 +16,11 @@ import java.util.*;
  **/
 public class CNIndex {
     public static Table indices() {
-        String url = "http://www.cnindex.com.cn/index/indexList";
+        List<Map<String,Object>> data= com.github.superzhc.data.index.CNIndex.indices();
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("channelCode", -1);
-        params.put("rows", 2000);
-        params.put("pageNum", 1);
+        Table table = TableUtils.buildByMap(data);
 
-        String result = HttpRequest.get(url, params).body();
-        JsonNode json = JsonUtils.json(result, "data", "rows");
-
-        List<String> columnNames = JsonUtils.extractObjectColumnName(json);
-
-        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
-
-        Table table = TableUtils.build(columnNames, dataRows);
-
-        List<String> finalColumnNames = Arrays.asList(
+        // List<String> finalColumnNames = Arrays.asList(
 //                "_",
 //                "_",
 //                "指数代码",
@@ -56,33 +44,17 @@ public class CNIndex {
 //                "总市值",
 //                "自由流通市值",
 //                "_",
-                "_"
-        );
-        table = TableUtils.rename(table, finalColumnNames);
+//                 "_"
+        // );
+        // table = TableUtils.rename(table, finalColumnNames);
 
         return table;
     }
 
     public static Table history(String symbol) {
-        String url = "http://hq.cnindex.com.cn/market/market/getIndexDailyDataWithDataFormat";
+        List<Map<String, Object>> data= com.github.superzhc.data.index.CNIndex.history(symbol);
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("indexCode", transform(symbol));
-        params.put("startDate", "");
-        params.put("endDate", "");
-        params.put("frequency", "day");
-
-        String result = HttpRequest.get(url, params).body();
-        JsonNode json = JsonUtils.json(result, "data");
-
-        List<String> columnNames = new ArrayList<>();
-        for (JsonNode field : json.get("item")) {
-            columnNames.add(field.asText());
-        }
-
-        List<String[]> dataRows = JsonUtils.extractArrayData(json.get("data"));
-
-        Table table = TableUtils.build(columnNames, dataRows);
+        Table table = TableUtils.buildByMap(data);
         return table;
     }
 

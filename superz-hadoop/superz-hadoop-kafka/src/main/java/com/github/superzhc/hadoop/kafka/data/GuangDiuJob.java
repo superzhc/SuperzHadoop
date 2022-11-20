@@ -2,6 +2,7 @@ package com.github.superzhc.hadoop.kafka.data;
 
 import com.github.superzhc.common.jackson.JsonUtils;
 import com.github.superzhc.data.shopping.GuangDiu;
+import com.github.superzhc.hadoop.kafka.MyAdminClient;
 import com.github.superzhc.hadoop.kafka.MyProducer;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -19,6 +20,7 @@ import java.util.Map;
 public class GuangDiuJob implements Job {
     private static final Logger log = LoggerFactory.getLogger(GuangDiuJob.class);
 
+    private static final String BROKERS="127.0.0.1:19092";
     public static final String TOPIC = "shop_guangdiu";
     private static final int PARTITIONS = 5;
 
@@ -79,6 +81,12 @@ public class GuangDiuJob implements Job {
             }
         } catch (Exception e) {
             throw new JobExecutionException(e);
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        try(MyAdminClient client=new MyAdminClient(BROKERS)){
+            client.addPartitions(TOPIC,5);
         }
     }
 }

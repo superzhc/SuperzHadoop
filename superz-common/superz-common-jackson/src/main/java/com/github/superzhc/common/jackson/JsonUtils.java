@@ -188,6 +188,8 @@ public class JsonUtils {
             }
         } else if (childNode.isTextual()) {
             return childNode.textValue();
+        } else if (childNode.isNull()) {
+            return null;
         } else {
             log.debug("数据【{}】未知类型", asString(childNode));
             return null;
@@ -199,6 +201,7 @@ public class JsonUtils {
      *
      * @param json
      * @param paths
+     *
      * @return
      */
     @Deprecated
@@ -384,6 +387,31 @@ public class JsonUtils {
         return arr;
     }
 
+    public static Object[][] newArrayArray(JsonNode node, String... paths) {
+        JsonNode childNode = node;
+        if (null != paths) {
+            childNode = object(node, paths);
+        }
+
+        Object[][] arr = new Object[childNode.size()][];
+        for (int i = 0, len = childNode.size(); i < len; i++) {
+            JsonNode item = childNode.get(i);
+            if (null == item) {
+                continue;
+            }
+
+            ArrayNode arrayNode = array(item);
+            Object[] objArr = new Object[arrayNode.size()];
+            for (int j = 0, arrLen = arrayNode.size(); j < arrLen; j++) {
+                objArr[j] = object2(arrayNode.get(j));
+            }
+
+            arr[i] = objArr;
+        }
+        return arr;
+
+    }
+
     public static String[][] arrayArray(JsonNode node, String... paths) {
         JsonNode childNode = node;
         if (null != paths) {
@@ -550,6 +578,7 @@ public class JsonUtils {
      *
      * @param datas
      * @param childPaths
+     *
      * @return
      */
     @Deprecated
@@ -562,6 +591,7 @@ public class JsonUtils {
      *
      * @param datas
      * @param childPaths
+     *
      * @return
      */
     @Deprecated
@@ -576,6 +606,7 @@ public class JsonUtils {
      * @param datas
      * @param columnNames
      * @param childPaths
+     *
      * @return
      */
     @Deprecated

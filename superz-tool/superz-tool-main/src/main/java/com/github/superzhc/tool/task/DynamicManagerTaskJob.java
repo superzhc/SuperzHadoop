@@ -3,9 +3,11 @@ package com.github.superzhc.tool.task;
 import com.github.superzhc.common.jdbc.JdbcHelper;
 import com.github.superzhc.common.utils.PathUtils;
 import org.quartz.*;
+import org.quartz.impl.calendar.CronCalendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +51,7 @@ public class DynamicManagerTaskJob implements Job {
         }
     }
 
-    private void addJob(JdbcHelper jdbc, int id, int jobId) throws SchedulerException, ClassNotFoundException {
+    private void addJob(JdbcHelper jdbc, int id, int jobId) throws SchedulerException, ClassNotFoundException, ParseException {
         log.debug("新增任务[{}]开始...", jobId);
         Map<String, Object> job = jdbc.queryFirst("select * from superz_quartz_job_new where id=?", jobId);
         if (null != job || job.size() > 0) {
@@ -58,7 +60,7 @@ public class DynamicManagerTaskJob implements Job {
             JobKey jobKey = new JobKey(name, group);
             if (!getScheduler().checkExists(jobKey)) {
                 Class<? extends Job> clazz = (Class<? extends Job>) Class.forName((String) job.get("_class"));
-                String cron = (String) job.get("_cron");
+                String crons = (String) job.get("_cron");
                 String description = (String) job.get("_description");
 
                 JobDetail jobDetail = JobBuilder.newJob(clazz)
@@ -76,9 +78,23 @@ public class DynamicManagerTaskJob implements Job {
                 }
                 jobDetail.getJobDataMap().putAll(jobDataMap);
 
+                String[] cronArr = crons.split(";");
+                String cron = cronArr[0];
+                String calendarName = null;
+                int len = cronArr.length;
+                if (len > 1) {
+                    calendarName = jobDetail.getKey().toString() + ".calendar";
+                    Calendar calendar = null;
+                    for (int i = 1; i < len; i++) {
+                        calendar = new CronCalendar(calendar, cronArr[i]);
+                    }
+                    getScheduler().addCalendar(calendarName, calendar, false, false);
+                }
+
                 Trigger trigger = TriggerBuilder.newTrigger()
                         .withIdentity(name, group)
                         .withSchedule(CronScheduleBuilder.cronSchedule(cron))
+                        .modifiedByCalendar(calendarName)
                         .withDescription(description)
                         .build();
 

@@ -27,21 +27,8 @@ public class DanJuanIndex {
      * @return
      */
     public static Table indexEva() {
-        String url = "https://danjuanfunds.com/djapi/index_eva/dj";
-        String result = HttpRequest.get(url).body();
-        JsonNode json = JsonUtils.json(result, "data", "items");
-
-        List<String> columnNames = JsonUtils.extractObjectColumnName(json);
-        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
-
-        Table table = TableUtils.build(columnNames, dataRows);
-        table.removeColumns("id");
-        // table.column("yeild").setName("股息率");
-        table.replaceColumn("ts", table.longColumn("ts").asDateTimes(ZoneOffset.ofHours(+8)).date().setName("ts"));
-        table.replaceColumn("begin_at", table.longColumn("begin_at").asDateTimes(ZoneOffset.ofHours(+8)).date().setName("begin_at"));
-        table.replaceColumn("created_at", table.longColumn("created_at").asDateTimes(ZoneOffset.ofHours(+8))/*.date()*/.setName("created_at"));
-        table.replaceColumn("updated_at", table.longColumn("updated_at").asDateTimes(ZoneOffset.ofHours(+8))/*.date()*/.setName("updated_at"));
-        table.removeColumns("url");
+        List<Map<String, Object>> data = com.github.superzhc.data.index.DanJuanIndex.indexEva();
+        Table table = TableUtils.buildByMap(data);
         return table;
     }
 
@@ -49,19 +36,12 @@ public class DanJuanIndex {
      * 单个指数估值
      *
      * @param indexCode 示例：000905.SH
+     *
      * @return
      */
     public static Table indexEva(String indexCode) {
-        // https://danjuanapp.com/djapi/index_eva/detail/SH000905
-        String url = String.format("https://danjuanapp.com/djapi/index_eva/detail/%s", transform(indexCode));
-
-        String result = HttpRequest.get(url).body();
-        JsonNode json = JsonUtils.json(result, "data");
-
-        Map<String, ?> map = JsonUtils.map(json);
-
+        Map<String, Object> map = com.github.superzhc.data.index.DanJuanIndex.indexEva(indexCode);
         Table table = TableUtils.map2Table(map);
-
         return table;
     }
 
@@ -69,25 +49,13 @@ public class DanJuanIndex {
      * 指数历史
      *
      * @param indexCode
-     * @param type      数据量，可选值：1y,3y,5y,10y
+     * @param type 数据量，可选值：1y,3y,5y,10y
+     *
      * @return
      */
     public static Table indexHistory(String indexCode, String type) {
-        String url = String.format("https://danjuanapp.com/djapi/fundx/base/index/nav/growth?symbol=%s&day=%s", transform(indexCode), type);
-
-        String result = HttpRequest.get(url).body();
-        JsonNode json = JsonUtils.json(result, "data", "symbol_nav_growth");
-
-        List<String> columnNames = Arrays.asList(
-                "date",
-                "gr_nav",
-                "gr_per"
-        );
-
-        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
-
-        Table table = TableUtils.build(columnNames, dataRows);
-
+        List<Map<String, Object>> data = com.github.superzhc.data.index.DanJuanIndex.indexHistory(indexCode, type);
+        Table table = TableUtils.buildByMap(data);
         return table;
     }
 
@@ -97,7 +65,7 @@ public class DanJuanIndex {
         // Table roeT = roeHistory(indexCode, type);
 
         if (peT.rowCount() != pbT.rowCount()
-                // || peT.rowCount() != roeT.rowCount()
+            // || peT.rowCount() != roeT.rowCount()
         ) {
             log.warn("pb:{},pe:{},roe:{}", pbT.rowCount(), peT.rowCount()/*, roeT.rowCount()*/);
         }
@@ -204,6 +172,7 @@ public class DanJuanIndex {
      * 转换成蛋卷的指数表示方式
      *
      * @param indexCode 示例 000905.SH
+     *
      * @return
      */
     private static String transform(String indexCode) {
