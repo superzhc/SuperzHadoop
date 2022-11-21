@@ -46,15 +46,6 @@ public class FundRealNetJob implements Job {
         //     log.debug("任务【FundRealNetJob】初始化结束！");
         // }
 
-        LocalDateTime now = LocalDateTime.now();
-        LocalDate today = now.toLocalDate();
-        LocalDateTime time1 = LocalDateTime.of(today, LocalTime.of(9, 30, 0));
-        LocalDateTime time2 = LocalDateTime.of(today, LocalTime.of(11, 30, 0));
-        LocalDateTime time3 = LocalDateTime.of(today, LocalTime.of(13, 0, 0));
-        if (now.isBefore(time1) || (now.isAfter(time2) && now.isBefore(time3))) {
-            return;
-        }
-
         // TODO 过滤掉节假日
 
         try (MyProducer producer = new MyProducer(brokers)) {
