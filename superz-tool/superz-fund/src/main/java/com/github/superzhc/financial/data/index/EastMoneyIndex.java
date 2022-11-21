@@ -51,85 +51,88 @@ public class EastMoneyIndex {
     }
 
     private static Table indices(String type) {
-        String url = "http://push2.eastmoney.com/api/qt/clist/get";
-
-        String fields = "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f26,f22,f33,f11,f62,f128,f136,f115,f152";
-        Map<String, Object> params = new HashMap<>();
-        params.put("pn", 1);// pageNumber
-        params.put("pz", 10000);//pageSize
-        params.put("po", 1);
-        params.put("np", 1);
-        params.put("ut", "bd1d9ddb04089700cf9c27f6f7426281");
-        params.put("fltt", 2);
-        params.put("invt", 2);
-        params.put("fid", "f3");
-        params.put("fs", type);
-        params.put("fields", fields);
-        params.put("_", System.currentTimeMillis());
-
-        String result = HttpRequest.get(url, params).userAgent(UA).referer("http://quote.eastmoney.com/").body();
-        JsonNode json = JsonUtils.json(result, "data", "diff");
-
-        List<String> columnNames = Arrays.asList(fields.split(","));
-        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
-
-        List<String> finalColumnNames = Arrays.asList(
-                "f1",
-                "close",
-                "change",// 涨跌幅（%）
-                "change_price",
-                "volume",
-                "turnover",
-                "amplitude",//振幅（%）
-                "f8",
-                "f9",
-                "equivalence_ratio",//量比
-                "index_code",
-                "market",//"f13",
-                "index_name",
-                "high",
-                "low",
-                "open",
-                "last",
-                "f20",
-                "f21",
-                "f23",
-                "f24",
-                "f25",
-                "f26",
-                "f22",
-                "f33",
-                "f11",
-                "f62",
-                "f128",
-                "f136",
-                "f115",
-                "f152"
-        );
-
-        Map<String, ColumnType> columnTypeMap = new HashMap<>();
-        columnTypeMap.put("index_code", ColumnType.STRING);
-        columnTypeMap.put("market", ColumnType.STRING);
-        columnTypeMap.put("volume", ColumnType.LONG);
-        columnTypeMap.put("turnover", ColumnType.DOUBLE);
-        columnTypeMap.put("f8", ColumnType.STRING);
-        columnTypeMap.put("f9", ColumnType.STRING);
-        columnTypeMap.put("f20", ColumnType.STRING);
-        columnTypeMap.put("f21", ColumnType.STRING);
-        columnTypeMap.put("f23", ColumnType.STRING);
-        columnTypeMap.put("f26", ColumnType.STRING);
-        columnTypeMap.put("f62", ColumnType.STRING);
-        columnTypeMap.put("f128", ColumnType.STRING);
-        columnTypeMap.put("f136", ColumnType.STRING);
-        columnTypeMap.put("f115", ColumnType.STRING);
-        columnTypeMap.put("f152", ColumnType.STRING);
-
-        Table table = TableBuildingUtils.build(finalColumnNames, dataRows, ReadOptionsUtils.columnTypeByName(columnTypeMap));
+        // String url = "http://push2.eastmoney.com/api/qt/clist/get";
+        //
+        // String fields = "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f26,f22,f33,f11,f62,f128,f136,f115,f152";
+        // Map<String, Object> params = new HashMap<>();
+        // params.put("pn", 1);// pageNumber
+        // params.put("pz", 10000);//pageSize
+        // params.put("po", 1);
+        // params.put("np", 1);
+        // // params.put("ut", "bd1d9ddb04089700cf9c27f6f7426281");
+        // params.put("fltt", 2);
+        // params.put("invt", 2);
+        // params.put("fid", "f3");
+        // params.put("fs", type);
+        // params.put("fields", fields);
+        // params.put("_", System.currentTimeMillis());
+        //
+        // String result = HttpRequest.get(url, params).userAgent(UA).referer("http://quote.eastmoney.com/").body();
+        // JsonNode json = JsonUtils.json(result, "data", "diff");
+        //
+        // List<String> columnNames = Arrays.asList(fields.split(","));
+        // List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
+        //
+        // List<String> finalColumnNames = Arrays.asList(
+        //         "f1",
+        //         "close",
+        //         "change",// 涨跌幅（%）
+        //         "change_price",
+        //         "volume",
+        //         "turnover",
+        //         "amplitude",//振幅（%）
+        //         "f8",
+        //         "f9",
+        //         "equivalence_ratio",//量比
+        //         "index_code",
+        //         "market",//"f13",
+        //         "index_name",
+        //         "high",
+        //         "low",
+        //         "open",
+        //         "last",
+        //         "f20",
+        //         "f21",
+        //         "f23",
+        //         "f24",
+        //         "f25",
+        //         "f26",
+        //         "f22",
+        //         "f33",
+        //         "f11",
+        //         "f62",
+        //         "f128",
+        //         "f136",
+        //         "f115",
+        //         "f152"
+        // );
+        //
+        // Map<String, ColumnType> columnTypeMap = new HashMap<>();
+        // columnTypeMap.put("index_code", ColumnType.STRING);
+        // columnTypeMap.put("market", ColumnType.STRING);
+        // columnTypeMap.put("volume", ColumnType.LONG);
+        // columnTypeMap.put("turnover", ColumnType.DOUBLE);
+        // columnTypeMap.put("f8", ColumnType.STRING);
+        // columnTypeMap.put("f9", ColumnType.STRING);
+        // columnTypeMap.put("f20", ColumnType.STRING);
+        // columnTypeMap.put("f21", ColumnType.STRING);
+        // columnTypeMap.put("f23", ColumnType.STRING);
+        // columnTypeMap.put("f26", ColumnType.STRING);
+        // columnTypeMap.put("f62", ColumnType.STRING);
+        // columnTypeMap.put("f128", ColumnType.STRING);
+        // columnTypeMap.put("f136", ColumnType.STRING);
+        // columnTypeMap.put("f115", ColumnType.STRING);
+        // columnTypeMap.put("f152", ColumnType.STRING);
+        //
+        // Table table = TableBuildingUtils.build(finalColumnNames, dataRows, ReadOptionsUtils.columnTypeByName(columnTypeMap));
 
         // StringColumn indexCode = StringColumn.create("index_code", table.stream().map(row ->
         //         String.format("%s.%s", row.getString("index_code"), transform2M(row.getString("market")))
         // ));
         // table.replaceColumn("index_code", indexCode);
+
+        List<Map<String, Object>> data = com.github.superzhc.data.index.EastMoneyIndex.indices(type);
+        Table table = TableUtils.buildByMap(data);
 
         return table;
     }
@@ -204,6 +207,7 @@ public class EastMoneyIndex {
     /**
      * @param symbol
      * @param period 周期，choice of {'daily', 'weekly', 'monthly'}
+     *
      * @return
      */
     public static Table history(String symbol, String period) {
@@ -212,43 +216,46 @@ public class EastMoneyIndex {
         periodMap.put("weekly", "102");
         periodMap.put("monthly", "103");
 
-        String url = "http://push2his.eastmoney.com/api/qt/stock/kline/get";
+        // String url = "http://push2his.eastmoney.com/api/qt/stock/kline/get";
+        //
+        // Map<String, Object> params = new HashMap<>();
+        // params.put("secid", transform(symbol));
+        // // params.put("ut", "7eea3edcaed734bea9cbfc24409ed989");
+        // params.put("fields1", "f1,f2,f3,f4,f5,f6");
+        // params.put("fields2", "f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61");
+        // params.put("klt", periodMap.get(period));
+        // params.put("fqt", "0");
+        // params.put("beg", "0");
+        // params.put("end", "20500000");
+        // params.put("_", System.currentTimeMillis());
+        //
+        // String result = HttpRequest.get(url, params).body();
+        // JsonNode json = JsonUtils.json(result, "data", "klines");
+        //
+        // List<String> columnNames = Arrays.asList(
+        //         INDEX_TRADE_DATE,//"日期"
+        //         INDEX_TRADE_OPEN,//"开盘"
+        //         INDEX_TRADE_CLOSE,//"收盘"
+        //         INDEX_TRADE_HIGH,//"最高"
+        //         INDEX_TRADE_LOW,//"最低"
+        //         INDEX_TRADE_VOLUME,//"成交量"
+        //         INDEX_TRADE_AMOUNT,//"成交额"
+        //         INDEX_TRADE_AMPLITUDE,//"振幅"
+        //         INDEX_TRADE_QUOTE_CHANGE,//"涨跌幅"
+        //         INDEX_TRADE_QUOTE_CHANGE_AMOUNT,//"涨跌额"
+        //         INDEX_TRADE_TURNOVER_RATE//"换手率"
+        // );
+        //
+        // List<String[]> dataRows = new ArrayList<>();
+        // for (JsonNode item : json) {
+        //     String[] row = item.asText().split(",");
+        //     dataRows.add(row);
+        // }
+        //
+        // Table table = TableUtils.build(columnNames, dataRows);
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("secid", transform(symbol));
-        // params.put("ut", "7eea3edcaed734bea9cbfc24409ed989");
-        params.put("fields1", "f1,f2,f3,f4,f5,f6");
-        params.put("fields2", "f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61");
-        params.put("klt", periodMap.get(period));
-        params.put("fqt", "0");
-        params.put("beg", "0");
-        params.put("end", "20500000");
-        params.put("_", System.currentTimeMillis());
-
-        String result = HttpRequest.get(url, params).body();
-        JsonNode json = JsonUtils.json(result, "data", "klines");
-
-        List<String> columnNames = Arrays.asList(
-                INDEX_TRADE_DATE,//"日期"
-                INDEX_TRADE_OPEN,//"开盘"
-                INDEX_TRADE_CLOSE,//"收盘"
-                INDEX_TRADE_HIGH,//"最高"
-                INDEX_TRADE_LOW,//"最低"
-                INDEX_TRADE_VOLUME,//"成交量"
-                INDEX_TRADE_AMOUNT,//"成交额"
-                INDEX_TRADE_AMPLITUDE,//"振幅"
-                INDEX_TRADE_QUOTE_CHANGE,//"涨跌幅"
-                INDEX_TRADE_QUOTE_CHANGE_AMOUNT,//"涨跌额"
-                INDEX_TRADE_TURNOVER_RATE//"换手率"
-        );
-
-        List<String[]> dataRows = new ArrayList<>();
-        for (JsonNode item : json) {
-            String[] row = item.asText().split(",");
-            dataRows.add(row);
-        }
-
-        Table table = TableUtils.build(columnNames, dataRows);
+        List<Map<String, Object>> data = com.github.superzhc.data.index.EastMoneyIndex.history(symbol, periodMap.get(period));
+        Table table = TableUtils.buildByMap(data);
 
         return table;
     }
@@ -348,10 +355,10 @@ public class EastMoneyIndex {
 
     private static String transform(String symbol) {
         String[] ss = symbol.split("\\.");
-        return String.format("%s.%s", transformM(ss[1]), ss[0]);
+        return String.format("%s.%s", transform4M(ss[1]), ss[0]);
     }
 
-    public static String transformM(String market) {
+    public static String transform4M(String market) {
         String s = market.toLowerCase();
         if ("sh".equals(s)) {
             return "1";
@@ -385,7 +392,7 @@ public class EastMoneyIndex {
         System.out.println(table.structure().print());
         System.out.println(table.shape());
 
-        XYChart chart=TableXChartTool.line4date(table,"date","close");
+        XYChart chart = TableXChartTool.line4date(table, "date", "close");
         new SwingWrapper<>(chart).displayChart();
     }
 }
