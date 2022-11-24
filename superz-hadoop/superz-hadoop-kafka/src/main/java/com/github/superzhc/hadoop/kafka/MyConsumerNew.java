@@ -22,72 +22,6 @@ import java.util.function.Function;
 public class MyConsumerNew<K, V> extends KafkaBrokers {
     private static final Logger log = LoggerFactory.getLogger(MyConsumerNew.class);
 
-    /*public static class TopicPartitionConsumer extends KafkaBrokers implements Runnable {
-
-        private String groupId;
-        private Map<String, String> properties;
-        private String topic;
-        private int partition;
-        private long start;
-        private long nums;
-        private java.util.function.Consumer<ConsumerRecord<String, String>> function;
-
-        public TopicPartitionConsumer(String brokers
-                , String groupId
-                , Map<String, String> properties
-                , String topic
-                , int partition
-                , long start
-                , long nums
-                , java.util.function.Consumer<ConsumerRecord<String, String>> function
-        ) {
-            super(brokers);
-
-            this.groupId = groupId;
-            this.properties = properties;
-            this.topic = topic;
-            this.partition = partition;
-            this.start = start;
-            this.nums = nums;
-            this.function = function;
-        }
-
-        @Override
-        public void run() {
-            Properties props = new Properties();
-            props.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, brokers);
-            props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
-            // 设定默认值
-            props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-            props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-            if (null != properties && !properties.isEmpty()) {
-                for (Map.Entry<String, String> property : properties.entrySet()) {
-                    props.put(property.getKey(), property.getValue());
-                }
-            }
-
-            try (Consumer<String, String> consumer = new KafkaConsumer<String, String>(props)) {
-                log.info("[{}]消费者组[{}]从主题[{}]的第[{}]分区的{}偏移量开始消费", Thread.currentThread().getName(), groupId, topic, partition, start);
-                TopicPartition topicPartition = new TopicPartition(topic, partition);
-                consumer.assign(Collections.singleton(topicPartition));
-                consumer.seek(topicPartition, start);
-                int cursor = 0;
-                while (cursor <= nums) {
-                    ConsumerRecords<String, String> records = consumer.poll(1000);
-                    log.debug("[{}]消费者组[{}]从主题[{}]的第[{}]分区获取数据：{}条", Thread.currentThread().getName(), groupId, topic, partition, records.count());
-                    if (!records.isEmpty()) {
-                        for (ConsumerRecord<String, String> record : records) {
-                            function.accept(record);
-                        }
-                        // 粗计算，只要大于设定的条数即可
-                        cursor += records.count();
-                    }
-                }
-                log.info("[{}]消费者组[{}]消费到主题[{}]的第[{}]分区的{}偏移量结束，共消费：{}条", Thread.currentThread().getName(), groupId, topic, partition, start + cursor, cursor);
-            }
-        }
-    }*/
-
     private static final String DEFAULT_GROUP = "DEFAULT-SUPERZ-CONSUMER";
 
     private final String groupId;
@@ -167,59 +101,7 @@ public class MyConsumerNew<K, V> extends KafkaBrokers {
         }
     }
 
-    public void multiConsumer(String topic, int partition, long start, long end, int workers) {
-        if (start >= end) {
-            throw new RuntimeException("主题[" + topic + "]的分区[" + partition + "]开始偏移量大于结束偏移量");
-        }
-
-        // 计算每个分片的数据量
-        long diff = end - start;
-        long remainder = diff % workers;
-        long avgWorkerOffset = diff / workers;
-        long[] workersOffset = new long[workers];
-        for (int i = 0; i < workers; i++) {
-            workersOffset[i] = avgWorkerOffset;
-        }
-        workersOffset[workers - 1] = avgWorkerOffset + remainder; // 最后一个worker消费多余的一部分偏移量
-
-        for (int j = 0; j < workers; j++) {
-            Properties props = properties();
-            props.put(ConsumerConfig.GROUP_ID_CONFIG, String.format("%s-%d", groupId, j));
-
-            // 分段开始的偏移量
-            final long splitStart = start + avgWorkerOffset * j;
-            final long splitNums = workersOffset[j];
-
-            Runnable thread = new Runnable() {
-                @Override
-                public void run() {
-                    try (Consumer<K, V> consumer = new KafkaConsumer<>(properties())) {
-                        // 指定主题分区
-                        TopicPartition topicPartition = new TopicPartition(topic, partition);
-                        consumer.assign(Collections.singleton(topicPartition));
-
-                        // 从指定偏移量获取数据
-                        consumer.seek(topicPartition, splitStart);
-
-                        int cursor = 0;
-                        while (true) {
-                            ConsumerRecords<K, V> records = consumer.poll(Duration.ofMillis(100));
-                            // TODO
-                            // flag = function.apply(records);
-                        }
-                    }
-                }
-            };
-        }
-    }
-
-/*    public List<ConsumerRecord<String, String>> consumer(
-            String topic
-            , int partition
-            , long start
-            , long end
-            , int workers
-    ) {
+    public void multiConsumer(String topic, int partition, long start, long end, int workers, Function<ConsumerRecords<K, V>, Void> function) {
         if (start >= end) {
             throw new RuntimeException("主题[" + topic + "]的分区[" + partition + "]开始偏移量大于结束偏移量");
         }
@@ -243,28 +125,41 @@ public class MyConsumerNew<K, V> extends KafkaBrokers {
                 , new SynchronousQueue<Runnable>()
         );
 
-        final List<ConsumerRecord<String, String>> data = new ArrayList<>();
-
         for (int j = 0; j < workers; j++) {
-            Runnable thread = new TopicPartitionConsumer(
-                    brokers
-                    , String.format("%s-%d", groupId, j)
-                    , properties
-                    , topic
-                    , partition
-                    , start + avgWorkerOffset * j
-                    , workersOffset[j]
-                    , new java.util.function.Consumer<ConsumerRecord<String, String>>() {
-                @Override
-                public void accept(ConsumerRecord<String, String> record) {
-                    data.add(record);
-                }
-            });
-            pool.submit(thread);
-        }
+            Properties props = properties();
+            props.put(ConsumerConfig.GROUP_ID_CONFIG, String.format("%s-%d", groupId, j));
 
-        return data;
-    }*/
+            // 分段开始的偏移量
+            final long splitStart = start + avgWorkerOffset * j;
+            final long splitNums = workersOffset[j];
+
+            Runnable task = new Runnable() {
+                @Override
+                public void run() {
+                    try (Consumer<K, V> consumer = new KafkaConsumer<>(properties())) {
+                        // 指定主题分区
+                        TopicPartition topicPartition = new TopicPartition(topic, partition);
+                        consumer.assign(Collections.singleton(topicPartition));
+
+                        // 从指定偏移量获取数据
+                        consumer.seek(topicPartition, splitStart);
+
+                        int cursor = 0;
+                        while (true) {
+                            ConsumerRecords<K, V> records = consumer.poll(Duration.ofMillis(100));
+                            function.apply(records);
+                            cursor += records.count();
+                            if (cursor >= splitNums) {
+                                break;
+                            }
+                        }
+                    }
+                }
+            };
+
+            pool.submit(task);
+        }
+    }
 
     public static void main(String[] args) {
         String broker = "127.0.0.1:19092";
