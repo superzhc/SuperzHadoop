@@ -13,6 +13,7 @@ import java.util.concurrent.Future;
 /**
  * 2020年04月26日 superz add
  */
+@Deprecated
 public class MyProducer extends KafkaBrokers implements Closeable {
     private Producer<String, String> producer;
 
