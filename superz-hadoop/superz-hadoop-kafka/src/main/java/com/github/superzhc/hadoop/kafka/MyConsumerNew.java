@@ -8,10 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.function.Function;
 
 /**
@@ -96,7 +93,7 @@ public class MyConsumerNew<K, V> extends KafkaBrokers {
         return props;
     }
 
-    public void consumer(String topic,final Function<ConsumerRecords<K, V>, Boolean> function) {
+    public void consumer(String topic, final Function<ConsumerRecords<K, V>, Boolean> function) {
         try (Consumer<K, V> consumer = new KafkaConsumer<>(properties())) {
             // 订阅主题
             consumer.subscribe(Collections.singleton(topic));
@@ -109,7 +106,7 @@ public class MyConsumerNew<K, V> extends KafkaBrokers {
         }
     }
 
-    public void consumer(String topic, int partition,final Function<ConsumerRecords<K, V>, Boolean> function) {
+    public void consumer(String topic, int partition, final Function<ConsumerRecords<K, V>, Boolean> function) {
         try (Consumer<K, V> consumer = new KafkaConsumer<>(properties())) {
             // 指定主题分区
             TopicPartition topicPartition = new TopicPartition(topic, partition);
@@ -123,7 +120,7 @@ public class MyConsumerNew<K, V> extends KafkaBrokers {
         }
     }
 
-    public void consumer4Beginning(String topic, int partition,final Function<ConsumerRecords<K, V>, Boolean> function) {
+    public void consumer4Beginning(String topic, int partition, final Function<ConsumerRecords<K, V>, Boolean> function) {
         try (Consumer<K, V> consumer = new KafkaConsumer<>(properties())) {
             // 指定主题分区
             TopicPartition topicPartition = new TopicPartition(topic, partition);
@@ -140,7 +137,7 @@ public class MyConsumerNew<K, V> extends KafkaBrokers {
         }
     }
 
-    public void consumer4End(String topic, int partition,final Function<ConsumerRecords<K, V>, Boolean> function) {
+    public void consumer4End(String topic, int partition, final Function<ConsumerRecords<K, V>, Boolean> function) {
         try (Consumer<K, V> consumer = new KafkaConsumer<>(properties())) {
             // 指定主题分区
             TopicPartition topicPartition = new TopicPartition(topic, partition);
@@ -157,7 +154,7 @@ public class MyConsumerNew<K, V> extends KafkaBrokers {
         }
     }
 
-    public void consumer(String topic, int partition, long start,final Function<ConsumerRecords<K, V>, Boolean> function) {
+    public void consumer(String topic, int partition, long start, final Function<ConsumerRecords<K, V>, Boolean> function) {
         try (Consumer<K, V> consumer = new KafkaConsumer<>(properties())) {
             // 指定主题分区
             TopicPartition topicPartition = new TopicPartition(topic, partition);
@@ -174,9 +171,43 @@ public class MyConsumerNew<K, V> extends KafkaBrokers {
         }
     }
 
-    public void multiConsumer(String topic, int partition, long start, long end, int workers,final java.util.function.Consumer<ConsumerRecords<K, V>> function) {
+    /**
+     * 多线程执行好像没啥用，单一一个线程读取主题分区耗时约等于多线程分段读取主题分区
+     * @param topic
+     * @param partition
+     * @param start
+     * @param end
+     * @param workers
+     * @param function
+     */
+    public void multiConsumer(String topic, int partition, long start, long end, int workers, final java.util.function.Consumer<ConsumerRecord<K, V>> function) {
+        long startTime = System.currentTimeMillis();
+
+        // 指定主题分区
+        final TopicPartition topicPartition = new TopicPartition(topic, partition);
+
+        Properties mirrorProps = properties();
+        mirrorProps.put(ConsumerConfig.GROUP_ID_CONFIG, String.format("%s-%s", groupId, "mirror"));
+        try (Consumer<K, V> mirrorConsumer = new KafkaConsumer<>(mirrorProps)) {
+            Map<TopicPartition, Long> beginOffsetsMap = mirrorConsumer.beginningOffsets(Collections.singletonList(topicPartition));
+            long realStart = beginOffsetsMap.get(topicPartition);
+
+            if (start < realStart) {
+                start = realStart;
+            }
+
+            if (start > end) {
+                Map<TopicPartition, Long> endOffsetsMap = mirrorConsumer.endOffsets(Collections.singletonList(topicPartition));
+                end = endOffsetsMap.get(topicPartition);
+            }
+        }
+
         if (start >= end) {
-            throw new RuntimeException("主题[" + topic + "]的分区[" + partition + "]开始偏移量大于结束偏移量");
+            throw new RuntimeException("主题[" + topic + "]的分区[" + partition + "]开始偏移量[" + start + "]大于结束偏移量[" + end + "]");
+        }
+
+        if (log.isDebugEnabled()) {
+            log.debug("主题[{}]的分区[{}]读取偏移量为：{} ~ {}，共{}条", topic, partition, start, end, end - start);
         }
 
         // 计算每个分片的数据量
@@ -188,6 +219,9 @@ public class MyConsumerNew<K, V> extends KafkaBrokers {
             workersOffset[i] = avgWorkerOffset;
         }
         workersOffset[workers - 1] = avgWorkerOffset + remainder; // 最后一个worker消费多余的一部分偏移量
+
+        // 2022年11月28日 做成同步方法，即所有线程执行完毕这函数才算执行完成
+        final CountDownLatch countDownLatch = new CountDownLatch(workers);
 
         // 创建线程池
         ExecutorService pool = new ThreadPoolExecutor(
@@ -205,13 +239,15 @@ public class MyConsumerNew<K, V> extends KafkaBrokers {
             // 分段开始的偏移量
             final long splitStart = start + avgWorkerOffset * j;
             final long splitNums = workersOffset[j];
+            final Integer runnableId = j + 1;
+            log.debug("主题[{}]的分区[{}]读取第{}段偏移量为：{} ~ {}，共{}条", topic, partition, runnableId, splitStart, splitStart + splitNums, splitNums);
 
             Runnable task = new Runnable() {
                 @Override
                 public void run() {
+                    long childStartTime = System.currentTimeMillis();
                     try (Consumer<K, V> consumer = new KafkaConsumer<>(properties())) {
-                        // 指定主题分区
-                        TopicPartition topicPartition = new TopicPartition(topic, partition);
+                        // 分配指定分区主题
                         consumer.assign(Collections.singleton(topicPartition));
 
                         // 从指定偏移量获取数据
@@ -220,17 +256,46 @@ public class MyConsumerNew<K, V> extends KafkaBrokers {
                         int cursor = 0;
                         while (true) {
                             ConsumerRecords<K, V> records = consumer.poll(Duration.ofMillis(1000));
-                            function.accept(records);
-                            cursor += records.count();
+                            if (records == null || records.isEmpty()) {
+                                continue;
+                            }
+
+                            List<ConsumerRecord<K, V>> recordList = records.records(topicPartition);
+                            int total = records.count();
+                            long minOffset = Long.MAX_VALUE;
+                            long maxOffset = -1;
+                            for (ConsumerRecord<K, V> record : recordList) {
+                                minOffset = Math.min(record.offset(), minOffset);
+                                maxOffset = Math.max(record.offset(), maxOffset);
+                                function.accept(record);
+                            }
+
+                            if (log.isDebugEnabled()) {
+                                log.debug("主题[{}]的分区[{}]第{}段读取数据[{}/{}]偏移量：{} ~ {}[{}]", topicPartition.topic(), topicPartition.partition(), runnableId, cursor + total, splitNums, minOffset, maxOffset, total);
+                            }
+
+                            cursor += total;
                             if (cursor >= splitNums) {
                                 break;
                             }
                         }
                     }
+
+                    long childEndTime = System.currentTimeMillis();
+                    log.debug("线程[{}]执行完毕，耗时：{}min", Thread.currentThread().getName(), (childEndTime - childStartTime) / (1000.0 * 60));
+                    countDownLatch.countDown();
                 }
             };
 
             pool.submit(task);
+        }
+
+        try {
+            countDownLatch.await();
+            long endTime = System.currentTimeMillis();
+            log.debug("主线程[{}]执行耗时：{}min", Thread.currentThread().getName(), (endTime - start) / (1000.0 * 60));
+        } catch (InterruptedException e) {
+            return;
         }
     }
 

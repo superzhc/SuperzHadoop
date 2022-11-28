@@ -179,9 +179,34 @@ public class MyConsumerNew<K, V> {
         }
     }
 
-    public void multiConsumer(String topic, int partition, long start, long end, int workers, final java.util.function.Consumer<ConsumerRecords<K, V>> function) {
+    public void multiConsumer(String topic, int partition, long start, long end, int workers, final java.util.function.Consumer<ConsumerRecord<K, V>> function) {
+        long startTime = System.currentTimeMillis();
+
+        // 指定主题分区
+        final TopicPartition topicPartition = new TopicPartition(topic, partition);
+
+        Properties mirrorProps = properties();
+        mirrorProps.put(ConsumerConfig.GROUP_ID_CONFIG, String.format("%s-%s", groupId, "mirror"));
+        try (Consumer<K, V> mirrorConsumer = new KafkaConsumer<>(mirrorProps)) {
+            Map<TopicPartition, Long> beginOffsetsMap = mirrorConsumer.beginningOffsets(Collections.singletonList(topicPartition));
+            long realStart = beginOffsetsMap.get(topicPartition);
+
+            if (start < realStart) {
+                start = realStart;
+            }
+
+            if (start > end) {
+                Map<TopicPartition, Long> endOffsetsMap = mirrorConsumer.endOffsets(Collections.singletonList(topicPartition));
+                end = endOffsetsMap.get(topicPartition);
+            }
+        }
+
         if (start >= end) {
-            throw new RuntimeException("主题[" + topic + "]的分区[" + partition + "]开始偏移量大于结束偏移量");
+            throw new RuntimeException("主题[" + topic + "]的分区[" + partition + "]开始偏移量[" + start + "]大于结束偏移量[" + end + "]");
+        }
+
+        if (log.isDebugEnabled()) {
+            log.debug("主题[{}]的分区[{}]读取偏移量为：{} ~ {}，共{}条", topic, partition, start, end, end - start);
         }
 
         // 计算每个分片的数据量
@@ -193,6 +218,9 @@ public class MyConsumerNew<K, V> {
             workersOffset[i] = avgWorkerOffset;
         }
         workersOffset[workers - 1] = avgWorkerOffset + remainder; // 最后一个worker消费多余的一部分偏移量
+
+        // 2022年11月28日 做成同步方法，即所有线程执行完毕这函数才算执行完成
+        final CountDownLatch countDownLatch = new CountDownLatch(workers);
 
         // 创建线程池
         ExecutorService pool = new ThreadPoolExecutor(
@@ -210,13 +238,15 @@ public class MyConsumerNew<K, V> {
             // 分段开始的偏移量
             final long splitStart = start + avgWorkerOffset * j;
             final long splitNums = workersOffset[j];
+            final Integer runnableId = j + 1;
+            log.debug("主题[{}]的分区[{}]读取第{}段偏移量为：{} ~ {}，共{}条", topic, partition, runnableId, splitStart, splitStart + splitNums, splitNums);
 
             Runnable task = new Runnable() {
                 @Override
                 public void run() {
+                    long childStartTime = System.currentTimeMillis();
                     try (Consumer<K, V> consumer = new KafkaConsumer<>(properties())) {
-                        // 指定主题分区
-                        TopicPartition topicPartition = new TopicPartition(topic, partition);
+                        // 分配指定分区主题
                         consumer.assign(Collections.singleton(topicPartition));
 
                         // 从指定偏移量获取数据
@@ -225,17 +255,46 @@ public class MyConsumerNew<K, V> {
                         int cursor = 0;
                         while (true) {
                             ConsumerRecords<K, V> records = consumer.poll(1000);
-                            function.accept(records);
-                            cursor += records.count();
+                            if (records == null || records.isEmpty()) {
+                                continue;
+                            }
+
+                            List<ConsumerRecord<K, V>> recordList = records.records(topicPartition);
+                            int total = records.count();
+                            long minOffset = Long.MAX_VALUE;
+                            long maxOffset = -1;
+                            for (ConsumerRecord<K, V> record : recordList) {
+                                minOffset = Math.min(record.offset(), minOffset);
+                                maxOffset = Math.max(record.offset(), maxOffset);
+                                function.accept(record);
+                            }
+
+                            if (log.isDebugEnabled()) {
+                                log.debug("主题[{}]的分区[{}]第{}段读取数据[{}/{}]偏移量：{} ~ {}[{}]", topicPartition.topic(), topicPartition.partition(), runnableId, cursor + total, splitNums, minOffset, maxOffset, total);
+                            }
+
+                            cursor += total;
                             if (cursor >= splitNums) {
                                 break;
                             }
                         }
                     }
+
+                    long childEndTime = System.currentTimeMillis();
+                    log.debug("线程[{}]执行完毕，耗时：{}min", Thread.currentThread().getName(), (childEndTime - childStartTime) / (1000.0 * 60));
+                    countDownLatch.countDown();
                 }
             };
 
             pool.submit(task);
+        }
+
+        try {
+            countDownLatch.await();
+            long endTime = System.currentTimeMillis();
+            log.debug("主线程[{}]执行耗时：{}min", Thread.currentThread().getName(), (endTime - startTime) / (1000.0 * 60));
+        } catch (InterruptedException e) {
+            return;
         }
     }
 
@@ -251,35 +310,24 @@ public class MyConsumerNew<K, V> {
         properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
 
-        final FixedQueue<ConsumerRecord<String, String>> queue = new FixedQueue<>(1000);
+        final FixedQueue<ConsumerRecord<String, String>> queue = new FixedQueue<>(100);
+        final AtomicLong counter = new AtomicLong(0L);
 
         MyConsumerNew<String, String> myConsumerNew = new MyConsumerNew<>(broker, String.format("superz-%s", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))), properties);
-        myConsumerNew.multiConsumer(topic, partition, start, end, 8, new java.util.function.Consumer<ConsumerRecords<String, String>>() {
+        myConsumerNew.multiConsumer(topic, partition, start, end, 8, new java.util.function.Consumer<ConsumerRecord<String, String>>() {
             @Override
-            public void accept(ConsumerRecords<String, String> records) {
-                if (null == records || records.isEmpty()) {
-                    return;
+            public void accept(ConsumerRecord<String, String> record) {
+                String value = record.value();
+                JsonNode json = JsonUtils.json(value);
+                String devSn = JsonUtils.string(json, "productID");
+                if ("A04FA021800403".equals(devSn)) {
+                    counter.incrementAndGet();
+                    queue.offer(record);
                 }
-
-                int counter = 0;
-                int total = records.count();
-                long minOffset = Long.MAX_VALUE;
-                long maxOffset = -1;
-                for (ConsumerRecord<String, String> record : records) {
-                    minOffset = Math.min(record.offset(), minOffset);
-                    maxOffset = Math.max(record.offset(), maxOffset);
-                    String value = record.value();
-                    JsonNode json = JsonUtils.json(value);
-                    String devSn = JsonUtils.string(json, "productID");
-                    if ("A04FA021800403".equals(devSn)) {
-                        counter++;
-                        queue.offer(record);
-                    }
-                }
-                log.debug("获取数据条数：{}[{} ~ {}]，匹配条数：{}", total, minOffset, maxOffset, counter);
             }
         });
 
+        System.out.println("匹配条数：" + counter.get());
         for (ConsumerRecord<String, String> record : queue) {
             System.out.println(record);
         }
