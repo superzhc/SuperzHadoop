@@ -293,7 +293,7 @@ public class MyConsumerNew<K, V> extends KafkaBrokers {
         try {
             countDownLatch.await();
             long endTime = System.currentTimeMillis();
-            log.debug("主线程[{}]执行耗时：{}min", Thread.currentThread().getName(), (endTime - start) / (1000.0 * 60));
+            log.debug("主线程[{}]执行耗时：{}min", Thread.currentThread().getName(), (endTime - startTime) / (1000.0 * 60));
         } catch (InterruptedException e) {
             return;
         }
