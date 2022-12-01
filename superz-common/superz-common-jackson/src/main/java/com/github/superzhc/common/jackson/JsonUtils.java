@@ -6,12 +6,17 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.jayway.jsonpath.Configuration;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.Option;
+import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
+import com.jayway.jsonpath.spi.json.JsonProvider;
+import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
+import com.jayway.jsonpath.spi.mapper.MappingProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.lang.reflect.Method;
-import java.lang.reflect.Type;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -201,7 +206,6 @@ public class JsonUtils {
      *
      * @param json
      * @param paths
-     *
      * @return
      */
     @Deprecated
@@ -578,7 +582,6 @@ public class JsonUtils {
      *
      * @param datas
      * @param childPaths
-     *
      * @return
      */
     @Deprecated
@@ -591,7 +594,6 @@ public class JsonUtils {
      *
      * @param datas
      * @param childPaths
-     *
      * @return
      */
     @Deprecated
@@ -606,7 +608,6 @@ public class JsonUtils {
      * @param datas
      * @param columnNames
      * @param childPaths
-     *
      * @return
      */
     @Deprecated
@@ -614,11 +615,44 @@ public class JsonUtils {
         return objectArrayWithKeys(datas, columnNames.toArray(new String[columnNames.size()]), childPaths);
     }
 
+    //=============================【实验性】JsonPath支持，若未引入jsonpath依赖包，无法使用如下方法===========================
+    static {
+        Configuration.setDefaults(new Configuration.Defaults() {
+            private final JsonProvider jsonProvider = new JacksonJsonNodeJsonProvider(mapper);
+            private final MappingProvider mappingProvider = new JacksonMappingProvider(mapper);
+
+            @Override
+            public JsonProvider jsonProvider() {
+                return jsonProvider;
+            }
+
+            @Override
+            public MappingProvider mappingProvider() {
+                return mappingProvider;
+            }
+
+            @Override
+            public Set<Option> options() {
+                return EnumSet.noneOf(Option.class);
+            }
+        });
+    }
+
+    public static JsonNode jsonpath(JsonNode node, String path) {
+        return JsonPath.read(node, path);
+    }
+    //=============================【实验性】JsonPath支持===================================================================
+
     public static void main(String[] args) {
         Object[] objs = new Object[]{"Hello", "en", "zh-cn", true};
         Object[] objs2 = new Object[]{objs, new Object[]{null}};
         Object[] objs3 = new Object[]{"MkEWBc", JsonUtils.asString(objs2), null, "generic"};
         Object[] objs4 = new Object[]{objs3};
         Object[] objs5 = new Object[]{objs4};
+
+        String str = "{\"cmdID\":0,\"productID\":\"2181457504\",\"offset\":42399409,\"payload\":\"{\\\"realLoadingWeight\\\":0.77,\\\"GPSCell\\\":\\\"0\\\",\\\"ShenBiSuoFaSignal\\\":0,\\\"FuJuanYangXiaLuoDianCiFa\\\":0,\\\"callType\\\":\\\"00\\\",\\\"currentWaterTemp\\\":79,\\\"ShenBiQieHuanFa\\\":0,\\\"password\\\":\\\"Qh\\\",\\\"pedalPosition\\\":0.0,\\\"enterAreaAlarmFunc\\\":\\\"0\\\",\\\"leaveAreaAlarmFunc\\\":\\\"0\\\",\\\"Distance\\\":380222,\\\"lng\\\":46.756175,\\\"BianFuYouGangDaQiangYaLi\\\":0,\\\"GaoDuXianWeiKaiGuanStatus\\\":\\\"0000\\\",\\\"encryptLat\\\":24.86716,\\\"gpsInfoNumber\\\":1,\\\"XianDaoFa\\\":0,\\\"interAreaAlarm\\\":\\\"0\\\",\\\"locationStatusOriginal\\\":\\\"A1\\\",\\\"mainLossOfElectric\\\":\\\"0\\\",\\\"standbyLossOfElectricFunc\\\":\\\"0\\\",\\\"ZhuJuanYangXiaLuoDianCiFa\\\":0,\\\"onOrOffStatusResponseFunc\\\":\\\"1\\\",\\\"forceSwitch\\\":0,\\\"mainBreakElectric\\\":\\\"0\\\",\\\"lockReason4\\\":\\\"0\\\",\\\"lockReason3\\\":\\\"0\\\",\\\"cmdReceiveTime\\\":\\\"2022-11-22 20:34:34\\\",\\\"terminalId\\\":\\\"2181457504\\\",\\\"currentOilConsumption\\\":0,\\\"deadZoneCompensation\\\":\\\"1\\\",\\\"lockReason2\\\":\\\"0\\\",\\\"gprsManufacturerCode\\\":\\\"68\\\",\\\"lockReason1\\\":\\\"0\\\",\\\"ErJieBiChang\\\":0,\\\"amplitude\\\":16.19,\\\"encryptLng\\\":46.756175,\\\"ZiYouHuaZhuanFa\\\":0,\\\"mainBreakElectricFunc\\\":\\\"1\\\",\\\"angle\\\":55.88,\\\"commandSequenceID\\\":\\\"E140\\\",\\\"originalGpsTime\\\":\\\"2022-11-22 12:34:33\\\",\\\"returnInfoId\\\":\\\"XXX8\\\",\\\"forceLimitFaultCode\\\":\\\"0000\\\",\\\"longitudeMarkOriginal\\\":\\\"A6\\\",\\\"torquePercentage\\\":25,\\\"overSpeedAlarm\\\":\\\"0\\\",\\\"protocolType\\\":\\\"gprsMediumSmallGps\\\",\\\"PositioningState\\\":1,\\\"vehicle_acc\\\":\\\"0\\\",\\\"leaveAreaAlarm\\\":\\\"0\\\",\\\"overSpeedAlarmFunc\\\":\\\"0\\\",\\\"bindingStatus\\\":\\\"0\\\",\\\"HuiZhuanZhiDongFa\\\":0,\\\"ratio\\\":4,\\\"FuJuanYangQiShengDianCiFa\\\":0,\\\"latitudeMarkOriginal\\\":\\\"A5\\\",\\\"ZhuSanQuanBaoHuQi\\\":0,\\\"onStatusResponse\\\":\\\"1\\\",\\\"totalMileage\\\":380222,\\\"emergencyAlarm\\\":\\\"0\\\",\\\"BianFuLuoDianCiFa\\\":0,\\\"parseTime\\\":\\\"2022-11-22 22:46:26\\\",\\\"lat\\\":24.86716,\\\"controllerFaultCode\\\":\\\"00\\\",\\\"offset\\\":42399409,\\\"dataType\\\":0,\\\"responseCommandID\\\":\\\"05\\\",\\\"workingCondition\\\":\\\"0001\\\",\\\"gpsTime\\\":\\\"2022-11-22 20:34:33\\\",\\\"terminalType\\\":\\\"\\\",\\\"YunXingShiJian\\\":2105,\\\"shortMessageManufacturerCode\\\":\\\"28\\\",\\\"FuSanQuanBaoHuQi\\\":0,\\\"gpsTerminalSn\\\":2181457504,\\\"lockVehicleStatus\\\":\\\"0\\\",\\\"oilPressure\\\":292,\\\"ZhuJuanYangQiShengDianCiFa\\\":0,\\\"speed\\\":0.5,\\\"ShenSuoFuJuanTaBanSignal\\\":0,\\\"locationStatus\\\":1,\\\"bindingSuccessStatus\\\":\\\"0\\\",\\\"latitudeMark\\\":\\\"N\\\",\\\"longitudeMark\\\":\\\"E\\\",\\\"ShenSuoFuJuanQieHuanKaiGuanSignal\\\":0,\\\"mainLossOfElectricFunc\\\":\\\"1\\\",\\\"rotateSpeed\\\":873,\\\"vehicleId\\\":\\\"1495240153358848002\\\",\\\"direction\\\":198,\\\"ShenBiShenFaSignal\\\":0,\\\"forceCall\\\":\\\"0\\\",\\\"dataFormat\\\":\\\"B\\\",\\\"length\\\":32.19,\\\"deviceCode\\\":\\\"501X\\\",\\\"maxLoadingWeight\\\":14.75,\\\"inputSignalAlarmFunc\\\":\\\"0\\\",\\\"engineWorkStatus\\\":\\\"1\\\"}\",\"vehiclePrefix\":22188,\"datePartition\":\"20221122\",\"time\":9223372035185655334,\"vehicle_id\":\"1495240153358848002\",\"productPrefix\":10971}";
+        JsonNode json = json(str);
+        long offset = aLong(jsonpath(json, "$.offset"));
+        System.out.println(offset);
     }
 }

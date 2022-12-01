@@ -63,6 +63,13 @@
             <artifactId>superz-fund</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <!--本地缓存框架-->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>2.9.3</version>
+        </dependency>
     </dependencies>
 
 </project>

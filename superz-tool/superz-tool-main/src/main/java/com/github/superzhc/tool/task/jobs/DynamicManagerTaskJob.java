@@ -1,4 +1,4 @@
-package com.github.superzhc.tool.task;
+package com.github.superzhc.tool.task.jobs;
 
 import com.github.superzhc.common.jdbc.JdbcHelper;
 import com.github.superzhc.common.utils.PathUtils;
