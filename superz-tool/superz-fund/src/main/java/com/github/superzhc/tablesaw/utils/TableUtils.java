@@ -72,7 +72,7 @@ public class TableUtils {
         return TableBuildingUtils.build(columnNames, dataRows, ReadOptionsUtils.columnTypeByFunction(new FundColumnType()));
     }
 
-    public static Table buildByMap(List<Map<String, Object>> dataRows) {
+    public static <T> Table buildByMap(List<Map<String, T>> dataRows) {
         Set<String> columnNames = new LinkedHashSet<>();
         for (Map<String, ?> dataRow : dataRows) {
             columnNames.addAll(dataRow.keySet());
@@ -80,7 +80,7 @@ public class TableUtils {
         return buildByMap(new ArrayList<>(columnNames), dataRows);
     }
 
-    public static Table buildByMap(List<String> columnNames, List<Map<String, Object>> dataRows) {
+    public static <T> Table buildByMap(List<String> columnNames, List<Map<String, T>> dataRows) {
         int columnSize = columnNames.size();
 
         List<String[]> dataRowList = new ArrayList<>();

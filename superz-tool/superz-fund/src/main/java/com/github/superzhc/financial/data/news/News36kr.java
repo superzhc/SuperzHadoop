@@ -100,26 +100,7 @@ public class News36kr {
     }
 
     private static Table execute(String category) {
-        String url = "https://www.36kr.com/information/ccs";
-
-        String result = HttpRequest.get(url).userAgent(UA_CHROME).body();
-        Document document = Jsoup.parse(result);
-
-        String data = null;
-        Pattern r = Pattern.compile(pattern);
-        Matcher matcher = r.matcher(document.data());
-        if (matcher.find()) {
-            data = matcher.group(1);
-            log.debug(data);
-        }
-
-        if (null == data) {
-            return null;
-        }
-
-        JsonNode json = JsonUtils.json(data);
-        List<String[]> tableData = JsonUtils.objectArray(json, "templateMaterial");
-        Table table = TableUtils.build(tableData);
+        Table table = TableUtils.buildByMap(com.github.superzhc.data.news.News36kr.execute(category));
         return table;
     }
 

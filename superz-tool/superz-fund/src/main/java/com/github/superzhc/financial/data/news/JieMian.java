@@ -21,26 +21,7 @@ import static com.github.superzhc.common.HttpConstant.UA_CHROME;
  **/
 public class JieMian {
     public static Table news() {
-        List<Map<String, Object>> dataRows = new ArrayList<>();
-
-        for (int i = 1; i < 5; i++) {
-            String url = String.format("https://www.jiemian.com/lists/%d.html", i);
-
-            String html = HttpRequest.get(url).userAgent(UA_CHROME).body();
-            Document document = Jsoup.parse(html);
-
-            Elements data = document.select(".card-list__content, .columns-right-center__newsflash-content");
-
-            for (Element item : data) {
-                Element ele = item.selectFirst("a");
-                Map<String, Object> dataRow = new LinkedHashMap<>();
-                dataRow.put("title", ele.text());
-                dataRow.put("link", ele.attr("href"));
-
-                dataRows.add(dataRow);
-            }
-        }
-
+        List<Map<String, Object>> dataRows = com.github.superzhc.data.news.JieMian.news();
         Table table = TableUtils.buildByMap(dataRows);
         return table;
     }

@@ -15,6 +15,7 @@ import java.util.*;
  * @author superz
  * @create 2022/8/5 9:12
  **/
+@Deprecated
 public class XueQiuArticle {
 
     public static void userArticle(String userId) {

@@ -134,18 +134,7 @@ public class BJSouBang {
     }
 
     public static Table execute(int channelId) {
-        String url = "https://www.bjsoubang.com/api/getChannelData";
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("channel_id", channelId);
-
-        String result = HttpRequest.get(url, params).body();
-        JsonNode json = JsonUtils.json(result, "info", "data");
-
-        List<String> columnNames = JsonUtils.extractObjectColumnName(json);
-        List<String[]> dataRows = JsonUtils.extractObjectData(json, columnNames);
-
-        Table table = TableUtils.build(columnNames, dataRows);
+        Table table = TableUtils.buildByMap(com.github.superzhc.data.other.BJSouBang.execute(channelId));
         return table;
     }
 

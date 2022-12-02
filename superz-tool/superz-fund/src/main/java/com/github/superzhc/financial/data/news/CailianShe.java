@@ -19,30 +19,9 @@ import static com.github.superzhc.common.HttpConstant.UA_CHROME;
  **/
 public class CailianShe {
     public static Table telegraph() {
-        String url = "https://www.cls.cn/nodeapi/updateTelegraphList";
-
-        Map<String, Object> params = new LinkedHashMap<>();
-        params.put("app", "CailianpressWeb");
-        params.put("category", "");
-        params.put("hasFirstVipArticle", "1");
-//        params.put("lastTime",);
-        params.put("os", "web");
-        params.put("rn", 100);//数量
-        params.put("subscribedColumnIds", "");
-        params.put("sv", "7.7.5");
-        // params.put("sign","b2c3f844c6867e28951c61c8e889de36");
-
-        String result = HttpRequest.get(url, params)
-                .header("Host", "www.cls.cn")
-                .userAgent(UA_CHROME)
-                // .followRedirects(true)
-                // .cookies("HWWAFSESID=82477a3143c62f598f; HWWAFSESTIME=1660374917550")
-                .body();
-        JsonNode json = JsonUtils.json(result, "data", "roll_data");
-
         List<String> columnNames = Arrays.asList("id", "ctime", "title", /*"type",*/ "brief", "content", "shareurl", "subjects");
-        List<String[]> data = JsonUtils.objectArrayWithKeys(json, columnNames);
-        Table table = TableUtils.build(data);
+        List<Map<String,Object>> data= com.github.superzhc.data.news.CailianShe.telegraph();
+        Table table = TableUtils.buildByMap(columnNames,data);
         return table;
     }
 
