@@ -130,6 +130,17 @@ public class MapUtils {
         return data;
     }
 
+    public static <K, V> Map<K, V> removeKeys(final Map<K, V> map, K... keys) {
+        if (null == keys || keys.length == 0) {
+            return map;
+        }
+
+        for (K key : keys) {
+            map.remove(key);
+        }
+        return map;
+    }
+
     public static <T> Map<String, T> replaceKey(Map<String, T> map, String key, String newKey) {
         map.put(newKey, map.get(key));
         map.remove(key);
