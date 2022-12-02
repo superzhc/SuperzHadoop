@@ -1,8 +1,9 @@
-package com.github.superzhc.hadoop.kafka.data;
+package com.github.superzhc.tool.task.jobs;
 
 import com.github.superzhc.common.jackson.JsonUtils;
 import com.github.superzhc.data.report.EastMoneyReport;
 import com.github.superzhc.hadoop.kafka.MyProducer;
+import com.github.superzhc.hadoop.kafka.MyStringProducer;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -46,7 +47,7 @@ public class FinanceReportJob implements Job {
     }
 
     public static void main(String[] args) throws Exception {
-        try (MyProducer producer = new MyProducer(BROKERS)) {
+        try (MyStringProducer producer = new MyStringProducer(BROKERS)) {
             LocalDate start = LocalDate.of(2021, 1, 1);
             LocalDate now = LocalDate.now();
             while (start.isBefore(now)) {

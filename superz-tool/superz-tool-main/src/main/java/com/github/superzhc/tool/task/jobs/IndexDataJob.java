@@ -1,8 +1,9 @@
-package com.github.superzhc.hadoop.kafka.data;
+package com.github.superzhc.tool.task.jobs;
 
 import com.github.superzhc.common.jackson.JsonUtils;
 import com.github.superzhc.data.index.CNIndex;
 import com.github.superzhc.hadoop.kafka.MyProducer;
+import com.github.superzhc.hadoop.kafka.MyStringProducer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +24,7 @@ public class IndexDataJob {
         String indexCode = "399986";
         List<Map<String, Object>> data = CNIndex.history(indexCode);
 
-        try (MyProducer producer = new MyProducer(BROKERS)) {
+        try (MyStringProducer producer = new MyStringProducer(BROKERS)) {
             int len = data.size();
             for (int i = 1; i <= len; i++) {
                 Map<String, Object> item = data.get(len - i);

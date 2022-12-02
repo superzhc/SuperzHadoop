@@ -1,16 +1,12 @@
-package com.github.superzhc.hadoop.kafka.data;
+package com.github.superzhc.tool.task.jobs;
 
 import com.github.superzhc.common.jackson.JsonUtils;
 import com.github.superzhc.data.fund.EastMoneyFund;
-import com.github.superzhc.hadoop.kafka.MyAdminClient;
 import com.github.superzhc.hadoop.kafka.MyProducer;
 import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 

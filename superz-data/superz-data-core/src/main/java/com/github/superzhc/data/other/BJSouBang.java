@@ -133,7 +133,7 @@ public class BJSouBang {
         return execute(9);
     }
 
-    private static List<Map<String, String>> execute(Integer channelId) {
+    public static List<Map<String, String>> execute(Integer channelId) {
         String url = String.format("https://www.bjsoubang.com/api/getChannelData?channel_id=%d", channelId);
         String result = HttpRequest.get(url).body();
         JsonNode data = JsonUtils.json(result, "info", "data");

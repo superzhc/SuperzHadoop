@@ -2,13 +2,12 @@ package com.github.superzhc.tool.task.jobs;
 
 import com.github.superzhc.common.jdbc.JdbcHelper;
 import com.github.superzhc.common.utils.PathUtils;
+import com.github.superzhc.tool.task.MyTimingTaskNew;
 import org.quartz.*;
-import org.quartz.impl.calendar.CronCalendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.ParseException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -53,52 +52,57 @@ public class DynamicManagerTaskJob implements Job {
 
     private void addJob(JdbcHelper jdbc, int id, int jobId) throws SchedulerException, ClassNotFoundException, ParseException {
         log.debug("新增任务[{}]开始...", jobId);
+        // 获取系统公用参数
+        List<Map<String, Object>> commonData = jdbc.query("select * from superz_quartz_common_data");
+
         Map<String, Object> job = jdbc.queryFirst("select * from superz_quartz_job_new where id=?", jobId);
         if (null != job || job.size() > 0) {
             String group = (String) job.get("_group");
             String name = (String) job.get("_name");
             JobKey jobKey = new JobKey(name, group);
             if (!getScheduler().checkExists(jobKey)) {
-                Class<? extends Job> clazz = (Class<? extends Job>) Class.forName((String) job.get("_class"));
-                String crons = (String) job.get("_cron");
-                String description = (String) job.get("_description");
-
-                JobDetail jobDetail = JobBuilder.newJob(clazz)
-                        .withIdentity(name, group)
-                        .withDescription(description)
-                        .build();
-
-                // 获取参数配置
-                Map<String, Object> jobDataMap = new HashMap<>();
                 List<Map<String, Object>> jobData = jdbc.query("select * from superz_quartz_job_data where job_id=?", jobId);
-                if (null != jobData && jobData.size() > 0) {
-                    for (Map<String, Object> jobDetailItem : jobData) {
-                        jobDataMap.put(String.valueOf(jobDetailItem.get("_key")), jobDetailItem.get("_value"));
-                    }
-                }
-                jobDetail.getJobDataMap().putAll(jobDataMap);
+                MyTimingTaskNew.addJob(job, commonData, jobData);
 
-                String[] cronArr = crons.split(";");
-                String cron = cronArr[0];
-                String calendarName = null;
-                int len = cronArr.length;
-                if (len > 1) {
-                    calendarName = jobDetail.getKey().toString() + ".calendar";
-                    Calendar calendar = null;
-                    for (int i = 1; i < len; i++) {
-                        calendar = new CronCalendar(calendar, cronArr[i]);
-                    }
-                    getScheduler().addCalendar(calendarName, calendar, false, false);
-                }
-
-                Trigger trigger = TriggerBuilder.newTrigger()
-                        .withIdentity(name, group)
-                        .withSchedule(CronScheduleBuilder.cronSchedule(cron))
-                        .modifiedByCalendar(calendarName)
-                        .withDescription(description)
-                        .build();
-
-                getScheduler().scheduleJob(jobDetail, trigger);
+//                Class<? extends Job> clazz = (Class<? extends Job>) Class.forName((String) job.get("_class"));
+//                String crons = (String) job.get("_cron");
+//                String description = (String) job.get("_description");
+//
+//                JobDetail jobDetail = JobBuilder.newJob(clazz)
+//                        .withIdentity(name, group)
+//                        .withDescription(description)
+//                        .build();
+//
+//                // 获取参数配置
+//                Map<String, Object> jobDataMap = new HashMap<>();
+//                if (null != jobData && jobData.size() > 0) {
+//                    for (Map<String, Object> jobDetailItem : jobData) {
+//                        jobDataMap.put(String.valueOf(jobDetailItem.get("_key")), jobDetailItem.get("_value"));
+//                    }
+//                }
+//                jobDetail.getJobDataMap().putAll(jobDataMap);
+//
+//                String[] cronArr = crons.split(";");
+//                String cron = cronArr[0];
+//                String calendarName = null;
+//                int len = cronArr.length;
+//                if (len > 1) {
+//                    calendarName = jobDetail.getKey().toString() + ".calendar";
+//                    Calendar calendar = null;
+//                    for (int i = 1; i < len; i++) {
+//                        calendar = new CronCalendar(calendar, cronArr[i]);
+//                    }
+//                    getScheduler().addCalendar(calendarName, calendar, false, false);
+//                }
+//
+//                Trigger trigger = TriggerBuilder.newTrigger()
+//                        .withIdentity(name, group)
+//                        .withSchedule(CronScheduleBuilder.cronSchedule(cron))
+//                        .modifiedByCalendar(calendarName)
+//                        .withDescription(description)
+//                        .build();
+//
+//                getScheduler().scheduleJob(jobDetail, trigger);
             } else {
                 log.info("任务[{}]已存在，无需新增", jobId);
             }

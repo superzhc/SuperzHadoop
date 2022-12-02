@@ -95,11 +95,13 @@ public class GuangDiuJob implements Job {
 
             for (Map<String, Object> item : data) {
                 String id = String.valueOf(item.get("id"));
-                Object v = GuangDiuCache.getInstance().getCache().getIfPresent(id);
-                if (null != v) {
-                    continue;
+                if(null!=id&&id.trim().length()>0) {
+                    Object v = GuangDiuCache.getInstance().getCache().getIfPresent(id);
+                    if (null != v) {
+                        continue;
+                    }
+                    GuangDiuCache.getInstance().getCache().put(id, true);
                 }
-                GuangDiuCache.getInstance().getCache().put(id, true);
 
                 String key = String.valueOf(item.get("platform"));
                 String value = JsonUtils.asString(item);

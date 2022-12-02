@@ -1,8 +1,9 @@
-package com.github.superzhc.hadoop.kafka.data;
+package com.github.superzhc.tool.task.jobs;
 
 import com.github.superzhc.common.jackson.JsonUtils;
 import com.github.superzhc.data.index.DanJuanIndex;
 import com.github.superzhc.hadoop.kafka.MyProducer;
+import com.github.superzhc.hadoop.kafka.MyStringProducer;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -32,7 +33,7 @@ public class IndexEvaJob implements Job {
 
         List<Map<String, Object>> data = DanJuanIndex.indexEva();
 
-        try (MyProducer producer = new MyProducer(broker)) {
+        try (MyStringProducer producer = new MyStringProducer(broker)) {
             int len = data.size();
             for (int i = 1; i <= len; i++) {
                 Map<String, Object> item = data.get(len - i);
