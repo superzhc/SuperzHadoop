@@ -55,7 +55,7 @@ public class DTCJ {
     }
 
     public static void main(String[] args) {
-        Table table = dataHero("10");
+        Table table = dataHero("6");
         System.out.println(table.print());
         System.out.println(table.shape());
     }

@@ -284,13 +284,63 @@ public class SMZDM {
         return dataRows;
     }
 
+    public static List<Map<String, Object>> userArticles(String uid) {
+        String url = String.format("https://zhiyou.smzdm.com/member/%s/article/", uid);
+
+        String html = HttpRequest.get(url).userAgent(UA_CHROME).body();
+        Document document = Jsoup.parse(html);
+        // String title = document.selectFirst(".info-stuff-nickname").text();
+
+        List<Map<String, Object>> dataRows = new ArrayList<>();
+
+        Elements articles = document.select(".pandect-content-stuff");
+        for (Element article : articles) {
+            Element ele = article.selectFirst(".pandect-content-title a");
+            String articleTitle = ele.text();
+            String articleLink = ele.attr("href");
+            String articlePubDate = article.selectFirst(".pandect-content-time").text();
+
+//            String articleDetailHtml = HttpRequest.get(articleLink).userAgent(UA_CHROME).body();
+//            Document articleDetailDocument = Jsoup.parse(articleDetailHtml);
+//            String articleContent = articleDetailDocument.selectFirst(".m-contant article").html();
+
+            Map<String, Object> dataRow = new LinkedHashMap<>();
+            dataRow.put("title", articleTitle);
+//            dataRow.put("content", articleContent);
+            dataRow.put("pubdate", articlePubDate);
+            dataRow.put("link", articleLink);
+            dataRows.add(dataRow);
+        }
+
+        return dataRows;
+    }
+
+    // public static List<Map<String, Object>> userBaoLiao(String uid) {
+    //     String url = String.format("https://zhiyou.smzdm.com/member/%s/baoliao/", uid);
+    //
+    //     String html = HttpRequest.get(url).userAgent(UA_CHROME).body();
+    //     Document document = Jsoup.parse(html);
+    //     // String title = document.selectFirst(".info-stuff-nickname").text();
+    //
+    //     Elements eles = document.select(".pandect-content-stuff");
+    //     for (Element ele : eles) {
+    //         Element e = ele.selectFirst(".pandect-content-title a");
+    //         String articleTitle = e.text();
+    //         String articleLink = e.attr("href");
+    //         String articlePubDate = ele.selectFirst(".pandect-content-time").text();
+    //
+    //         String contentHtml = HttpRequest.get(articleLink).userAgent(UA_CHROME).body();
+    //         Document contentDocument = Jsoup.parse(contentHtml);
+    //         String articleContent = contentDocument.selectFirst("article.txt-detail").html();
+    //     }
+    // }
+
     public static void main(String[] args) {
         String out = "";
         // System.out.println(MapUtils.print(haowen("1")));
 //        System.out.println(MapUtils.print(haowen2("7")));
 
-//        out = MapUtils.print(search("xbox"));
-//        out = MapUtils.print(search("chillmore"));
+       out = MapUtils.print(search("xbox"));
 
 //        List<Map<String, Object>> data = new ArrayList<>();
 //        data.addAll(ranking(RankType.好价电商榜_天猫));
@@ -310,7 +360,7 @@ public class SMZDM {
 //        out = MapUtils.print(ranking(RankType.好价品类榜_服饰鞋包));
 //        out = MapUtils.print(ranking(RankType.好价品类榜_白菜));
 //        out = MapUtils.print(ranking(RankType.好价品类榜_运动户外));
-        out = MapUtils.print(ranking(RankType.好价品类榜_食品生鲜));
+//         out = MapUtils.print(ranking(RankType.好价品类榜_食品生鲜));
 
         System.out.println(out);
     }

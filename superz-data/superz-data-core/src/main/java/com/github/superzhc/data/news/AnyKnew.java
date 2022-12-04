@@ -61,7 +61,6 @@ public class AnyKnew {
         String url = String.format("https://www.anyknew.com/api/v1/sites/%s", type);
 
         String result = HttpRequest.get(url).body();
-        System.out.println(result);
         JsonNode json = JsonUtils.json(result, "data", "site");
         String platform = JsonUtils.string(json, "site");
         String platformCN = JsonUtils.string(json, "attrs", "cn");

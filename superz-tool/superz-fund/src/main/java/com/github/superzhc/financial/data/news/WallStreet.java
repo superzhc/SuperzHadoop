@@ -102,136 +102,79 @@ public class WallStreet {
     }
 
     public static Table liveGlobal() {
-        return live("global");
+        return TableUtils.buildByMap(com.github.superzhc.data.mixture.WallStreet.liveGlobal());
     }
 
     public static Table liveAStock() {
-        return live("a-stock");
+        return TableUtils.buildByMap(com.github.superzhc.data.mixture.WallStreet.liveAStock());
     }
 
     public static Table liveUSStock() {
-        return live("us-stock");
+        return TableUtils.buildByMap(com.github.superzhc.data.mixture.WallStreet.liveUSStock());
     }
 
     public static Table liveHKStock() {
-        return live("hk-stock");
+        return TableUtils.buildByMap(com.github.superzhc.data.mixture.WallStreet.liveHKStock());
     }
 
     public static Table liveForex() {
-        return live("forex");
+        return TableUtils.buildByMap(com.github.superzhc.data.mixture.WallStreet.liveForex());
     }
 
     public static Table liveCommodity() {
-        return live("commodity");
+        return TableUtils.buildByMap(com.github.superzhc.data.mixture.WallStreet.liveCommodity());
     }
 
     public static Table liveFinancing() {
-        return live("financing");
-    }
-
-    private static Table live(String category) {
-        String url = "https://api-one.wallstcn.com/apiv1/content/lives";
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("channel", String.format("%s-channel", category));
-        params.put("limit", 100);
-
-        String result = HttpRequest.get(url, params).userAgent(UA_CHROME).body();
-        JsonNode data = JsonUtils.json(result, "data", "items");
-
-        List<Map<String, Object>> dataRows = new ArrayList<>();
-
-        for (JsonNode item : data) {
-            Map<String, Object> dataRow = new LinkedHashMap<>();
-            dataRow.put("title", JsonUtils.string(item, "title"));
-            dataRow.put("author", JsonUtils.string(item, "author", "display_name"));
-            dataRow.put("content", JsonUtils.string(item, "content"));
-            dataRow.put("content2", JsonUtils.string(item, "content_more"));
-            dataRow.put("channels", JsonUtils.text(item, "channels"));
-            dataRow.put("pubDate", JsonUtils.aLong(item, "display_time"));
-            dataRow.put("link", JsonUtils.string(item, "uri"));
-
-            dataRows.add(dataRow);
-        }
-
-        Table table = TableUtils.buildByMap(dataRows);
-        return table;
+        return TableUtils.buildByMap(com.github.superzhc.data.mixture.WallStreet.liveFinancing());
     }
 
     public static Table latest() {
-        return informationFlow("global");
+        return TableUtils.buildByMap(com.github.superzhc.data.mixture.WallStreet.latest());
     }
 
     public static Table shares() {
-        return informationFlow("shares");
+        return TableUtils.buildByMap(com.github.superzhc.data.mixture.WallStreet.shares());
     }
 
     public static Table bonds() {
-        return informationFlow("bonds");
+        return TableUtils.buildByMap(com.github.superzhc.data.mixture.WallStreet.bonds());
     }
 
     public static Table commodities() {
-        return informationFlow("commodities");
+        return TableUtils.buildByMap(com.github.superzhc.data.mixture.WallStreet.commodities());
     }
 
     public static Table forex() {
-        return informationFlow("forex");
+        return TableUtils.buildByMap(com.github.superzhc.data.mixture.WallStreet.forex());
     }
 
     public static Table enterprise() {
-        return informationFlow("enterprise");
+        return TableUtils.buildByMap(com.github.superzhc.data.mixture.WallStreet.enterprise());
     }
 
     public static Table assetManage() {
-        return informationFlow("asset-manage");
+        return TableUtils.buildByMap(com.github.superzhc.data.mixture.WallStreet.assetManage());
     }
 
     public static Table tmt() {
-        return informationFlow("tmt");
+        return TableUtils.buildByMap(com.github.superzhc.data.mixture.WallStreet.tmt());
     }
 
     public static Table estate() {
-        return informationFlow("estate");
+        return TableUtils.buildByMap(com.github.superzhc.data.mixture.WallStreet.estate());
     }
 
     public static Table car() {
-        return informationFlow("car");
+        return TableUtils.buildByMap(com.github.superzhc.data.mixture.WallStreet.car());
     }
 
     public static Table medicine() {
-        return informationFlow("medicine");
-    }
-
-    private static Table informationFlow(String category) {
-        String url = "https://api-one.wallstcn.com/apiv1/content/information-flow";
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("channel", String.format("%s-channel", category));
-        params.put("accept", "article");
-        params.put("limit", 25);
-
-        String result = HttpRequest.get(url, params).userAgent(UA_CHROME).body();
-        JsonNode data = JsonUtils.json(result, "data", "items");
-
-        List<Map<String, Object>> dataRows = new ArrayList<>();
-        for (JsonNode item : data) {
-            Map<String, Object> dataRow = new LinkedHashMap<>();
-            dataRow.put("title", JsonUtils.string(item, "resource", "title"));
-            dataRow.put("author", JsonUtils.string(item, "resource", "author", "display_name"));
-            dataRow.put("pubDate", JsonUtils.string(item, "resource", "display_time"));
-            dataRow.put("content", JsonUtils.string(item, "resource", "content_short"));
-            dataRow.put("type", JsonUtils.string(item, "resource_type"));
-            dataRow.put("link", JsonUtils.string(item, "resource", "uri"));
-
-            dataRows.add(dataRow);
-        }
-
-        Table table = TableUtils.buildByMap(dataRows);
-        return table;
+        return TableUtils.buildByMap(com.github.superzhc.data.mixture.WallStreet.medicine());
     }
 
     public static void main(String[] args) {
-        Table table = informationFlow("global");
+        Table table = car();
         System.out.println(table.structure().printAll());
         System.out.println(table.print());
         System.out.println(table.shape());

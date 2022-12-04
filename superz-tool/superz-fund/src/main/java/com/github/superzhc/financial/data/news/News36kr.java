@@ -23,7 +23,7 @@ import static com.github.superzhc.common.HttpConstant.UA_CHROME;
 public class News36kr {
     private static final Logger log = LoggerFactory.getLogger(News36kr.class);
 
-    private static final String pattern = "\"itemList\":(\\[.*?\\])";
+    // private static final String pattern = "\"itemList\":(\\[.*?\\])";
 
     /**
      * 最新资讯

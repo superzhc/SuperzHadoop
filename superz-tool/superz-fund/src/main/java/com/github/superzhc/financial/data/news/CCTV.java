@@ -65,6 +65,8 @@ public class CCTV {
             LocalDateTime now = LocalDateTime.now();
             if (now.getHour() < 20) {
                 date = now.minusDays(1).toLocalDate();
+            } else {
+                date = now.toLocalDate();
             }
         }
 

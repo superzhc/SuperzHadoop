@@ -73,25 +73,8 @@ public class AnyKnew {
      * 2  |     add_date  |      INTEGER  |
      */
     public static Table execute(String type) {
-        String url = String.format("https://www.anyknew.com/api/v1/sites/%s", type);
-        String result = HttpRequest.get(url).body();
-        JsonNode json = JsonUtils.json(result, "data", "site");
-
-        String siteName = JsonUtils.string(json, "attrs", "cn") /*json.get("attrs").get("cn").asText()*/;
-        String siteUrl = JsonUtils.string(json, "attrs", "url")/*json.get("attrs").get("url").asText()*/;
-
-        List<String> columnNames = Arrays.asList(
-                "iid",
-                "title",
-                "add_date"
-                //, "new_tag"
-        );
-
-        //List<String[]> dataRows = JsonUtils.extractObjectData(json.get("subs").get(0).get("items"), columnNames);
-        List<String[]> dataRows = JsonUtils.objectArrayWithKeys(json.get("subs").get(0).get("items"), columnNames);
-
-        Table table = TableUtils.build(dataRows);
-        table.setName(String.format("%s[%s]", siteName, siteUrl));
+        Table table = TableUtils.buildByMap(com.github.superzhc.data.news.AnyKnew.execute(type));
+        // table.setName(String.format("%s[%s]", siteName, siteUrl));
 
         table.replaceColumn("add_date", table.intColumn("add_date").multiply(1000).asLongColumn().asDateTimes(ZoneOffset.ofHours(+8)).setName("add_date"));
 

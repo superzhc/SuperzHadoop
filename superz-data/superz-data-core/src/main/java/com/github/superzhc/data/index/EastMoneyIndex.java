@@ -1,6 +1,7 @@
 package com.github.superzhc.data.index;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.superzhc.common.html.HtmlRequest;
 import com.github.superzhc.common.http.HttpRequest;
 import com.github.superzhc.common.jackson.JsonUtils;
 import com.github.superzhc.common.utils.MapUtils;
@@ -97,12 +98,13 @@ public class EastMoneyIndex {
         return history(symbol, "103");
     }
 
+    /**
+     *
+     * @param symbol
+     * @param period 周期；101（每日）、102（每周）、103（每月）
+     * @return
+     */
     public static List<Map<String, Object>> history(String symbol, String period) {
-        // Map<String, String> periodMap = new HashMap<>();
-        // periodMap.put("daily", "101");
-        // periodMap.put("weekly", "102");
-        // periodMap.put("monthly", "103");
-
         String url = "http://push2his.eastmoney.com/api/qt/stock/kline/get";
 
         Map<String, Object> params = new HashMap<>();

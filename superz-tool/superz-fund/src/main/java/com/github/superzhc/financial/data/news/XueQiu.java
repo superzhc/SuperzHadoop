@@ -17,31 +17,7 @@ import static com.github.superzhc.common.HttpConstant.UA_CHROME;
  **/
 public class XueQiu {
     public static Table hot() {
-        String url = "https://xueqiu.com/statuses/hots.json";
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("a", "1");
-        params.put("count", 10);
-        params.put("page", 1);
-        params.put("scope", "day");
-        params.put("type", "status");
-        params.put("meigu", "0");
-
-        String result = HttpRequest.get(url, params).userAgent(UA_CHROME).cookies(XueQiuUtils.cookies()).body();
-        JsonNode data = JsonUtils.json(result);
-
-        List<Map<String, Object>> dataRows = new ArrayList<>(data.size());
-        for (JsonNode item : data) {
-            Map<String, Object> dataRow = new LinkedHashMap<>();
-            dataRow.put("title", JsonUtils.string(item, "title"));
-            dataRow.put("description", JsonUtils.string(item, "text"));
-            dataRow.put("pubDate", JsonUtils.aLong(item, "created_at"));
-            dataRow.put("author", JsonUtils.string(item, "user", "screen_name"));
-            dataRow.put("link", String.format("https://xueqiu.com%s", JsonUtils.string(item, "target")));
-
-            dataRows.add(dataRow);
-        }
-
+        List<Map<String, Object>> dataRows = com.github.superzhc.data.mixture.XueQiu.hot();
         Table table = TableUtils.buildByMap(dataRows);
         return table;
     }
