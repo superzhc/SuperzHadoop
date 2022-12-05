@@ -39,6 +39,18 @@ public class MyTimingTaskNew {
         return scheduler;
     }
 
+    public static boolean existsJob(String group, String name) {
+        return existsJob(new JobKey(group, name));
+    }
+
+    public static boolean existsJob(JobKey jobKey) {
+        try {
+            return getScheduler().checkExists(jobKey);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void addJob(Map<String, Object> job, List<Map<String, Object>> commonData, List<Map<String, Object>> jobData) {
         try {
             String group = (String) job.get("_group");
@@ -90,6 +102,20 @@ public class MyTimingTaskNew {
                     .build();
 
             getScheduler().scheduleJob(jobDetail, trigger);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void deleteJob(String group, String name){
+        deleteJob(new JobKey(name, group));
+    }
+
+    public static void deleteJob(JobKey jobKey) {
+        try {
+            if (existsJob(jobKey)) {
+                getScheduler().deleteJob(jobKey);
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

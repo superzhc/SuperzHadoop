@@ -111,8 +111,9 @@ public class JsonUtils {
         return map(node);
     }
 
-    public static Map<String, Object> map(JsonNode json) {
-        return mapper.convertValue(json, LinkedHashMap.class);
+    public static Map<String, Object> map(JsonNode json, String... path) {
+        JsonNode childNode = object(json, path);
+        return mapper.convertValue(childNode, LinkedHashMap.class);
     }
 
     public static JsonNode file(String path, String... paths) {

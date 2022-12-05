@@ -3,6 +3,7 @@ package com.github.superzhc.data.news;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.http.HttpRequest;
 import com.github.superzhc.common.jackson.JsonUtils;
+import com.github.superzhc.common.utils.MapUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -35,7 +36,11 @@ public class Jin10 {
                 .header("x-version", "1.0.0")
                 .body();
         JsonNode json = JsonUtils.json(result, "data");
-        List<Map<String,Object>> maps= Arrays.asList(JsonUtils.newObjectArray(json));
+        List<Map<String, Object>> maps = Arrays.asList(JsonUtils.newObjectArray(json));
         return maps;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(MapUtils.print(news()));
     }
 }

@@ -4,8 +4,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * 2020年11月23日 superz add
@@ -147,6 +145,30 @@ public class MapUtils {
         return map;
     }
 
+    public static <K, V> Map<K, V>[] constant(K k, V v, Map<K, V>... maps) {
+        if (null == maps || maps.length == 0) {
+            return null;
+        }
+
+        for (Map<K, V> map : maps) {
+            map.put(k, v);
+        }
+
+        return maps;
+    }
+
+    public static <K, V> List<Map<K, V>> constant(K k, V v, List<Map<K, V>> maps) {
+        if (null == maps || maps.size() == 0) {
+            return null;
+        }
+
+        for (Map<K, V> map : maps) {
+            map.put(k, v);
+        }
+
+        return maps;
+    }
+
     public static <T> String print(Map<String, T> map) {
         List<Map<String, T>> maps = new ArrayList<>();
         maps.add(map);
@@ -164,7 +186,7 @@ public class MapUtils {
         String[] headerRow = new String[keys.size()];
         int i = 0;
         for (String key : keys) {
-            columnMaxLengths[i] = length(key);
+            columnMaxLengths[i] = stringLength(key);
             headerRow[i] = key;
             i++;
         }
@@ -176,7 +198,7 @@ public class MapUtils {
             for (String key : keys) {
                 String value = !map.containsKey(key) || null == map.get(key) ? null : String.valueOf(map.get(key));
                 row[j] = value;
-                columnMaxLengths[j] = Math.max(columnMaxLengths[j], (null == value ? 0 : length(value)));
+                columnMaxLengths[j] = Math.max(columnMaxLengths[j], (null == value ? 0 : stringLength(value)));
                 j++;
             }
             rows.add(row);
@@ -218,7 +240,7 @@ public class MapUtils {
     }
 
     private static String rightPad(String str, int maxLength) {
-        int len = length(str);
+        int len = stringLength(str);
         StringBuilder sb = new StringBuilder(null == str ? "" : str);
         for (int i = 0; i < ((maxLength - len) + 1); i++) {
             sb.append(' ');
@@ -226,7 +248,7 @@ public class MapUtils {
         return sb.toString();
     }
 
-    private static int length(String str) {
+    private static int stringLength(String str) {
         if (null == str) {
             return 0;
         }

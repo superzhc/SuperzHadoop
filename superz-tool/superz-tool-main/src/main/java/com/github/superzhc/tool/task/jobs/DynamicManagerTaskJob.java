@@ -3,11 +3,13 @@ package com.github.superzhc.tool.task.jobs;
 import com.github.superzhc.common.jdbc.JdbcHelper;
 import com.github.superzhc.common.utils.PathUtils;
 import com.github.superzhc.tool.task.MyTimingTaskNew;
-import org.quartz.*;
+import org.quartz.Job;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.quartz.JobKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -35,106 +37,86 @@ public class DynamicManagerTaskJob implements Job {
                 String operate = (String) dynamicJob.get("operate");
                 switch (operate) {
                     case "I":
-                        addJob(jdbc, id, jobId);
+                        addJob(jdbc, jobId);
                         break;
                     case "D":
-                        deleteJob(jdbc, id, jobId);
+                        deleteJob(jdbc, jobId);
                         break;
-                    case "M":
+                    case "U":
+                        updateJob(jdbc, jobId);
+                        break;
                     default:
                         throw new JobExecutionException("尚不支持[" + operate + "]操作");
                 }
+
+                //将该条动态管理给置为无效
+                jdbc.dmlExecute("update superz_quartz_dynamic_job set is_enable=0 where id=?", id);
             }
         } catch (Exception e) {
             throw new JobExecutionException(e);
         }
     }
 
-    private void addJob(JdbcHelper jdbc, int id, int jobId) throws SchedulerException, ClassNotFoundException, ParseException {
+    private void addJob(JdbcHelper jdbc, int jobId) {
         log.debug("新增任务[{}]开始...", jobId);
-        // 获取系统公用参数
-        List<Map<String, Object>> commonData = jdbc.query("select * from superz_quartz_common_data");
-
         Map<String, Object> job = jdbc.queryFirst("select * from superz_quartz_job_new where id=?", jobId);
         if (null != job || job.size() > 0) {
             String group = (String) job.get("_group");
             String name = (String) job.get("_name");
-            JobKey jobKey = new JobKey(name, group);
-            if (!getScheduler().checkExists(jobKey)) {
+            if (!existsJob(group, name)) {
+                // 获取系统公用参数
+                List<Map<String, Object>> commonData = jdbc.query("select * from superz_quartz_common_data");
+                // 用户自定义参数
                 List<Map<String, Object>> jobData = jdbc.query("select * from superz_quartz_job_data where job_id=?", jobId);
                 MyTimingTaskNew.addJob(job, commonData, jobData);
-
-//                Class<? extends Job> clazz = (Class<? extends Job>) Class.forName((String) job.get("_class"));
-//                String crons = (String) job.get("_cron");
-//                String description = (String) job.get("_description");
-//
-//                JobDetail jobDetail = JobBuilder.newJob(clazz)
-//                        .withIdentity(name, group)
-//                        .withDescription(description)
-//                        .build();
-//
-//                // 获取参数配置
-//                Map<String, Object> jobDataMap = new HashMap<>();
-//                if (null != jobData && jobData.size() > 0) {
-//                    for (Map<String, Object> jobDetailItem : jobData) {
-//                        jobDataMap.put(String.valueOf(jobDetailItem.get("_key")), jobDetailItem.get("_value"));
-//                    }
-//                }
-//                jobDetail.getJobDataMap().putAll(jobDataMap);
-//
-//                String[] cronArr = crons.split(";");
-//                String cron = cronArr[0];
-//                String calendarName = null;
-//                int len = cronArr.length;
-//                if (len > 1) {
-//                    calendarName = jobDetail.getKey().toString() + ".calendar";
-//                    Calendar calendar = null;
-//                    for (int i = 1; i < len; i++) {
-//                        calendar = new CronCalendar(calendar, cronArr[i]);
-//                    }
-//                    getScheduler().addCalendar(calendarName, calendar, false, false);
-//                }
-//
-//                Trigger trigger = TriggerBuilder.newTrigger()
-//                        .withIdentity(name, group)
-//                        .withSchedule(CronScheduleBuilder.cronSchedule(cron))
-//                        .modifiedByCalendar(calendarName)
-//                        .withDescription(description)
-//                        .build();
-//
-//                getScheduler().scheduleJob(jobDetail, trigger);
             } else {
                 log.info("任务[{}]已存在，无需新增", jobId);
             }
 
-            // 将任务的状态置为不可用
+            // 将任务的状态置为可用
             jdbc.dmlExecute("update superz_quartz_job_new set is_enable=1 where id=?", jobId);
         }
 
-        //将该条动态管理给置为无效
-        jdbc.dmlExecute("update superz_quartz_dynamic_job set is_enable=0 where id=?", id);
         log.debug("新增任务[{}]结束！", jobId);
     }
 
-    private void deleteJob(JdbcHelper jdbc, int id, int jobId) throws SchedulerException {
+    private void deleteJob(JdbcHelper jdbc, int jobId) {
         log.debug("结束任务[{}]开始...", jobId);
         Map<String, Object> job = jdbc.queryFirst("select * from superz_quartz_job_new where id=?", jobId);
         if (null != job || job.size() > 0) {
             String group = (String) job.get("_group");
             String name = (String) job.get("_name");
-            JobKey jobKey = new JobKey(name, group);
-            if (getScheduler().checkExists(jobKey)) {
-                getScheduler().deleteJob(jobKey);
-            } else {
-                log.debug("任务[{}]不存在，无需结束！", jobId);
-            }
+            MyTimingTaskNew.deleteJob(group, name);
 
             // 将任务的状态置为不可用
             jdbc.dmlExecute("update superz_quartz_job_new set is_enable=0 where id=?", jobId);
         }
 
-        //将该条动态管理给置为无效
-        jdbc.dmlExecute("update superz_quartz_dynamic_job set is_enable=0 where id=?", id);
         log.debug("结束任务[{}]结束！", jobId);
+    }
+
+    private void updateJob(JdbcHelper jdbc, int jobId) {
+        log.debug("更新任务[{}]开始...", jobId);
+        Map<String, Object> job = jdbc.queryFirst("select * from superz_quartz_job_new where id=?", jobId);
+        if (null != job || job.size() > 0) {
+            String group = (String) job.get("_group");
+            String name = (String) job.get("_name");
+            JobKey jobKey = new JobKey(group, name);
+            // 若任务存在，则先删除任务
+            if (MyTimingTaskNew.existsJob(jobKey)) {
+                MyTimingTaskNew.deleteJob(jobKey);
+            }
+
+            // 获取系统公用参数
+            List<Map<String, Object>> commonData = jdbc.query("select * from superz_quartz_common_data");
+            // 用户自定义参数
+            List<Map<String, Object>> jobData = jdbc.query("select * from superz_quartz_job_data where job_id=?", jobId);
+            MyTimingTaskNew.addJob(job, commonData, jobData);
+
+            // 将任务的状态置为可用
+            jdbc.dmlExecute("update superz_quartz_job_new set is_enable=1 where id=?", jobId);
+        }
+
+        log.debug("更新任务[{}]结束！", jobId);
     }
 }

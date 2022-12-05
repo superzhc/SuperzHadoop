@@ -8,6 +8,7 @@ import com.github.superzhc.common.utils.MapUtils;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
+import java.util.stream.Stream;
 
 
 /**
@@ -53,19 +54,9 @@ public class WallStreet {
         String result = HttpRequest.get(url, params).userAgent(UA_CHROME).body();
         JsonNode json = JsonUtils.json(result, "data");
 
-        List<Map<String, Object>> dataRows =Arrays.asList(JsonUtils.newObjectArray(json));
-
-        // List<Map<String, Object>> dataRows = new ArrayList<>();
-        // List<String> tags = Arrays.asList("day_items", "week_items");
-        // for (String tag : tags) {
-        //     for (JsonNode item : JsonUtils.object(json, tag)) {
-        //         Map<String, Object> dataRow = new LinkedHashMap<>();
-        //         dataRow.put("title", JsonUtils.string(item, "title"));
-        //         dataRow.put("link", JsonUtils.string(item, "uri"));
-        //         dataRow.put("pubDate", JsonUtils.aLong(item, "display_time"));
-        //         dataRows.add(dataRow);
-        //     }
-        // }
+        List<Map<String, Object>> dataRows = new ArrayList<>();
+        dataRows.addAll(Arrays.asList(MapUtils.constant("type", "day_items", JsonUtils.newObjectArray(json, "day_items"))));
+        dataRows.addAll(Arrays.asList(MapUtils.constant("type", "week_items", JsonUtils.newObjectArray(json, "week_items"))));
 
         return dataRows;
     }
@@ -111,14 +102,17 @@ public class WallStreet {
         List<Map<String, Object>> dataRows = new ArrayList<>();
 
         for (JsonNode item : data) {
-            Map<String, Object> dataRow = new LinkedHashMap<>();
-            dataRow.put("title", JsonUtils.string(item, "title"));
-            dataRow.put("author", JsonUtils.string(item, "author", "display_name"));
-            dataRow.put("content", JsonUtils.string(item, "content"));
-            dataRow.put("content2", JsonUtils.string(item, "content_more"));
-            dataRow.put("channels", JsonUtils.text(item, "channels"));
-            dataRow.put("pubDate", JsonUtils.aLong(item, "display_time"));
-            dataRow.put("link", JsonUtils.string(item, "uri"));
+            Map<String, Object> dataRow = JsonUtils.map(item);
+            MapUtils.removeKeys(dataRow, "ban_comment", "channels", "comment_count", "cover_images", "global_channel_name");
+
+//            Map<String, Object> dataRow = new LinkedHashMap<>();
+//            dataRow.put("title", JsonUtils.string(item, "title"));
+//            dataRow.put("author", JsonUtils.string(item, "author", "display_name"));
+//            dataRow.put("content", JsonUtils.string(item, "content"));
+//            dataRow.put("content2", JsonUtils.string(item, "content_more"));
+//            dataRow.put("channels", JsonUtils.text(item, "channels"));
+//            dataRow.put("pubDate", JsonUtils.aLong(item, "display_time"));
+//            dataRow.put("link", JsonUtils.string(item, "uri"));
 
             dataRows.add(dataRow);
         }
@@ -183,13 +177,16 @@ public class WallStreet {
 
         List<Map<String, Object>> dataRows = new ArrayList<>();
         for (JsonNode item : data) {
-            Map<String, Object> dataRow = new LinkedHashMap<>();
-            dataRow.put("title", JsonUtils.string(item, "resource", "title"));
-            dataRow.put("author", JsonUtils.string(item, "resource", "author", "display_name"));
-            dataRow.put("pubDate", JsonUtils.string(item, "resource", "display_time"));
-            dataRow.put("content", JsonUtils.string(item, "resource", "content_short"));
-            dataRow.put("type", JsonUtils.string(item, "resource_type"));
-            dataRow.put("link", JsonUtils.string(item, "resource", "uri"));
+            Map<String, Object> dataRow = JsonUtils.map(item, "resource");
+            MapUtils.removeKeys(dataRow, "channels", "cover_images", "images");
+
+//            Map<String, Object> dataRow = new LinkedHashMap<>();
+//            dataRow.put("title", JsonUtils.string(item, "resource", "title"));
+//            dataRow.put("author", JsonUtils.string(item, "resource", "author", "display_name"));
+//            dataRow.put("pubDate", JsonUtils.string(item, "resource", "display_time"));
+//            dataRow.put("content", JsonUtils.string(item, "resource", "content_short"));
+//            dataRow.put("type", JsonUtils.string(item, "resource_type"));
+//            dataRow.put("link", JsonUtils.string(item, "resource", "uri"));
 
             dataRows.add(dataRow);
         }
@@ -198,6 +195,6 @@ public class WallStreet {
     }
 
     public static void main(String[] args) {
-        System.out.println(MapUtils.print(hot()));
+        System.out.println(MapUtils.print(liveGlobal()));
     }
 }
