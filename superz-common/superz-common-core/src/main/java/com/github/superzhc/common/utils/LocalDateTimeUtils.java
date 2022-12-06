@@ -32,6 +32,11 @@ public class LocalDateTimeUtils {
         return localDateTime;
     }
 
+    public static LocalDateTime convert4secondTimestamp(long timestamp) {
+        LocalDateTime localDateTime = Instant.ofEpochSecond(timestamp).atZone(ZoneOffset.ofHours(8)).toLocalDateTime();
+        return localDateTime;
+    }
+
     public static long convert2timestamp(LocalDate localDate) {
         long timestamp = localDate.atStartOfDay(ZoneOffset.ofHours(8)).toInstant().toEpochMilli();
         return timestamp;

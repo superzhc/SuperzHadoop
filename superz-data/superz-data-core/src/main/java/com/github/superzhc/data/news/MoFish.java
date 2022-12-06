@@ -80,7 +80,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, Object>> wYNews() {
+    public static List<Map<String, Object>> WYNews() {
         return execute(10);
     }
 
@@ -134,7 +134,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, Object>> v2EX() {
+    public static List<Map<String, Object>> V2EX() {
         return execute(59);
     }
 
@@ -278,7 +278,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, Object>> sSPAI() {
+    public static List<Map<String, Object>> SSPAI() {
         return execute(116);
     }
 
@@ -377,7 +377,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, Object>> qQTech() {
+    public static List<Map<String, Object>> QQTech() {
         return execute(127);
     }
 
@@ -476,7 +476,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, Object>> tED() {
+    public static List<Map<String, Object>> TED() {
         return execute(139);
     }
 
@@ -665,7 +665,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, Object>> bJnews() {
+    public static List<Map<String, Object>> BJnews() {
         return execute(164);
     }
 
@@ -854,7 +854,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, Object>> mMM() {
+    public static List<Map<String, Object>> MMM() {
         return execute(1029);
     }
 
@@ -872,7 +872,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, Object>> wXRead() {
+    public static List<Map<String, Object>> WXRead() {
         return execute(1033);
     }
 
@@ -881,7 +881,7 @@ public class MoFish {
      *
      * @return
      */
-    public static List<Map<String, Object>> kFTT() {
+    public static List<Map<String, Object>> KFTT() {
         return execute(1034);
     }
 
@@ -1867,14 +1867,14 @@ public class MoFish {
 
         List<Map<String, Object>> dataRows = new ArrayList<>();
 
-        // 取3页
-        for (int i = 0; i < 3; i++) {
-            params.put("page", i);
+//        // 取3页
+//        for (int i = 0; i < 3; i++) {
+//            params.put("page", i);
 
             String result = HttpRequest.get(url, params).body();
             JsonNode data = JsonUtils.json(result, "Data", "data");
             dataRows.addAll(Arrays.asList(JsonUtils.newObjectArray(data)));
-        }
+//        }
         return dataRows;
     }
 

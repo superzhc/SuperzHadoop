@@ -34,6 +34,11 @@
         </dependency>
         <dependency>
             <groupId>com.github.superzhc</groupId>
+            <artifactId>superz-data-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.superzhc</groupId>
             <artifactId>superz-sql-driver</artifactId>
             <version>${project.version}</version>
             <exclusions>
@@ -58,17 +63,23 @@
             <artifactId>superz-hadoop-kafka</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>com.github.superzhc</groupId>
             <artifactId>superz-fund</artifactId>
             <version>${project.version}</version>
-        </dependency>
+        </dependency>-->
 
         <!--本地缓存框架-->
         <dependency>
             <groupId>com.github.ben-manes.caffeine</groupId>
             <artifactId>caffeine</artifactId>
             <version>2.9.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.36.0.3</version>
         </dependency>
     </dependencies>
 
