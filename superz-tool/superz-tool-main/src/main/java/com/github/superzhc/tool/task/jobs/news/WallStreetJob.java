@@ -4,7 +4,7 @@ import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.RemovalCause;
 import com.github.superzhc.common.jackson.JsonUtils;
-import com.github.superzhc.common.utils.LocalDateTimeUtils;
+import com.github.superzhc.common.date.LocalDateTimeUtils;
 import com.github.superzhc.common.utils.MapUtils;
 import com.github.superzhc.data.mixture.WallStreet;
 import com.github.superzhc.hadoop.kafka.MyStringProducer;
@@ -34,7 +34,7 @@ public class WallStreetJob implements Job {
         private JobCache() {
             cache = Caffeine.newBuilder()
                     .maximumSize(100000) //为缓存容量指定特定的大小，当缓存容量超过指定的大小，缓存将尝试逐出最近或经常未使用的条目
-                    .expireAfterWrite(Duration.ofHours(5))
+                    .expireAfterWrite(Duration.ofHours(24))
                     .removalListener((String key, Object value, RemovalCause cause) -> {
                         log.debug("Key [{}] was removed,reason:{}", key, cause);
                     })

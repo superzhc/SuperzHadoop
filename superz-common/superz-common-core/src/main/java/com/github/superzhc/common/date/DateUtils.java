@@ -1,4 +1,4 @@
-package com.github.superzhc.common.utils;
+package com.github.superzhc.common.date;
 
 import java.util.Calendar;
 import java.util.Date;

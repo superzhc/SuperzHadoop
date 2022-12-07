@@ -1,5 +1,7 @@
 package com.github.superzhc.common.jdbc;
 
+import com.github.superzhc.common.utils.CamelCaseUtils;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -56,9 +58,10 @@ public class ResultSetUtils {
             Map<String, Field> colNameFieldMap = new HashMap<>(Math.min(allFields.length, cols_len));
 
             for (int i = 0; i < cols_len; i++) {
-                String cols_name = metaData.getColumnName(i + 1);
+                String col_name = metaData.getColumnName(i + 1);
 
-                // 支持驼峰命名方式 TODO
+                // 支持驼峰命名方式
+                String finalColName = CamelCaseUtils.underscore2camelCase(col_name);
 
                 for (Field field : allFields) {
                     int mod = field.getModifiers();
@@ -66,9 +69,9 @@ public class ResultSetUtils {
                     if (Modifier.isStatic(mod))
                         continue;
 
-                    if (field.getName().equals(cols_name)) {
+                    if (field.getName().equalsIgnoreCase(col_name) || field.getName().equalsIgnoreCase(finalColName)) {
                         field.setAccessible(true);
-                        colNameFieldMap.put(cols_name, field);
+                        colNameFieldMap.put(col_name, field);
                         break;
                     }
 
@@ -79,12 +82,12 @@ public class ResultSetUtils {
                 T obj = beanClass.newInstance();
 
                 for (Map.Entry<String, Field> item : colNameFieldMap.entrySet()) {
-                    String cols_name = item.getKey();
-                    Object cols_value = rs.getObject(cols_name);
-                    if (null == cols_value) {
+                    String col_name = item.getKey();
+                    Object col_value = rs.getObject(col_name);
+                    if (null == col_value) {
                         continue;
                     }
-                    item.getValue().set(obj, cols_value);
+                    item.getValue().set(obj, col_value);
                 }
                 list.add(obj);
             }

@@ -42,10 +42,12 @@
             <version>2.56.0</version>
         </dependency>
 
+        <!--2022年12月7日 修改此依赖项的scope，减小该项目包大小-->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
             <version>4.0.0-rc-3</version>
+            <scope>provided</scope>
         </dependency>
 
         <!--日志模块-->
