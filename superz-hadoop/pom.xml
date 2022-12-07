@@ -25,6 +25,7 @@
         <module>superz-hadoop-install</module>
         <module>superz-hadoop-storm</module>
         <module>superz-hadoop-kafka_0.9</module>
+        <module>superz-hadoop-hudi</module>
     </modules>
 
     <properties>
