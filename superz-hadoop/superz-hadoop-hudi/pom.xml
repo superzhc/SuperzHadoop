@@ -38,7 +38,7 @@
                 </exclusion>
             </exclusions>
         </dependency>-->
-        <!--<dependency>
+        <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-common</artifactId>
             <version>${hadoop.version}</version>
@@ -48,7 +48,7 @@
                     <groupId>javax.servlet</groupId>
                 </exclusion>
             </exclusions>
-        </dependency>-->
+        </dependency>
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-hdfs-client</artifactId>
