@@ -11,11 +11,30 @@
 
     <artifactId>superz-hadoop-spark</artifactId>
 
+    <repositories>
+        <repository>
+            <id>oschina</id>
+            <name>oschina</name>
+            <url>http://maven.oschina.net/content/groups/public/</url>
+        </repository>
+        <repository>
+            <id>aliyun</id>
+            <name>aliyun</name>
+            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+        </repository>
+        <repository>
+            <id>repo1</id>
+            <name>repo1</name>
+            <url>https://repo1.maven.org/maven2/</url>
+        </repository>
+    </repositories>
+
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <scala.binary.version>2.12</scala.binary.version>
         <scala.version>2.12.10</scala.version>
+        <spark.version>3.3.0</spark.version>
     </properties>
 
     <dependencies>
@@ -87,12 +106,26 @@
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-core_${scala.binary.version}</artifactId>
             <version>${spark.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>log4j-slf4j-impl</artifactId>
+                    <groupId>org.apache.logging.log4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>log4j-1.2-api</artifactId>
+                    <groupId>org.apache.logging.log4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>log4j-api</artifactId>
+                    <groupId>org.apache.logging.log4j</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-yarn_${scala.binary.version}</artifactId>
             <version>${spark.version}</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-hive_${scala.binary.version}</artifactId>
@@ -124,6 +157,57 @@
         </dependency>-->
 
         <!--hudi-->
+        <!--<dependency>
+            <groupId>org.apache.hudi</groupId>
+            <artifactId>hudi-common</artifactId>
+            <version>${hudi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hudi</groupId>
+            <artifactId>hudi-client-common</artifactId>
+            <version>${hudi.version}</version>
+        </dependency>
+        &lt;!&ndash;<dependency>
+            <groupId>org.apache.hudi</groupId>
+            <artifactId>hudi-java-client</artifactId>
+            <version>${hudi.version}</version>
+        </dependency>&ndash;&gt;
+        <dependency>
+            <groupId>org.apache.hudi</groupId>
+            <artifactId>hudi-spark-client</artifactId>
+            <version>${hudi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hudi</groupId>
+            <artifactId>hudi-spark_${scala.binary.version}</artifactId>
+            <version>${hudi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hudi</groupId>
+            <artifactId>hudi-spark-common_${scala.binary.version}</artifactId>
+            <version>${hudi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hudi</groupId>
+            <artifactId>hudi-utilities_${scala.binary.version}</artifactId>
+            <version>${hudi.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>hudi-spark_2.11</artifactId>
+                    <groupId>org.apache.hudi</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hudi</groupId>
+            <artifactId>hudi-hadoop-mr</artifactId>
+            <version>${hudi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hudi</groupId>
+            <artifactId>hudi-timeline-service</artifactId>
+            <version>${hudi.version}</version>
+        </dependency>-->
         <dependency>
             <groupId>org.apache.hudi</groupId>
             <artifactId>hudi-spark3-bundle_${scala.binary.version}</artifactId>
@@ -132,8 +216,35 @@
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-avro_${scala.binary.version}</artifactId>
-            <version>3.0.1</version>
+            <!--<version>3.0.1</version>-->
+            <version>${spark.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro</artifactId>
+            <version>1.8.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.parquet</groupId>
+            <artifactId>parquet-avro</artifactId>
+            <version>1.10.1</version>
+        </dependency>
+
+        <!--<dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.13.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.13.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.13.3</version>
+        </dependency>-->
 
         <!--region scala-->
         <dependency>

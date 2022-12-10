@@ -131,7 +131,7 @@ public class GuangDiu {
             if (matcher.find()) {
                 id = matcher.group(1);
             } else {
-                id = "";
+                id = null;
             }
 
             String title = good.selectFirst("a.goodname").ownText();
@@ -167,7 +167,7 @@ public class GuangDiu {
             }
 
             Map<String, Object> dataRow = new LinkedHashMap<>();
-            dataRow.put("id", id);
+            dataRow.put("id", Integer.valueOf(id));
             dataRow.put("title", title);
 //            dataRow.put("title_fenci", titleFenCi);
             dataRow.put("price", price);

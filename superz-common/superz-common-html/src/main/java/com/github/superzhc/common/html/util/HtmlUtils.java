@@ -21,6 +21,51 @@ public class HtmlUtils {
     private HtmlUtils() {
     }
 
+    public static String text(Element element, String cssSelector) {
+        Element fetchElement = element.selectFirst(cssSelector);
+        if (null == fetchElement) {
+            return null;
+        }
+        return fetchElement.text();
+    }
+
+//    public static List<String> texts(Element element, String cssSelector) {
+//        Elements elements = element.select(cssSelector);
+//        if (null == elements || elements.size() == 0) {
+//            return null;
+//        }
+//
+//        List<String> lst = new ArrayList<>();
+//        for (Element childElement : elements) {
+//            lst.add(childElement.text());
+//        }
+//        return lst;
+//    }
+
+    public static String html(Element element, String cssSelector) {
+        Element fetchElement = element.selectFirst(cssSelector);
+        if (null == fetchElement) {
+            return null;
+        }
+        return fetchElement.html();
+    }
+
+    public static String attr(Element element, String cssSelector, String attribute) {
+        Element fetchElement = element.selectFirst(cssSelector);
+        if (null == fetchElement) {
+            return null;
+        }
+        return fetchElement.attr(attribute);
+    }
+
+    public static Element cssFirst(Document doc, String cssSelector) {
+        return doc.selectFirst(cssSelector);
+    }
+
+    public static Element cssFirst(Element element, String cssSelector) {
+        return element.selectFirst(cssSelector);
+    }
+
     public static Elements css(Document doc, String cssSelector) {
         return doc.select(cssSelector);
     }
