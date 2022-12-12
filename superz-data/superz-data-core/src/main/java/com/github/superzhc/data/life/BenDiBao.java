@@ -1,6 +1,7 @@
-package com.github.superzhc.data.news;
+package com.github.superzhc.data.life;
 
 import com.github.superzhc.common.http.HttpRequest;
+import com.github.superzhc.common.utils.MapUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -23,9 +24,9 @@ public class BenDiBao {
     public static List<Map<String, String>> news(String city) {
         String url = String.format("http://%s.bendibao.com", city);
 
-        String result = HttpRequest.get(url).body();
+        String html = HttpRequest.get(url).body();
 
-        Document doc = Jsoup.parse(result);
+        Document doc = Jsoup.parse(html);
 
         List<Map<String, String>> dataRows = new ArrayList<>();
 
@@ -45,5 +46,6 @@ public class BenDiBao {
 
     public static void main(String[] args) {
         String city = "nj";
+        System.out.println(MapUtils.print(news(city)));
     }
 }

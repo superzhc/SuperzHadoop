@@ -176,6 +176,10 @@ public class MapUtils {
     }
 
     public static <T> String print(List<Map<String, T>> maps) {
+        if (null == maps) {
+            return null;
+        }
+
         // 获取所有的key
         Set<String> keys = new LinkedHashSet<>();
         for (Map<String, ?> map : maps) {

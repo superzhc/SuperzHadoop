@@ -82,9 +82,11 @@ public class SMZDM {
     }
 
     /**
+     * 推荐使用 haowen2
      * @param period 以天为时间跨度，默认为 all，其余可以选择 1，7，30，365
      * @return
      */
+    @Deprecated
     public static List<Map<String, Object>> haowen(String period) {
         String url = String.format("https://post.smzdm.com/hot_%s", period);
 
@@ -337,10 +339,11 @@ public class SMZDM {
 
     public static void main(String[] args) {
         String out = "";
+        List<Map<String, Object>> data = null;
         // System.out.println(MapUtils.print(haowen("1")));
 //        System.out.println(MapUtils.print(haowen2("7")));
 
-       out = MapUtils.print(search("xbox"));
+//       out = MapUtils.print(search("xbox"));
 
 //        List<Map<String, Object>> data = new ArrayList<>();
 //        data.addAll(ranking(RankType.好价电商榜_天猫));
@@ -362,6 +365,8 @@ public class SMZDM {
 //        out = MapUtils.print(ranking(RankType.好价品类榜_运动户外));
 //         out = MapUtils.print(ranking(RankType.好价品类榜_食品生鲜));
 
+        data=search("n95");
+        out = MapUtils.print(data);
         System.out.println(out);
     }
 }
