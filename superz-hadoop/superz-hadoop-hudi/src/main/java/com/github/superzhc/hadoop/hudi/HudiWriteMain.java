@@ -1,22 +1,25 @@
 package com.github.superzhc.hadoop.hudi;
 
 import com.github.superzhc.data.shopping.GuangDiu;
+import com.github.superzhc.hadoop.hudi.data.AbstractData;
+import com.github.superzhc.hadoop.hudi.data.BiCiDoData;
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hudi.client.HoodieJavaWriteClient;
 import org.apache.hudi.client.common.HoodieJavaEngineContext;
-import org.apache.hudi.common.model.*;
+import org.apache.hudi.common.model.HoodieAvroPayload;
+import org.apache.hudi.common.model.HoodieAvroRecord;
+import org.apache.hudi.common.model.HoodieKey;
+import org.apache.hudi.common.model.HoodieRecord;
 import org.apache.hudi.common.util.Option;
 import org.apache.hudi.config.*;
-import org.apache.hudi.exception.HoodieKeyException;
 import org.apache.hudi.index.HoodieIndex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.function.BiFunction;
 
 import static org.apache.hudi.config.HoodieIndexConfig.BLOOM_INDEX_FILTER_DYNAMIC_MAX_ENTRIES;
 
@@ -27,29 +30,19 @@ import static org.apache.hudi.config.HoodieIndexConfig.BLOOM_INDEX_FILTER_DYNAMI
 public class HudiWriteMain {
     private static final Logger log = LoggerFactory.getLogger(HudiWriteMain.class);
 
-    public static void main(String[] args) {
+    public static void write(AbstractData data){
+        String tableName=data.getTableName();
+        String tablePath=data.getBasePath();
+        Schema schema=data.getSchema();
+
         // 如果在windows本地跑，需要从widnows访问HDFS，需要指定一个合法的身份
         System.setProperty("HADOOP_USER_NAME", "root");
 
-        String tableName = "superz_java_client_20221210144355";
-        String tablePath = "hdfs://log-platform01:8020/user/superz/hudi/" + tableName;
-
-        Schema.Field id = new Schema.Field("id", Schema.create(Schema.Type.INT), null, null);
-        Schema.Field title = new Schema.Field("title", Schema.createUnion(Arrays.asList(Schema.create(Schema.Type.STRING), Schema.create(Schema.Type.NULL))), null, null);
-        Schema.Field price = new Schema.Field("price", Schema.create(Schema.Type.STRING), null, null);
-        // 预定义hudi表无此字段，但写数据的shcema有这个定义
-        Schema.Field sync = new Schema.Field("sync", Schema.create(Schema.Type.STRING), null, null);
-        Schema.Field platform = new Schema.Field("platform", Schema.create(Schema.Type.STRING), null, null);
-        // 预定义hudi有此字段，但写数据的schema不定义
-        Schema.Field brief = new Schema.Field("brief", Schema.create(Schema.Type.STRING), null, null);
-        Schema.Field ts = new Schema.Field("ts", Schema.create(Schema.Type.LONG), "获取时间戳", null);
-        Schema defineSchema = Schema.createRecord(tableName, null, null, false);
-        defineSchema.setFields(Arrays.asList(id, title, price, /*sync,*/ platform, /*brief,*/ ts));
-
+        // 设置索引
         Properties indexProperties = new Properties();
         indexProperties.put(BLOOM_INDEX_FILTER_DYNAMIC_MAX_ENTRIES.key(), 150000); // 1000万总体时间提升1分钟
         HoodieWriteConfig cfg = HoodieWriteConfig.newBuilder().withPath(tablePath)
-                .withSchema(defineSchema.toString())
+                .withSchema(schema.toString())
                 .withParallelism(2, 2)
                 .withDeleteParallelism(2)
                 .forTable(tableName)
@@ -78,34 +71,12 @@ public class HudiWriteMain {
         String commitTime = writeClient.startCommit();
         log.info("commit time:{}", commitTime);
 
-        List<Map<String, Object>> data = GuangDiu.all();
+        List<Map<String, Object>> dataRows = data.getData();
         List<HoodieRecord<HoodieAvroPayload>> records = new ArrayList<>();
-        for (Map<String, Object> item : data) {
-            Object d = item.get("platform");
-            if (null != d) {
-                switch (String.valueOf(d)) {
-                    case "淘宝":
-                    case "天猫":
-                        d = "T";
-                        break;
-                    case "京东":
-                    case "京东·自营":
-                        d = "J";
-                        break;
-                    case "拼多多":
-                        d = "P";
-                        break;
-                    case "唯品会":
-                        d = "V";
-                        break;
-                    default:
-                        d = "O";
-                        break;
-                }
-            }
-            item.put("platform", d);
-            records.add(map2record(defineSchema, item, "id", "platform"));
+        for(Map<String,Object> item:dataRows){
+            records.add(map2record(schema, item, data.getRecordKeyFields(), data.getPartitionFields()));
         }
+
         writeClient.insert(records, commitTime);
         writeClient.close();
     }
@@ -182,5 +153,11 @@ public class HudiWriteMain {
         }
 
         return record;
+    }
+
+    public static void main(String[] args) {
+        String ts = "20221213150742";
+        AbstractData data = AbstractData.generate(BiCiDoData.class, ts);
+        write(data);
     }
 }

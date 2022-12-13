@@ -169,10 +169,16 @@ public class MapUtils {
         return maps;
     }
 
-    public static <T> String print(Map<String, T> map) {
-        List<Map<String, T>> maps = new ArrayList<>();
-        maps.add(map);
-        return print(maps);
+    public static <T> String print(Map<String, T>... maps) {
+        if (null == maps || maps.length == 0) {
+            return null;
+        }
+
+        List<Map<String, T>> lst = new ArrayList<>();
+        for (Map<String, T> map : maps) {
+            lst.add(map);
+        }
+        return print(lst);
     }
 
     public static <T> String print(List<Map<String, T>> maps) {
