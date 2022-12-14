@@ -35,8 +35,9 @@
         <hadoop.version>3.2.2</hadoop.version>
         <zookeeper.version>3.6.3</zookeeper.version>
         <hive.version>3.1.2</hive.version>
+        <trino.version>401</trino.version>
         <hbase.version>2.2.3</hbase.version>
-        <spark.version>3.0.0</spark.version>
+        <spark.version>3.3.0</spark.version>
         <!--2022年8月12日 更新flink版本为1.15.1，注意1.15.1版本后的flink包去掉了_{scala.binary.version}命名-->
         <!--1.15.1 发布公告翻译：https://developer.aliyun.com/article/908513-->
         <!--1.15.1 运行时去掉了对 Scala 的依赖-->

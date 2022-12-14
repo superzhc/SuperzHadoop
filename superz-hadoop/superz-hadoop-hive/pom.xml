@@ -84,15 +84,15 @@
         <dependency>
             <groupId>io.trino</groupId>
             <artifactId>trino-jdbc</artifactId>
-            <version>379</version>
+            <version>${trino.version}</version>
         </dependency>
 
         <!--hudi-->
-        <dependency>
+        <!--<dependency>
             <groupId>org.apache.hudi</groupId>
             <artifactId>hudi-hadoop-mr-bundle</artifactId>
             <version>${hudi.version}</version>
-        </dependency>
+        </dependency>-->
     </dependencies>
 
 </project>
