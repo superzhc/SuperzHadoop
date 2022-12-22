@@ -181,7 +181,26 @@ public class MapUtils {
         return print(lst);
     }
 
+    /**
+     * 打印所有数据
+     *
+     * @param maps
+     * @param <T>
+     * @return
+     */
     public static <T> String print(List<Map<String, T>> maps) {
+        return print(maps, maps.size());
+    }
+
+    /**
+     * 打印指定条数的数据
+     *
+     * @param maps
+     * @param num
+     * @param <T>
+     * @return
+     */
+    public static <T> String print(List<Map<String, T>> maps, int num) {
         if (null == maps) {
             return null;
         }
@@ -202,7 +221,12 @@ public class MapUtils {
         }
 
         List<String[]> rows = new ArrayList<>();
-        for (Map<String, ?> map : maps) {
+        for (int k = 0, mapsLength = maps.size(); k < mapsLength; k++) {
+            if (k >= num) {
+                break;
+            }
+
+            Map<String, ?> map = maps.get(k);
             String[] row = new String[keys.size()];
             int j = 0;
             for (String key : keys) {

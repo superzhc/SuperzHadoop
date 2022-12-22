@@ -132,13 +132,13 @@ public class JsonUtils {
         }
     }
 
-    public static Map<String, Object> map(String json, String... path) {
-        JsonNode node = json(json, path);
+    public static Map<String, Object> map(String json, String... paths) {
+        JsonNode node = json(json, paths);
         return map(node);
     }
 
-    public static Map<String, Object> map(JsonNode json, String... path) {
-        JsonNode childNode = object(json, path);
+    public static Map<String, Object> map(JsonNode json, String... paths) {
+        JsonNode childNode = object(json, paths);
         return mapper.convertValue(childNode, LinkedHashMap.class);
     }
 
@@ -191,11 +191,14 @@ public class JsonUtils {
             return null;
         }
 
-        if (!childNode.isValueNode()) {
-            return asString(childNode);
-        }
-
-        if (childNode.isShort()) {
+        if (childNode.isMissingNode()) {
+            return null;
+        } else if (childNode.isObject()) {
+            return map(childNode);
+        } else if (childNode.isArray()) {
+            List<Object> lst = list(childNode);
+            return lst;
+        } else if (childNode.isShort()) {
             return childNode.shortValue();
         } else if (childNode.isInt()) {
             return childNode.intValue();
@@ -276,6 +279,17 @@ public class JsonUtils {
         return null == childNode ? Boolean.FALSE : childNode.asBoolean();
     }
 
+    public static <T> List<T> list(JsonNode node, String... paths) {
+        ArrayNode arrayNode = (ArrayNode) node;
+        List<T> lst = new ArrayList<>(arrayNode.size());
+        for (int i = 0, len = arrayNode.size(); i < len; i++) {
+            JsonNode arrayChildNode = node.get(i);
+            T value = (T) object2(arrayChildNode);
+            lst.add(value);
+        }
+        return lst;
+    }
+
     public static List<String> stringArray2List(JsonNode node, String... paths) {
         return Arrays.asList(stringArray(node, paths));
     }
@@ -331,6 +345,22 @@ public class JsonUtils {
     }
 
     public static Map<String, Object>[] newObjectArray(JsonNode node, String... paths) {
+        return newObjectArray(node, paths, (List<String>) null);
+    }
+
+    public static Map<String, Object>[] newObjectArray4Keys(JsonNode node, List<String> keys) {
+        return newObjectArray(node, null, keys);
+    }
+
+    public static Map<String, Object>[] newObjectArray4Keys(JsonNode node, String... keys) {
+        return newObjectArray(node, null, keys);
+    }
+
+    public static Map<String, Object>[] newObjectArray(JsonNode node, String[] paths, String... keys) {
+        return newObjectArray(node, paths, Arrays.asList(keys));
+    }
+
+    public static Map<String, Object>[] newObjectArray(JsonNode node, String[] paths, List<String> keys) {
         JsonNode childNode = node;
         if (null != paths) {
             childNode = object(node, paths);
@@ -344,11 +374,18 @@ public class JsonUtils {
             }
 
             Map<String, Object> map = new LinkedHashMap<>();
-            Iterator<String> fieldNames = item.fieldNames();
-            while (fieldNames.hasNext()) {
-                String fieldName = fieldNames.next();
-                map.put(fieldName, object2(item, fieldName));
+            if (null == keys || keys.size() == 0) {
+                keys = null == keys ? new ArrayList<>() : keys;
+                Iterator<String> fieldNames = item.fieldNames();
+                while (fieldNames.hasNext()) {
+                    keys.add(fieldNames.next());
+                }
             }
+
+            for (String key : keys) {
+                map.put(key, object2(item, key));
+            }
+
             arr[i] = map;
         }
         return arr;
@@ -368,54 +405,52 @@ public class JsonUtils {
         return arr;
     }
 
+    /**
+     * Deprecated，推荐使用 newObjectArray
+     *
+     * @param node
+     * @param keys
+     * @param paths
+     * @return
+     */
+    @Deprecated
     public static Map<String, String>[] objectArray2Map(JsonNode node, String[] keys, String... paths) {
         return objectArray2Map(node, Arrays.asList(keys), paths);
     }
 
+    /**
+     * Deprecated，推荐使用 newObjectArray
+     *
+     * @param node
+     * @param keys
+     * @param paths
+     * @return
+     */
+    @Deprecated
     public static Map<String, String>[] objectArray2Map(JsonNode node, List<String> keys, String... paths) {
-        JsonNode childNode = node;
-        if (null != paths) {
-            childNode = object(node, paths);
-        }
-
-        Map<String, String>[] arr = new Map[childNode.size()];
-        for (int i = 0, len = childNode.size(); i < len; i++) {
-            JsonNode item = childNode.get(i);
-            if (null == item) {
-                continue;
+        Map<String, Object>[] originData = newObjectArray(node, paths, keys);
+        Map<String, String>[] data = new Map[originData.length];
+        for (int i = 0, len = originData.length; i < len; i++) {
+            Map<String, Object> originItem = originData[i];
+            Map<String, String> item = new LinkedHashMap<>();
+            for (Map.Entry<String, Object> originEntry : originItem.entrySet()) {
+                item.put(originEntry.getKey(), String.valueOf(originEntry.getValue()));
             }
-
-            Map<String, String> map = new LinkedHashMap<>();
-            for (String key : keys) {
-                map.put(key, text(item, key));
-            }
-            arr[i] = map;
+            data[i] = item;
         }
-        return arr;
+        return data;
     }
 
+    /**
+     * Deprecated，推荐使用 newObjectArray
+     *
+     * @param node
+     * @param paths
+     * @return
+     */
+    @Deprecated
     public static Map<String, String>[] objectArray2Map(JsonNode node, String... paths) {
-        JsonNode childNode = node;
-        if (null != paths) {
-            childNode = object(node, paths);
-        }
-
-        Map<String, String>[] arr = new Map[childNode.size()];
-        for (int i = 0, len = childNode.size(); i < len; i++) {
-            JsonNode item = childNode.get(i);
-            if (null == item) {
-                continue;
-            }
-
-            Map<String, String> map = new LinkedHashMap<>();
-            Iterator<String> fieldNames = item.fieldNames();
-            while (fieldNames.hasNext()) {
-                String fieldName = fieldNames.next();
-                map.put(fieldName, text(item, fieldName));
-            }
-            arr[i] = map;
-        }
-        return arr;
+        return objectArray2Map(node, (List<String>) null, paths);
     }
 
     public static Object[][] newArrayArray(JsonNode node, String... paths) {
@@ -440,7 +475,39 @@ public class JsonUtils {
             arr[i] = objArr;
         }
         return arr;
+    }
 
+    public static Map<String, Object>[] arrayArray2Map(JsonNode node, String... keys) {
+        return arrayArray2Map(node, null, keys);
+    }
+
+    public static Map<String, Object>[] arrayArray2Map(JsonNode node, String[] paths, String... keys) {
+        Object[][] originData = newArrayArray(node, paths);
+        Map<String, Object>[] data = new Map[originData.length];
+        for (int i = 0, len = originData.length; i < len; i++) {
+            Object[] originItem = originData[i];
+            if (null == originItem) {
+                data[i] = null;
+                continue;
+            }
+
+            Map<String, Object> item = new LinkedHashMap<>();
+            int indexCursor = 1;
+            int keySize = null == keys ? 0 : keys.length;
+            for (int j = 0, itemLen = originItem.length; j < itemLen; j++) {
+                Object value = originItem[j];
+                String key;
+                if (j < keySize) {
+                    key = keys[j];
+                } else {
+                    key = String.format("_%d", indexCursor);
+                    indexCursor++;
+                }
+                item.put(key, value);
+            }
+            data[i] = item;
+        }
+        return data;
     }
 
     public static String[][] arrayArray(JsonNode node, String... paths) {

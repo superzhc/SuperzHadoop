@@ -3,21 +3,97 @@ package com.github.superzhc.data.fund;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.http.HttpRequest;
 import com.github.superzhc.common.jackson.JsonUtils;
+import com.github.superzhc.common.utils.MapUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
-
-import static com.github.superzhc.data.utils.XueQiuUtils.UA;
 
 /**
  * @author superz
  * @create 2022/11/18 9:32
  **/
 public class EastMoneyFund {
-    public static List<Map<String, String>> fundRealNet(String... symbols) {
+    private static final Logger log = LoggerFactory.getLogger(EastMoneyFund.class);
+
+    public static final String UA =
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/94.0.4606.71";
+    public static final String UA_CHROME = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36";
+
+    public static List<Map<String, Object>> funds() {
+        String url = "http://fund.eastmoney.com/js/fundcode_search.js";
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("User-Agent", UA_CHROME);
+
+        try {
+            String result = HttpRequest.get(url).headers(headers).body();
+            String json = result.substring("var r = ".length(), result.length() - 1);
+            JsonNode nodes = JsonUtils.json(json);
+            Map<String, Object>[] data = JsonUtils.arrayArray2Map(nodes, new String[]{"code",
+                    "pinyin",
+                    "name",
+                    "type",
+                    "full_pinyin"});
+
+            return Arrays.asList(data);
+        } catch (Exception e) {
+            log.error("解析失败", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static List<Map<String, Object>> fundNetHistory(String symbol) {
+        String url = "https://fundmobapi.eastmoney.com/FundMNewApi/FundMNHisNetList";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("FCODE", symbol);
+        params.put("IsShareNet", true);
+        params.put("pageIndex", 1);
+        params.put("pageSize", LocalDate.of(1990, 1, 1).until(LocalDate.now(), ChronoUnit.DAYS));
+        params.put("deviceid", "Wap");
+        params.put("plat", "Wap");
+        params.put("product", "EFund");
+        params.put("version", "6.2.8");
+        params.put("_", System.currentTimeMillis());
+
+        String result = HttpRequest.get(url, params)
+                .userAgent(UA)
+                //.accept("text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
+                //.acceptEncoding("gzip, deflate, br")
+                //.header("Host", "fundmobapi.eastmoney.com")
+                .body();
+
+        JsonNode json = JsonUtils.json(result).get("Datas");
+
+        List<String> columnNames = Arrays.asList(
+                "FSRQ",
+                "DWJZ",
+                "LJJZ",
+                "JZZZL"
+        );
+        Map<String, Object>[] originData = JsonUtils.newObjectArray4Keys(json, columnNames);
+        List<Map<String, Object>> data = new ArrayList<>(originData.length);
+        for (Map<String, Object> originItem : originData) {
+            Map<String, Object> item = new LinkedHashMap<>();
+            item.put("code", symbol);
+            item.put("date", originItem.get("FSRQ"));
+            item.put("net_worth", originItem.get("DWJZ"));
+            item.put("accumulated_net_worth", originItem.get("LJJZ"));
+            item.put("change", originItem.get("JZZZL"));
+
+            data.add(item);
+        }
+        return data;
+    }
+
+    public static List<Map<String, Object>> fundRealNet(String... symbols) {
         if (null == symbols || symbols.length < 1) {
             throw new IllegalArgumentException("at least one fund");
         }
@@ -38,10 +114,10 @@ public class EastMoneyFund {
         params.put("version", "6.2.8");
         params.put("_", System.currentTimeMillis());
 
-        String result = HttpRequest.get(url, params).userAgent(UA).body();
+        String result = HttpRequest.get(url, params).userAgent(UA_CHROME).body();
         JsonNode json = JsonUtils.json(result, "Datas");
 
-        List<Map<String, String>> data = Arrays.asList(JsonUtils.objectArray2Map(json));
+        List<Map<String, Object>> data = Arrays.asList(JsonUtils.newObjectArray(json));
 
 //        List<String[]> dataRows = JsonUtils.objectArrayWithKeys(json, columnNames);
 //
@@ -99,7 +175,10 @@ public class EastMoneyFund {
     }
 
     public static void main(String[] args) {
-        System.out.println(tsdata("012348"));
+//        System.out.println(tsdata("012348"));
+
+//        System.out.println(MapUtils.print(funds(),20));
+        System.out.println(MapUtils.print(fundNetHistory("012348"), 100));
     }
 
 }
