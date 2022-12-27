@@ -19,11 +19,7 @@ public class PrestoMain {
          * jdbc:presto://host:port/catalog
          * jdbc:presto://host:port/catalog/schema
          */
-//        String url = "jdbc:presto://log-platform01:8099/hive/default";
-
-//        String url = "jdbc:trino://log-platform01:8099/elasticsearch/default";
-
-        String url = "jdbc:trino://log-platform01:8099";
+        String url = "jdbc:presto://log-platform01:8099/hive/default";
 
 //        Connection conn = null;
 //        Statement stmt = null;

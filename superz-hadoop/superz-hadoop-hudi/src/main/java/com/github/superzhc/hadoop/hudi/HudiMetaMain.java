@@ -10,6 +10,7 @@ import org.apache.hudi.common.fs.FSUtils;
 import org.apache.hudi.common.model.HoodieAvroPayload;
 import org.apache.hudi.common.model.HoodieTableType;
 import org.apache.hudi.common.table.HoodieTableMetaClient;
+import org.apache.hudi.exception.HoodieException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,6 +51,26 @@ public class HudiMetaMain {
                     .setPayloadClass(HoodieAvroPayload.class)
 //                    .setBootstrapIndexClass(NoOpBootstrapIndex.class.getName())
                     .initTable(hadoopConf, tablePath);
+        }
+    }
+
+    public static void delete(AbstractData data){
+        String basePath=data.getBasePath();
+
+        // 如果在windows本地跑，需要从widnows访问HDFS，需要指定一个合法的身份
+        System.setProperty("HADOOP_USER_NAME", "root");
+
+        Configuration hadoopConf = new Configuration();
+        hadoopConf.set("fs.hdfs.impl", "org.apache.hadoop.hdfs.DistributedFileSystem");
+
+        FileSystem fs = FSUtils.getFs(basePath, hadoopConf);
+        try {
+            Path metadataTablePath = new Path(basePath);
+            if (fs.exists(metadataTablePath)) {
+                fs.delete(metadataTablePath, true);
+            }
+        } catch (Exception e) {
+            throw new HoodieException("Failed to remove table from path " + basePath, e);
         }
     }
 

@@ -117,23 +117,24 @@ public class EastMoneyFund {
         String result = HttpRequest.get(url, params).userAgent(UA_CHROME).body();
         JsonNode json = JsonUtils.json(result, "Datas");
 
-        List<Map<String, Object>> data = Arrays.asList(JsonUtils.newObjectArray(json));
+        Map<String, Object>[] originData=JsonUtils.newObjectArray(json);
+        List<Map<String, Object>> data=new ArrayList<>();
+        for(Map<String,Object> originItem:originData){
+            Map<String,Object> item=new LinkedHashMap<>();
+            item.put("code",originItem.get("FCODE"));
+            item.put("name",originItem.get("SHORTNAME"));
+            // 上一个交易日的值
+            item.put("latest_date",originItem.get("PDATE"));
+            item.put("latest_net_worth",originItem.get("NAV"));
+            item.put("latest_accumulated_net_worth",originItem.get("ACCNAV"));
+            item.put("latest_change",originItem.get("NAVCHGRT"));
+            // 预估值
+            item.put("estimate_net_worth",originItem.get("GSZ"));
+            item.put("estimate_change",originItem.get("GSZZL"));
+            item.put("estimate_date",originItem.get("GZTIME"));
 
-//        List<String[]> dataRows = JsonUtils.objectArrayWithKeys(json, columnNames);
-//
-//        Table table = TableUtils.build(dataRows);
-//        table.column("FCODE").setName("code");
-//        table.column("SHORTNAME").setName("name");
-//        // 上一个交易日的值
-//        table.column("PDATE").setName("latest_date");
-//        table.column("NAV").setName("latest_net_worth");
-//        table.column("ACCNAV").setName("latest_accumulated_net_worth");
-//        table.column("NAVCHGRT").setName("latest_change");
-//        // 预估值
-//        table.column("GSZ").setName("estimate_net_worth");
-//        table.column("GSZZL").setName("estimate_change");
-//        table.column("GZTIME").setName("estimate_date");
-        //table.column("").setName("");
+            data.add(item);
+        }
 
         return data;
     }

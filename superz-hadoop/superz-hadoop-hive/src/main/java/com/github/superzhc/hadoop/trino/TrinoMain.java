@@ -19,7 +19,8 @@ public class TrinoMain {
         String url = "jdbc:trino://hanyun-2:7099/hudi/default";
 
         try (JdbcHelper jdbc = new JdbcHelper(url, "root", null)) {
-            jdbc.show("select count(*) from superz_java_client_20221213150742");
+            jdbc.show("select * from superz_java_client_20221213150742");
+//            jdbc.show("show create table superz_java_client_20221213150742");
 //            jdbc.show("show tables");
         }
     }
