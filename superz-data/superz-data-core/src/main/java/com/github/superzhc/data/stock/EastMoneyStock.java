@@ -3,7 +3,11 @@ package com.github.superzhc.data.stock;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.http.HttpRequest;
 import com.github.superzhc.common.jackson.JsonUtils;
+import com.github.superzhc.common.utils.MapUtils;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -11,7 +15,9 @@ import java.util.*;
  * @create 2022/9/13 11:29
  **/
 public class EastMoneyStock {
-    public static List<Map<String, Object>> boardConceptName() {
+
+    // 概念板块
+    public static List<Map<String, Object>> boardConcept() {
         String url = "http://push2.eastmoney.com/api/qt/clist/get";
 
         Map<String, Object> params = new HashMap<>();
@@ -51,26 +57,51 @@ public class EastMoneyStock {
     }
 
     // 概念板块-历史行情
-    public static List<Map<String, Object>> boardConceptHistory(String symbol, String type) {
+    public static List<Map<String, Object>> boardConceptHistory(String symbol) {
         String url = "http://push2his.eastmoney.com/api/qt/stock/kline/get";
 
         Map<String, Object> params = new HashMap<>();
         params.put("secid", String.format("90.%s", symbol));
         params.put("fields1", "f1,f2,f3,f4,f5,f6");
         params.put("fields2", "f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61");
-        params.put("klt", "101");
+        params.put("klt", "101"/*周期；每天 101，每周 102，每月 103*/);
         params.put("fqt", "0"/*0 不复权，1 前复权，2 后复权*/);
-        params.put("beg", "0");
-        params.put("end", "20500101");
+        params.put("beg", "19700101");
+        params.put("end", LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd")));
         params.put("smplmt", "10000");
         params.put("lmt", 1000000);
         params.put("_", System.currentTimeMillis());
 
         String result = HttpRequest.get(url, params).body();
 
-        // TODO
+        List<Map<String, Object>> data = new ArrayList<>();
 
-        return null;
+        JsonNode json = JsonUtils.loads(result, "data");
+        String code = JsonUtils.string(json, "code");
+        String name = JsonUtils.string(json, "name");
+        JsonNode klines = JsonUtils.object(json, "klines");
+        for (JsonNode node : klines) {
+            String item = JsonUtils.string(node);
+            String[] ss = item.split(",", -1);
+
+            Map<String, Object> map = new LinkedHashMap<>();
+            map.put("code", code);
+            map.put("name", name);
+            map.put("date", ss[0]);
+            map.put("open", ss[1]);
+            map.put("close", ss[2]);
+            map.put("high", ss[3]);
+            map.put("low", ss[4]);
+            map.put("volume", ss[5]);
+            map.put("turnover", ss[6]);
+            map.put("amplitude", ss[7]);
+            map.put("change", ss[8]);
+            map.put("change_amount", ss[9]);
+            map.put("rate", ss[10]);
+            data.add(map);
+        }
+
+        return data;
     }
 
     // 概念模块分时历史行情
@@ -81,7 +112,7 @@ public class EastMoneyStock {
         params.put("secid", String.format("90.%s", symbol));
         params.put("fields1", "f1,f2,f3,f4,f5,f6");
         params.put("fields2", "f51,f52,f53,f54,f55,f56,f57,f58,f59,f60,f61");
-        params.put("klt", period/*周期："1", "5", "15", "30", "60"*/);
+        params.put("klt", period/*周期（分钟）："1", "5", "15", "30", "60"*/);
         params.put("fqt", "1");
         params.put("end", "20500101");
         params.put("lmt", "1000000");
@@ -89,7 +120,34 @@ public class EastMoneyStock {
 
         String result = HttpRequest.get(url, params).body();
 
-        return null;
+        List<Map<String, Object>> data = new ArrayList<>();
+
+        JsonNode json = JsonUtils.loads(result, "data");
+        String code = JsonUtils.string(json, "code");
+        String name = JsonUtils.string(json, "name");
+        JsonNode klines = JsonUtils.object(json, "klines");
+        for (JsonNode node : klines) {
+            String item = JsonUtils.string(node);
+            String[] ss = item.split(",", -1);
+
+            Map<String, Object> map = new LinkedHashMap<>();
+            map.put("code", code);
+            map.put("name", name);
+            map.put("date", ss[0]);
+            map.put("open", ss[1]);
+            map.put("close", ss[2]);
+            map.put("high", ss[3]);
+            map.put("low", ss[4]);
+            map.put("volume", ss[5]);
+            map.put("turnover", ss[6]);
+            map.put("amplitude", ss[7]);
+            map.put("change", ss[8]);
+            map.put("change_amount", ss[9]);
+            map.put("rate", ss[10]);
+            data.add(map);
+        }
+
+        return data;
     }
 
     // 概念模块组成成分
@@ -110,7 +168,73 @@ public class EastMoneyStock {
 
         String result = HttpRequest.get(url, params).body();
 
-        return null;
+        List<Map<String, Object>> data = new ArrayList<>();
+
+        JsonNode json = JsonUtils.loads(result, "data", "diff");
+        for (JsonNode item : json) {
+            Map<String, Object> map = new LinkedHashMap<>();
+            map.put("code", JsonUtils.string(item, "f12"));
+            map.put("name", JsonUtils.string(item, "f14"));
+            map.put("last_close", JsonUtils.aDouble(item, "f18"));
+            map.put("open", JsonUtils.aDouble(item, "f17"));
+            map.put("high", JsonUtils.aDouble(item, "f15"));
+            map.put("low", JsonUtils.aDouble(item, "f16"));
+            map.put("current", JsonUtils.aDouble(item, "f2"));
+            map.put("change", JsonUtils.aDouble(item, "f3"));
+            map.put("change_amount", JsonUtils.aDouble(item, "f4"));
+            map.put("volume", JsonUtils.aDouble(item, "f5"));
+            map.put("turnover", JsonUtils.aDouble(item, "f6"));
+            map.put("amplitude", JsonUtils.aDouble(item, "f7"));
+            map.put("rate", JsonUtils.aDouble(item, "f8"));
+            map.put("PE[dynamic]", JsonUtils.string(item, "f9"));
+            map.put("PB", JsonUtils.string(item, "f24"));
+
+            data.add(map);
+        }
+
+        return data;
+    }
+
+    // 行业板块，数据不对，有点问题
+    public static List<Map<String, Object>> boardIndustry() {
+        String url = "http://push2.eastmoney.com/api/qt/clist/get";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("pn", 1);
+        params.put("pz", 2000);
+        params.put("po", "1");
+        params.put("np", "1");
+        params.put("fltt", "2");
+        params.put("invt", "2");
+        params.put("fid", "3");
+        params.put("fs", "m:90 t:2 f:!50");
+        params.put("fields", /*"f2,f3,f4,f8,f12,f14,f15,f16,f17,f18,f20,f21,f24,f25,f22,f33,f11,f62,f128,f124,f107,f104,f105,f136"*/
+                "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f26,f22,f33,f11,f62,f128,f136,f115,f152,f124,f107,f104,f105,f140,f141,f207,f208,f209,f222"
+        );
+        params.put("_", System.currentTimeMillis());
+
+        String result = HttpRequest.get(url, params).body();
+        JsonNode data = JsonUtils.json(result, "data", "diff");
+
+        List<Map<String, Object>> dataRows = new ArrayList<>();
+        for (JsonNode item : data) {
+            Map<String, Object> dataRow = new LinkedHashMap<>();
+            dataRow.put("板块名称", JsonUtils.string(item.get("f14")));
+            dataRow.put("板块代码", JsonUtils.string(item.get("f12")));
+            dataRow.put("最新价", JsonUtils.aDouble(item.get("f2")));
+            dataRow.put("涨跌额", JsonUtils.aDouble(item.get("f4")));
+            dataRow.put("涨跌幅", JsonUtils.aDouble(item.get("f3")));
+            dataRow.put("总市值", JsonUtils.aLong(item.get("f20")));
+            dataRow.put("换手率", JsonUtils.aDouble(item.get("f8")));
+            dataRow.put("上涨家数", JsonUtils.integer(item.get("f104")));
+            dataRow.put("下跌家数", JsonUtils.integer(item.get("f105")));
+            dataRow.put("领涨股票", JsonUtils.string(item.get("f128")));
+            dataRow.put("领涨股票-涨跌幅", JsonUtils.string(item.get("f136")));
+
+            dataRows.add(dataRow);
+        }
+
+        return dataRows;
     }
 
     public static List<Map<String, Object>> newShares() {
@@ -178,6 +302,6 @@ public class EastMoneyStock {
     }
 
     public static void main(String[] args) {
-        boardConceptName();
+        System.out.println(MapUtils.print(boardIndustry()));
     }
 }

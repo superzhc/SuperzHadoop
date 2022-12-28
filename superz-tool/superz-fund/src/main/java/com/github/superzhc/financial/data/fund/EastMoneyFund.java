@@ -1073,103 +1073,13 @@ public class EastMoneyFund {
      * 3  |                 change  |       STRING  |
      */
     public static Table fundNetHistory(String symbol) {
-        String url = "https://fundmobapi.eastmoney.com/FundMNewApi/FundMNHisNetList";
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("FCODE", symbol);
-        params.put("IsShareNet", true);
-        params.put("pageIndex", 1);
-        params.put("pageSize", LocalDate.of(1990, 1, 1).until(LocalDate.now(), ChronoUnit.DAYS));
-        params.put("deviceid", "Wap");
-        params.put("plat", "Wap");
-        params.put("product", "EFund");
-        params.put("version", "6.2.8");
-        params.put("_", System.currentTimeMillis());
-
-        String result = HttpRequest.get(url, params)
-                .userAgent(UA)
-                //.accept("text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9")
-                //.acceptEncoding("gzip, deflate, br")
-                //.header("Host", "fundmobapi.eastmoney.com")
-                .body();
-
-        JsonNode json = JsonUtils.json(result).get("Datas");
-
-        List<String> columnNames = Arrays.asList(
-                "FSRQ",
-                "DWJZ",
-                "LJJZ",
-                "JZZZL"
-        );
-
-        List<String[]> dataRows = JsonUtils.objectArrayWithKeys(json, columnNames);
-
-        Table table = TableUtils.build(dataRows);
-        table.column("FSRQ").setName("date");
-        table.column("DWJZ").setName("net_worth");
-        table.column("LJJZ").setName("accumulated_net_worth");
-        table.column("JZZZL").setName("change");
+        Table table=TableUtils.buildByMap(com.github.superzhc.data.fund.EastMoneyFund.fundNetHistory(symbol));
 
         return table;
     }
 
     public static Table fundRealNet(String... symbols) {
-        if (null == symbols || symbols.length < 1) {
-            throw new IllegalArgumentException("at least one fund");
-        }
-
-        String url = "https://fundmobapi.eastmoney.com/FundMNewApi/FundMNFInfo";
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("Fcodes", String.join(",", symbols));
-        params.put("pageIndex", 1);
-        params.put("pageSize", symbols.length);
-        // params.put("Sort", "");
-        // params.put("SortColumn", "");
-        params.put("IsShowSE", false);
-        // params.put("P", "F");
-        params.put("deviceid", "Wap");
-        params.put("plat", "Wap");
-        params.put("product", "EFund");
-        params.put("version", "6.2.8");
-        params.put("_", System.currentTimeMillis());
-
-        String result = HttpRequest.get(url, params).userAgent(UA).body();
-        JsonNode json = JsonUtils.json(result, "Datas");
-
-        List<String> columnNames = Arrays.asList(
-                "FCODE",
-                "SHORTNAME",
-                "PDATE",
-                "NAV",
-                "ACCNAV",
-                "NAVCHGRT",
-                "GSZ",
-                "GSZZL",
-                "GZTIME"
-//                ,
-//                "NEWPRICE",
-//                "CHANGERATIO",
-//                "ZJL",
-//                "HQDATE",
-//                "ISHAVEREDPACKET"
-        );
-
-        List<String[]> dataRows = JsonUtils.objectArrayWithKeys(json, columnNames);
-
-        Table table = TableUtils.build(dataRows);
-        table.column("FCODE").setName("code");
-        table.column("SHORTNAME").setName("name");
-        // 上一个交易日的值
-        table.column("PDATE").setName("latest_date");
-        table.column("NAV").setName("latest_net_worth");
-        table.column("ACCNAV").setName("latest_accumulated_net_worth");
-        table.column("NAVCHGRT").setName("latest_change");
-        // 预估值
-        table.column("GSZ").setName("estimate_net_worth");
-        table.column("GSZZL").setName("estimate_change");
-        table.column("GZTIME").setName("estimate_date");
-        //table.column("").setName("");
+        Table table = TableUtils.buildByMap(com.github.superzhc.data.fund.EastMoneyFund.fundRealNet(symbols));
 
         return table;
     }
