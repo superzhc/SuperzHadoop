@@ -26,6 +26,11 @@ public class EastMoneyFund {
             "Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/94.0.4606.71";
     public static final String UA_CHROME = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36";
 
+    /**
+     * SQL表创建语句：create table em_funds(id bigint auto_increment primary key,code varchar(8) not null,name varchar(255) not null,type varchar(255) not null,pinyin varchar(255) null,full_pinyin varchar(255) null)
+     *
+     * @return
+     */
     public static List<Map<String, Object>> funds() {
         String url = "http://fund.eastmoney.com/js/fundcode_search.js";
 
@@ -117,21 +122,21 @@ public class EastMoneyFund {
         String result = HttpRequest.get(url, params).userAgent(UA_CHROME).body();
         JsonNode json = JsonUtils.json(result, "Datas");
 
-        Map<String, Object>[] originData=JsonUtils.newObjectArray(json);
-        List<Map<String, Object>> data=new ArrayList<>();
-        for(Map<String,Object> originItem:originData){
-            Map<String,Object> item=new LinkedHashMap<>();
-            item.put("code",originItem.get("FCODE"));
-            item.put("name",originItem.get("SHORTNAME"));
+        Map<String, Object>[] originData = JsonUtils.newObjectArray(json);
+        List<Map<String, Object>> data = new ArrayList<>();
+        for (Map<String, Object> originItem : originData) {
+            Map<String, Object> item = new LinkedHashMap<>();
+            item.put("code", originItem.get("FCODE"));
+            item.put("name", originItem.get("SHORTNAME"));
             // 上一个交易日的值
-            item.put("latest_date",originItem.get("PDATE"));
-            item.put("latest_net_worth",originItem.get("NAV"));
-            item.put("latest_accumulated_net_worth",originItem.get("ACCNAV"));
-            item.put("latest_change",originItem.get("NAVCHGRT"));
+            item.put("latest_date", originItem.get("PDATE"));
+            item.put("latest_net_worth", originItem.get("NAV"));
+            item.put("latest_accumulated_net_worth", originItem.get("ACCNAV"));
+            item.put("latest_change", originItem.get("NAVCHGRT"));
             // 预估值
-            item.put("estimate_net_worth",originItem.get("GSZ"));
-            item.put("estimate_change",originItem.get("GSZZL"));
-            item.put("estimate_date",originItem.get("GZTIME"));
+            item.put("estimate_net_worth", originItem.get("GSZ"));
+            item.put("estimate_change", originItem.get("GSZZL"));
+            item.put("estimate_date", originItem.get("GZTIME"));
 
             data.add(item);
         }

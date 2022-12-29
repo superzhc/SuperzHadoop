@@ -2,6 +2,9 @@ package com.github.superzhc.data;
 
 import com.github.superzhc.common.jdbc.JdbcHelper;
 import com.github.superzhc.common.utils.MapUtils;
+import com.github.superzhc.data.fund.DoctorXiong;
+import com.github.superzhc.data.fund.EastMoneyFund;
+import com.github.superzhc.data.fund.SinaFund;
 import com.github.superzhc.data.news.MoFish;
 import com.github.superzhc.data.stock.NetEaseStock;
 
@@ -19,13 +22,20 @@ public class DataMain {
         String username = "root";
         String password = "123456";
 
+        // // 创建基金表
+        // String sql="create table em_funds(id bigint auto_increment primary key,code varchar(8) not null,name varchar(255) not null,type varchar(255) not null,pinyin varchar(255) null,full_pinyin varchar(255) null)";
+        // String sql="create table sina_funds(id bigint auto_increment primary key,code varchar(8) not null,name varchar(255) not null,company_name varchar(255),subject_name varchar(255),create_date varchar(50),scale double,cxpj int,htpj int,jajxpj int,zspj int,yhpj3 int,yhpj5 int)";
+
+
         try (JdbcHelper jdbc = new JdbcHelper(url, username, password)) {
-            String sql = "insert into mofish_20221011 ( id, create_time, comment_num, approval_num, title, hot_desc, url, img_url, type_name)\n" +
-                    " values (?,?,?,?,?,?,?,?,?)";
+            // String sql = "insert into em_funds (code,name,type,pinyin,full_pinyin) values (?,?,?,?,?)";
+            // List<Map<String, Object>> data = EastMoneyFund.funds();
+            // jdbc.batchUpdate(sql, MapUtils.values(data, "code", "name", "type", "pinyin", "full_pinyin"));
 
-            List<Map<String, Object>> data = MoFish.taobao3760();
-            jdbc.batchUpdate(sql,MapUtils.values(data,"id","CreateTime","commentNum","approvalNum","Title","hotDesc","Url","imgUrl","TypeName"));
+            // String sql = "insert into sina_funds(code, name, company_name, subject_name, create_date, scale, cxpj, htpj, jajxpj, zspj, yhpj3, yhpj5) VALUE (?,?,?,?,?,?,?,?,?,?,?,?)";
+            // List<Map<String, Object>> data = SinaFund.funds();
+            // jdbc.batchUpdate(sql, MapUtils.values(data, "code", "name", "company_name", "subject_name", "create_date", "scale", "cxpj", "htpj", "jajxpj", "zspj", "yhpj3", "yhpj5"));
+
         }
-
     }
 }

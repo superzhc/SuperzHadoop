@@ -20,7 +20,7 @@ public class DoctorXiong {
      *
      * @return
      */
-    public static List<Map<String, String>> fund(String... codes) {
+    public static List<Map<String, Object>> fund(String... codes) {
         if (null == codes || codes.length == 0) {
             return null;
         }
@@ -32,10 +32,19 @@ public class DoctorXiong {
 
         String result = HttpRequest.get(url, params).body();
         JsonNode data = JsonUtils.json(result, "data");
-        Map<String, String>[] maps = JsonUtils.objectArray2Map(data);
+        Map<String, Object>[] maps = JsonUtils.newObjectArray(data);
         return Arrays.asList(maps);
     }
 
+    /**
+     * 获取基金的历史净值、总净值
+     *
+     * @param startDate 开始时间,标准时间格式yyyy-MM-dd
+     * @param endDate 截至时间,标准时间格式yyyy-MM-dd
+     * @param code 基金代码
+     *
+     * @return
+     */
     public static List<Map<String, Object>> fundDetail(String startDate, String endDate, String code) {
         String url = String.format("%s/v1/fund/detail", URL);
 

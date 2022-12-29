@@ -186,6 +186,7 @@ public class MapUtils {
      *
      * @param maps
      * @param <T>
+     *
      * @return
      */
     public static <T> String print(List<Map<String, T>> maps) {
@@ -198,11 +199,12 @@ public class MapUtils {
      * @param maps
      * @param num
      * @param <T>
+     *
      * @return
      */
     public static <T> String print(List<Map<String, T>> maps, int num) {
         if (null == maps) {
-            return null;
+            return "暂无数据";
         }
 
         // 获取所有的key
@@ -246,6 +248,8 @@ public class MapUtils {
             result.append(printRow(row, columnMaxLengths)).append("\n");
         }
         result.append(printSeparator(columnMaxLengths)).append("\n");
+
+        result.append("展示数据条数：" + num + "，数据总数：").append(maps.size()).append("\n");
 
         return result.toString();
     }

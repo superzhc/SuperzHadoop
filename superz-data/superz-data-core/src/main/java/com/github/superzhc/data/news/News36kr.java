@@ -30,11 +30,11 @@ public class News36kr {
      * @return
      */
     public static List<Map<String, Object>> latest() {
-        return execute("web_news");
+        return information("web_news");
     }
 
     public static List<Map<String, Object>> recommend() {
-        return execute("web_recommend");
+        return information("web_recommend");
     }
 
     /**
@@ -43,15 +43,15 @@ public class News36kr {
      * @return
      */
     public static List<Map<String, Object>> vc() {
-        return execute("contact");
+        return information("contact");
     }
 
     public static List<Map<String, Object>> car() {
-        return execute("travel");
+        return information("travel");
     }
 
     public static List<Map<String, Object>> technology() {
-        return execute("technology");
+        return information("technology");
     }
 
     /**
@@ -60,7 +60,7 @@ public class News36kr {
      * @return
      */
     public static List<Map<String, Object>> enterpriseService() {
-        return execute("enterpriseservice");
+        return information("enterpriseservice");
     }
 
     /**
@@ -69,7 +69,7 @@ public class News36kr {
      * @return
      */
     public static List<Map<String, Object>> innovate() {
-        return execute("innovate");
+        return information("innovate");
     }
 
     /**
@@ -78,15 +78,15 @@ public class News36kr {
      * @return
      */
     public static List<Map<String, Object>> realEstate() {
-        return execute("real_estate");
+        return information("real_estate");
     }
 
     public static List<Map<String, Object>> life() {
-        return execute("happy_life");
+        return information("happy_life");
     }
 
     public static List<Map<String, Object>> other() {
-        return execute("other");
+        return information("other");
     }
 
     /**
@@ -95,18 +95,50 @@ public class News36kr {
      * @return
      */
     public static List<Map<String, Object>> finance() {
-        return execute("ccs");
+        return information("ccs");
     }
 
-    public static List<Map<String, Object>> execute(String category) {
-        String url = "https://www.36kr.com/information/ccs";
+    public static List<Map<String, Object>> information(String category) {
+        String path = String.format("/information/%s", category);
+        JsonNode json = execute(path);
+        JsonNode dataNode = JsonUtils.jsonpath(json, "$..templateMaterial");
+        return Arrays.asList(JsonUtils.newObjectArray(dataNode));
+    }
 
-        String result = HttpRequest.get(url).userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36").body();
+    public static List<Map<String, Object>> topic(String id) {
+        String path = String.format("/motif/%s", id);
+        JsonNode json = execute(path);
+        JsonNode dataNode = JsonUtils.jsonpath(json, "$..templateMaterial");
+        return Arrays.asList(JsonUtils.newObjectArray(dataNode));
+    }
+
+    public static List<Map<String, Object>> user(String id) {
+        String path = String.format("/user/%s", id);
+        JsonNode json = execute(path);
+        JsonNode dataNode = JsonUtils.jsonpath(json, "$..templateMaterial");
+        return Arrays.asList(JsonUtils.newObjectArray(dataNode));
+    }
+
+    public static List<Map<String, Object>> search(String keyword) {
+        String path = String.format("/search/articles/%s", keyword);
+        JsonNode json = execute(path);
+        return Arrays.asList(JsonUtils.newObjectArray(json));
+    }
+
+    public static List<Map<String, Object>> searchInformation(String keyword) {
+        String path = String.format("/search/information/%s", keyword);
+        JsonNode json = execute(path);
+        return Arrays.asList(JsonUtils.newObjectArray(json));
+    }
+
+    private static JsonNode execute(String path) {
+        String url = String.format("https://www.36kr.com%s", path);
+        String result = HttpRequest.get(HttpRequest.encode(url)).userAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36").body();
         Document document = Jsoup.parse(result);
 
         String data = null;
         Pattern r = Pattern.compile(pattern);
-        Matcher matcher = r.matcher(document.data());
+        Matcher matcher = r.matcher(document.data().replaceAll("<\\/?em>", ""));
         if (matcher.find()) {
             data = matcher.group(1);
         }
@@ -116,12 +148,14 @@ public class News36kr {
         }
 
         JsonNode json = JsonUtils.json(data);
-        JsonNode dataNode = JsonUtils.jsonpath(json, "$..templateMaterial");
-        return Arrays.asList(JsonUtils.newObjectArray(dataNode));
+        return json;
     }
 
     public static void main(String[] args) {
-        List<Map<String, Object>> maps = latest();
+        List<Map<String, Object>> maps = null;
+        // maps=searchInformation("南京");;
+        // maps = topic("327685996545");
+        maps = user("5258135");
         System.out.println(MapUtils.print(maps));
     }
 }

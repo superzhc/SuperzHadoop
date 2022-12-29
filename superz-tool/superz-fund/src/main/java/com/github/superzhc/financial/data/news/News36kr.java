@@ -1,20 +1,9 @@
 package com.github.superzhc.financial.data.news;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.github.superzhc.common.http.HttpRequest;
-import com.github.superzhc.common.jackson.JsonUtils;
 import com.github.superzhc.tablesaw.utils.TableUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.tablesaw.api.Table;
-
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static com.github.superzhc.common.HttpConstant.UA_CHROME;
 
 /**
  * @author superz
@@ -100,7 +89,7 @@ public class News36kr {
     }
 
     private static Table execute(String category) {
-        Table table = TableUtils.buildByMap(com.github.superzhc.data.news.News36kr.execute(category));
+        Table table = TableUtils.buildByMap(com.github.superzhc.data.news.News36kr.information(category));
         return table;
     }
 

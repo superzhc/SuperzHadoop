@@ -1,19 +1,7 @@
 package com.github.superzhc.financial.data.news;
 
-import com.github.superzhc.common.http.HttpRequest;
 import com.github.superzhc.tablesaw.utils.TableUtils;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import tech.tablesaw.api.Table;
-
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import static com.github.superzhc.common.HttpConstant.UA_CHROME;
 
 /**
  * @author superz
@@ -72,36 +60,12 @@ public class News199IT {
     }
 
     public static Table category(String path) {
-        String url = String.format("http://www.199it.com/archives/category/%s", path);
-        return execute(url);
+        Table table = TableUtils.buildByMap(com.github.superzhc.data.report.News199IT.category(path));
+        return table;
     }
 
     public static Table tag(String path) {
-        String url = String.format("http://www.199it.com/archives/tag/%s", path);
-        return execute(url);
-    }
-
-    private static Table execute(String url) {
-        String html = HttpRequest.get(url).userAgent(UA_CHROME).body();
-        Document document = Jsoup.parse(html);
-
-        List<Map<String, Object>> dataRows = new ArrayList<>();
-
-        Elements articles = document.select("article.entry-list");
-        for (Element article : articles) {
-            Element ele = article.selectFirst("a[title]");
-            String title = ele.attr("title");
-            String link = ele.attr("href");
-            String pubDate = article.selectFirst("time").attr("datetime");
-
-            Map<String, Object> dataRow = new LinkedHashMap<>();
-            dataRow.put("title", title);
-            dataRow.put("link", link);
-            dataRow.put("pubDate", pubDate);
-            dataRows.add(dataRow);
-        }
-
-        Table table = TableUtils.buildByMap(dataRows);
+        Table table = TableUtils.buildByMap(com.github.superzhc.data.report.News199IT.tag(path));
         return table;
     }
 
