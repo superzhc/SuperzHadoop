@@ -8,6 +8,8 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -22,15 +24,63 @@ import java.util.Map;
  */
 public class JavaRDDMain {
     public static void main(String[] args) {
-//        SparkConf conf = new SparkConf();
-//        conf.setAppName("superz").setMaster("local[1]");
-//        JavaSparkContext jsc = new JavaSparkContext(conf);
+        SparkConf conf = new SparkConf();
+        conf.setAppName("superz").setMaster("local[1]");
+        JavaSparkContext jsc = new JavaSparkContext(conf);
 
-        List<Map<String,Object>> data= MoFish.taobaoAll();
-        System.out.println(MapUtils.print(data));
+//        List<Map<String,Object>> data= MoFish.taobaoAll();
+//        System.out.println(MapUtils.print(data));
+
 //        JavaRDD<Map<String,String>> rdd= jsc.parallelize(data);
 //        List<Map<String,String>> lst=rdd.filter(row->row.get("Title").contains("家用")).collect();
 //        System.out.println(JsonUtils.format(lst));
+
+        JavaRDD<String> rdd = jsc.textFile("file:\\G:\\data\\200W快手数据pao   36.txt");
+        System.out.println("数据量：" + rdd.count());
+        rdd.foreach(d-> System.out.println(d));
+
+//        JavaRDD<List<String>> rdd2 = rdd.map(line -> {
+//                    String str = line.split(",", -1)[1];
+//                    if (null == str || str.length() == 0) {
+//                        return str;
+//                    }
+//
+//                    return str.substring(1, str.length() - 1);
+//                })
+//                .map(d -> {
+//                    List<String> lst = new ArrayList<>();
+//                    if (null == d || d.trim().length() == 0) {
+//                        return lst;
+//                    }
+//
+//                    String[] arr = d.split("\\|");
+//                    lst.add(String.valueOf(arr.length));
+//                    for (String s : arr) {
+//                        lst.add(s);
+//                    }
+//
+//                    return lst;
+//                })
+//                .filter(d -> "6".equals(d.get(0)));
+//
+////        rdd2 = rdd2.map(d -> {
+////                    String s1 = d.get(1).trim();
+////                    String s2 = d.get(2).trim();
+////                    if ("?".startsWith(s1)) {
+////                        s1 = s1.substring(1);
+////                    }
+////                    if ("\\?".startsWith(s2)) {
+////                        s2 = s2.substring(1);
+////                    }
+////                    return Arrays.asList(s1, s2);
+////                })
+////                .filter(d -> !d.get(0).matches("1[3456789]\\d{9}"))
+////        ;
+//        System.out.println("过滤后的数据量：" + rdd2.count());
+//        rdd2.foreach(d -> System.out.println(d));
+
+
+        jsc.stop();
     }
 
     /**

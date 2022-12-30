@@ -2,6 +2,7 @@ package com.github.superzhc.hadoop.hudi;
 
 import com.github.superzhc.hadoop.hudi.data.AbstractData;
 import com.github.superzhc.hadoop.hudi.data.BiCiDoData;
+import com.github.superzhc.hadoop.hudi.data.FundHistoryData;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hudi.common.config.TypedProperties;
 import org.apache.hudi.hive.HiveSyncConfigHolder;
@@ -45,15 +46,18 @@ public class HudiMetaSyncHiveMain {
         properties.put(HoodieSyncConfig.META_SYNC_TABLE_NAME.key(), tableName);
         properties.put(HoodieSyncConfig.META_SYNC_BASE_PATH.key(), tablePath);
         properties.put(HoodieSyncConfig.META_SYNC_PARTITION_EXTRACTOR_CLASS.key(), MultiPartKeysValueExtractor.class.getName());
-        properties.put(HoodieSyncConfig.META_SYNC_PARTITION_FIELDS.key(), data.getPartitionFields());
+        if (null != data.getPartitionFields() && data.getPartitionFields().trim().length() > 0) {
+            properties.put(HoodieSyncConfig.META_SYNC_PARTITION_FIELDS.key(), data.getPartitionFields());
+        }
 
         HiveSyncTool hiveSyncTool = new HiveSyncTool(properties, conf);
         hiveSyncTool.syncHoodieTable();
     }
 
     public static void main(String[] args) {
-        String ts = "20221213150742";
-        AbstractData data = AbstractData.generate(BiCiDoData.class, ts);
+        // superz_java_client_20221230103829
+        String ts = "20221230173512";
+        AbstractData data = AbstractData.generate(FundHistoryData.class, ts);
         sync(data);
     }
 }

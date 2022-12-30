@@ -23,9 +23,9 @@ public class HudiSparkReadMain {
                 .setMaster("local");
         SparkSession spark = SparkSession.builder().config(conf).getOrCreate();
 
-        String basePath = "";
+        String basePath = "hdfs://hanyun-3/hudi/superz/superz_java_client_20221230103829";
         Dataset<Row> ds = spark.read().format("hudi").load(basePath);
-        ds.createOrReplaceTempView("superz_hudi_spark_client");
+        ds.createOrReplaceTempView("t1");
 
 //        /*查询模式*/
 //        spark.read().format("hudi")
@@ -34,7 +34,7 @@ public class HudiSparkReadMain {
 //                .load(basePath)
 //        ;
 
-        spark.sql("select * from superz_hudi_spark_client").show();
+        spark.sql("select * from t1").show();
 
         spark.stop();
     }

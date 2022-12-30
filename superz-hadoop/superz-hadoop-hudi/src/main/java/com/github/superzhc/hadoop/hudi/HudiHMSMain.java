@@ -59,6 +59,9 @@ public class HudiHMSMain {
 //        fields.remove(9);
 //        table.getSd().setCols(fields);
 
-        client.alter_table("default","superz_java_client_20221213150742",table);
+//        client.alter_table("default","superz_java_client_20221213150742",table);
+
+        /*删除表*/
+        client.dropTable("default","superz_spark_client_20221230144601");
     }
 }

@@ -2,6 +2,7 @@ package com.github.superzhc.hadoop.hudi;
 
 import com.github.superzhc.hadoop.hudi.data.AbstractData;
 import com.github.superzhc.hadoop.hudi.data.BiCiDoData;
+import com.github.superzhc.hadoop.hudi.data.FundHistoryData;
 import org.apache.avro.Schema;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -75,7 +76,7 @@ public class HudiMetaMain {
     }
 
     public static void main(String[] args) throws Exception {
-        BiCiDoData data = new BiCiDoData();
+        FundHistoryData data = new FundHistoryData();
         create(data);
     }
 }

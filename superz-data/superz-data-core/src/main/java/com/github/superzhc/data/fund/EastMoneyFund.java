@@ -54,6 +54,59 @@ public class EastMoneyFund {
         }
     }
 
+    public static Map<String, String> fund(String symbol) {
+        String url = "https://fundmobapi.eastmoney.com/FundMNewApi/FundMNNBasicInformation";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("FCODE", symbol);
+        params.put("deviceid", "Wap");
+        params.put("plat", "Wap");
+        params.put("product", "EFund");
+        params.put("version", "6.3.8");
+        params.put("_", System.currentTimeMillis());
+
+        String result = HttpRequest.get(url, params).userAgent(UA).body();
+        JsonNode jjxq = JsonUtils.json(result, "Datas");
+
+        Map<String, String> map = new LinkedHashMap<>();
+
+        map.put("code", jjxq.get("FCODE").asText());
+        map.put("name", jjxq.get("SHORTNAME").asText());
+        map.put("type", jjxq.get("FTYPE").asText());
+        map.put("established", jjxq.get("ESTABDATE").asText());
+        map.put("index_code", jjxq.get("INDEXCODE").asText());
+        map.put("index_name", jjxq.get("INDEXNAME").asText());
+        map.put("rate", jjxq.get("RLEVEL_SZ").asText());
+        map.put("risk_level", jjxq.get("RISKLEVEL").asText());
+//        map.put("bench", jjxq.get("BENCH").asText());
+        map.put("scale", jjxq.get("ENDNAV").asText());
+        map.put("scale_date", jjxq.get("FEGMRQ").asText());
+//        map.put("日涨幅 (%)", jjxq.get("RZDF").asText());
+        map.put("net_worth"/*"单位净值"*/, jjxq.get("DWJZ").asText());
+        map.put("accumulated_net_worth"/*"累计净值"*/, jjxq.get("LJJZ").asText());
+//        map.put("当日确认份额时间点", jjxq.get("CURRENTDAYMARK").asText());
+//        map.put("购买起点（元）", jjxq.get("MINSG").asText());
+//        map.put("首次购买（元）", jjxq.get("MINSBRG").asText());
+//        map.put("追加购买（元）", jjxq.get("MINSBSG").asText());
+//        map.put("定投起点（元）", jjxq.get("MINDT").asText());
+//        map.put("单日累计购买上限（元）", jjxq.get("MAXSG").asText());
+        map.put("purchase_status", jjxq.get("SGZT").asText());
+//        map.put("卖出状态", jjxq.get("SHZT").asText());
+//        map.put("定投状态", jjxq.get("DTZT").asText());
+        map.put("origin_rate"/*"原始购买费率"*/, jjxq.get("SOURCERATE").asText());
+        map.put("real_rate"/*"实际购买费率"*/, jjxq.get("RATE").asText());
+//        map.put("近1年波动率", jjxq.get("STDDEV1").asText());
+//        map.put("近2年波动率", jjxq.get("STDDEV2").asText());
+//        map.put("近3年波动率", jjxq.get("STDDEV3").asText());
+//        map.put("近1年夏普比率", jjxq.get("SHARP1").asText());
+//        map.put("近2年夏普比率", jjxq.get("SHARP2").asText());
+//        map.put("近3年夏普比率", jjxq.get("SHARP3").asText());
+//        map.put("近1年最大回撤", jjxq.get("MAXRETRA1").asText());
+//        map.put("买入确认日", jjxq.get("SSBCFDAY").asText());
+
+        return map;
+    }
+
     public static List<Map<String, Object>> fundNetHistory(String symbol) {
         String url = "https://fundmobapi.eastmoney.com/FundMNewApi/FundMNHisNetList";
 

@@ -59,7 +59,7 @@ public class HudiSparkWriteMain {
 
         ds.show(false);
 
-        ds.write()
+        /*ds.write()
                 .format("hudi")
                 // 插入数据用 OverWrite，更新数据用 Append
                 .mode(SaveMode.Overwrite)
@@ -70,7 +70,7 @@ public class HudiSparkWriteMain {
                 .option(KeyGeneratorOptions.PARTITIONPATH_FIELD_NAME.key(), "code")          // 分区字段
                 .option(HoodieWriteConfig.TBL_NAME.key(), "superz_hudi_spark_client")  // 表名
                 .save("");
-        ;
+        ;*/
 
         spark.stop();
     }
