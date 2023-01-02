@@ -34,7 +34,7 @@ public class FundController {
             return;
         }
 
-        Map<String, String> fundInfo = EastMoneyFund.fundNew(fundCode);
+        Map<String, Object> fundInfo = com.github.superzhc.data.fund.EastMoneyFund.fund(fundCode);
 
         HBox code = FormUtils.text("代码", fundInfo.get("code"));
         HBox name = FormUtils.text("名称", fundInfo.get("name"));

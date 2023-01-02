@@ -111,11 +111,11 @@ public class FundRecordAddController implements Initializable {
     }
 
     private void getFundBasicInfo(String fundCode) {
-        Map<String, String> fundInfo = EastMoneyFund.fundNew(fundCode);
-        txtFundName.setText(fundInfo.get("name"));
-        cbIndexCode.setValue(fundInfo.get("index_code"));
-        txtIndexName.setText(fundInfo.get("index_name"));
-        txtRate.setText(fundInfo.get("real_rate"));
+        Map<String, Object> fundInfo = com.github.superzhc.data.fund.EastMoneyFund.fund(fundCode);
+        txtFundName.setText(String.valueOf(fundInfo.get("name")));
+        cbIndexCode.setValue(String.valueOf(fundInfo.get("index_code")));
+        txtIndexName.setText(String.valueOf(fundInfo.get("index_name")));
+        txtRate.setText(String.valueOf(fundInfo.get("real_rate")));
     }
 
     @FXML

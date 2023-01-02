@@ -54,7 +54,7 @@ public class EastMoneyFund {
         }
     }
 
-    public static Map<String, String> fund(String symbol) {
+    public static Map<String, Object> fund(String symbol) {
         String url = "https://fundmobapi.eastmoney.com/FundMNewApi/FundMNNBasicInformation";
 
         Map<String, Object> params = new HashMap<>();
@@ -68,8 +68,7 @@ public class EastMoneyFund {
         String result = HttpRequest.get(url, params).userAgent(UA).body();
         JsonNode jjxq = JsonUtils.json(result, "Datas");
 
-        Map<String, String> map = new LinkedHashMap<>();
-
+        Map<String, Object> map = new LinkedHashMap<>();
         map.put("code", jjxq.get("FCODE").asText());
         map.put("name", jjxq.get("SHORTNAME").asText());
         map.put("type", jjxq.get("FTYPE").asText());
@@ -105,6 +104,34 @@ public class EastMoneyFund {
 //        map.put("买入确认日", jjxq.get("SSBCFDAY").asText());
 
         return map;
+    }
+
+    public static void fundBasic(String symbol){
+        String url = String.format("http://j5.dfcfw.com/sc/tfs/qt/v2.0.1/%s.json", symbol);
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("_", System.currentTimeMillis());
+
+        String result = HttpRequest.get(url, params).userAgent(UA).body();
+        JsonNode json=JsonUtils.loads(result);
+
+        // 基金基本信息
+        JsonNode info=JsonUtils.object(json,"JJXQ");
+
+        // 基金统计信息
+        JsonNode tssj=JsonUtils.object(json,"TSSJ");
+
+        // 基金经理
+        JsonNode managers=JsonUtils.object(json,"JJJLNEW");
+
+        // 基金规模
+        JsonNode scale=JsonUtils.object(json,"JJGM");
+
+        // 基金分红
+        JsonNode fenhong=JsonUtils.object(json,"FHSP");
+
+        // 基金组成：股票+债券+货币等
+        JsonNode component=JsonUtils.object(json,"JJCCNEW");
     }
 
     public static List<Map<String, Object>> fundNetHistory(String symbol) {
@@ -237,7 +264,9 @@ public class EastMoneyFund {
 //        System.out.println(tsdata("012348"));
 
 //        System.out.println(MapUtils.print(funds(),20));
-        System.out.println(MapUtils.print(fundNetHistory("012348"), 100));
+//         System.out.println(MapUtils.print(fundNetHistory("012348"), 100));
+        fundBasic("012348");
+//         System.out.println();
     }
 
 }

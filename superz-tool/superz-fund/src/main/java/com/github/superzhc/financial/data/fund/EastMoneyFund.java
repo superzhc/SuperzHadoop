@@ -222,7 +222,7 @@ public class EastMoneyFund {
      * 8  |        bench  |       STRING  |
      */
     public static Table fundNewTable(String symbol) {
-        Map<String, String> map = com.github.superzhc.data.fund.EastMoneyFund.fund(symbol);
+        Map<String, Object> map = com.github.superzhc.data.fund.EastMoneyFund.fund(symbol);
         Table table = TableUtils.map2Table(map);
 
         return table;
