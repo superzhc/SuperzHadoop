@@ -2,28 +2,28 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>SuperzHadoop</artifactId>
         <groupId>com.github.superzhc</groupId>
+        <artifactId>superz-other</artifactId>
         <version>0.2.2</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>superz-other</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>superz-leetcode</module>
-        <module>superz-scala</module>
-        <module>superz-json-data-generator-config</module>
-        <module>superz-windows-bat</module>
-        <module>superz-minio</module>
-        <module>superz-java</module>
-        <module>superz-neo4j</module>
-    </modules>
+    <artifactId>superz-neo4j</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <neo4j.version>4.4.16</neo4j.version>
     </properties>
+
+    <dependencies>
+        <!--<dependency>
+            <groupId>org.neo4j</groupId>
+            <artifactId>neo4j</artifactId>
+            <version>${neo4j.version}</version>
+        </dependency>-->
+    </dependencies>
 
 </project>

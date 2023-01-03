@@ -1,5 +1,6 @@
 package com.github.superzhc.hadoop.hudi;
 
+import com.github.superzhc.hadoop.hudi.data.AbstractData;
 import org.apache.avro.Schema;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -75,15 +76,24 @@ public class HoodieClientHelper {
         FileSystem fs = FSUtils.getFs(basePath, hadoopConf);
         if (!fs.exists(path)) {
             log.info("路径[{}]不存在", basePath);
-            HoodieTableMetaClient.withPropertyBuilder()
+            HoodieTableMetaClient.PropertyBuilder builder = HoodieTableMetaClient.withPropertyBuilder()
                     .setTableType(tableType/*HoodieTableType.COPY_ON_WRITE*/)
                     .setTableName(tableName)
                     .setTableCreateSchema(schema.toString())
                     .setRecordKeyFields(String.join(",", recordKeyFields))
-                    .setPreCombineField(preCombineField)
-                    .setPartitionFields(String.join(",", partitionFields))
                     .setPayloadClass(HoodieAvroPayload.class)
-                    .initTable(hadoopConf, basePath);
+//                    .setBootstrapIndexClass(NoOpBootstrapIndex.class.getName())
+                    ;
+
+            if (null != preCombineField && preCombineField.trim().length() > 0) {
+                builder.setPreCombineField(preCombineField);
+            }
+
+            if (null != partitionFields && partitionFields.length > 0) {
+                builder.setPartitionFields(String.join(",", partitionFields));
+            }
+
+            builder.initTable(hadoopConf, basePath);
         }
     }
 
@@ -178,27 +188,29 @@ public class HoodieClientHelper {
     }
 
     public static void main(String[] args) throws Exception {
-        String hiveMetastoreUris = "thrift://log-platform03:9083";
-        String hudiBasePath = "hdfs://log-platform01:8020/user/superz/hudi";
-        String tanent = "xgitdmp";
-        String tableName = "superz_java_client_20221226001";
-        String basePath = String.format("%s/%s/%s", hudiBasePath, tanent, tableName);
+        String hiveMetastoreUris = AbstractData.DEFAULT_HIVE_METASTORE_URIS;
+        String hudiBasePath = AbstractData.DEFAULT_HUDI_PATH;
+        String tanent = "";/*AbstractData.DEFAULT_HIVE_DATABASE;*/
+        String tableName = "zbx3";
+        String basePath = String.format("%s%s%s", hudiBasePath, ((null == tanent || tanent.trim().length() == 0) ? "" : (tanent + "/")), tableName);
 
-        Schema schema = Schema.createRecord(tableName, null, null, false);
-        Schema.Field id = new Schema.Field("id", Schema.create(Schema.Type.STRING), "uuid", null);
-        Schema.Field title = new Schema.Field("title", Schema.create(Schema.Type.STRING), "标题", null);
-        Schema.Field url = new Schema.Field("url", Schema.create(Schema.Type.STRING), "地址", null);
-        Schema.Field r = new Schema.Field("r", Schema.create(Schema.Type.STRING), "", null);
-        Schema.Field ts = new Schema.Field("ts", Schema.create(Schema.Type.LONG), "时间戳", null);
-        List<Schema.Field> fields = Arrays.asList(id, title, url, r, ts);
-        schema.setFields(fields);
+//        Schema schema = Schema.createRecord(tableName, null, null, false);
+//        Schema.Field id = new Schema.Field("id", Schema.create(Schema.Type.STRING), "uuid", null);
+//        Schema.Field title = new Schema.Field("title", Schema.create(Schema.Type.STRING), "标题", null);
+//        Schema.Field url = new Schema.Field("url", Schema.create(Schema.Type.STRING), "地址", null);
+//        Schema.Field r = new Schema.Field("r", Schema.create(Schema.Type.STRING), "", null);
+//        Schema.Field ts = new Schema.Field("ts", Schema.create(Schema.Type.LONG), "时间戳", null);
+//        List<Schema.Field> fields = Arrays.asList(id, title, url, r, ts);
+//        schema.setFields(fields);
 
-//        initTable(basePath, tableName, HoodieTableType.MERGE_ON_READ, schema, new String[]{"id"}, new String[]{"r"}, "ts");
-//
-//        syncHive(hiveMetastoreUris,basePath,"default",tableName,new String[]{"r"});
+        String schemaStr = "{\"name\":\""+tableName+"\",\"type\":\"record\",\"fields\":[{\"name\":\"id\",\"type\":[\"string\",\"null\"]},{\"name\":\"c\",\"type\":[\"string\",\"null\"]},{\"name\":\"d\",\"type\":[\"string\",\"null\"]},{\"name\":\"a\",\"type\":[\"double\",\"null\"]},{\"name\":\"b\",\"type\":[\"double\",\"null\"]},{\"name\":\"ts2\",\"type\":[\"int\",\"null\"]}]}";
+
+        initTable(basePath, tableName, HoodieTableType.COPY_ON_WRITE, schemaStr, new String[]{"id"}, new String[]{}, null);
+
+        syncHive(hiveMetastoreUris, basePath, "default", tableName, new String[]{});
 
 //        addColumn(hiveMetastoreUris, "default", tableName, "col1", "string", "新增列1");
 
-        deleteTable(hiveMetastoreUris, basePath, "default", tableName);
+//        deleteTable(hiveMetastoreUris, basePath, "default", tableName);
     }
 }

@@ -15,6 +15,10 @@ import org.apache.hudi.exception.HoodieException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author superz
  * @create 2022/12/7 15:18
@@ -41,22 +45,29 @@ public class HudiMetaMain {
         FileSystem fs = FSUtils.getFs(tablePath, hadoopConf);
         if (!fs.exists(path)) {
             log.info("路径[{}]不存在", tablePath);
-            HoodieTableMetaClient.withPropertyBuilder()
+            HoodieTableMetaClient.PropertyBuilder builder = HoodieTableMetaClient.withPropertyBuilder()
                     .setTableType(HoodieTableType.COPY_ON_WRITE)
                     .setTableName(tableName)
-                    // 目前没什么作用
                     .setTableCreateSchema(schema.toString())
                     .setRecordKeyFields(data.getRecordKeyFields())
-                    .setPreCombineField(data.getPreCombineField())
-                    .setPartitionFields(data.getPartitionFields())
                     .setPayloadClass(HoodieAvroPayload.class)
 //                    .setBootstrapIndexClass(NoOpBootstrapIndex.class.getName())
-                    .initTable(hadoopConf, tablePath);
+                    ;
+
+            if (null != data.getPreCombineField() && data.getPreCombineField().trim().length() > 0) {
+                builder.setPreCombineField(data.getPreCombineField());
+            }
+
+            if (null != data.getPartitionFields() && data.getPartitionFields().trim().length() > 0) {
+                builder.setPartitionFields(data.getPartitionFields());
+            }
+
+            builder.initTable(hadoopConf, tablePath);
         }
     }
 
-    public static void delete(AbstractData data){
-        String basePath=data.getBasePath();
+    public static void delete(AbstractData data) {
+        String basePath = data.getBasePath();
 
         // 如果在windows本地跑，需要从widnows访问HDFS，需要指定一个合法的身份
         System.setProperty("HADOOP_USER_NAME", "root");
@@ -76,7 +87,7 @@ public class HudiMetaMain {
     }
 
     public static void main(String[] args) throws Exception {
-        FundHistoryData data = new FundHistoryData();
-        create(data);
+//        FundHistoryData data = new FundHistoryData();
+//        create(data);
     }
 }
