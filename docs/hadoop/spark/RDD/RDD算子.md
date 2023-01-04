@@ -79,6 +79,10 @@ rdd.sample(false, 0.3).foreach(println)
 
 <img src="../images/15050363083877-1568652449549.jpg" alt="img" style="zoom:50%;" />
 
+**groupByKey**
+
+在一个PairRDD或 `(k,v)` 二元组RDD上调用，返回一个 `(k,Iterable<v>)`。主要作用是将相同的所有的键值对分组到一个集合序列当中，其顺序是不确定的。groupByKey 是把所有的键值对集合都加载到内存中存储计算，若一个键对应值太多，则易导致内存溢出。
+
 ### `sortByKey`：按key进行排序
 
 ```scala
@@ -310,6 +314,8 @@ fullOuterJoinRDD.foreach( x => {
 // 3 Some(Bob) Some(5000)
 // 4 Some(Tony) None
 ```
+
+### `cogroup`：同 fullOuterJoin
 
 ### `union`：把两个RDD进行逻辑上的合并
 

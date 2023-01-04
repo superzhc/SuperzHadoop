@@ -45,9 +45,9 @@ public class FundRealNetJob implements Job {
         // TODO 过滤掉节假日
 
         try (MyProducer producer = new MyProducer(brokers)) {
-            List<Map<String, String>> data = EastMoneyFund.fundRealNet(codes.split(","));
-            for (Map<String, String> item : data) {
-                String code = item.get("FCODE");
+            List<Map<String, Object>> data = EastMoneyFund.fundRealNet(codes.split(","));
+            for (Map<String, Object> item : data) {
+                String code = String.valueOf(item.get("FCODE"));
                 String value = JsonUtils.asString(item);
                 producer.send(topic, code, value);
             }

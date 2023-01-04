@@ -106,6 +106,10 @@ public class HdfsRestApi {
         return request.body();
     }
 
+    public String list(){
+        return list("/");
+    }
+
     public String list(String path) {
         HttpRequest request = execute(METHOD_GET, path, "LISTSTATUS");
         return request.body();

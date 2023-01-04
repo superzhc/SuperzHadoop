@@ -6,21 +6,20 @@
 
     <groupId>com.github.superzhc</groupId>
     <artifactId>SuperzHadoop</artifactId>
-    <version>0.2.2</version>
+    <version>0.3.0</version>
     <packaging>pom</packaging>
     <description>jdk、scala版本控制，打包等相关在此处配置</description>
     <modules>
         <module>superz-geo</module>
         <module>superz-common</module>
-        <module>superz-xxl-job-executors</module>
         <module>superz-hadoop</module>
         <module>superz-tool</module>
         <module>superz-other</module>
         <module>superz-data-mining</module>
         <module>superz-data-warehouse</module>
-        <module>superz-web</module>
         <module>superz-sql</module>
         <module>superz-data</module>
+        <module>superz-spring</module>
     </modules>
 
     <properties>
