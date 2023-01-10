@@ -14,6 +14,7 @@
     <modules>
         <module>superz-spring-web</module>
         <module>superz-spring-data-neo4j</module>
+        <module>superz-spring-java-driver-neo4j</module>
     </modules>
 
     <properties>

@@ -9,13 +9,12 @@
         <version>0.3.0</version>
     </parent>
 
-    <artifactId>superz-spring-data-neo4j</artifactId>
+    <artifactId>superz-spring-java-driver-neo4j</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <neo4j-java-driver.version>4.4.16</neo4j-java-driver.version>
     </properties>
 
     <dependencies>
@@ -25,21 +24,13 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-neo4j</artifactId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+            <!--<version>2.4.5</version>-->
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webflux</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.projectreactor</groupId>
-            <artifactId>reactor-test</artifactId>
-            <scope>test</scope>
+            <groupId>org.neo4j.driver</groupId>
+            <artifactId>neo4j-java-driver-spring-boot-starter</artifactId>
+            <version>4.3.6.0</version>
         </dependency>
     </dependencies>
 

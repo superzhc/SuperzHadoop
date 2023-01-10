@@ -18,7 +18,7 @@ docker pull neo4j:4.4.16-community
 # conf：数据库配置文件夹（在配置文件neo4j.conf中配置包括开放远程连接、设置默认激活的数据库）
 # import：为了大批量导入csv来构建数据库，需要导入的节点文件nodes.csv和关系文件rel.csv需要放到这个文件夹下
 
-docker run --privileged=true -d --name neo4j -p 7474:7474 -p 7687:7687 -v /f/docker/volumes/neo4j/data:/data -v /f/docker/volumes/neo4j/logs:/logs -v /f/docker/volumes/neo4j/conf:/conf -v /f/docker/volumes/neo4j/import:/import --env NEO4J_AUTH=neo4j/neo4j neo4j:4.4.16-community
+docker run --privileged=true -d --name neo4j -p 7474:7474 -p 7687:7687 -v /f/docker/volumes/neo4j/data:/data -v /f/docker/volumes/neo4j/logs:/logs -v /f/docker/volumes/neo4j/conf:/conf -v /f/docker/volumes/neo4j/import:/import --env NEO4J_AUTH=neo4j/password neo4j:4.4.16-community
 ```
 
 **设置配置值**
