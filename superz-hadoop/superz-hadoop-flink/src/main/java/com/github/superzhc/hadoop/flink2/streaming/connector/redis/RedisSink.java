@@ -285,6 +285,6 @@ public class RedisSink<IN> extends RichSinkFunction<IN> {
 
         ds2.addSink(sink);
 
-        env.execute("flink http sink");
+        env.execute("flink redis sink");
     }
 }

@@ -1,6 +1,8 @@
 package com.github.superzhc.common.utils;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,9 +14,115 @@ import java.util.List;
  * @create 2021/4/8 17:13
  */
 public class ReflectionUtils {
+    /**
+     * 类实例化，支持参数构造函数
+     *
+     * @param clazz
+     * @param params
+     * @param <T>
+     * @return
+     */
+    public static <T> T instance(Class<T> clazz, Object... params) {
+        try {
+            Constructor<T> constructor = clazz.getConstructor(paramsType(params));
+            constructor.setAccessible(true);
+            return constructor.newInstance(params);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 调用静态方法
+     *
+     * @param clazz
+     * @param methodName
+     * @param params
+     * @param <T>
+     * @return
+     */
+    public static <T> T invokeStaticMethod(Class<?> clazz, String methodName, Object... params) {
+        try {
+            Method method = clazz.getMethod(methodName, paramsType(params));
+            method.setAccessible(true);
+            return (T) method.invoke(null, params);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 调用方法
+     *
+     * @param clazz
+     * @param methodName
+     * @param params
+     * @param <T>
+     * @return
+     */
+    public static <T> T invokeMethod(Class<?> clazz, String methodName, Object... params) {
+        Object obj = instance(clazz);
+        return invokeMethod(obj, methodName, params);
+    }
+
+    /**
+     * 调用方法
+     *
+     * @param clazz
+     * @param constructorArgs
+     * @param methodName
+     * @param params
+     * @param <T>
+     * @return
+     */
+    public static <T> T invokeMethod(Class<?> clazz, Object[] constructorArgs, String methodName, Object... params) {
+        Object obj = instance(clazz, constructorArgs);
+        return invokeMethod(obj, methodName, params);
+    }
+
+    /**
+     * 调用方法
+     *
+     * @param instance
+     * @param methodName
+     * @param params
+     * @param <T>
+     * @return
+     */
+    public static <T> T invokeMethod(Object instance, String methodName, Object... params) {
+        Class<?> clazz = instance.getClass();
+
+        try {
+            Method method = clazz.getMethod(methodName, paramsType(params));
+            method.setAccessible(true);
+            return (T) method.invoke(instance, params);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * 获取所有参数类型
+     *
+     * @param params
+     * @return
+     */
+    private static Class<?>[] paramsType(Object... params) {
+        if (null == params || params.length == 0) {
+            return null;
+        }
+
+        int len = params.length;
+        Class<?>[] paramsClass = new Class[len];
+        for (int i = 0; i < len; i++) {
+            paramsClass[i] = params[i].getClass();
+        }
+        return paramsClass;
+    }
 
     /**
      * 获取所有字段（public、protected和private），也包含父类字段
+     *
      * @param clazz
      * @return
      */
