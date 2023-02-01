@@ -155,10 +155,14 @@ public class GuangDiu {
             String price = null == priceEle ? null : priceEle.text();
             String image = good.selectFirst("img.imgself").attr("src");
             String link = good.selectFirst("div.iteminfoarea > h2 > a").attr("href");
+            link = host + "/" + link;
             Element syncPlatformEle = good.selectFirst("div.infofrom");
             String syncPlatform = null == syncPlatformEle ? null : syncPlatformEle.text();
             String brief = good.selectFirst("div.shortabstract > a.abstractcontent").text();
             String actUrl = good.selectFirst("a.innergototobuybtn").attr("href");
+            if (!(actUrl.startsWith("http://") && actUrl.startsWith("https://"))) {
+                actUrl = host + "/" + actUrl;
+            }
             Element platformEle = good.selectFirst("a.rightmallname");
             String platform = null == platformEle ? null : platformEle.text();
             Element platformMore = good.selectFirst("div.rightmall > span.malladd");

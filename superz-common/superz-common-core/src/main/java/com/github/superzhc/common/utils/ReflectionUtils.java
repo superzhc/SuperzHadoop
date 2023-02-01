@@ -14,19 +14,29 @@ import java.util.List;
  * @create 2021/4/8 17:13
  */
 public class ReflectionUtils {
+    public static <T> T instance(String className, Object... params) {
+        try {
+            Class<?> clazz = Class.forName(className);
+            return instance(clazz, params);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     /**
      * 类实例化，支持参数构造函数
      *
      * @param clazz
      * @param params
      * @param <T>
+     *
      * @return
      */
-    public static <T> T instance(Class<T> clazz, Object... params) {
+    public static <T> T instance(Class<?> clazz, Object... params) {
         try {
-            Constructor<T> constructor = clazz.getConstructor(paramsType(params));
+            Constructor constructor = clazz.getDeclaredConstructor(paramsType(params));
             constructor.setAccessible(true);
-            return constructor.newInstance(params);
+            return (T) constructor.newInstance(params);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -39,11 +49,12 @@ public class ReflectionUtils {
      * @param methodName
      * @param params
      * @param <T>
+     *
      * @return
      */
     public static <T> T invokeStaticMethod(Class<?> clazz, String methodName, Object... params) {
         try {
-            Method method = clazz.getMethod(methodName, paramsType(params));
+            Method method = clazz.getDeclaredMethod(methodName, paramsType(params));
             method.setAccessible(true);
             return (T) method.invoke(null, params);
         } catch (Exception e) {
@@ -58,6 +69,7 @@ public class ReflectionUtils {
      * @param methodName
      * @param params
      * @param <T>
+     *
      * @return
      */
     public static <T> T invokeMethod(Class<?> clazz, String methodName, Object... params) {
@@ -73,6 +85,7 @@ public class ReflectionUtils {
      * @param methodName
      * @param params
      * @param <T>
+     *
      * @return
      */
     public static <T> T invokeMethod(Class<?> clazz, Object[] constructorArgs, String methodName, Object... params) {
@@ -87,15 +100,25 @@ public class ReflectionUtils {
      * @param methodName
      * @param params
      * @param <T>
+     *
      * @return
      */
     public static <T> T invokeMethod(Object instance, String methodName, Object... params) {
         Class<?> clazz = instance.getClass();
 
         try {
-            Method method = clazz.getMethod(methodName, paramsType(params));
+            Method method = clazz.getDeclaredMethod(methodName, paramsType(params));
             method.setAccessible(true);
             return (T) method.invoke(instance, params);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static <T> Class<T> methodReturnType(Class<?> clazz, String methodName, Object... params) {
+        try {
+            Method method = clazz.getDeclaredMethod(methodName, paramsType(params));
+            return (Class<T>) method.getReturnType();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -105,6 +128,7 @@ public class ReflectionUtils {
      * 获取所有参数类型
      *
      * @param params
+     *
      * @return
      */
     private static Class<?>[] paramsType(Object... params) {
@@ -124,6 +148,7 @@ public class ReflectionUtils {
      * 获取所有字段（public、protected和private），也包含父类字段
      *
      * @param clazz
+     *
      * @return
      */
     public static Field[] getDeclaredFields(Class<?> clazz) {

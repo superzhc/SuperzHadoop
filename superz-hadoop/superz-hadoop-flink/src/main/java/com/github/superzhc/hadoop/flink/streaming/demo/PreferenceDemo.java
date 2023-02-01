@@ -29,14 +29,14 @@ public class PreferenceDemo {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
 
-        env.addSource(new SourceFunction<Map<String, String>>() {
+        env.addSource(new SourceFunction<Map<String, Object>>() {
                     private volatile boolean cancel = false;
 
                     @Override
-                    public void run(SourceContext<Map<String, String>> ctx) throws Exception {
+                    public void run(SourceContext<Map<String, Object>> ctx) throws Exception {
                         while (!cancel) {
-                            List<Map<String, String>> lst = MoFish.jingdong();
-                            for (Map<String, String> map : lst) {
+                            List<Map<String, Object>> lst = MoFish.jingdong();
+                            for (Map<String, Object> map : lst) {
                                 ctx.collect(map);
                             }
 

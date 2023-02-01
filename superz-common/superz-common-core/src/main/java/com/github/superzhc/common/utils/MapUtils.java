@@ -169,6 +169,56 @@ public class MapUtils {
         return maps;
     }
 
+    public static <T> String html(Map<String, T>... maps) {
+        if (null == maps || maps.length == 0) {
+            return null;
+        }
+
+        List<Map<String, T>> lst = new ArrayList<>();
+        for (Map<String, T> map : maps) {
+            lst.add(map);
+        }
+        return html(lst);
+    }
+
+    public static <T> String html(List<Map<String, T>> maps) {
+        if (null == maps || maps.size() == 0) {
+            return "<p>暂无数据</p>";
+        }
+
+        // 获取所有的key
+        Set<String> keys = new LinkedHashSet<>();
+        for (Map<String, ?> map : maps) {
+            keys.addAll(map.keySet());
+        }
+
+        StringBuilder sb = new StringBuilder("<table>");
+        String rowTemplate = "<tr>%s</tr>";
+
+        StringBuilder header = new StringBuilder();
+        for (String key : keys) {
+            header.append("<th>").append(key).append("</th>");
+        }
+        sb.append(String.format(rowTemplate, header));
+
+        for (Map<String, T> map : maps) {
+            StringBuilder row = new StringBuilder();
+            for (String key : keys) {
+                String value = (null == map || !map.containsKey(key) || null == map.get(key)) ? null : String.valueOf(map.get(key)).trim();
+                if (null != value) {
+                    if (value.startsWith("http://") || value.startsWith("https://")) {
+                        value = String.format("<a href='%s'>链接</a>", value);
+                    }
+                }
+                row.append("<td>").append(value).append("</td>");
+            }
+            sb.append(String.format(rowTemplate, row));
+        }
+
+        sb.append("</table>");
+        return sb.toString();
+    }
+
     public static <T> String print(Map<String, T>... maps) {
         if (null == maps || maps.length == 0) {
             return null;
@@ -232,7 +282,7 @@ public class MapUtils {
             String[] row = new String[keys.size()];
             int j = 0;
             for (String key : keys) {
-                String value = !map.containsKey(key) || null == map.get(key) ? null : String.valueOf(map.get(key));
+                String value = (null == map || !map.containsKey(key) || null == map.get(key)) ? null : String.valueOf(map.get(key));
                 row[j] = value;
                 columnMaxLengths[j] = Math.max(columnMaxLengths[j], (null == value ? 0 : stringLength(value)));
                 j++;
