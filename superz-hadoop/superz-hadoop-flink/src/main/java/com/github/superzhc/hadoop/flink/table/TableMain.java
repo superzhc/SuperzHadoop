@@ -116,7 +116,8 @@ public class TableMain {
          */
 
         // 方法 Table.executeInsert(String tableName) 将 Table 发送至已注册的 TableSink。
-        TableResult tableResult = table2.executeInsert("outputTable");
+        // TableResult tableResult = table2.executeInsert("outputTable");
         //tableResult...
+        table3.execute().print();
     }
 }

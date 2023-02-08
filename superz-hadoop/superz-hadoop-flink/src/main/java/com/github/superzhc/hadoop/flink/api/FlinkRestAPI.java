@@ -7,6 +7,7 @@ import org.apache.flink.shaded.jackson2.com.fasterxml.jackson.databind.node.Obje
 /**
  * 版本：1.12
  * 官方文档：<a>https://ci.apache.org/projects/flink/flink-docs-release-1.12/ops/rest_api.html</a>
+ *
  * @author superz
  * @create 2021/10/28 15:43
  */
@@ -29,6 +30,14 @@ public class FlinkRestAPI {
         return String.format("%s/v1%s", url, path);
     }
 
+    public static Overview overviewApi(String url){
+        return new Overview(url);
+    }
+
+    public static Job jobApi(String url){
+        return new Job(url);
+    }
+
 
     public static class Overview extends FlinkRestAPI {
 
@@ -44,7 +53,9 @@ public class FlinkRestAPI {
          * 请求参数：
          * 返回结果：
          */
-        public void config() {
+        public String config() {
+            String path = "/config";
+            return get(path);
         }
 
         /**
@@ -66,144 +77,150 @@ public class FlinkRestAPI {
          * "flink-commit": "fe36135"
          * }
          */
-        public void overview() {
+        public String overview() {
+            String path = "/overview";
+            return get(path);
         }
     }
 
-    public static class JobManager extends FlinkRestAPI{
+    public static class JobManager extends FlinkRestAPI {
         public JobManager(String url) {
             super(url);
         }
 
         /**
          * 查看集群的配置信息
-         *
+         * <p>
          * 请求路径：http://{ip}:{port}/v1/jobmanager/config
          * 请求方式：GET
          * 请求参数：无
          * 返回结果：
          * {
-         *   "type" : "object",
-         *   "id" : "urn:jsonschema:org:apache:flink:runtime:rest:messages:DashboardConfiguration",
-         *   "properties" : {
-         *     "features" : {
-         *       "type" : "object",
-         *       "id" : "urn:jsonschema:org:apache:flink:runtime:rest:messages:DashboardConfiguration:Features",
-         *       "properties" : {
-         *         "web-submit" : {
-         *           "type" : "boolean"
-         *         }
-         *       }
-         *     },
-         *     "flink-revision" : {
-         *       "type" : "string"
-         *     },
-         *     "flink-version" : {
-         *       "type" : "string"
-         *     },
-         *     "refresh-interval" : {
-         *       "type" : "integer"
-         *     },
-         *     "timezone-name" : {
-         *       "type" : "string"
-         *     },
-         *     "timezone-offset" : {
-         *       "type" : "integer"
-         *     }
-         *   }
+         * "type" : "object",
+         * "id" : "urn:jsonschema:org:apache:flink:runtime:rest:messages:DashboardConfiguration",
+         * "properties" : {
+         * "features" : {
+         * "type" : "object",
+         * "id" : "urn:jsonschema:org:apache:flink:runtime:rest:messages:DashboardConfiguration:Features",
+         * "properties" : {
+         * "web-submit" : {
+         * "type" : "boolean"
+         * }
+         * }
+         * },
+         * "flink-revision" : {
+         * "type" : "string"
+         * },
+         * "flink-version" : {
+         * "type" : "string"
+         * },
+         * "refresh-interval" : {
+         * "type" : "integer"
+         * },
+         * "timezone-name" : {
+         * "type" : "string"
+         * },
+         * "timezone-offset" : {
+         * "type" : "integer"
+         * }
+         * }
          * }
          */
-        public void config(){}
+        public void config() {
+        }
 
         /**
          * 查看 JobManager 上所有日志文件列表
-         *
+         * <p>
          * 请求路径：http://{ip}:{port}/v1/jobmanager/logs
          * 请求方式：GET
          * 请求参数：无
          * 返回结果：
          * {
-         *   "logs": [
-         *     {
-         *       "name": "flink-wy-client-wy.lan.log",
-         *       "size": 6763
-         *     },
-         *     ...
-         *   ]
+         * "logs": [
+         * {
+         * "name": "flink-wy-client-wy.lan.log",
+         * "size": 6763
+         * },
+         * ...
+         * ]
          * }
          */
-        public void logs(){}
+        public void logs() {
+        }
 
         /**
          * 查看 JobManager 的 Metrics 信息
-         *
+         * <p>
          * 请求路径：http://{ip}:{port}/v1/jobmanager/metrics
          * 请求方式：GET
          * 请求参数：无
          * 返回结果：
          * [
-         *   {
-         *     "id": "taskSlotsAvailable"
-         *   },
-         *   ...
-         *   {
-         *     "id": "Status.JVM.Memory.Heap.Used"
-         *   }
+         * {
+         * "id": "taskSlotsAvailable"
+         * },
+         * ...
+         * {
+         * "id": "Status.JVM.Memory.Heap.Used"
+         * }
          * ]
          */
-        public void metrics(){}
+        public void metrics() {
+        }
     }
 
-    public static class TaskManager extends FlinkRestAPI{
+    public static class TaskManager extends FlinkRestAPI {
         public TaskManager(String url) {
             super(url);
         }
 
         /**
          * 查看所有 Taskmanager 的信息
-         *
+         * <p>
          * 请求路径：http://{ip}:{port}/v1/taskmanagers
          * 请求方式：GET
          * 请求参数：无
          * 返回结果：
          * {
-         *   "taskmanagers": [
-         *     {
-         *       "id": "14b7a2a632fd93d3548a8e17a311697b",
-         *       "path": "akka.tcp://flink@192.168.99.198:49627/user/rpc/taskmanager_0",
-         *       "dataPort": 49629,
-         *       "timeSinceLastHeartbeat": 1605340256498,
-         *       "slotsNumber": 1,
-         *       "freeSlots": 0,
-         *       "totalResource": {
-         *         "cpuCores": 0.0,
-         *         "taskHeapMemory": 0,
-         *         "taskOffHeapMemory": 0,
-         *         "managedMemory": 0,
-         *         "networkMemory": 0,
-         *         "extendedResources": {
-         *         }
-         *       },
-         *       "freeResource": {
-         *         "cpuCores": 0.0,
-         *         "taskHeapMemory": 0,
-         *         "taskOffHeapMemory": 0,
-         *         "managedMemory": 0,
-         *         "networkMemory": 0,
-         *         "extendedResources": {
-         *         }
-         *       },
-         *       "hardware": {
-         *         "cpuCores": 4,
-         *         "physicalMemory": 8589934592,
-         *         "freeMemory": 536870912,
-         *         "managedMemory": 536870920
-         *       }
-         *     }
-         *   ]
+         * "taskmanagers": [
+         * {
+         * "id": "14b7a2a632fd93d3548a8e17a311697b",
+         * "path": "akka.tcp://flink@192.168.99.198:49627/user/rpc/taskmanager_0",
+         * "dataPort": 49629,
+         * "timeSinceLastHeartbeat": 1605340256498,
+         * "slotsNumber": 1,
+         * "freeSlots": 0,
+         * "totalResource": {
+         * "cpuCores": 0.0,
+         * "taskHeapMemory": 0,
+         * "taskOffHeapMemory": 0,
+         * "managedMemory": 0,
+         * "networkMemory": 0,
+         * "extendedResources": {
+         * }
+         * },
+         * "freeResource": {
+         * "cpuCores": 0.0,
+         * "taskHeapMemory": 0,
+         * "taskOffHeapMemory": 0,
+         * "managedMemory": 0,
+         * "networkMemory": 0,
+         * "extendedResources": {
+         * }
+         * },
+         * "hardware": {
+         * "cpuCores": 4,
+         * "physicalMemory": 8589934592,
+         * "freeMemory": 536870912,
+         * "managedMemory": 536870920
+         * }
+         * }
+         * ]
          * }
          */
-        public void taskManagers(){}
+        public void taskManagers() {
+        }
     }
 
     public static class Jar extends FlinkRestAPI {
@@ -314,32 +331,34 @@ public class FlinkRestAPI {
          * 请求参数：无
          * 返回结果：
          * {
-         *   "jobs": [
-         *     {
-         *       "jid": "a2848961b7e7768dcf2d9ac71405aacf",
-         *       "name": "flink-kafka-stream",
-         *       "state": "RUNNING",
-         *       "start-time": 1604157862897,
-         *       "end-time": -1,
-         *       "duration": 983781978,
-         *       "last-modification": 1604157863753,
-         *       "tasks": {
-         *         "total": 1,
-         *         "created": 0,
-         *         "scheduled": 0,
-         *         "deploying": 0,
-         *         "running": 1,
-         *         "finished": 0,
-         *         "canceling": 0,
-         *         "canceled": 0,
-         *         "failed": 0,
-         *         "reconciling": 0
-         *       }
-         *     }
-         *   ]
+         * "jobs": [
+         * {
+         * "jid": "a2848961b7e7768dcf2d9ac71405aacf",
+         * "name": "flink-kafka-stream",
+         * "state": "RUNNING",
+         * "start-time": 1604157862897,
+         * "end-time": -1,
+         * "duration": 983781978,
+         * "last-modification": 1604157863753,
+         * "tasks": {
+         * "total": 1,
+         * "created": 0,
+         * "scheduled": 0,
+         * "deploying": 0,
+         * "running": 1,
+         * "finished": 0,
+         * "canceling": 0,
+         * "canceled": 0,
+         * "failed": 0,
+         * "reconciling": 0
+         * }
+         * }
+         * ]
          * }
          */
-        public void jobs() {
+        public String jobs() {
+            String path = "/jobs/overview";
+            return get(path);
         }
 
         /**
@@ -350,85 +369,85 @@ public class FlinkRestAPI {
          * 请求参数：无
          * 返回结果：
          * {
-         *   "jid": "a2848961b7e7768dcf2d9ac71405aacf",
-         *   "name": "flink-kafka-stream",
-         *   "isStoppable": false,
-         *   "state": "RUNNING",
-         *   "start-time": 1604157862897,
-         *   "end-time": -1,
-         *   "duration": 983903294,
-         *   "now": 1605141766191,
-         *   "timestamps": {
-         *     "RESTARTING": 0,
-         *     "FAILED": 0,
-         *     "SUSPENDED": 0,
-         *     "RECONCILING": 0,
-         *     "CREATED": 1604157862897,
-         *     "RUNNING": 1604157862984,
-         *     "CANCELED": 0,
-         *     "FINISHED": 0,
-         *     "FAILING": 0,
-         *     "CANCELLING": 0
-         *   },
-         *   "vertices": [
-         *     {
-         *       "id": "cbc357ccb763df2852fee8c4fc7d55f2",
-         *       "name": "Source: Custom Source -> Map -> Sink: Print to Std. Out",
-         *       "parallelism": 1,
-         *       "status": "RUNNING",
-         *       "start-time": 1604157863134,
-         *       "end-time": -1,
-         *       "duration": 983903057,
-         *       "tasks": {
-         *         "CANCELED": 0,
-         *         "RUNNING": 1,
-         *         "CANCELING": 0,
-         *         "RECONCILING": 0,
-         *         "CREATED": 0,
-         *         "DEPLOYING": 0,
-         *         "FAILED": 0,
-         *         "SCHEDULED": 0,
-         *         "FINISHED": 0
-         *       },
-         *       "metrics": {
-         *         "read-bytes": 0,
-         *         "read-bytes-complete": true,
-         *         "write-bytes": 0,
-         *         "write-bytes-complete": true,
-         *         "read-records": 0,
-         *         "read-records-complete": true,
-         *         "write-records": 0,
-         *         "write-records-complete": true
-         *       }
-         *     }
-         *   ],
-         *   "status-counts": {
-         *     "CANCELED": 0,
-         *     "RUNNING": 1,
-         *     "CANCELING": 0,
-         *     "RECONCILING": 0,
-         *     "CREATED": 0,
-         *     "DEPLOYING": 0,
-         *     "FAILED": 0,
-         *     "SCHEDULED": 0,
-         *     "FINISHED": 0
-         *   },
-         *   "plan": {
-         *     "jid": "a2848961b7e7768dcf2d9ac71405aacf",
-         *     "name": "flink-kafka-stream",
-         *     "nodes": [
-         *       {
-         *         "id": "cbc357ccb763df2852fee8c4fc7d55f2",
-         *         "parallelism": 1,
-         *         "operator": "",
-         *         "operator_strategy": "",
-         *         "description": "Source: Custom Source -&gt; Map -&gt; Sink: Print to Std. Out",
-         *         "optimizer_properties": {
-         *
-         *         }
-         *       }
-         *     ]
-         *   }
+         * "jid": "a2848961b7e7768dcf2d9ac71405aacf",
+         * "name": "flink-kafka-stream",
+         * "isStoppable": false,
+         * "state": "RUNNING",
+         * "start-time": 1604157862897,
+         * "end-time": -1,
+         * "duration": 983903294,
+         * "now": 1605141766191,
+         * "timestamps": {
+         * "RESTARTING": 0,
+         * "FAILED": 0,
+         * "SUSPENDED": 0,
+         * "RECONCILING": 0,
+         * "CREATED": 1604157862897,
+         * "RUNNING": 1604157862984,
+         * "CANCELED": 0,
+         * "FINISHED": 0,
+         * "FAILING": 0,
+         * "CANCELLING": 0
+         * },
+         * "vertices": [
+         * {
+         * "id": "cbc357ccb763df2852fee8c4fc7d55f2",
+         * "name": "Source: Custom Source -> Map -> Sink: Print to Std. Out",
+         * "parallelism": 1,
+         * "status": "RUNNING",
+         * "start-time": 1604157863134,
+         * "end-time": -1,
+         * "duration": 983903057,
+         * "tasks": {
+         * "CANCELED": 0,
+         * "RUNNING": 1,
+         * "CANCELING": 0,
+         * "RECONCILING": 0,
+         * "CREATED": 0,
+         * "DEPLOYING": 0,
+         * "FAILED": 0,
+         * "SCHEDULED": 0,
+         * "FINISHED": 0
+         * },
+         * "metrics": {
+         * "read-bytes": 0,
+         * "read-bytes-complete": true,
+         * "write-bytes": 0,
+         * "write-bytes-complete": true,
+         * "read-records": 0,
+         * "read-records-complete": true,
+         * "write-records": 0,
+         * "write-records-complete": true
+         * }
+         * }
+         * ],
+         * "status-counts": {
+         * "CANCELED": 0,
+         * "RUNNING": 1,
+         * "CANCELING": 0,
+         * "RECONCILING": 0,
+         * "CREATED": 0,
+         * "DEPLOYING": 0,
+         * "FAILED": 0,
+         * "SCHEDULED": 0,
+         * "FINISHED": 0
+         * },
+         * "plan": {
+         * "jid": "a2848961b7e7768dcf2d9ac71405aacf",
+         * "name": "flink-kafka-stream",
+         * "nodes": [
+         * {
+         * "id": "cbc357ccb763df2852fee8c4fc7d55f2",
+         * "parallelism": 1,
+         * "operator": "",
+         * "operator_strategy": "",
+         * "description": "Source: Custom Source -&gt; Map -&gt; Sink: Print to Std. Out",
+         * "optimizer_properties": {
+         * <p>
+         * }
+         * }
+         * ]
+         * }
          * }
          */
         public void job() {
@@ -436,31 +455,31 @@ public class FlinkRestAPI {
 
         /**
          * 查看作业的数据流执行计划
-         *
+         * <p>
          * 请求路径：http://{ip}:{port}/v1/jobs/{jobid}/plan
          * 请求方式：GET
          * 请求参数：无
          * 返回结果：
          * {
-         *   "plan": {
-         *     "jid": "719ca461851b0afad055d81309b945a8",
-         *     "name": "flink-kafka-stream",
-         *     "nodes": [
-         *       {
-         *         "id": "cbc357ccb763df2852fee8c4fc7d55f2",
-         *         "parallelism": 1,
-         *         "operator": "",
-         *         "operator_strategy": "",
-         *         "description": "Source: Custom Source -&gt; Map -&gt; Sink: Print to Std. Out",
-         *         "optimizer_properties": {
-         *
-         *         }
-         *       }
-         *     ]
-         *   }
+         * "plan": {
+         * "jid": "719ca461851b0afad055d81309b945a8",
+         * "name": "flink-kafka-stream",
+         * "nodes": [
+         * {
+         * "id": "cbc357ccb763df2852fee8c4fc7d55f2",
+         * "parallelism": 1,
+         * "operator": "",
+         * "operator_strategy": "",
+         * "description": "Source: Custom Source -&gt; Map -&gt; Sink: Print to Std. Out",
+         * "optimizer_properties": {
+         * <p>
+         * }
+         * }
+         * ]
+         * }
          * }
          */
-        public void plan(){
+        public void plan() {
         }
 
         /**
@@ -487,13 +506,13 @@ public class FlinkRestAPI {
 
         /**
          * 触发保存点
-         *
+         * <p>
          * 请求路径：http://{ip}:{port}/jobs/{jobid}/savepoints
          * 请求方式：POST
          * 请求参数：
          * {
-         *     cancle-job:[boolean 类型],
-         *     target-directory:xxx
+         * cancle-job:[boolean 类型],
+         * target-directory:xxx
          * }
          * 返回结果：
          * {"request-id":"e7c2e8806a24818baebe23012569d9e1"}

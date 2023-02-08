@@ -3,6 +3,8 @@ package com.github.superzhc.hadoop.hdfs;
 import com.github.superzhc.common.http.HttpRequest;
 import com.github.superzhc.common.jackson.JsonUtils;
 import org.apache.hadoop.fs.permission.FsAction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.InputStream;
@@ -20,6 +22,8 @@ import static com.github.superzhc.common.http.HttpRequest.*;
  * @create 2022/3/15 15:49
  **/
 public class HdfsRestApi {
+    private static final Logger LOG = LoggerFactory.getLogger(HdfsRestApi.class);
+
     /* Hadoop3.x 版本的 WebHDFS 默认端口号为 9870 */
     public static final Integer DEFAULT_WEBHDFS_PORT_3_X = 9870;
     private final static String REST_API_TEMPLATOR_URL = "http://%s:%d/webhdfs/v1/%s";
@@ -44,6 +48,7 @@ public class HdfsRestApi {
 
     public String upload(String path, File file) {
         path = String.format("%s/%s", path, file.getName());
+        LOG.info("上传文件：{}开始...", path);
 
         /**
          * 上传文件分两步：
@@ -55,9 +60,12 @@ public class HdfsRestApi {
         params.put("noredirect", true);
         HttpRequest request = execute(METHOD_PUT, path, "CREATE", params);
         String location = JsonUtils.string(request.body(), "Location");
+        LOG.info("HDFS数据节点上传地址：{}", location);
 
         HttpRequest request2 = HttpRequest.put(location).send(file);
-        return request2.body();
+        String str = request2.body();
+        LOG.info("上传结束：{}", str);
+        return str;
     }
 
     public InputStream open(String path) {
@@ -106,7 +114,7 @@ public class HdfsRestApi {
         return request.body();
     }
 
-    public String list(){
+    public String list() {
         return list("/");
     }
 

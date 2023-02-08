@@ -14,7 +14,7 @@ import java.util.List;
  * @create 2021/4/8 17:13
  */
 public class ReflectionUtils {
-    public static <T> T instance(String className, Object... params) {
+    public static <T> T instance(String className,final Object... params) {
         try {
             Class<?> clazz = Class.forName(className);
             return instance(clazz, params);
@@ -32,7 +32,7 @@ public class ReflectionUtils {
      *
      * @return
      */
-    public static <T> T instance(Class<?> clazz, Object... params) {
+    public static <T> T instance(Class<?> clazz,final Object... params) {
         try {
             Constructor constructor = clazz.getDeclaredConstructor(paramsType(params));
             constructor.setAccessible(true);
@@ -52,7 +52,7 @@ public class ReflectionUtils {
      *
      * @return
      */
-    public static <T> T invokeStaticMethod(Class<?> clazz, String methodName, Object... params) {
+    public static <T> T invokeStaticMethod(Class<?> clazz, String methodName,final Object... params) {
         try {
             Method method = clazz.getDeclaredMethod(methodName, paramsType(params));
             method.setAccessible(true);
@@ -72,7 +72,7 @@ public class ReflectionUtils {
      *
      * @return
      */
-    public static <T> T invokeMethod(Class<?> clazz, String methodName, Object... params) {
+    public static <T> T invokeMethod(Class<?> clazz, String methodName,final Object... params) {
         Object obj = instance(clazz);
         return invokeMethod(obj, methodName, params);
     }
@@ -88,7 +88,7 @@ public class ReflectionUtils {
      *
      * @return
      */
-    public static <T> T invokeMethod(Class<?> clazz, Object[] constructorArgs, String methodName, Object... params) {
+    public static <T> T invokeMethod(Class<?> clazz,final Object[] constructorArgs, String methodName, final Object... params) {
         Object obj = instance(clazz, constructorArgs);
         return invokeMethod(obj, methodName, params);
     }
@@ -103,7 +103,7 @@ public class ReflectionUtils {
      *
      * @return
      */
-    public static <T> T invokeMethod(Object instance, String methodName, Object... params) {
+    public static <T> T invokeMethod(Object instance, String methodName,final Object... params) {
         Class<?> clazz = instance.getClass();
 
         try {
@@ -115,7 +115,7 @@ public class ReflectionUtils {
         }
     }
 
-    public static <T> Class<T> methodReturnType(Class<?> clazz, String methodName, Object... params) {
+    public static <T> Class<T> methodReturnType(Class<?> clazz, String methodName,final Object... params) {
         try {
             Method method = clazz.getDeclaredMethod(methodName, paramsType(params));
             return (Class<T>) method.getReturnType();
