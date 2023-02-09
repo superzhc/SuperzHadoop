@@ -1,8 +1,8 @@
 package com.github.superzhc.common.image;
 
-import com.sun.image.codec.jpeg.JPEGCodec;
-import com.sun.image.codec.jpeg.JPEGEncodeParam;
-import com.sun.image.codec.jpeg.JPEGImageEncoder;
+//import com.sun.image.codec.jpeg.JPEGCodec;
+//import com.sun.image.codec.jpeg.JPEGEncodeParam;
+//import com.sun.image.codec.jpeg.JPEGImageEncoder;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -19,31 +19,31 @@ import java.io.IOException;
  */
 
 public class ImageDPIHandleUtil {
-    // 默认密度单位 方式
+    /*// 默认密度单位 方式
     private static int DEFAULT_DENSITY_UNIT = JPEGEncodeParam.DENSITY_UNIT_DOTS_INCH;
     // 默认质量
     private static float DEFAULT_QUALITY = 1f;
 
 
-    /************************* com.sun.image.codec 处理DPI *************************/
-    /**
+    *//************************* com.sun.image.codec 处理DPI *************************//*
+    *//**
      * 改变JPG图片DPI
      * @param file - 原图
      * @param xDensity - 水平分辨率
      * @param yDensity - 垂直分辨率
-     */
+     *//*
     public static void handleDpiJPG(File file,int xDensity, int yDensity){
         handleDpiJPG(file,DEFAULT_DENSITY_UNIT,xDensity,yDensity,DEFAULT_QUALITY);
     }
 
-    /**
+    *//**
      * 改变JPG图片DPI
      * @param file - 原图
      * @param density - 密度单位
      * @param xDensity - 水平分辨率
      * @param yDensity - 垂直分辨率
      * @param quality  - 质量水平
-     */
+     *//*
     public static void handleDpiJPG(File file,int density, int xDensity, int yDensity, float quality) {
         try {
             BufferedImage image = ImageIO.read(file);
@@ -61,5 +61,5 @@ public class ImageDPIHandleUtil {
             e.printStackTrace();
         }
     }
-    /************************* com.sun.image.codec 处理DPI *************************/
+    *//************************* com.sun.image.codec 处理DPI *************************/
 }

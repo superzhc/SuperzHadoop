@@ -2,6 +2,7 @@ package com.github.superzhc.hadoop.flink.table;
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.Table;
+import org.apache.flink.table.api.TableEnvironment;
 import org.apache.flink.table.api.TableResult;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
@@ -49,14 +50,46 @@ public class FlinkSqlMysqlMain {
             "            'table-name'='t_statistics_vehiclemodel'\n" +
             "        )";
 
+    static void print(TableEnvironment tEnv){
+        tEnv.executeSql(MYSQL_TABLE_SOURCE_DDL);
+        Table table = tEnv.sqlQuery("select * from statistics_vehicle_model");
+        TableResult ts=table.execute();
+        ts.print();
+    }
+
+    static void insertSelect(TableEnvironment tEnv){
+        String ddlDatagen="CREATE TABLE IF NOT EXISTS datagen_source(\n" +
+                "  id  BIGINT,\n" +
+                "  name STRING\n" +
+                ") WITH (\n" +
+                "  'connector' = 'datagen'\n" +
+                ")";
+
+        String ddlDinkySuperzDemo="CREATE TABLE IF NOT EXISTS dinky_superz_demo(\n" +
+                "    id              bigint,\n" +
+                "    name            string\n" +
+                ") WITH(\n" +
+                "    'connector'='jdbc',\n" +
+                "    'driver'='com.mysql.cj.jdbc.Driver',\n" +
+                "    'url'='jdbc:mysql://log-platform01:3306/xgitbigdata?zeroDateTimeBehavior=convertToNull&serverTimezone=GMT%2b8&useSSL=true',\n" +
+                "    'username'='root',\n" +
+                "    'password'='gcadmin',\n" +
+                "    'table-name'='dinky_superz_demo1'\n" +
+                ")";
+
+        String dmlSQL="insert into dinky_superz_demo select * from datagen_source";
+
+        tEnv.executeSql(ddlDatagen);
+        tEnv.executeSql(ddlDinkySuperzDemo);
+        tEnv.executeSql(dmlSQL);
+    }
+
     public static void main(String[] args) {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
 
         StreamTableEnvironment tEnv = StreamTableEnvironment.create(env);
-        tEnv.executeSql(MYSQL_TABLE_SOURCE_DDL);
-        Table table = tEnv.sqlQuery("select * from statistics_vehicle_model");
-        TableResult ts=table.execute();
-        ts.print();
+
+        insertSelect(tEnv);
     }
 }

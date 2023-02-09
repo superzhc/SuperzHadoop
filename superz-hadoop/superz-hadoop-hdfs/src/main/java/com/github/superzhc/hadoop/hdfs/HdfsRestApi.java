@@ -108,10 +108,13 @@ public class HdfsRestApi {
     }
 
     public String delete(String path) {
+        LOG.info("删除文件开始...");
         Map<String, Object> params = new HashMap<>();
         params.put("recursive", "true");// 是否递归
         HttpRequest request = execute(METHOD_DELETE, path, "DELETE", params);
-        return request.body();
+        String str = request.body();
+        LOG.info("删除文件结束：{}", str);
+        return str;
     }
 
     public String list() {

@@ -1,5 +1,7 @@
 package com.github.superzhc.hadoop.hdfs;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.github.superzhc.common.jackson.JsonUtils;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,12 +22,13 @@ public class HdfsRestApiTest {
 
     @Test
     public void list() {
-        System.out.println(api.list());
+        String hdfsPath = "/dinky/flink/lib";
+        System.out.println(api.list(hdfsPath));
     }
 
     @Test
     public void upload() {
-        String localPath = "E:\\data\\flink_lib";
+        String localPath = "E:\\data\\flink_lib\\custom";
         String hdfsPath = "/dinky/flink/lib";
 
         File dir = new File(localPath);
@@ -38,5 +41,30 @@ public class HdfsRestApiTest {
     public void mkdirsWithPermission() {
         String result = api.mkdirsWithPermission("/dinky/flink/lib");
         System.out.println(result);
+    }
+
+    @Test
+    public void delete(){
+        String excludeFilesPath="E:\\data\\flink_lib\\opt";
+        String hdfsPath = "/dinky/flink/lib";
+
+        // JsonNode json= JsonUtils.loads(api.list(hdfsPath));
+        File dir = new File(excludeFilesPath);
+        for (File file : dir.listFiles()) {
+            if(file.isDirectory()){
+                continue;
+            }
+
+            if(file.getName().contains("flink-table-planner")){
+                continue;
+            }
+
+            String exculdeFilePath=String.format("%s/%s",hdfsPath,file.getName());
+            api.delete(exculdeFilePath);
+//            System.out.println(exculdeFilePath);
+        }
+
+        String libExculdeFilePath=String.format("%s/%s",hdfsPath,"flink-table-planner-loader-1.15.1.jar");
+        api.delete(libExculdeFilePath);
     }
 }
