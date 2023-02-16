@@ -13,6 +13,10 @@
 - `flink-table-planner-loader-1.15.1.jar`【删除】
 - `flink-table-planner_2.12-1.15.1.jar`【新增】
 
+![](images/FAQ-20230210161925.png)
+
+> 推测是 Dinky 使用了 Table SQL 的查询计划，flink-table-planner-loader 不支持
+
 ## 【0.7.0_Flink1.15】Dinky 直接使用 FlinkSql 使用 `flink-connector-jdbc` 报错
 
 `flink-connector-jdbc` 未直接包含在 Flink 二进制发行版本中，需要单独引用。
