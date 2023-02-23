@@ -23,6 +23,7 @@
         <module>superz-common-visualization</module>
         <module>superz-common-javafx</module>
         <module>superz-common-file2</module>
+        <module>superz-common-cron</module>
     </modules>
 
     <properties>
