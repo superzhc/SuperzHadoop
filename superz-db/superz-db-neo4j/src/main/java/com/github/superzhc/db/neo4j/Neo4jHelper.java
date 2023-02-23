@@ -1,4 +1,4 @@
-package com.github.superzhc.neo4j;
+package com.github.superzhc.db.neo4j;
 
 import org.neo4j.driver.*;
 import org.neo4j.driver.types.Node;

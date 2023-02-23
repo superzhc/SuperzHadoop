@@ -18,7 +18,6 @@
         <module>superz-windows-bat</module>
         <module>superz-minio</module>
         <module>superz-java</module>
-        <module>superz-neo4j</module>
         <module>superz-xxl-job</module>
         <module>superz-apijson</module>
     </modules>

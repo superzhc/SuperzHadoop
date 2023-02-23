@@ -5,15 +5,15 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.github.superzhc</groupId>
-        <artifactId>SuperzHadoop</artifactId>
+        <artifactId>superz-db</artifactId>
         <version>0.3.0</version>
     </parent>
 
-    <artifactId>superz-db</artifactId>
+    <artifactId>superz-db-influxdb</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>superz-db-influxdb</module>
-        <module>superz-db-neo4j</module>
+        <module>superz-db-influxdb1</module>
+        <module>superz-db-influxdb2</module>
     </modules>
 
     <properties>

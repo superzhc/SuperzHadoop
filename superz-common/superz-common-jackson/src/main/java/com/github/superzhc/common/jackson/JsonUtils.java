@@ -132,17 +132,17 @@ public class JsonUtils {
         }
     }
 
-    public static Map<String, Object> map(String json, String... paths) {
+    public static Map<String, Object> map(String json, Object... paths) {
         JsonNode node = json(json, paths);
         return map(node);
     }
 
-    public static Map<String, Object> map(JsonNode json, String... paths) {
+    public static Map<String, Object> map(JsonNode json, Object... paths) {
         JsonNode childNode = object(json, paths);
         return mapper.convertValue(childNode, LinkedHashMap.class);
     }
 
-    public static JsonNode file(String path, String... paths) {
+    public static JsonNode file(String path, Object... paths) {
         try {
             JsonNode node = mapper.readTree(new File(path));
             return object(node, paths);
@@ -151,11 +151,11 @@ public class JsonUtils {
         }
     }
 
-    public static JsonNode loads(String json, String... paths) {
+    public static JsonNode loads(String json, Object... paths) {
         return json(json, paths);
     }
 
-    public static JsonNode json(String json, String... paths) {
+    public static JsonNode json(String json, Object... paths) {
         try {
             JsonNode node = mapper.readTree(json);
             return object(node, paths);
@@ -164,28 +164,46 @@ public class JsonUtils {
         }
     }
 
-    public static String simpleString(String json, String... paths) {
+    public static String simpleString(String json, Object... paths) {
         JsonNode childNode = json(json, paths);
         return text(childNode);
     }
 
-    public static JsonNode object(JsonNode json, String... paths) {
+    public static JsonNode object(JsonNode json, Object... paths) {
         JsonNode node = json;
-        for (String path : paths) {
-            if (!path.startsWith("/")) {
-                path = "/" + path;
+//        for (String path : paths) {
+//            if (!path.startsWith("/")) {
+//                path = "/" + path;
+//            }
+//            node = node.at(path);
+//        }
+
+        for (Object path : paths) {
+            if (null == path) {
+                continue;
             }
-            node = node.at(path);
+
+            if (path.getClass() == String.class) {
+                String str = (String) path;
+                if (!str.startsWith("/")) {
+                    str = "/" + str;
+                }
+                node = node.at(str);
+            } else if (path.getClass() == int.class || path.getClass() == Integer.class) {
+                node = node.get((int) path);
+            }else{
+                throw new RuntimeException("json 子节点的获取仅支持字符串字段和整型index序号");
+            }
         }
         return node;
     }
 
-    public static ArrayNode array(JsonNode json, String... paths) {
+    public static ArrayNode array(JsonNode json, Object... paths) {
         JsonNode childNode = object(json, paths);
         return (ArrayNode) childNode;
     }
 
-    public static Object object2(JsonNode json, String... paths) {
+    public static Object object2(JsonNode json, Object... paths) {
         JsonNode childNode = object(json, paths);
         if (null == childNode) {
             return null;
@@ -239,16 +257,16 @@ public class JsonUtils {
      * @return
      */
     @Deprecated
-    public static String string(String json, String... paths) {
+    public static String string(String json, Object... paths) {
         return simpleString(json, paths);
     }
 
-    public static String string(JsonNode node, String... paths) {
+    public static String string(JsonNode node, Object... paths) {
         JsonNode childNode = object(node, paths);
         return null == childNode ? null : childNode.asText();
     }
 
-    public static String text(JsonNode node, String... paths) {
+    public static String text(JsonNode node, Object... paths) {
         JsonNode childNode = object(node, paths);
         if (null == childNode) {
             return null;
@@ -259,27 +277,27 @@ public class JsonUtils {
         }
     }
 
-    public static Integer integer(JsonNode node, String... paths) {
+    public static Integer integer(JsonNode node, Object... paths) {
         JsonNode childNode = object(node, paths);
         return null == childNode ? null : childNode.asInt();
     }
 
-    public static Double aDouble(JsonNode node, String... paths) {
+    public static Double aDouble(JsonNode node, Object... paths) {
         JsonNode childNode = object(node, paths);
         return null == childNode ? null : childNode.asDouble();
     }
 
-    public static Long aLong(JsonNode node, String... paths) {
+    public static Long aLong(JsonNode node, Object... paths) {
         JsonNode childNode = object(node, paths);
         return null == childNode ? null : childNode.asLong();
     }
 
-    public static Boolean bool(JsonNode node, String... paths) {
+    public static Boolean bool(JsonNode node, Object... paths) {
         JsonNode childNode = object(node, paths);
         return null == childNode ? Boolean.FALSE : childNode.asBoolean();
     }
 
-    public static <T> List<T> list(JsonNode node, String... paths) {
+    public static <T> List<T> list(JsonNode node, Object... paths) {
         ArrayNode arrayNode = (ArrayNode) node;
         List<T> lst = new ArrayList<>(arrayNode.size());
         for (int i = 0, len = arrayNode.size(); i < len; i++) {
@@ -290,15 +308,15 @@ public class JsonUtils {
         return lst;
     }
 
-    public static List<String> stringArray2List(JsonNode node, String... paths) {
+    public static List<String> stringArray2List(JsonNode node, Object... paths) {
         return Arrays.asList(stringArray(node, paths));
     }
 
-    public static String[] stringArray(String json, String... paths) {
+    public static String[] stringArray(String json, Object... paths) {
         return stringArray(json(json), paths);
     }
 
-    public static String[] stringArray(JsonNode node, String... paths) {
+    public static String[] stringArray(JsonNode node, Object... paths) {
         ArrayNode childNode = array(node, paths);
         String[] arr = new String[childNode.size()];
         for (int i = 0, len = childNode.size(); i < len; i++) {
@@ -307,7 +325,7 @@ public class JsonUtils {
         return arr;
     }
 
-    public static int[] intArray(JsonNode node, String... paths) {
+    public static int[] intArray(JsonNode node, Object... paths) {
         ArrayNode childNode = array(node, paths);
         int[] arr = new int[childNode.size()];
         for (int i = 0, len = childNode.size(); i < len; i++) {
@@ -317,7 +335,7 @@ public class JsonUtils {
     }
 
 
-    public static long[] longArray(JsonNode node, String... paths) {
+    public static long[] longArray(JsonNode node, Object... paths) {
         ArrayNode childNode = array(node, paths);
         long[] arr = new long[childNode.size()];
         for (int i = 0, len = childNode.size(); i < len; i++) {
@@ -326,7 +344,7 @@ public class JsonUtils {
         return arr;
     }
 
-    public static LocalDateTime[] long2DateTimeArray(JsonNode node, String... paths) {
+    public static LocalDateTime[] long2DateTimeArray(JsonNode node, Object... paths) {
         ArrayNode childNode = array(node, paths);
         LocalDateTime[] arr = new LocalDateTime[childNode.size()];
         for (int i = 0, len = childNode.size(); i < len; i++) {
@@ -335,7 +353,7 @@ public class JsonUtils {
         return arr;
     }
 
-    public static double[] doubleArray(JsonNode node, String... paths) {
+    public static double[] doubleArray(JsonNode node, Object... paths) {
         ArrayNode childNode = array(node, paths);
         double[] arr = new double[childNode.size()];
         for (int i = 0, len = childNode.size(); i < len; i++) {
@@ -344,7 +362,7 @@ public class JsonUtils {
         return arr;
     }
 
-    public static Map<String, Object>[] newObjectArray(JsonNode node, String... paths) {
+    public static Map<String, Object>[] newObjectArray(JsonNode node, Object... paths) {
         return newObjectArray(node, paths, (List<String>) null);
     }
 

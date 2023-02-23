@@ -5,35 +5,29 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.github.superzhc</groupId>
-        <artifactId>superz-other</artifactId>
+        <artifactId>superz-db-influxdb</artifactId>
         <version>0.3.0</version>
     </parent>
 
-    <artifactId>superz-neo4j</artifactId>
+    <artifactId>superz-db-influxdb1</artifactId>
+    <description>InfluxDB 1.x 版本</description>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <neo4j.version>4.4.16</neo4j.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.github.superzhc</groupId>
-            <artifactId>superz-data-core</artifactId>
+            <artifactId>superz-common-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
-            <groupId>org.neo4j.driver</groupId>
-            <artifactId>neo4j-java-driver</artifactId>
-            <version>4.4.11</version>
-        </dependency>
-        <dependency>
-            <groupId>org.neo4j</groupId>
-            <artifactId>neo4j-cypher-dsl</artifactId>
-            <version>2022.4.0</version>
+            <groupId>com.github.superzhc</groupId>
+            <artifactId>superz-data-core</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <!--日志模块-->
@@ -51,6 +45,13 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.17</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.2</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

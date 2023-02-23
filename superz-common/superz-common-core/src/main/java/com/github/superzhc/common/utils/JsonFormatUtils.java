@@ -4,6 +4,7 @@ package com.github.superzhc.common.utils;
  * @author superz
  * @create 2022/3/16 10:42
  **/
+@Deprecated
 public class JsonFormatUtils {
     private static final int INDENT_SPACE = 2;
 

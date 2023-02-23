@@ -1,4 +1,4 @@
-package com.github.superzhc.neo4j;
+package com.github.superzhc.db.neo4j;
 
 import org.neo4j.driver.Record;
 import org.neo4j.driver.types.Node;
@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import static com.github.superzhc.neo4j.Neo4jHelper.node2map;
-import static com.github.superzhc.neo4j.Neo4jHelper.relationship2map;
+import static com.github.superzhc.db.neo4j.Neo4jHelper.node2map;
+import static com.github.superzhc.db.neo4j.Neo4jHelper.relationship2map;
 
 /**
  * @author superz
