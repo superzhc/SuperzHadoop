@@ -16,7 +16,6 @@
         <module>superz-scala</module>
         <module>superz-json-data-generator-config</module>
         <module>superz-windows-bat</module>
-        <module>superz-minio</module>
         <module>superz-java</module>
         <module>superz-xxl-job</module>
         <module>superz-apijson</module>

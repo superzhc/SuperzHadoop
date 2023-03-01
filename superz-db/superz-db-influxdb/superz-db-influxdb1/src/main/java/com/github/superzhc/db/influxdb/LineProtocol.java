@@ -2,6 +2,7 @@ package com.github.superzhc.db.influxdb;
 
 import com.github.superzhc.common.utils.TypeUtils;
 
+import java.time.*;
 import java.util.List;
 import java.util.Map;
 
@@ -38,6 +39,10 @@ public class LineProtocol {
     private String measurement;
     private Map<String, String> tagSet;
     private Map<String, Object> fieldSet;
+
+    /**
+     * 时间戳记以纳秒精度Unix时间。行协议中的时间戳是可选的。 如果没有为数据点指定时间戳，InfluxDB会使用服务器的本地纳秒时间戳。
+     */
     private Long timestamp;
 
     public LineProtocol() {
@@ -80,6 +85,14 @@ public class LineProtocol {
 
     public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public void setTimestamp(LocalDateTime dateTime) {
+        /*计算出纳米级时间戳*/
+        ZonedDateTime dt = dateTime.atZone(ZoneOffset.systemDefault());
+        Instant instant=dt.toInstant();
+        long ns = instant.getEpochSecond() * 1000000000 + instant.getNano();
+        setTimestamp(ns);
     }
 
     @Override

@@ -16,6 +16,7 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <influxdb.version>2.23</influxdb.version>
     </properties>
 
     <dependencies>
@@ -28,6 +29,13 @@
             <groupId>com.github.superzhc</groupId>
             <artifactId>superz-data-core</artifactId>
             <version>${project.version}</version>
+        </dependency>
+
+        <!--InfluxDB 1.x 官方客户端-->
+        <dependency>
+            <groupId>org.influxdb</groupId>
+            <artifactId>influxdb-java</artifactId>
+            <version>${influxdb.version}</version>
         </dependency>
 
         <!--日志模块-->

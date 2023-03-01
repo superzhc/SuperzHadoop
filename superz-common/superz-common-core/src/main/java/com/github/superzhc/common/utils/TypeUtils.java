@@ -37,7 +37,7 @@ public class TypeUtils {
         }
     }
 
-    public static boolean isLong(Object obj){
+    public static boolean isLong(Object obj) {
         if (null == obj) {
             return false;
         }
@@ -73,7 +73,7 @@ public class TypeUtils {
         }
     }
 
-    public static boolean isBool(Object obj){
+    public static boolean isBool(Object obj) {
         if (null == obj) {
             return false;
         }
@@ -83,5 +83,34 @@ public class TypeUtils {
         } else {
             return obj.getClass() == boolean.class;
         }
+    }
+
+    public static Class removePrimitive(Object obj) {
+        if (null == obj) {
+            return Object.class;
+        }
+
+        Class clazz = obj.getClass();
+        if (clazz.isPrimitive()) {
+            if (Byte.TYPE == clazz) {
+                return Byte.class;
+            } else if (Short.TYPE == clazz) {
+                return Short.class;
+            } else if (Integer.TYPE == clazz) {
+                return Integer.class;
+            } else if (Long.TYPE == clazz) {
+                return Long.class;
+            } else if (Float.TYPE == clazz) {
+                return Float.class;
+            } else if (Double.TYPE == clazz) {
+                return Double.class;
+            } else if (Character.TYPE == clazz) {
+                return Character.class;
+            } else if (Boolean.TYPE == clazz) {
+                return Boolean.class;
+            }
+        }
+
+        return clazz;
     }
 }

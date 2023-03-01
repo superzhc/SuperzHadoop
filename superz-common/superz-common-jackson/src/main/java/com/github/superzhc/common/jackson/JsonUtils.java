@@ -178,6 +178,10 @@ public class JsonUtils {
 //            node = node.at(path);
 //        }
 
+        if (null == node) {
+            return null;
+        }
+
         for (Object path : paths) {
             if (null == path) {
                 continue;
@@ -191,7 +195,7 @@ public class JsonUtils {
                 node = node.at(str);
             } else if (path.getClass() == int.class || path.getClass() == Integer.class) {
                 node = node.get((int) path);
-            }else{
+            } else {
                 throw new RuntimeException("json 子节点的获取仅支持字符串字段和整型index序号");
             }
         }
@@ -374,11 +378,11 @@ public class JsonUtils {
         return newObjectArray(node, null, keys);
     }
 
-    public static Map<String, Object>[] newObjectArray(JsonNode node, String[] paths, String... keys) {
+    public static Map<String, Object>[] newObjectArray(JsonNode node, Object[] paths, String... keys) {
         return newObjectArray(node, paths, Arrays.asList(keys));
     }
 
-    public static Map<String, Object>[] newObjectArray(JsonNode node, String[] paths, List<String> keys) {
+    public static Map<String, Object>[] newObjectArray(JsonNode node, Object[] paths, List<String> keys) {
         JsonNode childNode = node;
         if (null != paths) {
             childNode = object(node, paths);

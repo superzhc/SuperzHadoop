@@ -7,6 +7,7 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.RowFactory;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.Metadata;
@@ -15,6 +16,8 @@ import org.apache.spark.sql.types.StructType;
 import scala.collection.JavaConverters;
 import scala.collection.Seq;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -39,8 +42,10 @@ public class HudiSparkSQLWriteMain {
                 /*开启hive*/
                 .enableHiveSupport()
                 //设置hive元数据连接地址
-                .config("hive.metastore.uris", "thrift://hanyun-3:9083")
+//                .config("hive.metastore.uris", "thrift://hanyun-3:9083")
+                .config("hive.metastore.uris", "thrift://10.90.18.83:9083")
                 .getOrCreate();
+        JavaSparkContext sc = JavaSparkContext.fromSparkContext(spark.sparkContext());
 
         /*创建表*/
         String ddlSQL = "";
@@ -71,11 +76,43 @@ public class HudiSparkSQLWriteMain {
 //        spark.sql("use xgit_gctest;");
 //            spark.sql("show tables;").show();
 
+        List<Map<String, Object>> data =new ArrayList<>();
+        for (int i=11;i<2000;i++){
+            Map<String,Object> item=new HashMap<>();
+            item.put("id",i);
+            Double d=(i*2.0);
+            item.put("order_id",d.floatValue());
+            data.add(item);
+        }
+
+        JavaRDD<Row> rdd = sc.parallelize(data).map(new Function<Map<String, Object>, Row>() {
+            @Override
+            public Row call(Map<String, Object> map) throws Exception {
+//                Seq<Object> seq = JavaConverters.collectionAsScalaIterableConverter(map.values()).asScala().toSeq();
+//                 return Row.fromSeq(seq);
+                Object[] objs=map.values().toArray();
+                return RowFactory.create(objs);
+            }
+        });
+
+        StructField id = new StructField("id", DataTypes.IntegerType, false, Metadata.empty());
+        StructField orderId = new StructField("order_id", DataTypes.FloatType, false, Metadata.empty());
+        StructType schema = new StructType(new StructField[]{id,orderId/*code, date, netWorth, accumulatedNetWorth, change*/});
+        Dataset<Row> ds = spark.createDataFrame(rdd, schema);
+        ds.createOrReplaceTempView("test1");
+
+        String databaseName="xgit_zuhuadmin";
         String tableName = "zbx3";
-        spark.sql("use xgit_gctest");
+        tableName="mm";
+//        spark.sql("use xgit_gctest");
+        spark.sql("use "+databaseName);
         spark.sql("desc " + tableName).show();
-        spark.sql("insert into " + tableName + " select '1' as id,'2023-01-03' as d,1.0 as a,1.0 as b,1672712334 as ts,'000001' as c");
-        spark.sql("select * from " + tableName).show();
+//        spark.sql("insert into " + tableName + " select '1' as id,'2023-01-03' as d,1.0 as a,1.0 as b,1672712334 as ts,'000001' as c");
+//        for(int i=11;i<200;i++) {
+//            spark.sql("insert into " + tableName + "  select " + i + " as id," + (i * 2.0) + " as order_id");
+//        }
+//        spark.sql("insert into "+tableName+" select id,order_id from test1");
+        spark.sql("select * from " + tableName).show(1000);
 
 //        spark.sql("insert into student select 1 as id,'xxx' as name,10 as age");
 //        spark.sql("insert into student select 1,'yyyy',20");

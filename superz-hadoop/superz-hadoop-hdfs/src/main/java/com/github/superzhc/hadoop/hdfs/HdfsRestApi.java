@@ -47,24 +47,34 @@ public class HdfsRestApi {
     }
 
     public String upload(String path, File file) {
-        path = String.format("%s/%s", path, file.getName());
-        LOG.info("上传文件：{}开始...", path);
+        String fileName = file.getName();
+
+        // 计算文件大小
+        double fileSize = file.length();
+        String[] fileSizeUnit = {"B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB"};
+        int cursor = 0;
+        while (fileSize > 1024.0 && cursor < fileSizeUnit.length) {
+            fileSize /= 1024.0;
+            cursor++;
+        }
+        LOG.info("上传文件：[{}] 开始，文件大小：{}{}...", fileName, String.format("%.2f", fileSize), fileSizeUnit[cursor]);
 
         /**
          * 上传文件分两步：
          * 第一步运行之后，在命令行会返回 namenode 的信息。然后我们根据返回的信息，重定向并针对适当的 datanode 执行 WebHDFS API
          * 第二步根据上一步返回的Location，上传文件
          */
+        path = String.format("%s/%s", path, fileName);
         Map<String, Object> params = new HashMap<>();
         params.put("overwrite", true);
         params.put("noredirect", true);
         HttpRequest request = execute(METHOD_PUT, path, "CREATE", params);
         String location = JsonUtils.string(request.body(), "Location");
-        LOG.info("HDFS数据节点上传地址：{}", location);
+        LOG.info("HDFS数据节点上传地址：<{}>", location);
 
         HttpRequest request2 = HttpRequest.put(location).send(file);
         String str = request2.body();
-        LOG.info("上传结束：{}", str);
+        LOG.info("上传文件：[{}] 结束，返回结果：[{}]!!!", fileName, str);
         return str;
     }
 

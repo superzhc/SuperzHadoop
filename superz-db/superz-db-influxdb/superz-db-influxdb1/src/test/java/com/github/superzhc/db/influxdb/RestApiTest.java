@@ -28,13 +28,55 @@ public class RestApiTest {
     }
 
     @Test
+    public void ping(){
+        System.out.println(api.ping());
+    }
+
+    @Test
     public void createDB() {
         api.createDB("superz");
     }
 
     @Test
+    public void databases() {
+        String result = api.databases();
+        JsonNode json = JsonUtils.json(result, "results", 0, "series", 0, "values");
+        System.out.println(JsonUtils.newArrayArray(json));
+    }
+
+    @Test
+    public void retentionPolicies() {
+        String result = api.retentionPolicies("xgit");
+        System.out.println(result);
+    }
+
+    @Test
+    public void series() {
+        String result = api.series("xgit");
+        System.out.println(result);
+    }
+
+    @Test
+    public void measurements() {
+        String result = api.measurements("xgit");
+        System.out.println(result);
+    }
+
+    @Test
+    public void tagKeys(){
+        String result=api.tagKeys("xgit");
+        System.out.println(result);
+    }
+
+    @Test
+    public void tagKeys2(){
+        String result=api.tagKeys("xgit","fund_etf_hist_min_em");
+        System.out.println(result);
+    }
+
+    @Test
     public void write() {
-        String ql = "cpu_load_short,host=server01,region=us-west value=0.64 1434055562000000000";
+        String ql = "cpu_load_short,host=server03,region=us-west value1=0.64 1434055564000000000";
         api.write("xgit", ql);
     }
 
@@ -71,8 +113,41 @@ public class RestApiTest {
 
     @Test
     public void read() {
-        String influxQL = "select * from fund_etf_spot_em limit 50";
+        String influxQL = "select * from cpu_load_short where host='server03'";
         String result = api.read("xgit", influxQL);
+        System.out.println(result);
+        JsonNode json = JsonUtils.json(result, "results", 0, "series", 0);
+        String[] columns = JsonUtils.stringArray(json, "columns");
+        Object[][] data = JsonUtils.newArrayArray(json, "values");
+        System.out.println(ListUtils.print(columns, data));
+    }
+
+    @Test
+    public void read2() {
+        String influxQL = "select * from cpu_load_short";
+        String result = api.read("xgit", influxQL);
+        System.out.println(result);
+        JsonNode json = JsonUtils.json(result, "results", 0, "series", 0);
+        String[] columns = JsonUtils.stringArray(json, "columns");
+        Object[][] data = JsonUtils.newArrayArray(json, "values");
+        System.out.println(ListUtils.print(columns, data));
+    }
+
+    @Test
+    public void test3() {
+        String influxQL = "select max(account),max(volume),min(account),min(volume) from fund_etf_hist_min_em group by code";
+        String result = api.read("xgit", influxQL);
+        JsonNode json = JsonUtils.json(result, "results", 0, "series", 0);
+        String[] columns = JsonUtils.stringArray(json, "columns");
+        Object[][] data = JsonUtils.newArrayArray(json, "values");
+        System.out.println(ListUtils.print(columns, data));
+    }
+
+    @Test
+    public void test4() {
+        String influxQL = "select * from fund_etf_hist_min_em where time >= '2023-01-01T00:00:00Z'";
+        String result = api.read("xgit", influxQL);
+        System.out.println(result);
         JsonNode json = JsonUtils.json(result, "results", 0, "series", 0);
         String[] columns = JsonUtils.stringArray(json, "columns");
         Object[][] data = JsonUtils.newArrayArray(json, "values");

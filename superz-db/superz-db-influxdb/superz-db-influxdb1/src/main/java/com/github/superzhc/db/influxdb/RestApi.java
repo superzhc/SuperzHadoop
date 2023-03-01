@@ -22,15 +22,41 @@ public class RestApi {
 
     private boolean isDebug = false;
 
+    private String username = null;
+
+    private String password = null;
+
     public RestApi(String host, Integer port) {
-        this.host = host;
-        this.port = port;
+        this(host, port, null, null, false);
+    }
+
+    public RestApi(String host, Integer port, String username, String password) {
+        this(host, port, username, password, false);
     }
 
     public RestApi(String host, Integer port, boolean isDebug) {
+        this(host, port, null, null, isDebug);
+    }
+
+    public RestApi(String host, Integer port, String username, String password, boolean isDebug) {
         this.host = host;
         this.port = port;
+        this.username = username;
+        this.password = password;
         this.isDebug = isDebug;
+    }
+
+    public String ping() {
+        String url = String.format("http://%s:%d/ping", host, port);
+
+        Map<String, Object> params = new HashMap<>();
+        if (username != null && null != password) {
+            params.put("u", username);
+            params.put("p", password);
+        }
+
+        String result = HttpRequest.get(url, params).body();
+        return result;
     }
 
     /**
@@ -40,14 +66,93 @@ public class RestApi {
      */
     public String createDB(String db) {
         String influxQL = String.format("CREATE DATABASE %s", db);
+        return queryPost(influxQL);
+    }
 
-        String url = String.format("http://%s:%d/query", host, port);
+    public String dropDB(String db) {
+        String influxQL = String.format("DROP DATABASE %s", db);
+        return query(influxQL);
+    }
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("q", influxQL);
+    public String databases() {
+        String influxQL = "SHOW DATABASES";
+        return query(influxQL);
+    }
 
-        String result = HttpRequest.post(url).form(params).body();
-        return result;
+    /**
+     * 返回指定数据库的保留策略列表
+     *
+     * @param db
+     * @return
+     */
+    public String retentionPolicies(String db) {
+        // 方式一
+        // String influxQL=String.format("SHOW RETENTION POLICIES ON \"%s\"",db);
+        // return query(influxQL);
+
+        // 方式二
+        String influxQL = "SHOW RETENTION POLICIES";
+        return query(db, influxQL);
+    }
+
+    public String series(String db) {
+        // 方式一
+        // String influxQL = String.format("SHOW SERIES ON %s", db);
+        // return query(influxQL);
+
+        // 方式二
+        String influxQL = "SHOW SERIES";
+        return query(db, influxQL);
+    }
+
+    public String measurements(String db) {
+        // 方式一
+        // String influxQL = String.format("SHOW MEASUREMENTS ON %s", db);
+        // return query(influxQL);
+
+        // 方式二
+        String influxQL = "SHOW MEASUREMENTS";
+        return query(db, influxQL);
+    }
+
+    public String tagKeys(String db) {
+        // 方式一
+        // String influxQL = String.format("SHOW TAG KEYS ON %s", db);
+        // return query(influxQL);
+
+        // 方式二
+        String influxQL = "SHOW TAG KEYS";
+        return query(db, influxQL);
+    }
+
+    public String tagKeys(String db, String measurement) {
+        // 方式一
+        // String influxQL = String.format("SHOW TAG KEYS ON %s FROM \"%s\"", db,measurement);
+        // return query(influxQL);
+
+        // 方式二
+        String influxQL = String.format("SHOW TAG KEYS FROM %s", measurement);
+        return query(db, influxQL);
+    }
+
+    public String fieldKeys(String db) {
+        // 方式一
+        // String influxQL = String.format("SHOW FIELD KEYS ON %s", db);
+        // return query(influxQL);
+
+        // 方式二
+        String influxQL = "SHOW FIELD KEYS";
+        return query(db, influxQL);
+    }
+
+    public String fieldKeys(String db, String measurement) {
+        // 方式一
+        // String influxQL = String.format("SHOW FIELD KEYS ON %s FROM \"%s\"", db,measurement);
+        // return query(influxQL);
+
+        // 方式二
+        String influxQL = String.format("SHOW FIELD KEYS FROM %s", measurement);
+        return query(db, influxQL);
     }
 
     /**
@@ -102,9 +207,16 @@ public class RestApi {
     public String write(String db, String influxQL) {
         LOG.info("[Line Protocol]: {}", influxQL);
 
-        String url = String.format("http://%s:%d/write?db=%s", host, port, db);
+        String url = String.format("http://%s:%d/write", host, port);
 
-        HttpRequest request = HttpRequest.post(url).send(influxQL);
+        Map<String, Object> params = new HashMap<>();
+        params.put("db", db);
+        if ((null != username && username.trim().length() > 0) && (null != password && password.trim().length() > 0)) {
+            params.put("u", username);
+            params.put("p", password);
+        }
+
+        HttpRequest request = HttpRequest.post(url, params).send(influxQL);
         if (request.code() == 204) {
             return "{}";
         } else {
@@ -122,27 +234,104 @@ public class RestApi {
     }
 
     public String read(String db, String influxQL) {
-        return read(db, influxQL, null);
+        return read(db, null, influxQL, null);
     }
 
     /**
+     * `SELECT`支持指定数据的几种格式：
+     * 1. `SELECT *`：返回所有的field和tag
+     * 2. `SELECT f1` 返回特定的field
+     * 3. `SELECT f1,f2` 返回多个field
+     * 4. `SELECT t1,f1` 返回特定的field和tag，`SELECT`在包括一个tag时，必须至少指定一个field
+     * 5. `SELECT a1::field,a1::tag` 返回特定的field和tag，`::[field | tag]`语法指定标识符的类型。 使用此语法来区分具有相同名称的field key和tag key。
+     *
      * @param db
+     * @param rp
      * @param influxQL
      * @param epoch    在InfluxDB中的所有数据都是存的UTC时间，时间戳默认返回RFC3339格式的纳米级的UTC时间，例如2015-08-04T19:05:14.318570484Z，如果想要返回Unix格式的时间，可以在请求参数里设置epoch参数，其中epoch可以是[h,m,s,ms,u,ns]之一。
      * @return
      */
-    public String read(String db, String influxQL, String epoch) {
-        String url = String.format("http://%s:%d/query", host, port);
+    public String read(String db, String rp, String influxQL, String epoch) {
+        LOG.info(influxQL);
 
         Map<String, Object> params = new HashMap<>();
-        params.put("db", db);
-        params.put("q", influxQL);
-        params.put("pretty", isDebug);
+        // params.put("db", db);
+        if (null != rp && rp.trim().length() > 0) {
+            params.put("rp", rp);
+        }
+        // params.put("q", influxQL);
         if (null != epoch && epoch.trim().length() > 0) {
             params.put("epoch", epoch);
         }
 
+        return query(db, influxQL, params);
+    }
+
+    public String query(String influxQL) {
+        return query(null, influxQL, null);
+    }
+
+    public String query(String db, String influxQL) {
+        return query(db, influxQL, null);
+    }
+
+    public String query(String db, String influxQL, Map<String, Object> params) {
+        if (null == params) {
+            params = new HashMap<>();
+        }
+
+        if (null != db && db.trim().length() > 0) {
+            params.put("db", db);
+        }
+
+        params.put("q", influxQL);
+        return query(params);
+    }
+
+    public String query(Map<String, Object> params) {
+        String url = String.format("http://%s:%d/query", host, port);
+
+        params.put("pretty", isDebug);
+        if ((null != username && username.trim().length() > 0) && (null != password && password.trim().length() > 0)) {
+            params.put("u", username);
+            params.put("p", password);
+        }
+
         String result = HttpRequest.get(url, params).body();
+        return result;
+    }
+
+    public String queryPost(String influxQL) {
+        return queryPost(null, influxQL, null);
+    }
+
+    public String queryPost(String db, String influxQL) {
+        return queryPost(db, influxQL, null);
+    }
+
+    public String queryPost(String db, String influxQL, Map<String, Object> params) {
+        if (null == params) {
+            params = new HashMap<>();
+        }
+
+        if (null != db && db.trim().length() > 0) {
+            params.put("db", db);
+        }
+
+        params.put("q", influxQL);
+        return queryPost(params);
+    }
+
+    public String queryPost(Map<String, Object> params) {
+        String url = String.format("http://%s:%d/query", host, port);
+
+        params.put("pretty", isDebug);
+        if ((null != username && username.trim().length() > 0) && (null != password && password.trim().length() > 0)) {
+            params.put("u", username);
+            params.put("p", password);
+        }
+
+        String result = HttpRequest.post(url, params).body();
         return result;
     }
 

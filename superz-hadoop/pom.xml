@@ -26,6 +26,7 @@
         <module>superz-hadoop-storm</module>
         <module>superz-hadoop-kafka_0.9</module>
         <module>superz-hadoop-hudi</module>
+        <module>superz-hadoop-minio</module>
     </modules>
 
     <properties>
@@ -46,6 +47,7 @@
         <kafka.version>2.2.1</kafka.version>
         <elasticsearch.version>6.8.23</elasticsearch.version>
         <hudi.version>0.12.1</hudi.version>
+        <iceberg.version>1.1.0</iceberg.version>
     </properties>
 
     <dependencies>

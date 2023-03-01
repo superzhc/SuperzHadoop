@@ -1002,6 +1002,10 @@ public class HttpRequest {
         return new HttpRequest(url, METHOD_HEAD);
     }
 
+    public static HttpRequest head(final CharSequence baseUrl, final Map<?, ?> params) {
+        return head(baseUrl, params, true);
+    }
+
     /**
      * Start a 'HEAD' request to the given URL along with the query params
      *

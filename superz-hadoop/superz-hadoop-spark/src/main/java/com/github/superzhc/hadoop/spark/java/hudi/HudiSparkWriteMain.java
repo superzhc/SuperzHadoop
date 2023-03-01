@@ -17,6 +17,8 @@ import org.apache.spark.sql.types.*;
 import scala.collection.JavaConverters;
 import scala.collection.Seq;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,20 +43,32 @@ public class HudiSparkWriteMain {
         JavaSparkContext sc = JavaSparkContext.fromSparkContext(spark.sparkContext());
 
         List<Map<String, Object>> data = EastMoneyFund.fundNetHistory("000478");
+
+        data=new ArrayList<>();
+        for (int i=1;i<200;i++){
+            Map<String,Object> item=new HashMap<>();
+            item.put("id",i);
+            item.put("order_id",i*2.0);
+            data.add(item);
+        }
+
         JavaRDD<Row> rdd = sc.parallelize(data).map(new Function<Map<String, Object>, Row>() {
             @Override
             public Row call(Map<String, Object> map) throws Exception {
                 Seq<Object> seq = JavaConverters.collectionAsScalaIterableConverter(map.values()).asScala().toSeq();
-                return Row.fromSeq(seq);
+//                 return Row.fromSeq(seq);
+                return null;
             }
         });
 
+        StructField id = new StructField("id", DataTypes.IntegerType, false, Metadata.empty());
+        StructField orderId = new StructField("order_id", DataTypes.FloatType, false, Metadata.empty());
         StructField code = new StructField("code", DataTypes.StringType, false, Metadata.empty());
         StructField date = new StructField("date", DataTypes.StringType, false, Metadata.empty());
         StructField netWorth = new StructField("net_worth", DataTypes.StringType, false, Metadata.empty());
         StructField accumulatedNetWorth = new StructField("accumulated_net_worth", DataTypes.StringType, false, Metadata.empty());
         StructField change = new StructField("change", DataTypes.StringType, false, Metadata.empty());
-        StructType schema = new StructType(new StructField[]{code, date, netWorth, accumulatedNetWorth, change});
+        StructType schema = new StructType(new StructField[]{id,orderId/*code, date, netWorth, accumulatedNetWorth, change*/});
         Dataset<Row> ds = spark.createDataFrame(rdd, schema);
 
         ds.show(false);

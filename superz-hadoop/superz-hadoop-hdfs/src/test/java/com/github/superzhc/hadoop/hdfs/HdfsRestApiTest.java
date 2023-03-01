@@ -10,7 +10,7 @@ import java.io.File;
 import static org.junit.Assert.*;
 
 public class HdfsRestApiTest {
-    private String host = "xgitcrm-1";
+    private String host = "log-platform01";
     private Integer port = 50070;
 
     private HdfsRestApi api = null;
@@ -28,8 +28,8 @@ public class HdfsRestApiTest {
 
     @Test
     public void upload() {
-        String localPath = "E:\\data\\flink_lib\\custom";
-        String hdfsPath = "/dinky/flink/lib";
+        String localPath = "E:\\data\\flink_lib\\custom\\connector-mysql";
+        String hdfsPath = "/dinky/flink1.15";
 
         File dir = new File(localPath);
         for (File file : dir.listFiles()) {
