@@ -3,6 +3,8 @@ package com.github.superzhc.common.utils;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 
 /**
@@ -106,6 +108,41 @@ public class MapUtils {
         }
 
         return set.toArray(new String[set.size()]);
+    }
+
+    public static Map<String, Class> types(List<Map<String, Object>> maps) {
+        //不添加枚举了
+        Map<Class, Integer> typesOrder = new HashMap<>();
+        typesOrder.put(null, 0);
+        typesOrder.put(Byte.class, 1);
+        typesOrder.put(Short.class, 2);
+        typesOrder.put(Boolean.class, 3);
+        typesOrder.put(Integer.class, 4);
+        typesOrder.put(BigInteger.class, 5);
+        typesOrder.put(Long.class, 5);
+        typesOrder.put(Float.class, 6);
+        typesOrder.put(Double.class, 7);
+        typesOrder.put(BigDecimal.class, 8);
+        typesOrder.put(String.class, 10);
+
+
+        Map<String, Class> valueTypes = new LinkedHashMap<>();
+        for (Map<String, Object> map : maps) {
+            for (Map.Entry<String, Object> entry : map.entrySet()) {
+                String key = entry.getKey();
+                Object value = entry.getValue();
+                Class valueClass = null == value ? null : TypeUtils.removePrimitive(value);
+                if (!valueTypes.containsKey(key)) {
+                    valueTypes.put(key, typesOrder.containsKey(valueClass) ? valueClass : String.class);
+                } else {
+                    Class oldClass = valueTypes.get(key);
+                    Class newClass = typesOrder.containsKey(valueClass) ? valueClass : String.class;
+                    valueTypes.put(key, typesOrder.get(newClass) > typesOrder.get(oldClass) ? newClass : oldClass);
+                }
+            }
+        }
+
+        return valueTypes;
     }
 
     public static <T> List<List<T>> values(List<Map<String, T>> maps, String... keys) {
@@ -236,7 +273,6 @@ public class MapUtils {
      *
      * @param maps
      * @param <T>
-     *
      * @return
      */
     public static <T> String print(List<Map<String, T>> maps) {
@@ -249,7 +285,6 @@ public class MapUtils {
      * @param maps
      * @param num
      * @param <T>
-     *
      * @return
      */
     public static <T> String print(List<Map<String, T>> maps, int num) {

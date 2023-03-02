@@ -286,6 +286,12 @@
             <version>${scala.version}</version>
             &lt;!&ndash;<scope>provided</scope>&ndash;&gt;
         </dependency>-->
+        <!--fix bug:java.lang.NoClassDefFoundError: scala/jdk/CollectionConverters$-->
+        <dependency>
+            <groupId>org.scala-lang.modules</groupId>
+            <artifactId>scala-collection-compat_${scala.binary.version}</artifactId>
+            <version>2.1.2</version>
+        </dependency>
         <!--endregion-->
 
         <dependency>
