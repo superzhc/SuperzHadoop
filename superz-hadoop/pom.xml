@@ -27,6 +27,7 @@
         <module>superz-hadoop-kafka_0.9</module>
         <module>superz-hadoop-hudi</module>
         <module>superz-hadoop-minio</module>
+        <module>superz-hadoop-iceberg</module>
     </modules>
 
     <properties>
