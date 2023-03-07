@@ -19,7 +19,7 @@ import java.util.Map;
  **/
 public class FundETFMinutesHistroy {
     public static void main(String[] args) {
-        RestApi influxApi = new RestApi("127.0.0.1", 8086, true);
+        RestApi influxApi = new RestApi("127.0.0.1", 8086);
         AKTools akTools = new AKTools("127.0.0.1", 8080);
 
         String api = "fund_etf_hist_min_em";

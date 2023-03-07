@@ -23,12 +23,13 @@ public class RestApiTest {
 
     @Before
     public void setUp() throws Exception {
-        api = new RestApi("127.0.0.1", 8086, true);
+        api = new RestApi("127.0.0.1", 8086);
+        api.enableDebug();
         akTools = new AKTools("127.0.0.1", 8080);
     }
 
     @Test
-    public void ping(){
+    public void ping() {
         System.out.println(api.ping());
     }
 
@@ -63,14 +64,14 @@ public class RestApiTest {
     }
 
     @Test
-    public void tagKeys(){
-        String result=api.tagKeys("xgit");
+    public void tagKeys() {
+        String result = api.tagKeys("xgit");
         System.out.println(result);
     }
 
     @Test
-    public void tagKeys2(){
-        String result=api.tagKeys("xgit","fund_etf_hist_min_em");
+    public void tagKeys2() {
+        String result = api.tagKeys("xgit", "fund_etf_hist_min_em");
         System.out.println(result);
     }
 

@@ -16,9 +16,13 @@ import java.util.stream.Collectors;
 public class RestApi {
     private static final Logger LOG = LoggerFactory.getLogger(RestApi.class);
 
-    private String host;
+    private static final String DEFAULT_PROTOCOL = "http";
 
-    private Integer port;
+    private String url;
+
+//    private String host;
+//
+//    private Integer port;
 
     private boolean isDebug = false;
 
@@ -27,27 +31,41 @@ public class RestApi {
     private String password = null;
 
     public RestApi(String host, Integer port) {
-        this(host, port, null, null, false);
+        this(DEFAULT_PROTOCOL, host, port, null, null);
     }
 
     public RestApi(String host, Integer port, String username, String password) {
-        this(host, port, username, password, false);
+        this(DEFAULT_PROTOCOL, host, port, username, password);
     }
 
-    public RestApi(String host, Integer port, boolean isDebug) {
-        this(host, port, null, null, isDebug);
+    public RestApi(String protocol, String host, Integer port) {
+        this(protocol, host, port, null, null);
     }
 
-    public RestApi(String host, Integer port, String username, String password, boolean isDebug) {
-        this.host = host;
-        this.port = port;
+    public RestApi(String protocol, String host, Integer port, String username, String password) {
+        this(String.format("%s://%s:%d", protocol, host, port), username, password);
+    }
+
+    public RestApi(String url) {
+        this(url, null, (String) null);
+    }
+
+    public RestApi(String url, String username, String password) {
+        this.url = url;
         this.username = username;
         this.password = password;
-        this.isDebug = isDebug;
+    }
+
+    public void enableDebug(){
+        this.isDebug=true;
+    }
+
+    public void disableDebug(){
+        this.isDebug=false;
     }
 
     public String ping() {
-        String url = String.format("http://%s:%d/ping", host, port);
+        String api = String.format("%s/ping", url);
 
         Map<String, Object> params = new HashMap<>();
         if (username != null && null != password) {
@@ -55,7 +73,7 @@ public class RestApi {
             params.put("p", password);
         }
 
-        String result = HttpRequest.get(url, params).body();
+        String result = HttpRequest.get(api, params).body();
         return result;
     }
 
@@ -207,7 +225,7 @@ public class RestApi {
     public String write(String db, String influxQL) {
         LOG.info("[Line Protocol]: {}", influxQL);
 
-        String url = String.format("http://%s:%d/write", host, port);
+        String api = String.format("%s/write", url);
 
         Map<String, Object> params = new HashMap<>();
         params.put("db", db);
@@ -216,7 +234,7 @@ public class RestApi {
             params.put("p", password);
         }
 
-        HttpRequest request = HttpRequest.post(url, params).send(influxQL);
+        HttpRequest request = HttpRequest.post(api, params).send(influxQL);
         if (request.code() == 204) {
             return "{}";
         } else {
@@ -289,7 +307,7 @@ public class RestApi {
     }
 
     public String query(Map<String, Object> params) {
-        String url = String.format("http://%s:%d/query", host, port);
+        String api = String.format("%s/query", url);
 
         params.put("pretty", isDebug);
         if ((null != username && username.trim().length() > 0) && (null != password && password.trim().length() > 0)) {
@@ -297,7 +315,7 @@ public class RestApi {
             params.put("p", password);
         }
 
-        String result = HttpRequest.get(url, params).body();
+        String result = HttpRequest.get(api, params).body();
         return result;
     }
 
@@ -323,7 +341,7 @@ public class RestApi {
     }
 
     public String queryPost(Map<String, Object> params) {
-        String url = String.format("http://%s:%d/query", host, port);
+        String api = String.format("%s/query", url);
 
         params.put("pretty", isDebug);
         if ((null != username && username.trim().length() > 0) && (null != password && password.trim().length() > 0)) {
@@ -331,15 +349,15 @@ public class RestApi {
             params.put("p", password);
         }
 
-        String result = HttpRequest.post(url, params).body();
+        String result = HttpRequest.post(api, params).body();
         return result;
     }
 
-    public boolean isDebug() {
-        return isDebug;
-    }
-
-    public void setDebug(boolean debug) {
-        isDebug = debug;
-    }
+//    public boolean isDebug() {
+//        return isDebug;
+//    }
+//
+//    public void setDebug(boolean debug) {
+//        isDebug = debug;
+//    }
 }

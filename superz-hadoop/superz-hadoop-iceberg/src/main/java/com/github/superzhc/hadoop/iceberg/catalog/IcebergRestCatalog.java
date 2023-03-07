@@ -1,34 +1,33 @@
-package com.github.superzhc.hadoop.iceberg.aws;
+package com.github.superzhc.hadoop.iceberg.catalog;
 
 import org.apache.iceberg.CatalogProperties;
 import org.apache.iceberg.PartitionSpec;
 import org.apache.iceberg.Schema;
 import org.apache.iceberg.aws.AwsProperties;
-import org.apache.iceberg.aws.dynamodb.DynamoDbCatalog;
 import org.apache.iceberg.catalog.Namespace;
 import org.apache.iceberg.catalog.TableIdentifier;
+import org.apache.iceberg.rest.RESTCatalog;
 import org.apache.iceberg.types.Types;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 报错，无dynamodb
  * @author superz
- * @create 2023/3/6 14:12
+ * @create 2023/3/6 10:14
  **/
-public class IcebergDynamoDBCatalog {
+public class IcebergRestCatalog {
     public static void main(String[] args) {
         Map<String, String> properties = new HashMap<>();
-        properties.put(CatalogProperties.CATALOG_IMPL, "org.apache.iceberg.aws.dynamodb.DynamoDbCatalog");
-//        properties.put(CatalogProperties.URI, "");
+        properties.put(CatalogProperties.CATALOG_IMPL, "org.apache.iceberg.rest.RESTCatalog");
+        properties.put(CatalogProperties.URI, "http://localhost:8181");
         properties.put(CatalogProperties.WAREHOUSE_LOCATION, "s3a://superz/iceberg_java");
         properties.put(CatalogProperties.FILE_IO_IMPL, "org.apache.iceberg.aws.s3.S3FileIO");
         properties.put(AwsProperties.S3FILEIO_ENDPOINT, "http://127.0.0.1:9000");
         properties.put(AwsProperties.S3FILEIO_ACCESS_KEY_ID, "admin");
         properties.put(AwsProperties.S3FILEIO_SECRET_ACCESS_KEY, "admin123456");
 
-        DynamoDbCatalog catalog = new DynamoDbCatalog();
+        RESTCatalog catalog = new RESTCatalog();
         catalog.initialize("demo", properties);
 
         // 定义Schema
@@ -45,7 +44,7 @@ public class IcebergDynamoDBCatalog {
                 .build();
 
         // 定义命名空间
-        Namespace namespace = Namespace.of("dynamodb");
+        Namespace namespace = Namespace.of("rest");
         TableIdentifier name = TableIdentifier.of(namespace, "logs");
 
         // 创建表
