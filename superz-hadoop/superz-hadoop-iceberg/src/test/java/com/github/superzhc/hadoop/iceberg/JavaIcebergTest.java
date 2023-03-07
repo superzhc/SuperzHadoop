@@ -10,7 +10,9 @@ import org.apache.iceberg.types.Types;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -20,7 +22,7 @@ public class JavaIcebergTest {
     @Before
     public void setUp() throws Exception {
         catalog = new IcebergHadoopS3Catalog(
-                "s3a://superz/iceberg"
+                "s3a://superz"
                 , "http://127.0.0.1:9000"
                 , "admin"
                 , "admin123456")
@@ -50,14 +52,27 @@ public class JavaIcebergTest {
     }
 
     @Test
+    public void createTable1() {
+        Map<String, String> fields = new LinkedHashMap<>();
+        fields.put("date", "date");
+        fields.put("title", "string");
+        fields.put("content", "string");
+
+        Schema schema = SchemaUtils.create(fields);
+        PartitionSpec partition = PartitionSpec.builderFor(schema).month("date").build();
+        TableIdentifier tableIdentifier = TableIdentifier.of("akshare", "news_cctv");
+        catalog.createTable(tableIdentifier, schema, partition);
+    }
+
+    @Test
     public void listTables() {
         List<TableIdentifier> tables = catalog.listTables(Namespace.of("akshare"));
         System.out.println(tables);
     }
 
     @Test
-    public void dropTable(){
-        TableIdentifier tableIdentifier=TableIdentifier.of("demo","logs");
+    public void dropTable() {
+        TableIdentifier tableIdentifier = TableIdentifier.of("demo", "logs");
         catalog.dropTable(tableIdentifier);
     }
 
