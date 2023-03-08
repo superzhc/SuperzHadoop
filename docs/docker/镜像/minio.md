@@ -3,13 +3,14 @@
 ## 拉取镜像
 
 ```bash
-docker pull minio/minio:RELEASE.2021-06-17T00-10-46Z
+docker pull minio/minio:RELEASE.2023-02-22T18-23-45Z
 ```
 
 ## 启动镜像
 
+<!--
 ```bash
-docker run --name minio -p 9000:9000 -d minio/minio:RELEASE.2021-06-17T00-10-46Z server /data
+docker run --name minio -p 9000:9000 -d minio/minio:RELEASE.2023-02-22T18-23-45Z server /data
 ```
 
 这种安装方式并没有指定 ACCESS_KEY 和 SECRET_KEY 进行设置，安装后可以进行 echo 命令设置:
@@ -20,15 +21,10 @@ echo "admin" | docker secret create secret_key -
 ```
 
 **自定义用户的密钥**
+-->
 
 ```bash
-docker run -p 9000:9000 --name minio \
--d --restart=always \
--e "MINIO_ACCESS_KEY=admin" \
--e "MINIO_SECRET_KEY=admin123456" \
--v /home/data:/data \
--v /home/config:/root/.minio \
-minio/minio:RELEASE.2021-06-17T00-10-46Z server /data
+docker run -p 9000:9000 -p 9001:9001 --name minio -d -e "MINIO_ROOT_USER=admin" -e "MINIO_ROOT_PASSWORD=admin123456" -v /f/docker/volumes/minio/data:/data -v /f/docker/volumes/minio/config:/root/.minio minio/minio:RELEASE.2023-02-22T18-23-45Z server /data --console-address ":9001"
 ```
 
 *注意*：密码不能设置过于简单，不然会报错
@@ -38,5 +34,5 @@ minio/minio:RELEASE.2021-06-17T00-10-46Z server /data
 **登录客户端**
 
 ```
-http://127.0.0.1:9000
+http://127.0.0.1:9001
 ```

@@ -2,6 +2,7 @@ package com.github.superzhc.common.utils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -25,6 +26,13 @@ public class ListUtils {
         }
         sb.append(lst.get(size - 1));
         return sb.toString();
+    }
+
+    public static <T> List<T> copyIterator(Iterator<T> iter) {
+        List<T> copy = new ArrayList<T>();
+        while (iter.hasNext())
+            copy.add(iter.next());
+        return copy;
     }
 
     public static <T> String print(String[] headers, T[][] data) {

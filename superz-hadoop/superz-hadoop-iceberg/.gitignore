@@ -97,3 +97,4 @@ hs_err_pid*
 /logs/
 /superzmqtt-tcplocalhost1883/.lck
 /chart/
+/db/iceberg.db
