@@ -1,4 +1,4 @@
-package com.github.superzhc.sql.mysql;
+package com.github.superzhc.db.mysql;
 
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
