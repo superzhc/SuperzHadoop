@@ -7,11 +7,17 @@ import org.apache.iceberg.*;
 import org.apache.iceberg.catalog.Catalog;
 import org.apache.iceberg.catalog.Namespace;
 import org.apache.iceberg.catalog.TableIdentifier;
+import org.apache.iceberg.data.GenericRecord;
 import org.apache.iceberg.data.IcebergGenerics;
 import org.apache.iceberg.data.Record;
+import org.apache.iceberg.data.parquet.GenericParquetWriter;
 import org.apache.iceberg.expressions.Expression;
 import org.apache.iceberg.expressions.Expressions;
+import org.apache.iceberg.io.DataWriter;
+import org.apache.iceberg.io.OutputFile;
+import org.apache.iceberg.parquet.Parquet;
 import org.apache.iceberg.types.Types;
+import org.apache.parquet.hadoop.ParquetWriter;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -91,6 +97,13 @@ public class JavaIcebergTest {
         catalog.dropTable(tableIdentifier);
     }
 
+    @Test
+    public void schema() {
+        Table table = catalog.loadTable(TableIdentifier.of("demo", "t1"));
+        Schema schema = table.schema();
+        System.out.println(schema);
+    }
+
     public void scan0() {
         Table table = catalog.loadTable(TableIdentifier.of("demo", "t1"));
         TableScan scan = table.newScan()
@@ -150,6 +163,47 @@ public class JavaIcebergTest {
         table.manageSnapshots();
     }
 
+//    @Test
+//    public void write1() throws Exception {
+//        Table table = catalog.loadTable(TableIdentifier.of("demo", "t1"));
+//
+//        String newPath = table.locationProvider().newDataLocation(
+//                table.spec(),
+//                null,
+//                String.format("%s.parquet", UUID.randomUUID().toString()));
+//
+//        String path = String.format("%s/data/%s.parquet", table.location(), UUID.randomUUID().toString());
+//        OutputFile file = table.io().newOutputFile(path);
+//
+//        GenericRecord record = GenericRecord.create(table.schema());
+//
+//        DataWriter<GenericRecord> dataWriter = null;
+//        try {
+//            dataWriter = Parquet
+//                    .writeData(file)
+//                    .forTable(table)
+//                    //.schema(table.schema())
+//                    //.withSpec(table.spec()/*PartitionSpec.unpartitioned()*/)
+//                    .createWriterFunc(GenericParquetWriter::buildWriter)
+//                    .overwrite()
+//                    // .withPartition(record)
+//                    .build();
+//
+//            Map<String, Object> data = new HashMap<>();
+//            data.put("date", LocalDate.now());
+//            data.put("title", "Iceberg Java API Write");
+//            data.put("content", "superz use iceberg java api write data");
+//            record = record.copy(data);
+//
+//            dataWriter.write(record);
+//
+//        } finally {
+//            dataWriter.close();
+//        }
+//        DataFile dataFile = dataWriter.toDataFile();
+//        table.newAppend().appendFile(dataFile).commit();
+//    }
+
     public void ddl0() {
         Table table = catalog.loadTable(TableIdentifier.of("demo", "t1"));
 
@@ -161,7 +215,7 @@ public class JavaIcebergTest {
                 .commit();
 
         table.updateProperties()
-                .set("k1","v1")
+                .set("k1", "v1")
                 .commit();
 
         table.updateLocation()

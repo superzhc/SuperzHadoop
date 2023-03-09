@@ -2,6 +2,8 @@ package com.github.superzhc.hadoop.iceberg.utils;
 
 import org.apache.iceberg.PartitionSpec;
 import org.apache.iceberg.Schema;
+import org.apache.iceberg.Table;
+import org.apache.iceberg.UpdateSchema;
 import org.apache.iceberg.types.Type;
 import org.apache.iceberg.types.Types;
 
@@ -35,6 +37,55 @@ public class SchemaUtils {
         Schema schema = new Schema(nestedFields);
         return schema;
     }
+
+    public static void addColumn(Table table, String field, String type) {
+        addColumn(table, field, type, null);
+    }
+
+    public static void addColumn(Table table, String field, String type, String comment) {
+        UpdateSchema update = table.updateSchema();
+
+        Type typeObj = Types.fromPrimitiveString(type);
+        update.addColumn(field, typeObj, comment);
+
+        update.commit();
+    }
+
+    public static void deleteColumn(Table table, String field) {
+        UpdateSchema update = table.updateSchema();
+
+        update.deleteColumn(field);
+
+        update.commit();
+    }
+
+    public static void renameColumn(Table table, String oldName, String newName) {
+        UpdateSchema update = table.updateSchema();
+
+        update.renameColumn(oldName, newName);
+
+        update.commit();
+    }
+
+    public static void updateColumn(Table table, String field, String type) {
+        updateColumn(table, field, type, null);
+    }
+
+    public static void updateColumn(Table table, String field, String type, String comment) {
+        UpdateSchema update = table.updateSchema();
+
+        if (null != type) {
+            Type.PrimitiveType typeObj = Types.fromPrimitiveString(field);
+            update.updateColumn(field, typeObj);
+        }
+
+        if (null != comment) {
+            update.updateColumnDoc(field, comment);
+        }
+
+        update.commit();
+    }
+
 
     public static PartitionSpec partition(Map<String, String> fields, String... partitionFields) {
         return partition(create(fields), partitionFields);
