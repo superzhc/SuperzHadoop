@@ -1,9 +1,6 @@
 package com.github.superzhc.hadoop.iceberg.utils;
 
-import org.apache.iceberg.PartitionSpec;
-import org.apache.iceberg.Schema;
-import org.apache.iceberg.Table;
-import org.apache.iceberg.UpdateSchema;
+import org.apache.iceberg.*;
 import org.apache.iceberg.types.Type;
 import org.apache.iceberg.types.Types;
 
@@ -81,6 +78,38 @@ public class SchemaUtils {
 
         if (null != comment) {
             update.updateColumnDoc(field, comment);
+        }
+
+        update.commit();
+    }
+
+    public static void setProperties(Table table, String key, String value) {
+        UpdateProperties update = table.updateProperties();
+
+        update.set(key, value);
+
+        update.commit();
+    }
+
+    public static void setProperties(Table table, Map<String, String> properties) {
+        UpdateProperties update = table.updateProperties();
+
+        for (Map.Entry<String, String> property : properties.entrySet()) {
+            update.set(property.getKey(), property.getValue());
+        }
+
+        update.commit();
+    }
+
+    public static void removeProperties(Table table, String... properties) {
+        if (null == properties || properties.length == 0) {
+            return;
+        }
+
+        UpdateProperties update = table.updateProperties();
+
+        for (String property : properties) {
+            update.remove(property);
         }
 
         update.commit();

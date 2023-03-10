@@ -3,6 +3,7 @@ package com.github.superzhc.hadoop.spark.java.data;
 import com.github.superzhc.common.utils.MapUtils;
 import com.github.superzhc.data.other.AKTools;
 import com.github.superzhc.hadoop.spark.java.dataframe.DataFrameMain;
+import com.github.superzhc.hadoop.spark.java.dataframe.DatasetUtils;
 import org.apache.spark.SparkConf;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -56,6 +57,28 @@ public class AKShareTest {
         if (null != spark) {
             spark.stop();
         }
+    }
+
+    @Test
+    public void stock_zh_index_hist_csindex() {
+        // spark.sql("CREATE TABLE akshare.spark.stock_zh_index_hist_csindex(date string,code string,name string,open double,close double,high double,low double,change_amount double,change double,volume double) USING iceberg");
+
+        List<Map<String, Object>> data = akTools.get("stock_zh_index_hist_csindex");
+        Dataset<Row> ds = DatasetUtils.fromMap(spark, data);
+        ds.createOrReplaceTempView("t1");
+
+//        ds.printSchema();
+        ds.show(10000,false);
+
+        // UPSERT 语句，甚至更灵活进行更多操作
+        String sql = "MERGE INTO akshare.spark.stock_zh_index_hist_csindex t USING (SELECT date,code,name,open,close,high,low,change_amount,change,volume FROM t1) u ON t.code = u.code " +
+                "WHEN MATCHED THEN UPDATE SET t.date=u.date,t.open=u.open,t.close=u.close,t.high=u.high,t.low=u.low,t.change_amount=u.change_amount,t.change=u.change,t.volume=u.volume " +
+                // "WHEN NOT MATCHED THEN INSERT *"
+                "WHEN NOT MATCHED THEN INSERT date,code,name,open,close,high,low,change_amount,change,volume values(u.date,u.code,u.name,u.open,u.close,u.high,u.low,u.change_amount,u.change,u.volume)"
+                ;
+        spark.sql(sql);
+
+        spark.table("akshare.spark.stock_zh_index_hist_csindex").show(1000, false);
     }
 
     @Test

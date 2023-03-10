@@ -221,5 +221,14 @@ public class JavaIcebergTest {
         table.updateLocation()
                 .setLocation("xxx")
                 .commit();
+
+
+    }
+
+    @Test
+    public void renameColumn(){
+        Table table = catalog.loadTable(TableIdentifier.of("akshare", "spark","stock_zh_index_hist_csindex"));
+
+        SchemaUtils.renameColumn(table,"volumn","volume");
     }
 }
