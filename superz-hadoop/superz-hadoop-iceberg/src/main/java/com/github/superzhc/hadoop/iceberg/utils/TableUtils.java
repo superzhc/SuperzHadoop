@@ -3,11 +3,14 @@ package com.github.superzhc.hadoop.iceberg.utils;
 import org.apache.iceberg.PartitionSpec;
 import org.apache.iceberg.Schema;
 import org.apache.iceberg.Table;
+import org.apache.iceberg.UpdateProperties;
 import org.apache.iceberg.catalog.Catalog;
 import org.apache.iceberg.catalog.Namespace;
 import org.apache.iceberg.catalog.TableIdentifier;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -29,11 +32,85 @@ public class TableUtils {
     }
 
     public static Table create(Catalog catalog, TableIdentifier tableIdentifier, Schema schema, PartitionSpec spec) {
-        return catalog.createTable(tableIdentifier,schema,spec);
+        return catalog.createTable(tableIdentifier, schema, spec);
     }
 
-    public static void drop(Catalog catalog,Table table){
+    public static boolean drop(Catalog catalog, Table table) {
+        String[] names = table.name().split("\\.");
+        names = Arrays.copyOfRange(names, 1, names.length);
+        return drop(catalog, names);
+    }
 
-//        catalog.dropTable()
+    public static boolean drop(Catalog catalog, String... names) {
+        return drop(catalog, TableIdentifier.of(names));
+    }
+
+    public static boolean drop(Catalog catalog, TableIdentifier tableIdentifier) {
+        return catalog.dropTable(tableIdentifier);
+    }
+
+    public static void rename(Catalog catalog, Table table, String newName) {
+        String[] names = table.name().split("\\.");
+        names = Arrays.copyOfRange(names, 1, names.length);
+        TableIdentifier from = TableIdentifier.of(names);
+        names[names.length - 1] = newName;
+        TableIdentifier to = TableIdentifier.of(names);
+        rename(catalog, from, to);
+    }
+
+    public static void rename(Catalog catalog, Namespace namespace, String oldName, String newName) {
+        TableIdentifier from = TableIdentifier.of(namespace, oldName);
+        TableIdentifier to = TableIdentifier.of(namespace, newName);
+        rename(catalog, from, to);
+    }
+
+    /**
+     * 不一定支持
+     * @param catalog
+     * @param from
+     * @param to
+     */
+    public static void rename(Catalog catalog, TableIdentifier from, TableIdentifier to) {
+        catalog.renameTable(from, to);
+    }
+
+    public static Table loadTable(Catalog catalog,String... names){
+        return loadTable(catalog,TableIdentifier.of(names));
+    }
+
+    public static Table loadTable(Catalog catalog, TableIdentifier tableIdentifier) {
+        return catalog.loadTable(tableIdentifier);
+    }
+
+    public static void setProperties(Table table, String key, String value) {
+        UpdateProperties update = table.updateProperties();
+
+        update.set(key, value);
+
+        update.commit();
+    }
+
+    public static void setProperties(Table table, Map<String, String> properties) {
+        UpdateProperties update = table.updateProperties();
+
+        for (Map.Entry<String, String> property : properties.entrySet()) {
+            update.set(property.getKey(), property.getValue());
+        }
+
+        update.commit();
+    }
+
+    public static void removeProperties(Table table, String... properties) {
+        if (null == properties || properties.length == 0) {
+            return;
+        }
+
+        UpdateProperties update = table.updateProperties();
+
+        for (String property : properties) {
+            update.remove(property);
+        }
+
+        update.commit();
     }
 }

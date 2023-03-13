@@ -76,6 +76,12 @@ public class RestApiTest {
     }
 
     @Test
+    public void fieldKeys(){
+        String result = api.fieldKeys("xgit", "fund_etf_hist_min_em");
+        System.out.println(result);
+    }
+
+    @Test
     public void write() {
         String ql = "cpu_load_short,host=server03,region=us-west value1=0.64 1434055564000000000";
         api.write("xgit", ql);

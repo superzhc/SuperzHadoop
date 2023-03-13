@@ -3,6 +3,7 @@ package com.github.superzhc.hadoop.iceberg;
 import com.github.superzhc.common.utils.ListUtils;
 import com.github.superzhc.hadoop.iceberg.catalog.IcebergHadoopS3Catalog;
 import com.github.superzhc.hadoop.iceberg.utils.SchemaUtils;
+import com.github.superzhc.hadoop.iceberg.utils.TableUtils;
 import org.apache.iceberg.*;
 import org.apache.iceberg.catalog.Catalog;
 import org.apache.iceberg.catalog.Namespace;
@@ -53,7 +54,7 @@ public class JavaIcebergTest {
                 .build();
 
         // 创建表标识
-        TableIdentifier tableIdentifier = TableIdentifier.of("demo", "logs");
+        TableIdentifier tableIdentifier = TableIdentifier.of("demo", "t1");
 
         // 创建表
         catalog.createTable(tableIdentifier, schema, spec);
@@ -204,31 +205,38 @@ public class JavaIcebergTest {
 //        table.newAppend().appendFile(dataFile).commit();
 //    }
 
+    @Test
     public void ddl0() {
         Table table = catalog.loadTable(TableIdentifier.of("demo", "t1"));
 
-        table.updateSchema()
-                .addColumn("col1", Types.StringType.get())
-                .deleteColumn("title")
-                .updateColumn("col1", Types.IntegerType.get())
-                .renameColumn("content", "col2")
-                .commit();
+//        System.out.println(table.name());
+        System.out.println(TableUtils.drop(catalog, table));
 
-        table.updateProperties()
-                .set("k1", "v1")
-                .commit();
+//        table.updateSchema()
+//                .addColumn("col1", Types.StringType.get())
+//                .deleteColumn("title")
+//                .updateColumn("col1", Types.IntegerType.get())
+//                .renameColumn("content", "col2")
+//                .commit();
+//
+//        table.updateProperties()
+//                .set("k1", "v1")
+//                .commit();
+//
+//        table.updateLocation()
+//                .setLocation("xxx")
+//                .commit();
+    }
 
-        table.updateLocation()
-                .setLocation("xxx")
-                .commit();
-
-
+    public void renameTable(){
+        Table table=TableUtils.loadTable(catalog,"demo","t1");
+        TableUtils.rename(catalog,table,"t2");
     }
 
     @Test
-    public void renameColumn(){
-        Table table = catalog.loadTable(TableIdentifier.of("akshare", "spark","stock_zh_index_hist_csindex"));
+    public void renameColumn() {
+        Table table = catalog.loadTable(TableIdentifier.of("akshare", "spark", "stock_zh_index_hist_csindex"));
 
-        SchemaUtils.renameColumn(table,"volumn","volume");
+        SchemaUtils.renameColumn(table, "volumn", "volume");
     }
 }

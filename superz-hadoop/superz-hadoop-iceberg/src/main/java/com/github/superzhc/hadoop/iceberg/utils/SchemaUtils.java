@@ -83,39 +83,6 @@ public class SchemaUtils {
         update.commit();
     }
 
-    public static void setProperties(Table table, String key, String value) {
-        UpdateProperties update = table.updateProperties();
-
-        update.set(key, value);
-
-        update.commit();
-    }
-
-    public static void setProperties(Table table, Map<String, String> properties) {
-        UpdateProperties update = table.updateProperties();
-
-        for (Map.Entry<String, String> property : properties.entrySet()) {
-            update.set(property.getKey(), property.getValue());
-        }
-
-        update.commit();
-    }
-
-    public static void removeProperties(Table table, String... properties) {
-        if (null == properties || properties.length == 0) {
-            return;
-        }
-
-        UpdateProperties update = table.updateProperties();
-
-        for (String property : properties) {
-            update.remove(property);
-        }
-
-        update.commit();
-    }
-
-
     public static PartitionSpec partition(Map<String, String> fields, String... partitionFields) {
         return partition(create(fields), partitionFields);
     }
