@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+-->
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+    <property>
+        <name>fs.s3a.connection.ssl.enabled</name>
+        <value>false</value>
+        <description>Enables or disables SSL connections to S3.</description>
+    </property>
+
+    <property>
+        <name>fs.s3a.endpoint</name>
+        <value>http://127.0.0.1</value>
+        <description>AWS S3 endpoint to connect to. An up-to-date list is
+            provided in the AWS Documentation: regions and endpoints. Without this
+            property, the standard region (s3.amazonaws.com) is assumed.
+        </description>
+    </property>
+
+    <property>
+        <name>fs.s3a.endpoint.region</name>
+        <value>us-east-1</value>
+        <description>AWS S3 region for a bucket, which bypasses the parsing of
+            fs.s3a.endpoint to know the region. Would be helpful in avoiding errors
+            while using privateLink URL and explicitly set the bucket region.
+            If set to a blank string (or 1+ space), falls back to the
+            (potentially brittle) SDK region resolution process.
+        </description>
+    </property>
+
+    <property>
+        <name>fs.s3a.path.style.access</name>
+        <value>true</value>
+        <description>Enable S3 path style access ie disabling the default virtual hosting behaviour.
+            Useful for S3A-compliant storage providers as it removes the need to set up DNS for virtual hosting.
+        </description>
+    </property>
+    <property>
+        <name>fs.s3a.access.key</name>
+        <value>admin</value>
+        <description>AWS access key ID.
+            Omit for IAM role-based or provider-based authentication.</description>
+    </property>
+
+    <property>
+        <name>fs.s3a.secret.key</name>
+        <value>admin123456</value>
+        <description>AWS secret key.
+            Omit for IAM role-based or provider-based authentication.</description>
+    </property>
+
+    <property>
+        <name>fs.s3a.aws.credentials.provider</name>
+        <value>org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider</value>
+        <description>
+            Comma-separated class names of credential provider classes which implement
+            com.amazonaws.auth.AWSCredentialsProvider.
+
+            These are loaded and queried in sequence for a valid set of credentials.
+            Each listed class must implement one of the following means of
+            construction, which are attempted in order:
+            1. a public constructor accepting java.net.URI and
+            org.apache.hadoop.conf.Configuration,
+            2. a public static method named getInstance that accepts no
+            arguments and returns an instance of
+            com.amazonaws.auth.AWSCredentialsProvider, or
+            3. a public default constructor.
+
+            Specifying org.apache.hadoop.fs.s3a.AnonymousAWSCredentialsProvider allows
+            anonymous access to a publicly accessible S3 bucket without any credentials.
+            Please note that allowing anonymous access to an S3 bucket compromises
+            security and therefore is unsuitable for most use cases. It can be useful
+            for accessing public data sets without requiring AWS credentials.
+
+            If unspecified, then the default list of credential provider classes,
+            queried in sequence, is:
+            1. org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider:
+            Uses the values of fs.s3a.access.key and fs.s3a.secret.key.
+            2. com.amazonaws.auth.EnvironmentVariableCredentialsProvider: supports
+            configuration of AWS access key ID and secret access key in
+            environment variables named AWS_ACCESS_KEY_ID and
+            AWS_SECRET_ACCESS_KEY, as documented in the AWS SDK.
+            3. com.amazonaws.auth.InstanceProfileCredentialsProvider: supports use
+            of instance profile credentials if running in an EC2 VM.
+        </description>
+    </property>
+</configuration>

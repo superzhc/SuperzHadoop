@@ -33,7 +33,7 @@ public class SparkIcebergDDLTest {
                 .set("spark.sql.extensions", "org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions")
                 .set("spark.sql.catalog.test", "org.apache.iceberg.spark.SparkCatalog")
                 .set("spark.sql.catalog.test.type", "hadoop")
-                .set("spark.sql.catalog.test.warehouse", "s3a://superz/demo")
+                .set("spark.sql.catalog.test.warehouse", "s3a://superz/spark")
         ;
         spark = SparkSession.builder().config(conf).getOrCreate();
     }
@@ -47,12 +47,12 @@ public class SparkIcebergDDLTest {
 
     @Test
     public void createDB() {
-        spark.sql("CREATE DATABASE IF NOT EXISTS test.iceberg_db");
+        spark.sql("CREATE DATABASE IF NOT EXISTS test.iceberg");
     }
 
     @Test
     public void createTable() {
-        String sql = "CREATE TABLE test.spark.t1 (" +
+        String sql = "CREATE TABLE test.iceberg.t1 (" +
                 "    id bigint COMMENT 'unique id'," +
                 "    data string," +
                 "    category string" +

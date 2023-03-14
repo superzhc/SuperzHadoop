@@ -118,6 +118,12 @@
             <artifactId>flink-test-utils</artifactId>
             <version>${flink.version}</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>log4j-slf4j-impl</artifactId>
+                    <groupId>org.apache.logging.log4j</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
@@ -172,11 +178,34 @@
             <version>${cdc.mysql.version}</version>
         </dependency>
 
-        <!--s3文件系统-->
+        <!--s3文件系统，注意：本地环境下测试这两个包不能共存-->
         <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-connector-files</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+        <!--如果要在 S3 中使用 checkpoint，推荐使用 Presto S3 文件系统。-->
+        <!--<dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-s3-fs-presto</artifactId>
             <version>${flink.version}</version>
+        </dependency>-->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-s3-fs-hadoop</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
+
+        <!--iceberg-->
+        <dependency>
+            <groupId>org.apache.iceberg</groupId>
+            <artifactId>iceberg-flink-runtime-${flink.major.version}</artifactId>
+            <version>${iceberg.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-client</artifactId>
+            <version>${hadoop.version}</version>
         </dependency>
 
         <!--Mqtt客户端-->

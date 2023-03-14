@@ -68,14 +68,13 @@ public class AKShareTest {
         ds.createOrReplaceTempView("t1");
 
 //        ds.printSchema();
-        ds.show(10000,false);
+        ds.show(10000, false);
 
         // UPSERT 语句，甚至更灵活进行更多操作
         String sql = "MERGE INTO akshare.spark.stock_zh_index_hist_csindex t USING (SELECT date,code,name,open,close,high,low,change_amount,change,volume FROM t1) u ON t.code = u.code " +
                 "WHEN MATCHED THEN UPDATE SET t.date=u.date,t.open=u.open,t.close=u.close,t.high=u.high,t.low=u.low,t.change_amount=u.change_amount,t.change=u.change,t.volume=u.volume " +
                 // "WHEN NOT MATCHED THEN INSERT *"
-                "WHEN NOT MATCHED THEN INSERT date,code,name,open,close,high,low,change_amount,change,volume values(u.date,u.code,u.name,u.open,u.close,u.high,u.low,u.change_amount,u.change,u.volume)"
-                ;
+                "WHEN NOT MATCHED THEN INSERT date,code,name,open,close,high,low,change_amount,change,volume values(u.date,u.code,u.name,u.open,u.close,u.high,u.low,u.change_amount,u.change,u.volume)";
         spark.sql(sql);
 
         spark.table("akshare.spark.stock_zh_index_hist_csindex").show(1000, false);
@@ -177,5 +176,17 @@ public class AKShareTest {
         // spark.sql("select * from akshare.news_cctv").show(10000,false);
 
         spark.table("akshare.news_cctv").printSchema();
+    }
+
+    @Test
+    public void funds() {
+        List<Map<String, Object>> data = akTools.get("fund_rating_all");
+
+        Dataset<Row> ds = DatasetUtils.fromMap(spark, data);
+        ds.createOrReplaceTempView("fund_rating_all");
+        ds.printSchema();
+
+        spark.sql("CREATE TABLE akshare.fund_basic USING iceberg AS SELECT * FROM fund_rating_all");
+        spark.table("akshare.fund_basic").show(100, false);
     }
 }

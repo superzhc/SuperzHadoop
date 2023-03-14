@@ -45,6 +45,7 @@
         <!--1.15.1 运行时去掉了对 Scala 的依赖-->
         <!--<flink.version>1.12.1</flink.version>-->
         <flink.version>1.15.1</flink.version>
+        <flink.major.version>1.15</flink.major.version>
         <kafka.version>2.2.1</kafka.version>
         <elasticsearch.version>6.8.23</elasticsearch.version>
         <hudi.version>0.12.1</hudi.version>

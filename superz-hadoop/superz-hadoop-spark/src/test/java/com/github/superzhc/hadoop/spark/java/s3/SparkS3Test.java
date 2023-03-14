@@ -14,9 +14,7 @@ import org.junit.Test;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
-
-public class AWSMainTest {
+public class SparkS3Test {
     private SparkSession spark = null;
 
     private AKTools akTools;
@@ -55,20 +53,20 @@ public class AWSMainTest {
     public void writeParquet() {
         List<Map<String, Object>> data = akTools.get("fund_money_fund_daily_em"/*"fund_scale_close_sina"*/);
         Dataset<Row> ds = DataFrameMain.maps2ds(spark, data);
-        ds.write().mode(SaveMode.Overwrite).parquet("s3a://superz/spark/202303021603");
+        ds.write().mode(SaveMode.Overwrite).parquet("s3a://superz/spark/s3/parquet_fund_money_fund_daily_em");
     }
 
     @Test
     public void writeCSV() {
         List<Map<String, Object>> data = akTools.get("fund_money_fund_daily_em"/*"fund_scale_close_sina"*/);
         Dataset<Row> ds = DataFrameMain.maps2ds(spark, data);
-        ds.write().mode(SaveMode.Overwrite).csv("s3a://superz/spark/202303021629");
+        ds.write().mode(SaveMode.Overwrite).csv("s3a://superz/spark/s3/csv_fund_money_fund_daily_em");
     }
 
     @Test
     public void writeJson() {
         List<Map<String, Object>> data = akTools.get("fund_money_fund_daily_em"/*"fund_scale_close_sina"*/);
         Dataset<Row> ds = DataFrameMain.maps2ds(spark, data);
-        ds.write().mode(SaveMode.Overwrite).json("s3a://superz/spark/202303021630");
+        ds.write().mode(SaveMode.Overwrite).json("s3a://superz/spark/s3/json_fund_money_fund_daily_em");
     }
 }

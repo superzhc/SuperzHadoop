@@ -20,10 +20,117 @@ public class AKToolsTest {
 
     @Test
     public void testGet() {
-        Map<String,Object> params=new HashMap<>();
-        params.put("date","20230216");
+        Map<String, Object> params = new HashMap<>();
+        params.put("date", "20230216");
 
         List<Map<String, Object>> data = instance.get("fund_etf_spot_em");
         System.out.println(MapUtils.print(data));
+    }
+
+    @Test
+    public void macro_bank_china_interest_rate() {
+        List<Map<String, Object>> data = instance.get("macro_bank_china_interest_rate");
+        System.out.println(MapUtils.print(data));
+    }
+
+    public void macro_china_qyspjg() {
+        List<Map<String, Object>> data = instance.get("macro_china_qyspjg");
+        System.out.println(MapUtils.print(data));
+    }
+
+    public void macro_china_fdi() {
+        List<Map<String, Object>> data = instance.get("macro_china_fdi");
+        System.out.println(MapUtils.print(data));
+    }
+
+    public void macro_china_cpi_yearly() {
+        List<Map<String, Object>> data = instance.get("macro_china_cpi_yearly");
+        System.out.println(MapUtils.print(data));
+    }
+
+    public void macro_china_cpi_monthly() {
+        List<Map<String, Object>> data = instance.get("macro_china_cpi_monthly");
+        System.out.println(MapUtils.print(data));
+    }
+
+    public void macro_china_ppi_yearly() {
+        List<Map<String, Object>> data = instance.get("macro_china_ppi_yearly");
+        System.out.println(MapUtils.print(data));
+    }
+
+    @Test
+    public void macro_china_fx_reserves_yearly() {
+        List<Map<String, Object>> data = instance.get("macro_china_fx_reserves_yearly");
+        System.out.println(MapUtils.print(data));
+    }
+
+    public void macro_china_m2_yearly() {
+        List<Map<String, Object>> data = instance.get("macro_china_m2_yearly");
+        System.out.println(MapUtils.print(data));
+    }
+
+    @Test
+    public void macro_china_new_financial_credit() {
+        List<Map<String, Object>> data = instance.get("macro_china_new_financial_credit");
+        System.out.println(MapUtils.print(data));
+    }
+
+    public void macro_china_cpi() {
+        List<Map<String, Object>> data = instance.get("macro_china_cpi");
+        System.out.println(MapUtils.print(data));
+    }
+
+    public void macro_china_gdp() {
+        List<Map<String, Object>> data = instance.get("macro_china_gdp");
+        System.out.println(MapUtils.print(data));
+    }
+
+    public void macro_china_ppi() {
+        List<Map<String, Object>> data = instance.get("macro_china_ppi");
+        System.out.println(MapUtils.print(data));
+    }
+
+    public void macro_china_pmi() {
+        List<Map<String, Object>> data = instance.get("macro_china_pmi");
+        System.out.println(MapUtils.print(data));
+    }
+
+    public void macro_china_gdzctz() {
+        List<Map<String, Object>> data = instance.get("macro_china_gdzctz");
+        System.out.println(MapUtils.print(data));
+    }
+
+    public void macro_china_czsr() {
+        List<Map<String, Object>> data = instance.get("macro_china_czsr");
+        System.out.println(MapUtils.print(data));
+    }
+
+    public void macro_china_whxd() {
+        List<Map<String, Object>> data = instance.get("macro_china_whxd");
+        System.out.println(MapUtils.print(data));
+    }
+
+    @Test
+    public void sw_index_first_info() {
+        List<Map<String, Object>> data = instance.get("sw_index_first_info");
+        System.out.println(MapUtils.print(data));
+    }
+
+    @Test
+    public void sw_index_second_info() {
+        List<Map<String, Object>> data = instance.get("sw_index_second_info");
+        System.out.println(MapUtils.print(data));
+    }
+
+    @Test
+    public void sw_index_third_info() {
+        List<Map<String, Object>> data = instance.get("sw_index_third_info");
+        System.out.println(MapUtils.print(data));
+    }
+
+    @Test
+    public void fund_rating_all() {
+        List<Map<String, Object>> data = instance.get("fund_rating_all");
+        System.out.println(MapUtils.print(data,100));
     }
 }
