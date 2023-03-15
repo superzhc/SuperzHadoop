@@ -56,12 +56,12 @@ public class RestApi {
         this.password = password;
     }
 
-    public void enableDebug(){
-        this.isDebug=true;
+    public void enableDebug() {
+        this.isDebug = true;
     }
 
-    public void disableDebug(){
-        this.isDebug=false;
+    public void disableDebug() {
+        this.isDebug = false;
     }
 
     public String ping() {
@@ -123,6 +123,12 @@ public class RestApi {
         return query(db, influxQL);
     }
 
+    public String dropSeries(String db, String measurement) {
+        // DROP SERIES FROM <measurement_name[,measurement_name]> WHERE <tag_key>='<tag_value>'
+        String influxQL = String.format("DROP SERIES FROM %s", measurement);
+        return query(db, influxQL);
+    }
+
     public String measurements(String db) {
         // 方式一
         // String influxQL = String.format("SHOW MEASUREMENTS ON %s", db);
@@ -130,6 +136,12 @@ public class RestApi {
 
         // 方式二
         String influxQL = "SHOW MEASUREMENTS";
+        return query(db, influxQL);
+    }
+
+    public String dropMeasurement(String db, String measurement) {
+        // DROP MEASUREMENT <measurement_name>
+        String influxQL = String.format("DROP MEASUREMENT %s", measurement);
         return query(db, influxQL);
     }
 

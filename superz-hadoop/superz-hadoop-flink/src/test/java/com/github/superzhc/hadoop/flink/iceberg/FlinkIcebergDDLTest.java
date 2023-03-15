@@ -1,5 +1,6 @@
 package com.github.superzhc.hadoop.flink.iceberg;
 
+import com.github.superzhc.common.utils.SystemUtils;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.core.fs.FileSystem;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -13,6 +14,11 @@ import org.junit.Test;
  * @create 2023/3/14 15:21
  **/
 public class FlinkIcebergDDLTest {
+
+    static {
+        SystemUtils.setEnv("HADOOP_CONF_DIR", "./target/classes");
+    }
+
     StreamExecutionEnvironment env;
     TableEnvironment tEnv;
 

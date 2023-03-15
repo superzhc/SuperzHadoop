@@ -8,10 +8,7 @@ import com.github.superzhc.data.other.AKTools;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -35,14 +32,14 @@ public class RestApiTest {
 
     @Test
     public void createDB() {
-        api.createDB("superz");
+        api.createDB("front");
     }
 
     @Test
     public void databases() {
         String result = api.databases();
         JsonNode json = JsonUtils.json(result, "results", 0, "series", 0, "values");
-        System.out.println(JsonUtils.newArrayArray(json));
+        System.out.println(JsonUtils.asString(json));
     }
 
     @Test
@@ -83,8 +80,11 @@ public class RestApiTest {
 
     @Test
     public void write() {
-        String ql = "cpu_load_short,host=server03,region=us-west value1=0.64 1434055564000000000";
-        api.write("xgit", ql);
+        String influxQLTemp="test%d,tag1=k%d,tag2=k%d field1=%f,field2=%f";
+        for(int i=1;i<=10;i++){
+            String influxQL=String.format(influxQLTemp,i,i,i,i*1.0,i*2.0);
+            api.write("front",influxQL);
+        }
     }
 
     @Test
