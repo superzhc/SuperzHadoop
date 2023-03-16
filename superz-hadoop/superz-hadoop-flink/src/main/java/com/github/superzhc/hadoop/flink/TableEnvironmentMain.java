@@ -26,5 +26,5 @@ package com.github.superzhc.hadoop.flink;
  * @author superz
  * @create 2021/10/18 14:35
  */
-public class TableEnvironment {
+public class TableEnvironmentMain {
 }

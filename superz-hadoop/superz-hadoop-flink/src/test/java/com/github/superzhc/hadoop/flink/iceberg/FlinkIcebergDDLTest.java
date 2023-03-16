@@ -26,16 +26,6 @@ public class FlinkIcebergDDLTest {
     public void setUp() throws Exception {
         // 设置环境变量：HADOOP_CONF_DIR=./target/classes
 
-        //  Configuration conf = new Configuration();
-        // conf.setString("fs.allowed-fallback-filesystems", "s3");
-        // conf.setString("flink.hadoop.fs.s3a.endpoint", "http://127.0.0.1:9000");
-        // conf.setBoolean("flink.hadoop.fs.s3a.path.style.access", true);
-        // conf.setString("flink.hadoop.fs.s3a.access.key", "admin");
-        // conf.setString("flink.hadoop.fs.s3a.secret.key", "admin123456");
-        // conf.setBoolean("flink.hadoop.fs.s3a.ssl.enabled", false);
-        // conf.setString("flink.hadoop.fs.s3a.aws.credentials.provider", "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider");
-        // FileSystem.initialize(conf, null);
-
         Configuration conf = new Configuration();
         // conf.setString("fs.allowed-fallback-filesystems", "s3");
         // conf.setString("s3a.endpoint", "http://127.0.0.1:9000");
@@ -76,12 +66,16 @@ public class FlinkIcebergDDLTest {
 
     @Test
     public void createDatabase() {
+        createHadoopCatalog();
+
         tEnv.executeSql("CREATE DATABASE test");
         tEnv.executeSql("USE test");
     }
 
     @Test
     public void createTable() {
+        createHadoopCatalog();
+
         String sql = "CREATE TABLE `hadoop_catalog`.`test`.`t1` (" +
                 "    id BIGINT COMMENT 'unique id'," +
                 "    data STRING" +
@@ -89,20 +83,43 @@ public class FlinkIcebergDDLTest {
         tEnv.executeSql(sql);
     }
 
+    @Test
     public void createTableLike() {
-        String sql = "CREATE TABLE  `hadoop_catalog`.`test`.`t1_like` LIKE `hadoop_catalog`.`test`.`t1`";
+        createHadoopCatalog();
+
+        String sql = "CREATE TABLE datagen (\n" +
+                " f_random INT,\n" +
+                " f_random_str STRING\n" +
+                ") WITH (\n" +
+                " 'connector' = 'datagen',\n" +
+                " 'rows-per-second'='5',\n" +
+                " 'fields.f_random.min'='1',\n" +
+                " 'fields.f_random.max'='1000',\n" +
+                " 'fields.f_random_str.length'='10'\n" +
+                ")";
         tEnv.executeSql(sql);
+
+        sql = "CREATE TABLE  `hadoop_catalog`.`test`.`t_202303161029` LIKE `datagen`";
+        tEnv.executeSql(sql);
+
+        tEnv.executeSql("SELECT * FROM test.t_202303161029").print();
     }
 
     public void alterTable() {
+        createHadoopCatalog();
+
         String sql = "ALTER TABLE `hadoop_catalog`.`test`.`t1` SET ('write.format.default'='avro')";
     }
 
     public void alterTableRenameTo() {
+        createHadoopCatalog();
+
         String sql = "ALTER TABLE `hadoop_catalog`.`test`.`t1` RENAME TO `hadoop_catalog`.`test`.`new_t1`";
     }
 
     public void dropTable() {
+        createHadoopCatalog();
+
         String sql = "DROP TABLE `hadoop_catalog`.`test`.`t1`";
         tEnv.executeSql(sql);
     }

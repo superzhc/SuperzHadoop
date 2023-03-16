@@ -73,17 +73,17 @@ public class RestApiTest {
     }
 
     @Test
-    public void fieldKeys(){
-        String result = api.fieldKeys("xgit", "fund_etf_hist_min_em");
+    public void fieldKeys() {
+        String result = api.fieldKeys("xgit", "cpu_load_short");
         System.out.println(result);
     }
 
     @Test
     public void write() {
-        String influxQLTemp="test%d,tag1=k%d,tag2=k%d field1=%f,field2=%f";
-        for(int i=1;i<=10;i++){
-            String influxQL=String.format(influxQLTemp,i,i,i,i*1.0,i*2.0);
-            api.write("front",influxQL);
+        String influxQLTemp = "test%d,tag1=k%d,tag2=k%d field1=%f,field2=%f";
+        for (int i = 1; i <= 10; i++) {
+            String influxQL = String.format(influxQLTemp, i, i, i, i * 1.0, i * 2.0);
+            api.write("front", influxQL);
         }
     }
 
@@ -159,5 +159,12 @@ public class RestApiTest {
         String[] columns = JsonUtils.stringArray(json, "columns");
         Object[][] data = JsonUtils.newArrayArray(json, "values");
         System.out.println(ListUtils.print(columns, data));
+    }
+
+    @Test
+    public void testCount() {
+        String influxQL = "select count(value) from cpu_load_short";
+        String result = api.query("xgit", influxQL);
+        System.out.println(result);
     }
 }

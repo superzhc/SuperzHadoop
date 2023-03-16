@@ -1,8 +1,11 @@
-package com.github.superzhc.hadoop.flink.streaming.checkpoint;
+package com.github.superzhc.hadoop.flink.base;
 
 import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.table.api.TableEnvironment;
+import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
+import org.junit.Before;
 
 /**
  * 为了使 Flink 的状态具有良好的容错性，Flink 提供了检查点机制 (CheckPoints) 。
@@ -13,23 +16,24 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
  * 默认情况下，Flink不会触发一次 Checkpoint 当系统有其他 Checkpoint 在进行时，也就是说 Checkpoint 默认的并发为 1。
  *
  * @author superz
- * @create 2021/10/27 9:38
- */
-public class CheckpointMain {
-    /**
-     * 针对 Flink DataStream 任务，程序需要经历从 StreamGraph -> JobGraph -> ExecutionGraph -> 物理执行图四个步骤，其中在 ExecutionGraph 构建时，会初始化 CheckpointCoordinator。
-     * ExecutionGraph 通过 ExecutionGraphBuilder.buildGraph 方法构建，在构建完时，会调用 ExecutionGraph 的 enableCheckpointing 方法创建 CheckpointCoordinator。
-     * <p>
-     * CheckpoinCoordinator 是 Flink 任务 Checkpoint 的关键，针对每一个 Flink 任务，都会初始化一个 CheckpointCoordinator 类，来触发 Flink 任务 Checkpoint。
-     */
+ * @create 2023/3/16 9:54
+ **/
+public class CheckpointTest {
+    StreamExecutionEnvironment env;
+    TableEnvironment tEnv;
 
-    public static void main(String[] args) {
-        StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+    @Before
+    public void setUp() throws Exception {
+        env = StreamExecutionEnvironment.getExecutionEnvironment();
+        tEnv = StreamTableEnvironment.create(env);
+    }
 
+    private void config() {
         /* 默认情况下，检查点机制是关闭的，需要在程序中进行开启 */
         env.enableCheckpointing(1000);
 
         // 其他可选配置如下：
+        CheckpointConfig checkpointConfig = env.getCheckpointConfig();
 
         /**
          * 设置语义
@@ -37,18 +41,18 @@ public class CheckpointMain {
          * Exactly Once 和 At least Once 具体是针对 Flink 状态而言。
          *
          */
-        env.getCheckpointConfig().setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);
+        checkpointConfig.setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);
 
         /**
          * 设置两个检查点之间的最小时间间隔
          * 当 Checkpoint 时间比设置的 Checkpoint 间隔时间要长时，可以设置 Checkpoint 间最小时间间隔 。这样在上次 Checkpoint 完成时，不会立马进行下一次 Checkpoint，而是会等待一个最小时间间隔，然后再进行该次 Checkpoint。否则，每次 Checkpoint 完成时，就会立马开始下一次 Checkpoint，系统会有很多资源消耗 Checkpoint。
          */
-        env.getCheckpointConfig().setMinPauseBetweenCheckpoints(500);
+        checkpointConfig.setMinPauseBetweenCheckpoints(500);
 
         // 设置执行Checkpoint操作时的超时时间
-        env.getCheckpointConfig().setCheckpointTimeout(60000);
+        checkpointConfig.setCheckpointTimeout(60000);
         // 设置最大并发执行的检查点的数量
-        env.getCheckpointConfig().setMaxConcurrentCheckpoints(1);
+        checkpointConfig.setMaxConcurrentCheckpoints(1);
 
         /**
          * Checkpoint 保存的状态在程序取消时，默认会进行清除。
@@ -59,7 +63,7 @@ public class CheckpointMain {
          *
          * 用户可以结合业务情况，设置 Checkpoint 保留模式。
          */
-        env.getCheckpointConfig().enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
+        checkpointConfig.enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
 
         // 如果有更近的保存点时，是否将作业回退到该检查点
 //        env.getCheckpointConfig().setPreferCheckpointForRecovery(true);
@@ -71,7 +75,5 @@ public class CheckpointMain {
          *
          * state.checkpoints.num-retained: 20
          */
-
-
     }
 }

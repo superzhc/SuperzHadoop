@@ -19,7 +19,7 @@ public class FlinkSqlKafkaMain {
             "    ts TIMESTAMP(3)\n" +
             ") WITH (\n" +
             "    'connector.type' = 'kafka',  -- 指定连接类型是kafka\n" +
-            "    'connector.version' = '0.11',  -- 与我们之前Docker安装的kafka版本要一致\n" +
+            "    'connector.version' = '0.11',  -- 安装的kafka版本要一致\n" +
             "    'connector.topic' = 'mykafka', -- 之前创建的topic \n" +
             "    'connector.properties.group.id' = 'flink-test-0', -- 消费者组，相关概念可自行百度\n" +
             "    'connector.startup-mode' = 'earliest-offset',  --指定从最早消费\n" +
