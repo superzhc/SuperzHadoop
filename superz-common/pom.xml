@@ -24,6 +24,7 @@
         <module>superz-common-javafx</module>
         <module>superz-common-file2</module>
         <module>superz-common-cron</module>
+        <module>superz-common-xml</module>
     </modules>
 
     <properties>

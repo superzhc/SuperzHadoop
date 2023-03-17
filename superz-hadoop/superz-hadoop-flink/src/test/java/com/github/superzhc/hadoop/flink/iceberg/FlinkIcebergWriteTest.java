@@ -30,9 +30,9 @@ public class FlinkIcebergWriteTest {
         // 设置环境变量：HADOOP_CONF_DIR=./target/classes
 
         Configuration conf = new Configuration();
-        conf.setString("state.backend","filesystem");
-        conf.setString("state.checkpoints.dir","s3a://superz/flink/checkpoint");
-        conf.setString("state.savepoints.dir","s3a://superz/flink/savepoint");
+        conf.setString("state.backend", "filesystem");
+        conf.setString("state.checkpoints.dir", "s3a://superz/flink/checkpoint");
+        conf.setString("state.savepoints.dir", "s3a://superz/flink/savepoint");
 
         // EnvironmentSettings settings = EnvironmentSettings.newInstance()
         //         .inStreamingMode()

@@ -32,6 +32,11 @@
             <artifactId>superz-common-jackson</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.superzhc</groupId>
+            <artifactId>superz-common-xml</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!--分词-->
         <!--<dependency>

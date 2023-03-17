@@ -1,5 +1,7 @@
 package com.github.superzhc.hadoop.flink.base;
 
+import org.apache.flink.runtime.state.hashmap.HashMapStateBackend;
+import org.apache.flink.runtime.state.storage.FileSystemCheckpointStorage;
 import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
@@ -28,7 +30,7 @@ public class CheckpointTest {
         tEnv = StreamTableEnvironment.create(env);
     }
 
-    private void config() {
+    private void openCheckpoint() {
         /* 默认情况下，检查点机制是关闭的，需要在程序中进行开启 */
         env.enableCheckpointing(1000);
 
@@ -75,5 +77,10 @@ public class CheckpointTest {
          *
          * state.checkpoints.num-retained: 20
          */
+
+        // 设置checkpoint、status存储地址
+        env.setStateBackend(new HashMapStateBackend());
+        checkpointConfig.setCheckpointStorage("s3a://superz/flink/checkpoint");
+//        checkpointConfig.setCheckpointStorage(new FileSystemCheckpointStorage("s3a://superz/flink/checkpoint"));
     }
 }
