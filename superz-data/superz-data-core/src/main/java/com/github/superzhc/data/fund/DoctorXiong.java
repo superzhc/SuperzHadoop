@@ -20,7 +20,7 @@ public class DoctorXiong {
      *
      * @return
      */
-    public static List<Map<String, Object>> fund(String... codes) {
+    public static List<Map<String, Object>> funds(String... codes) {
         if (null == codes || codes.length == 0) {
             return null;
         }

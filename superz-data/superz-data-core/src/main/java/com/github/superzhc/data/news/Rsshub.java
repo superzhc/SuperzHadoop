@@ -1,12 +1,16 @@
 package com.github.superzhc.data.news;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.dom4j.XmlUtils;
 import com.github.superzhc.common.http.HttpRequest;
+import com.github.superzhc.common.jackson.JsonUtils;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -42,15 +46,66 @@ public class Rsshub {
     }
 
     public List<Map<String, Object>> get(String path, Map<String, String> headers, Map<String, Object> params) {
-        String fullUrl = this.url;
-        if (!fullUrl.endsWith("/")) {
-            fullUrl += "/";
+        HttpRequest request = execute(path, headers, params);
+
+        Element root = XmlUtils.load(request.body());
+        root = root.element("channel");
+
+        String type = XmlUtils.text(root, "title");
+        String homePage = XmlUtils.text(root, "link");
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.ENGLISH);
+        LocalDateTime date = XmlUtils.localDateTime(root, formatter, "lastBuildDate");
+        date = date.atZone(ZoneId.of("+0")).withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime();
+
+        List<Element> items = XmlUtils.elements(root, "item");
+        List<Map<String, Object>> data = new ArrayList<>();
+        for (Element item : items) {
+//            Map<String, Object> map = new LinkedHashMap<>();
+//            map.put("title", XmlUtils.text(item, "title"));
+//            map.put("type", type);
+//            map.put("link", XmlUtils.text(item, "link"));
+//
+//            LocalDateTime pubDate = XmlUtils.localDateTime(item, formatter, "pubDate");
+//            map.put("date", null == pubDate ? date : pubDate);
+//
+//            map.put("homePage", homePage);
+//            map.put("description", XmlUtils.text(item, "description"));
+//            data.add(map);
+
+            // 无需知道返回什么节点，但返回数据类型无法自动转换，看取舍
+            Map<String, Object> map = XmlUtils.map(item);
+            if (map.containsKey("pubDate")) {
+                map.put("pubDate", LocalDateTime.parse(map.get("pubDate").toString(), formatter)
+                        .atZone(ZoneId.of("+0")).withZoneSameInstant(ZoneId.systemDefault())
+                        .toLocalDateTime());
+            }
+            map.put("sourceType", type);
+            map.put("syncDate", date);
+            data.add(map);
         }
 
-        if (path.startsWith("/")) {
-            path = path.substring(1);
-        }
-        fullUrl += path;
+        return data;
+    }
+
+    public List<Map<String, Object>> getJson(String path) {
+        return getJson(path, null, null);
+    }
+
+    public List<Map<String, Object>> getJson(String path, Map<String, Object> params) {
+        return getJson(path, null, params);
+    }
+
+    public List<Map<String, Object>> getJson(String path, Map<String, String> headers, Map<String, Object> params) {
+        HttpRequest request = execute(path, headers, params);
+
+        JsonNode json = JsonUtils.loads(request.body());
+        Map<String, Object>[] array = JsonUtils.newObjectArray(json, "items");
+        return Arrays.asList(array);
+    }
+
+    private HttpRequest execute(String path, Map<String, String> headers, Map<String, Object> params) {
+        String fullUrl = fullUrl(path);
 
         HttpRequest request = HttpRequest.get(fullUrl, params);
 
@@ -71,24 +126,19 @@ public class Rsshub {
         if (!isUserAgent) {
             request.userAgent(DEFAULT_USER_AGENT);
         }
+        return request;
+    }
 
-        Element root = XmlUtils.load(request.stream());
-        root = root.element("channel");
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss 'GMT'", Locale.ENGLISH);
-        LocalDateTime date = XmlUtils.localDateTime(root, formatter, "lastBuildDate");
-
-        List<Element> items = XmlUtils.elements(root, "item");
-        List<Map<String, Object>> data = new ArrayList<>();
-        for (Element item : items) {
-            Map<String, Object> map = new LinkedHashMap<>();
-            map.put("title", XmlUtils.text(item, "title"));
-            map.put("description", XmlUtils.text(item, "description"));
-            map.put("link", XmlUtils.text(item, "link"));
-            map.put("date", date);
-            data.add(map);
+    private String fullUrl(String path) {
+        String fullUrl = this.url;
+        if (!fullUrl.endsWith("/")) {
+            fullUrl += "/";
         }
 
-        return data;
+        if (path.startsWith("/")) {
+            path = path.substring(1);
+        }
+        fullUrl += path;
+        return fullUrl;
     }
 }

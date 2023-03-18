@@ -1,9 +1,6 @@
 package com.github.superzhc.common.date;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
@@ -61,5 +58,21 @@ public class LocalDateTimeUtils {
 
     public static String format(LocalDate localDate,String pattern){
         return localDate.format(DateTimeFormatter.ofPattern(pattern));
+    }
+
+    public static LocalDateTime transformZone(LocalDateTime dateTime, int from, int to) {
+        return transformZone(dateTime, ZoneOffset.ofHours(from), ZoneOffset.ofHours(to));
+    }
+
+    /**
+     * 时区转换
+     *
+     * @param dateTime
+     * @param from
+     * @param to
+     * @return
+     */
+    public static LocalDateTime transformZone(LocalDateTime dateTime, ZoneId from, ZoneId to) {
+        return dateTime.atZone(from).withZoneSameInstant(to).toLocalDateTime();
     }
 }

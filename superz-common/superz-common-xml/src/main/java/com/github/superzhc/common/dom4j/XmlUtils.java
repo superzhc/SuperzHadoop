@@ -2,6 +2,7 @@ package com.github.superzhc.common.dom4j;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,7 @@ import java.io.InputStream;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
@@ -82,6 +84,89 @@ public class XmlUtils {
         return childElements;
     }
 
+    public static Map<String, Object> map(Element element, Object... tags) {
+        Element childElement = element(element, tags);
+        if (null == childElement) {
+            return null;
+        }
+
+        // TODO:属性是否考虑？？？
+
+        Object value = object(childElement);
+        if (null == value) {
+            return null;
+        }
+
+        if (value.getClass() == String.class) {
+            throw new RuntimeException("当前节点【" + childElement.getName() + "】无任何子节点，无法转换成 Map");
+        }
+
+        return (Map<String, Object>) value;
+    }
+
+    public static Map<String, Object>[] maps(Element element, Object... tags) {
+        List<Element> childElements = elements(element, tags);
+        if (null == childElements || childElements.size() == 0) {
+            return null;
+        }
+
+        Map<String, Object>[] array = new Map[childElements.size()];
+        for (int i = 0, len = childElements.size(); i < len; i++) {
+            Element childElement = childElements.get(i);
+            Object value = object(childElement);
+            if (null == value) {
+                array[i] = null;
+            } else if (value.getClass() == String.class) {
+                array[i] = null;
+                LOG.debug("当前节点【{}】无任何子节点，无法转换成 Map，置为 null", childElement.getName());
+            } else {
+                array[i] = (Map<String, Object>) value;
+            }
+        }
+        return array;
+    }
+
+    public static Object object(Element element, Object... tags) {
+        Element childElement = element(element, tags);
+        if (null == childElement) {
+            return null;
+        }
+
+        List<Element> subChildElements = childElement.elements();
+        if (null == subChildElements || subChildElements.size() == 0) {
+            return childElement.getTextTrim();
+        }
+
+        Map<String, List<Object>> map = new LinkedHashMap<>();
+        for (Element subChildElement : subChildElements) {
+            String name = subChildElement.getName();
+
+            List<Object> data;
+            if (!map.containsKey(name)) {
+                data = new ArrayList<>();
+                map.put(name, data);
+            } else {
+                data = map.get(name);
+            }
+
+            data.add(object(subChildElement));
+        }
+
+        // map 中的值优化
+        Map<String, Object> finalMap = new LinkedHashMap<>();
+        for (Map.Entry<String, List<Object>> entry : map.entrySet()) {
+            List<Object> data = entry.getValue();
+            if (null == data || data.size() == 0) {
+                finalMap.put(entry.getKey(), null);
+            } else if (data.size() == 1) {
+                finalMap.put(entry.getKey(), data.get(0));
+            } else {
+                finalMap.put(entry.getKey(), data);
+            }
+        }
+        return finalMap;
+    }
+
     public static String text(Element element, Object... tags) {
         Element innerElement = element(element, tags);
         return null == innerElement ? null : innerElement.getTextTrim();
@@ -139,18 +224,19 @@ public class XmlUtils {
         if (null == text || text.trim().length() == 0) {
             return null;
         }
+
         return LocalDateTime.parse(text, format);
     }
 
     public static String[] texts(Element element, Object... tags) {
-        List<Element> elements = elements(element, tags);
-        if (null == element || elements.size() == 0) {
+        List<Element> childElements = elements(element, tags);
+        if (null == childElements || childElements.size() == 0) {
             return null;
         }
 
-        String[] arr = new String[elements.size()];
-        for (int i = 0, len = elements.size(); i < len; i++) {
-            arr[i] = elements.get(i).getTextTrim();
+        String[] arr = new String[childElements.size()];
+        for (int i = 0, len = childElements.size(); i < len; i++) {
+            arr[i] = childElements.get(i).getTextTrim();
         }
         return arr;
     }
@@ -240,12 +326,26 @@ public class XmlUtils {
                 if (null == array[i] || array[i].trim().length() == 0) {
                     resultArray[i] = null;
                 } else {
-                    resultArray[i] = LocalDateTime.parse(array[i], format);
+                    resultArray[i] = LocalDateTime.parse(array[i], format)
+                    ;
                 }
             }
             return resultArray;
         } catch (Exception e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public static class XPath {
+        private XPath() {
+        }
+
+        public static Node node(Element element, String xpath) {
+            return element.selectSingleNode(xpath);
+        }
+
+        public static List<Node> nodes(Element element, String xpath) {
+            return element.selectNodes(xpath);
         }
     }
 }
