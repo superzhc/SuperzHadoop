@@ -1247,7 +1247,7 @@ public class HttpRequest {
 
     private HttpURLConnection createConnection() {
         try {
-            log.debug("[{}] {}", requestMethod, url.toString());
+            log.debug("[{}]-[{}] create connect", requestMethod, url.toString());
             final HttpURLConnection connection;
             if (httpProxyHost != null)
                 connection = CONNECTION_FACTORY.create(url, createProxy());
@@ -1310,7 +1310,7 @@ public class HttpRequest {
         try {
             closeOutput();
             int respCode = getConnection().getResponseCode();
-            log.debug("[{}] code:{}", requestMethod, respCode);
+            log.debug("[{}]-[{}] code:{}", requestMethod, url, respCode);
             return respCode;
         } catch (IOException e) {
             throw new HttpRequestException(e);
@@ -1536,7 +1536,7 @@ public class HttpRequest {
                         .replaceAll("    ", " ")
                         .replaceAll("   "," ")
                         .replaceAll("  ", " ");
-                log.debug("[{}] response:{}", requestMethod, str.length() > 512 ? str.substring(0, 512) + "..." : str);
+                log.debug("[{}]-[{}] response:{}", requestMethod, url, str.length() > 512 ? str.substring(0, 512) + "..." : str);
             }
             return resp;
         } catch (IOException e) {
@@ -1636,7 +1636,7 @@ public class HttpRequest {
             }
         else {
             try {
-                log.error("[{}] message:{}", requestMethod, getConnection().getResponseMessage());
+                log.error("[{}]-[{}] message:{}", requestMethod, url, getConnection().getResponseMessage());
             }catch (IOException e){
                 throw new HttpRequestException(e);
             }
@@ -1876,7 +1876,7 @@ public class HttpRequest {
                 || HEADER_COOKIE.equalsIgnoreCase(name))
                 || HEADER_CONTENT_TYPE.equalsIgnoreCase(name)
         ) {
-            log.debug("[{}] header:{}={}", requestMethod, name, value);
+            log.debug("[{}]-[{}] header:{}={}", requestMethod, url, name, value);
         }
         conn.setRequestProperty(name, value);
         return this;
@@ -3045,7 +3045,7 @@ public class HttpRequest {
             output.write('=');
             if (value != null)
                 output.write(URLEncoder.encode(value.toString(), charset));
-            log.debug("[{}] form body: {}={}", requestMethod, URLEncoder.encode(name.toString(), charset), (null == value ? null : URLEncoder.encode(value.toString(), charset)));
+            log.debug("[{}]-[{}] form: {}={}", requestMethod, url, URLEncoder.encode(name.toString(), charset), (null == value ? null : URLEncoder.encode(value.toString(), charset)));
         } catch (IOException e) {
             throw new HttpRequestException(e);
         }
@@ -3162,7 +3162,7 @@ public class HttpRequest {
         try {
             openOutput();
             output.write(json);
-            log.debug("json body:{}", requestMethod, json);
+            log.debug("[{}]-[{}] json:{}", requestMethod, url, json);
         } catch (IOException e) {
             throw new HttpRequestException(e);
         }

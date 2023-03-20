@@ -75,11 +75,19 @@ public class Rsshub {
 
             // 无需知道返回什么节点，但返回数据类型无法自动转换，看取舍
             Map<String, Object> map = XmlUtils.map(item);
+
+            if (!map.containsKey("guid")) {
+                map.put("guid", UUID.randomUUID().toString());
+            }
+
             if (map.containsKey("pubDate")) {
                 map.put("pubDate", LocalDateTime.parse(map.get("pubDate").toString(), formatter)
                         .atZone(ZoneId.of("+0")).withZoneSameInstant(ZoneId.systemDefault())
                         .toLocalDateTime());
+            } else {
+                map.put("pubDate", date);
             }
+
             map.put("sourceType", type);
             map.put("syncDate", date);
             data.add(map);
