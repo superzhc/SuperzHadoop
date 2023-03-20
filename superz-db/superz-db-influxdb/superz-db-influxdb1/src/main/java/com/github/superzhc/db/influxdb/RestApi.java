@@ -1,12 +1,12 @@
 package com.github.superzhc.db.influxdb;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.http.HttpRequest;
+import com.github.superzhc.common.jackson.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -64,7 +64,7 @@ public class RestApi {
         this.isDebug = false;
     }
 
-    public String ping() {
+    public boolean ping() {
         String api = String.format("%s/ping", url);
 
         Map<String, Object> params = new HashMap<>();
@@ -73,8 +73,8 @@ public class RestApi {
             params.put("p", password);
         }
 
-        String result = HttpRequest.get(api, params).body();
-        return result;
+        HttpRequest request = HttpRequest.get(api, params);
+        return request.code() == 204;
     }
 
     /**
@@ -82,19 +82,20 @@ public class RestApi {
      *
      * @param db
      */
-    public String createDB(String db) {
+    public void createDB(String db) {
         String influxQL = String.format("CREATE DATABASE %s", db);
-        return queryPost(influxQL);
+        queryPost(influxQL);
     }
 
-    public String dropDB(String db) {
+    public void dropDB(String db) {
         String influxQL = String.format("DROP DATABASE %s", db);
-        return query(influxQL);
+        queryPost(influxQL);
     }
 
-    public String databases() {
+    public List<String> databases() {
         String influxQL = "SHOW DATABASES";
-        return query(influxQL);
+        String result = query(influxQL);
+        return singleColumnParse(result);
     }
 
     /**
@@ -113,76 +114,82 @@ public class RestApi {
         return query(db, influxQL);
     }
 
-    public String series(String db) {
+    public List<String> series(String db) {
         // 方式一
         // String influxQL = String.format("SHOW SERIES ON %s", db);
         // return query(influxQL);
 
         // 方式二
         String influxQL = "SHOW SERIES";
-        return query(db, influxQL);
+        String result = query(db, influxQL);
+        return singleColumnParse(result);
     }
 
-    public String dropSeries(String db, String measurement) {
+    public void dropSeries(String db, String measurement) {
         // DROP SERIES FROM <measurement_name[,measurement_name]> WHERE <tag_key>='<tag_value>'
         String influxQL = String.format("DROP SERIES FROM %s", measurement);
-        return query(db, influxQL);
+        queryPost(db, influxQL);
     }
 
-    public String measurements(String db) {
+    public List<String> measurements(String db) {
         // 方式一
         // String influxQL = String.format("SHOW MEASUREMENTS ON %s", db);
         // return query(influxQL);
 
         // 方式二
         String influxQL = "SHOW MEASUREMENTS";
-        return query(db, influxQL);
+        String result = query(db, influxQL);
+        return singleColumnParse(result);
     }
 
-    public String dropMeasurement(String db, String measurement) {
+    public void dropMeasurement(String db, String measurement) {
         // DROP MEASUREMENT <measurement_name>
         String influxQL = String.format("DROP MEASUREMENT %s", measurement);
-        return query(db, influxQL);
+        queryPost(db, influxQL);
     }
 
-    public String tagKeys(String db) {
+    public List<String> tagKeys(String db) {
         // 方式一
         // String influxQL = String.format("SHOW TAG KEYS ON %s", db);
         // return query(influxQL);
 
         // 方式二
         String influxQL = "SHOW TAG KEYS";
-        return query(db, influxQL);
+        String result = query(db, influxQL);
+        return singleColumnParse(result);
     }
 
-    public String tagKeys(String db, String measurement) {
+    public List<String> tagKeys(String db, String measurement) {
         // 方式一
         // String influxQL = String.format("SHOW TAG KEYS ON %s FROM \"%s\"", db,measurement);
         // return query(influxQL);
 
         // 方式二
         String influxQL = String.format("SHOW TAG KEYS FROM %s", measurement);
-        return query(db, influxQL);
+        String result = query(db, influxQL);
+        return singleColumnParse(result);
     }
 
-    public String fieldKeys(String db) {
+    public List<String> fieldKeys(String db) {
         // 方式一
         // String influxQL = String.format("SHOW FIELD KEYS ON %s", db);
         // return query(influxQL);
 
         // 方式二
         String influxQL = "SHOW FIELD KEYS";
-        return query(db, influxQL);
+        String result = query(db, influxQL);
+        return singleColumnParse(result);
     }
 
-    public String fieldKeys(String db, String measurement) {
+    public List<String> fieldKeys(String db, String measurement) {
         // 方式一
         // String influxQL = String.format("SHOW FIELD KEYS ON %s FROM \"%s\"", db,measurement);
         // return query(influxQL);
 
         // 方式二
         String influxQL = String.format("SHOW FIELD KEYS FROM %s", measurement);
-        return query(db, influxQL);
+        String result = query(db, influxQL);
+        return singleColumnParse(result);
     }
 
     /**
@@ -206,35 +213,35 @@ public class RestApi {
         );
     }
 
-    public String writeBatch(String db, List<LineProtocol> lineProtocols) {
+    public void writeBatch(String db, List<LineProtocol> lineProtocols) {
         String influxQL = LineProtocol.buildBatch(lineProtocols);
         LOG.info("[Line Protocol]: {}", influxQL);
 
-        return write(db, influxQL);
+        write(db, influxQL);
     }
 
-    public String write(String db, LineProtocol lineProtocol) {
-        return write(db, lineProtocol.getMeasurement(), lineProtocol.getTagSet(), lineProtocol.getFieldSet(), lineProtocol.getTimestamp());
+    public void write(String db, LineProtocol lineProtocol) {
+        write(db, lineProtocol.getMeasurement(), lineProtocol.getTagSet(), lineProtocol.getFieldSet(), lineProtocol.getTimestamp());
     }
 
-    public String write(String db, String measurement, Map<String, Object> fields) {
-        return write(db, measurement, null, fields, null);
+    public void write(String db, String measurement, Map<String, Object> fields) {
+        write(db, measurement, null, fields, null);
     }
 
-    public String write(String db, String measurement, Map<String, Object> fields, Long timestamp) {
-        return write(db, measurement, null, fields, timestamp);
+    public void write(String db, String measurement, Map<String, Object> fields, Long timestamp) {
+        write(db, measurement, null, fields, timestamp);
     }
 
-    public String write(String db, String measurement, Map<String, String> tags, Map<String, Object> fields) {
-        return write(db, measurement, tags, fields, null);
+    public void write(String db, String measurement, Map<String, String> tags, Map<String, Object> fields) {
+        write(db, measurement, tags, fields, null);
     }
 
-    public String write(String db, String measurement, Map<String, String> tags, Map<String, Object> fields, Long timestamp) {
+    public void write(String db, String measurement, Map<String, String> tags, Map<String, Object> fields, Long timestamp) {
         String influxQl = LineProtocol.build(measurement, tags, fields, timestamp);
-        return write(db, influxQl);
+        write(db, influxQl);
     }
 
-    public String write(String db, String influxQL) {
+    public void write(String db, String influxQL) {
         LOG.info("[Line Protocol]: {}", influxQL);
 
         String api = String.format("%s/write", url);
@@ -247,23 +254,22 @@ public class RestApi {
         }
 
         HttpRequest request = HttpRequest.post(api, params).send(influxQL);
-        if (request.code() == 204) {
-            return "{}";
-        } else {
-            return request.body();
+        if (request.code() != 204) {
+            LOG.error(request.body());
+            throw new RuntimeException(request.body());
         }
     }
 
-    public String read(String db, List<String> influxQL) {
-        /**
-         * 多个查询
-         * 在一次API调用中发送多个InfluxDB的查询语句，可以简单地使用分号分隔每个查询
-         */
-        String finalInfluxQL = influxQL.stream().collect(Collectors.joining(";"));
-        return read(db, finalInfluxQL);
-    }
+//    public String read(String db, List<String> influxQL) {
+//        /**
+//         * 多个查询
+//         * 在一次API调用中发送多个InfluxDB的查询语句，可以简单地使用分号分隔每个查询
+//         */
+//        String finalInfluxQL = influxQL.stream().collect(Collectors.joining(";"));
+//        return read(db, finalInfluxQL);
+//    }
 
-    public String read(String db, String influxQL) {
+    public List<Map<String, Object>> read(String db, String influxQL) {
         return read(db, null, influxQL, null);
     }
 
@@ -281,7 +287,7 @@ public class RestApi {
      * @param epoch    在InfluxDB中的所有数据都是存的UTC时间，时间戳默认返回RFC3339格式的纳米级的UTC时间，例如2015-08-04T19:05:14.318570484Z，如果想要返回Unix格式的时间，可以在请求参数里设置epoch参数，其中epoch可以是[h,m,s,ms,u,ns]之一。
      * @return
      */
-    public String read(String db, String rp, String influxQL, String epoch) {
+    public List<Map<String, Object>> read(String db, String rp, String influxQL, String epoch) {
         LOG.info(influxQL);
 
         Map<String, Object> params = new HashMap<>();
@@ -294,7 +300,8 @@ public class RestApi {
             params.put("epoch", epoch);
         }
 
-        return query(db, influxQL, params);
+        String result = query(db, influxQL, params);
+        return parse(result);
     }
 
     public String query(String influxQL) {
@@ -363,6 +370,41 @@ public class RestApi {
 
         String result = HttpRequest.post(api, params).body();
         return result;
+    }
+
+    private List<String> singleColumnParse(String result) {
+        JsonNode json = JsonUtils.json(result, "results", 0, "series", 0);
+        if (null == json) {
+            return null;
+        }
+
+        Object[][] values = JsonUtils.newArrayArray(json, "values");
+
+        List<String> data = new ArrayList<>();
+        for (Object[] value : values) {
+            data.add(String.valueOf(value[0]));
+        }
+        return data;
+    }
+
+    private List<Map<String, Object>> parse(String result) {
+        JsonNode json = JsonUtils.json(result, "results", 0, "series", 0);
+        if (null == json) {
+            return null;
+        }
+
+        String[] columns = JsonUtils.stringArray(json, "columns");
+        Object[][] values = JsonUtils.newArrayArray(json, "values");
+
+        List<Map<String, Object>> data = new ArrayList<>();
+        for (Object[] value : values) {
+            Map<String, Object> item = new LinkedHashMap<>(columns.length);
+            for (int i = 0, len = columns.length; i < len; i++) {
+                item.put(columns[i], value[i]);
+            }
+            data.add(item);
+        }
+        return data;
     }
 
 //    public boolean isDebug() {

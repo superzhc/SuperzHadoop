@@ -8,6 +8,8 @@ import com.github.superzhc.data.other.AKTools;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -20,7 +22,8 @@ public class RestApiTest {
 
     @Before
     public void setUp() throws Exception {
-        api = new RestApi("127.0.0.1", 8086);
+        // api = new RestApi("127.0.0.1", 8086);
+        api = new RestApi("10.90.18.100", 8086);
         api.enableDebug();
         akTools = new AKTools("127.0.0.1", 8080);
     }
@@ -32,49 +35,54 @@ public class RestApiTest {
 
     @Test
     public void createDB() {
-        api.createDB("front");
+        api.createDB("superz");
+    }
+
+    @Test
+    public void testDropDB() {
+        api.dropDB("superz");
     }
 
     @Test
     public void databases() {
-        String result = api.databases();
-        JsonNode json = JsonUtils.json(result, "results", 0, "series", 0, "values");
-        System.out.println(JsonUtils.asString(json));
+        System.out.println(api.databases());
     }
 
-    @Test
-    public void retentionPolicies() {
-        String result = api.retentionPolicies("xgit");
-        System.out.println(result);
-    }
+//    @Test
+//    public void retentionPolicies() {
+//        String result = api.retentionPolicies("xgit");
+//        System.out.println(result);
+//    }
 
     @Test
     public void series() {
-        String result = api.series("xgit");
-        System.out.println(result);
+        System.out.println(api.series("superz"));
     }
 
     @Test
     public void measurements() {
-        String result = api.measurements("xgit");
-        System.out.println(result);
+        System.out.println(api.measurements("superz"));
+    }
+
+    @Test
+    public void testDropMeasurement() {
+        api.dropMeasurement("superz", "spot_hist_sge");
     }
 
     @Test
     public void tagKeys() {
-        String result = api.tagKeys("xgit");
-        System.out.println(result);
+        System.out.println(api.tagKeys("superz"));
     }
 
     @Test
     public void tagKeys2() {
-        String result = api.tagKeys("xgit", "fund_etf_hist_min_em");
-        System.out.println(result);
+        List<String> data = api.tagKeys("superz", "spot_hist_sge");
+        System.out.println(data);
     }
 
     @Test
     public void fieldKeys() {
-        String result = api.fieldKeys("xgit", "cpu_load_short");
+        List<String> result = api.fieldKeys("superz", "spot_hist_sge");
         System.out.println(result);
     }
 
@@ -88,9 +96,16 @@ public class RestApiTest {
     }
 
     @Test
-    public void writeBatch() {
-        String measurement = "fund_etf_spot_em";
+    public void spot_hist_sge() {
+        String measurement = "spot_hist_sge";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("symbol", "Au99.99");
+
         List<Map<String, Object>> data = akTools.get(measurement);
+        //System.out.println(MapUtils.print(data));
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
         List<LineProtocol> lineProtocols = new ArrayList<>();
         for (Map<String, Object> item : data) {
@@ -98,67 +113,41 @@ public class RestApiTest {
             protocol.setMeasurement(measurement);
 
             Map<String, String> tags = new HashMap<>();
-            tags.put("code", item.get("代码").toString());
-            tags.put("name", item.get("名称").toString());
+            tags.put("type", "d1");
             protocol.setTagSet(tags);
 
-            Map<String, Object> fields = new HashMap<>();
-            fields.put("last_close", item.get("昨收"));
-            fields.put("open", item.get("开盘价"));
-            fields.put("high", item.get("最高价"));
-            fields.put("low", item.get("最低价"));
-            fields.put("new", item.get("最新价"));
-            fields.put("change", item.get("涨跌额"));
-            fields.put("change_per", item.get("涨跌幅"));
+            LocalDateTime dateTime = LocalDateTime.parse(String.valueOf(item.get("date")), formatter);
+            protocol.setTimestamp(dateTime);
+
+            item.remove("date");
+            Map<String, Object> fields = item;
             protocol.setFieldSet(fields);
 
             lineProtocols.add(protocol);
         }
 
-        System.out.println(api.writeBatch("xgit", lineProtocols));
+        api.writeBatch("superz", lineProtocols);
     }
 
     @Test
     public void read() {
-        String influxQL = "select * from cpu_load_short where host='server03'";
-        String result = api.read("xgit", influxQL);
-        System.out.println(result);
-        JsonNode json = JsonUtils.json(result, "results", 0, "series", 0);
-        String[] columns = JsonUtils.stringArray(json, "columns");
-        Object[][] data = JsonUtils.newArrayArray(json, "values");
-        System.out.println(ListUtils.print(columns, data));
-    }
-
-    @Test
-    public void read2() {
-        String influxQL = "select * from cpu_load_short";
-        String result = api.read("xgit", influxQL);
-        System.out.println(result);
-        JsonNode json = JsonUtils.json(result, "results", 0, "series", 0);
-        String[] columns = JsonUtils.stringArray(json, "columns");
-        Object[][] data = JsonUtils.newArrayArray(json, "values");
-        System.out.println(ListUtils.print(columns, data));
+        String influxQL = "select * from spot_hist_sge";
+        List<Map<String, Object>> result = api.read("superz", influxQL);
+        System.out.println(MapUtils.print(result));
     }
 
     @Test
     public void test3() {
         String influxQL = "select max(account),max(volume),min(account),min(volume) from fund_etf_hist_min_em group by code";
-        String result = api.read("xgit", influxQL);
-        JsonNode json = JsonUtils.json(result, "results", 0, "series", 0);
-        String[] columns = JsonUtils.stringArray(json, "columns");
-        Object[][] data = JsonUtils.newArrayArray(json, "values");
-        System.out.println(ListUtils.print(columns, data));
+        List<Map<String, Object>> result = api.read("xgit", influxQL);
+        System.out.println(MapUtils.print(result));
     }
 
     @Test
     public void test4() {
         String influxQL = "select * from fund_etf_hist_min_em where time >= '2023-01-01T00:00:00Z'";
-        String result = api.read("xgit", influxQL);
-        System.out.println(result);
-        JsonNode json = JsonUtils.json(result, "results", 0, "series", 0);
-        String[] columns = JsonUtils.stringArray(json, "columns");
-        Object[][] data = JsonUtils.newArrayArray(json, "values");
-        System.out.println(ListUtils.print(columns, data));
+        List<Map<String, Object>> result = api.read("xgit", influxQL);
+        System.out.println(MapUtils.print(result));
     }
 
     @Test

@@ -28,6 +28,47 @@ public class AKToolsTest {
     }
 
     @Test
+    public void stock_individual_info_em() {
+        String api = "stock_individual_info_em";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("symbol", "000001");
+
+        List<Map<String, Object>> data = instance.get(api, params);
+        System.out.println(MapUtils.print(data));
+    }
+
+    @Test
+    public void stock_new_a_spot_em(){
+        List<Map<String,Object>> data=instance.get("stock_new_a_spot_em");
+        System.out.println(MapUtils.print(data));
+    }
+
+    @Test
+    public void stock_kc_a_spot_em(){
+        List<Map<String,Object>> data=instance.get("stock_kc_a_spot_em");
+        System.out.println(MapUtils.print(data));
+    }
+
+    @Test
+    public void testBondInfoCm() {
+        String api = "bond_info_cm";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("bond_name", "");
+        params.put("bond_code", "");
+        params.put("bond_issue", "");
+        params.put("bond_type", "");
+        params.put("coupon_type", "");
+        params.put("issue_year", "");
+        params.put("underwriter", "");
+        params.put("grade", "");
+
+        List<Map<String, Object>> data = instance.get(api, params);
+        System.out.println(MapUtils.print(data));
+    }
+
+    @Test
     public void macro_bank_china_interest_rate() {
         List<Map<String, Object>> data = instance.get("macro_bank_china_interest_rate");
         System.out.println(MapUtils.print(data));
@@ -131,6 +172,6 @@ public class AKToolsTest {
     @Test
     public void fund_rating_all() {
         List<Map<String, Object>> data = instance.get("fund_rating_all");
-        System.out.println(MapUtils.print(data,100));
+        System.out.println(MapUtils.print(data, 100));
     }
 }

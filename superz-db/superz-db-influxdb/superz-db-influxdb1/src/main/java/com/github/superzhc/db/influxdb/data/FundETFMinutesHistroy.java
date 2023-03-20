@@ -56,6 +56,6 @@ public class FundETFMinutesHistroy {
         }
 //        System.out.println(LineProtocol.buildBatch(lineProtocols));
 
-        System.out.println(influxApi.writeBatch("xgit", lineProtocols));
+        influxApi.writeBatch("xgit", lineProtocols);
     }
 }

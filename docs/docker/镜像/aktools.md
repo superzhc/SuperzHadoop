@@ -28,7 +28,8 @@ docker build -t aktools:0.0.83 .
 
 ```shell
 # docker pull registry.cn-shanghai.aliyuncs.com/akfamily/aktools:[AKShare 的版本号]
-docker pull registry.cn-shanghai.aliyuncs.com/akfamily/aktools:1.8.83
+# docker pull registry.cn-shanghai.aliyuncs.com/akfamily/aktools:1.8.83
+docker pull registry.cn-shanghai.aliyuncs.com/akfamily/aktools:1.8.95
 ```
 
 **此为阿里云仓库官方镜像**
@@ -36,5 +37,12 @@ docker pull registry.cn-shanghai.aliyuncs.com/akfamily/aktools:1.8.83
 ## 启动镜像
 
 ```shell
-docker run -d -p 8080:8080 --name aktools aktools:0.0.83
+docker run -d -p 8080:8080 --name aktools registry.cn-shanghai.aliyuncs.com/akfamily/aktools:1.8.95
 ```
+
+## 升级镜像
+
+1. 进入容器：`docker exec -it aktools bash`
+2. 容器内更新包：`pip install akshare --upgrade -i https://pypi.org/simple`
+3. 更新完成，退出容器：`exit`
+4. 重启容器

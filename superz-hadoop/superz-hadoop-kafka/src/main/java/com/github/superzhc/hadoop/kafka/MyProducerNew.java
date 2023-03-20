@@ -92,6 +92,7 @@ public class MyProducerNew<K, V> extends KafkaBrokers implements Closeable {
     }
 
     public Future<RecordMetadata> sendAsync(ProducerRecord<K, V> record, Callback callback) {
+        log.debug("发送消息：{}", record);
         return getProducer().send(record, callback);
     }
 
@@ -112,8 +113,10 @@ public class MyProducerNew<K, V> extends KafkaBrokers implements Closeable {
 
     public RecordMetadata send(ProducerRecord<K, V> record) {
         try {
+            log.debug("发送消息：{}", record);
             return getProducer().send(record).get();
         } catch (ExecutionException | InterruptedException e) {
+            log.error("发送消息异常", e);
             throw new RuntimeException(e);
         }
     }

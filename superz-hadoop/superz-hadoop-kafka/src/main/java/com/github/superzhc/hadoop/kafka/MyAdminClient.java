@@ -56,6 +56,10 @@ public class MyAdminClient extends KafkaBrokers implements Closeable {
         adminClient = AdminClient.create(props);
     }
 
+    public void create(String topic) {
+        create(topic, 3, (short) 1, null);
+    }
+
     /**
      * 创建主题
      *
