@@ -33,7 +33,6 @@ public class KafkaSqlConnectorTest {
                 "   rsshubKey string," +
                 "   pubDate TIMESTAMP(3)," +
                 // 不支持设置主键
-//                // 设置主键
 //                "   PRIMARY KEY(guid) NOT ENFORCED," +
                 // 设置WaterMark
                 "   WATERMARK FOR `pubDate` AS `pubDate` - INTERVAL '5' SECOND" +

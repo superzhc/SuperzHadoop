@@ -24,6 +24,22 @@ public class CatalogTest {
         tEnv = StreamTableEnvironment.create(env);
     }
 
+
+    public void jdbcCatalog() throws Exception{
+        /**
+         * JdbcCatalog 允许用户通过 JDBC 协议将 Flink 连接到关系数据库。
+         *
+         * 目前，JDBC Catalog 有两个实现，即 Postgres Catalog 和 MySQL Catalog。
+         */
+        String sql="CREATE CATALOG my_catalog WITH(" +
+                "    'type' = 'jdbc'," +
+                "    'default-database' = '...'," +
+                "    'username' = '...'," +
+                "    'password' = '...'," +
+                "    'base-url' = '...'" +
+                ")";
+    }
+
     @Test
     public void icebergHadoopCatalog() throws Exception {
         SystemUtils.setEnv("HADOOP_CONF_DIR", "./target/classes");

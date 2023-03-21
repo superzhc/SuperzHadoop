@@ -164,6 +164,11 @@
             <artifactId>flink-avro</artifactId>
             <version>${flink.version}</version>
         </dependency>
+        <!--<dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-orc_${scala.binary.version}</artifactId>
+            <version>${flink.version}</version>
+        </dependency>-->
 
 
 
@@ -176,11 +181,14 @@
             <artifactId>flink-connector-base</artifactId>
             <version>${flink.version}</version>
         </dependency>
+
+        <!--kafka 连接器，该连接必须引入flink-connector-base-->
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-connector-kafka</artifactId>
             <version>${flink.version}</version>
         </dependency>
+
         <!--2021年10月24日 github relase下载的jar包，Flink相关接口还是老的，存在问题，直接copy下来代码，引入javafaker依赖包-->
         <!--<dependency>
             <groupId>com.github.knaufk</groupId>
@@ -189,6 +197,7 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/libs/flink-faker-0.3.0.jar</systemPath>
         </dependency>-->
+
         <!--2021年10月25日 新增 JDBC 数据源操作-->
         <dependency>
             <groupId>org.apache.flink</groupId>
@@ -200,6 +209,8 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysql.version}</version>
         </dependency>
+
+        <!--cdc-->
         <dependency>
             <groupId>com.alibaba.ververica</groupId>
             <artifactId>flink-connector-mysql-cdc</artifactId>

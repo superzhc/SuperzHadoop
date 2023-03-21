@@ -10,7 +10,7 @@ import org.junit.Test;
  * @author superz
  * @create 2023/3/16 10:09
  **/
-public class DataGenConnectorTest {
+public class DataGenSqlConnectorTest {
     StreamExecutionEnvironment env;
     TableEnvironment tEnv;
 
