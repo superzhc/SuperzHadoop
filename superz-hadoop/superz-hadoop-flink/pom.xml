@@ -19,6 +19,7 @@
         <mysql.version>8.0.21</mysql.version>
         <cdc.mysql.version>1.3.0</cdc.mysql.version>
         <jedis.version>3.3.0</jedis.version>
+        <aws.version>2.17.257</aws.version>
     </properties>
 
     <dependencies>
@@ -164,6 +165,8 @@
             <version>${flink.version}</version>
         </dependency>
 
+
+
         <!--endregion format-->
 
         <!--region connector-->
@@ -238,6 +241,17 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>bundle</artifactId>
+            <version>${aws.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>url-connection-client</artifactId>
+            <version>${aws.version}</version>
+        </dependency>
+
 
         <!--Mqtt客户端-->
         <dependency>

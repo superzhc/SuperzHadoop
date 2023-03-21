@@ -3,9 +3,11 @@ package com.github.superzhc.hadoop.flink.iceberg;
 import com.github.superzhc.common.utils.SystemUtils;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.TableEnvironment;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.junit.Before;
+import org.junit.Test;
 
 /**
  * @author superz
@@ -36,5 +38,11 @@ public class FlinkIcebergQueryTest {
                 "  'property-version'='1'" +
                 ")";
         tEnv.executeSql(sql);
+    }
+
+    @Test
+    public void rsshub_shopping(){
+        Table table= tEnv.from("hadoop_catalog.rsshub.shopping");
+        table.printSchema();
     }
 }

@@ -21,18 +21,37 @@ public class SchemaUtils {
      * @param fields 例如：{"col1":"string","col2":"decimal(9,2)"}
      * @return
      */
-    public static Schema create(Map<String, String> fields) {
+    public static Schema create(Map<String, String> fields, String... requiredFields) {
         Types.NestedField[] nestedFields = new Types.NestedField[fields.size()];
         int i = 0;
         for (Map.Entry<String, String> field : fields.entrySet()) {
             String name = field.getKey();
             Type type = Types.fromPrimitiveString(field.getValue());
-            nestedFields[i] = Types.NestedField.optional(i + 1, name, type);
+            nestedFields[i] =
+                    contain(requiredFields, name)
+                            ?
+                            Types.NestedField.required(i + 1, name, type)
+                            :
+                            Types.NestedField.optional(i + 1, name, type);
             i++;
         }
 
         Schema schema = new Schema(nestedFields);
         return schema;
+    }
+
+    private static boolean contain(String[] array, String item) {
+        if (null == array || array.length == 0) {
+            return false;
+        }
+
+        for (String str : array) {
+            if (item.equalsIgnoreCase(str)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static void addColumn(Table table, String field, String type) {

@@ -67,10 +67,12 @@ public class RsshubTask {
 //        System.out.println(MapUtils.print(data));
 
         String brokers = "127.0.0.1:19092";
-        String topic = "rsshub";
-        // try (MyAdminClient admin = new MyAdminClient(brokers)) {
-        //     admin.create(topic, 10, (short) 1, null);
-        // }
+        String topic = "rsshub_finance";
+        try (MyAdminClient admin = new MyAdminClient(brokers)) {
+            if (!admin.exist(topic)) {
+                admin.create(topic, 10, (short) 1, null);
+            }
+        }
 
 
         ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(2);

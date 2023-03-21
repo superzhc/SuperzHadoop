@@ -4,6 +4,7 @@ import com.github.superzhc.common.utils.SystemUtils;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.core.fs.FileSystem;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.TableEnvironment;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import org.junit.Before;
@@ -122,5 +123,13 @@ public class FlinkIcebergDDLTest {
 
         String sql = "DROP TABLE `hadoop_catalog`.`test`.`t1`";
         tEnv.executeSql(sql);
+    }
+
+    @Test
+    public void schema(){
+        createHadoopCatalog();
+
+        Table table=tEnv.from("hadoop_catalog.rsshub.shopping");
+        table.printSchema();
     }
 }
