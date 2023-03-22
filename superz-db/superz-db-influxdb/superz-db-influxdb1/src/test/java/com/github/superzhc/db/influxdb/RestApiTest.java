@@ -22,8 +22,8 @@ public class RestApiTest {
 
     @Before
     public void setUp() throws Exception {
-        // api = new RestApi("127.0.0.1", 8086);
-        api = new RestApi("10.90.18.100", 8086);
+         api = new RestApi("127.0.0.1", 8086);
+//        api = new RestApi("10.90.18.100", 8086);
         api.enableDebug();
         akTools = new AKTools("127.0.0.1", 8080);
     }
@@ -109,19 +109,15 @@ public class RestApiTest {
 
         List<LineProtocol> lineProtocols = new ArrayList<>();
         for (Map<String, Object> item : data) {
-            LineProtocol protocol = new LineProtocol();
-            protocol.setMeasurement(measurement);
-
-            Map<String, String> tags = new HashMap<>();
-            tags.put("type", "d1");
-            protocol.setTagSet(tags);
-
             LocalDateTime dateTime = LocalDateTime.parse(String.valueOf(item.get("date")), formatter);
-            protocol.setTimestamp(dateTime);
-
             item.remove("date");
-            Map<String, Object> fields = item;
-            protocol.setFieldSet(fields);
+
+            LineProtocol protocol = LineProtocol.builder()
+                    .measurement(measurement)
+                    .addTag("type","d1")
+                    .fields(item)
+                    .timestamp(dateTime)
+                    .build();
 
             lineProtocols.add(protocol);
         }

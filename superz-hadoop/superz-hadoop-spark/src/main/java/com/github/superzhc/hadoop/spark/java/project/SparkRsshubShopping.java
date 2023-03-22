@@ -31,7 +31,7 @@ public class SparkRsshubShopping {
         SparkSession spark = SparkSession.builder().config(conf).getOrCreate();
 
         Dataset<Row> ds = spark.table("test.rsshub.shopping");
-//        System.out.println(ds.count());
+        System.out.println("数据条数："+ds.count());
         ds.show(1000);
 
         spark.stop();

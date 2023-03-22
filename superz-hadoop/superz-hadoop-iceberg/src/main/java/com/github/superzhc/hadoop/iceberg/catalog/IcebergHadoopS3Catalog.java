@@ -25,6 +25,10 @@ public class IcebergHadoopS3Catalog extends S3Catalog {
         super(warehouse, endpoint, username, password);
     }
 
+    public Catalog catalog() {
+        return catalog("hadoop");
+    }
+
     @Override
     public Catalog catalog(String name) {
         Map<String, String> properties = new HashMap<>();

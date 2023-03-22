@@ -3,6 +3,7 @@ package com.github.superzhc.db.influxdb;
 import com.github.superzhc.common.utils.TypeUtils;
 
 import java.time.*;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -87,13 +88,13 @@ public class LineProtocol {
         this.timestamp = timestamp;
     }
 
-    public void setTimestamp(LocalDateTime dateTime) {
-        /*计算出纳米级时间戳*/
-        ZonedDateTime dt = dateTime.atZone(ZoneOffset.systemDefault());
-        Instant instant=dt.toInstant();
-        long ns = instant.getEpochSecond() * 1000000000 + instant.getNano();
-        setTimestamp(ns);
-    }
+//    public void setTimestamp(LocalDateTime dateTime) {
+//        /*计算出纳米级时间戳*/
+//        ZonedDateTime dt = dateTime.atZone(ZoneOffset.systemDefault());
+//        Instant instant = dt.toInstant();
+//        long ns = instant.getEpochSecond() * 1000000000 + instant.getNano();
+//        setTimestamp(ns);
+//    }
 
     @Override
     public String toString() {
@@ -173,28 +174,28 @@ public class LineProtocol {
                 ;
     }
 
-    public static String build(LineProtocol protocol) {
+    public static String transform(LineProtocol protocol) {
         return protocol.toString();
     }
 
-    public static String build(String measurement, Map<String, Object> fieldSet) {
-        return build(measurement, null, fieldSet, null);
+    public static String transform(String measurement, Map<String, Object> fieldSet) {
+        return transform(measurement, null, fieldSet, null);
     }
 
-    public static String build(String measurement, Map<String, Object> fieldSet, Long timestamp) {
-        return build(measurement, null, fieldSet, timestamp);
+    public static String transform(String measurement, Map<String, Object> fieldSet, Long timestamp) {
+        return transform(measurement, null, fieldSet, timestamp);
     }
 
-    public static String build(String measurement, Map<String, String> tagSet, Map<String, Object> fieldSet) {
-        return build(measurement, tagSet, fieldSet, null);
+    public static String transform(String measurement, Map<String, String> tagSet, Map<String, Object> fieldSet) {
+        return transform(measurement, tagSet, fieldSet, null);
     }
 
-    public static String build(String measurement, Map<String, String> tagSet, Map<String, Object> fieldSet, Long timestamp) {
+    public static String transform(String measurement, Map<String, String> tagSet, Map<String, Object> fieldSet, Long timestamp) {
         LineProtocol lineProtocol = new LineProtocol(measurement, tagSet, fieldSet, timestamp);
-        return build(lineProtocol);
+        return transform(lineProtocol);
     }
 
-    public static String buildBatch(List<LineProtocol> lineProtocols) {
+    public static String transformBatch(List<LineProtocol> lineProtocols) {
         if (null == lineProtocols || lineProtocols.size() == 0) {
             return null;
         }
@@ -204,5 +205,86 @@ public class LineProtocol {
             sb.append('\n').append(lineProtocol.toString());
         }
         return sb.substring(1);
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private String measurement;
+        private Map<String, String> tags = new LinkedHashMap<>();
+        private Map<String, Object> fields = new LinkedHashMap<>();
+        private Long timestamp = null;
+
+        public Builder measurement(String measurement) {
+            this.measurement = measurement;
+            return this;
+        }
+
+        public Builder tags(Map<String, String> tags) {
+            this.tags = tags;
+            return this;
+        }
+
+        public Builder addTags(Map<String, String> tags) {
+            this.tags.putAll(tags);
+            return this;
+        }
+
+        public Builder addObjectTag(String key, Object value) {
+            return addTag(key, String.valueOf(value));
+        }
+
+        public Builder addTag(String key, String value) {
+            this.tags.put(key, value);
+            return this;
+        }
+
+        public Builder removeTag(String key) {
+            if (this.tags.containsKey(key)) {
+                this.tags.remove(key);
+            }
+            return this;
+        }
+
+        public Builder fields(Map<String, Object> fields) {
+            this.fields = fields;
+            return this;
+        }
+
+        public Builder addFields(Map<String, Object> fields) {
+            this.fields.putAll(fields);
+            return this;
+        }
+
+        public Builder addField(String key, Object value) {
+            this.fields.put(key, value);
+            return this;
+        }
+
+        public Builder removeField(String key) {
+            if (this.fields.containsKey(key)) {
+                this.fields.remove(key);
+            }
+            return this;
+        }
+
+        public Builder timestamp(Long timestamp) {
+            this.timestamp = timestamp;
+            return this;
+        }
+
+        public Builder timestamp(LocalDateTime dateTime) {
+            /*计算出纳米级时间戳*/
+            ZonedDateTime dt = dateTime.atZone(ZoneOffset.systemDefault());
+            Instant instant = dt.toInstant();
+            long ns = instant.getEpochSecond() * 1000000000 + instant.getNano();
+            return timestamp(ns);
+        }
+
+        public LineProtocol build() {
+            return new LineProtocol(measurement, tags, fields, timestamp);
+        }
     }
 }

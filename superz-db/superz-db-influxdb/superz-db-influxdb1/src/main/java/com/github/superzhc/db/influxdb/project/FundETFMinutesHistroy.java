@@ -1,4 +1,4 @@
-package com.github.superzhc.db.influxdb.data;
+package com.github.superzhc.db.influxdb.project;
 
 import com.github.superzhc.common.utils.MapUtils;
 import com.github.superzhc.data.other.AKTools;
@@ -27,34 +27,27 @@ public class FundETFMinutesHistroy {
 
         Map<String, Object> params = new HashMap<>();
         params.put("symbol", code);
-        params.put("start_date", "2023-01-01 08:30:00");
-        params.put("end_date", "2023-02-24 16:00:00");
+        params.put("start_date", "2023-02-27 08:30:00");
+        params.put("end_date", "2023-03-22 16:00:00");
         params.put("period", "30");
         params.put("adjust", "");
 
         List<Map<String, Object>> data = akTools.get(api, params);
-        // System.out.println(MapUtils.print(data));
+        System.out.println(MapUtils.print(data));
 
         List<LineProtocol> lineProtocols = new ArrayList<>();
         for (Map<String, Object> item : data) {
-            LineProtocol lineProtocol = new LineProtocol();
+            LocalDateTime dateTime = LocalDateTime.parse(item.get("date").toString(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+
+            LineProtocol lineProtocol = LineProtocol.builder()
+                    .measurement(api)
+                    .addTag("code",code)
+                    .addField("volume", item.get("volume"))
+                    .addField("account", item.get("account"))
+                    .timestamp(dateTime)
+                    .build();
             lineProtocol.setMeasurement(api);
-
-            Map<String, String> tags = new HashMap<>();
-            tags.put("code", code);
-            lineProtocol.setTagSet(tags);
-
-            Map<String, Object> fields = new HashMap<>();
-            fields.put("volume", item.get("成交量"));
-            fields.put("account", item.get("成交额"));
-            lineProtocol.setFieldSet(fields);
-
-            LocalDateTime dateTime = LocalDateTime.parse(item.get("时间").toString(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            lineProtocol.setTimestamp(dateTime);
-
-            lineProtocols.add(lineProtocol);
         }
-//        System.out.println(LineProtocol.buildBatch(lineProtocols));
 
         influxApi.writeBatch("xgit", lineProtocols);
     }

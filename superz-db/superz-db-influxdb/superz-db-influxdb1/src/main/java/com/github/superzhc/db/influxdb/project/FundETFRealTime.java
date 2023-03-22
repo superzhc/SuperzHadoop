@@ -1,4 +1,4 @@
-package com.github.superzhc.db.influxdb.data;
+package com.github.superzhc.db.influxdb.project;
 
 import com.github.superzhc.common.utils.MapUtils;
 import com.github.superzhc.data.other.AKTools;

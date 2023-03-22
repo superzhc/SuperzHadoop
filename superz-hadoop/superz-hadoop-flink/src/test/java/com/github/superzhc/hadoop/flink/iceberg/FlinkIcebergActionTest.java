@@ -20,7 +20,7 @@ import java.util.Map;
  * @author superz
  * @create 2023/3/21 14:47
  **/
-public class RewriteDataFilesActionTest {
+public class FlinkIcebergActionTest {
     StreamExecutionEnvironment env;
     Catalog catalog;
 

@@ -199,7 +199,9 @@ public class EastMoneyFund {
         params.put("version", "6.2.8");
         params.put("_", System.currentTimeMillis());
 
-        String result = HttpRequest.get(url, params).userAgent(UA_CHROME).body();
+        String result = HttpRequest.get(url, params)
+                .userAgent("Mozilla/5.0 (iPhone; CPU iPhone OS 13_2_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.0.3 Mobile/15E148 Safari/604.1 Edg/94.0.4606.71")
+                .body();
         JsonNode json = JsonUtils.json(result, "Datas");
 
         Map<String, Object>[] originData = JsonUtils.newObjectArray(json);

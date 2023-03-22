@@ -1247,13 +1247,13 @@ public class HttpRequest {
 
     private HttpURLConnection createConnection() {
         try {
-            log.debug("[{}]-[{}] create connect", requestMethod, url.toString());
             final HttpURLConnection connection;
             if (httpProxyHost != null)
                 connection = CONNECTION_FACTORY.create(url, createProxy());
             else
                 connection = CONNECTION_FACTORY.create(url);
             connection.setRequestMethod(requestMethod);
+            log.debug("[{}]-[{}] connection:{}", requestMethod, connection.hashCode(), url.toString());
             return connection;
         } catch (IOException e) {
             throw new HttpRequestException(e);
@@ -1310,7 +1310,7 @@ public class HttpRequest {
         try {
             closeOutput();
             int respCode = getConnection().getResponseCode();
-            log.debug("[{}]-[{}] code:{}", requestMethod, url, respCode);
+            log.debug("[{}]-[{}] code:{}", requestMethod, getConnection().hashCode(), respCode);
             return respCode;
         } catch (IOException e) {
             throw new HttpRequestException(e);
@@ -1411,7 +1411,7 @@ public class HttpRequest {
         try {
             closeOutput();
             String respMessage = getConnection().getResponseMessage();
-            log.debug("[{}] message:{}", requestMethod, message());
+            log.debug("[{}]-[{}] message:{}", requestMethod, getConnection().hashCode(), message());
             return respMessage;
         } catch (IOException e) {
             throw new HttpRequestException(e);
@@ -1424,6 +1424,7 @@ public class HttpRequest {
      * @return this request
      */
     public HttpRequest disconnect() {
+        log.debug("[{}]-[{}] disconnect", requestMethod, getConnection().hashCode());
         getConnection().disconnect();
         return this;
     }
@@ -1536,7 +1537,7 @@ public class HttpRequest {
                         .replaceAll("    ", " ")
                         .replaceAll("   "," ")
                         .replaceAll("  ", " ");
-                log.debug("[{}]-[{}] response:{}", requestMethod, url, str.length() > 512 ? str.substring(0, 512) + "..." : str);
+                log.debug("[{}]-[{}] response:{}", requestMethod, getConnection().hashCode(), str.length() > 512 ? str.substring(0, 512) + "..." : str);
             }
             return resp;
         } catch (IOException e) {
@@ -1636,7 +1637,7 @@ public class HttpRequest {
             }
         else {
             try {
-                log.error("[{}]-[{}] message:{}", requestMethod, url, getConnection().getResponseMessage());
+                log.error("[{}]-[{}] message:{}", requestMethod, getConnection().hashCode(), getConnection().getResponseMessage());
             }catch (IOException e){
                 throw new HttpRequestException(e);
             }
@@ -1727,21 +1728,30 @@ public class HttpRequest {
      * @throws HttpRequestException
      */
     public HttpRequest download(final String path) throws HttpRequestException {
-        String downloadPath = path;
-        downloadPath = downloadPath.replaceAll("[/\\\\]", Matcher.quoteReplacement(File.separator));
-
         File file = new File(path);
-        if (file.exists() && file.isDirectory()) {
-            String u = this.url().getPath();
-            String fileName = u.substring(u.lastIndexOf("/") + 1);
-            if (path.endsWith(File.separator)) {
-                downloadPath = path + fileName;
-            } else {
-                downloadPath = path + File.separator + fileName;
+        // 自动创建文件夹
+        if (!file.exists()) {
+            boolean b = file.mkdirs();
+            if (!b) {
+                throw new RuntimeException("创建文件夹[" + path + "]失败");
             }
+            log.debug("创建文件夹[{}]成功", path);
         }
 
-        return receive(new File(downloadPath));
+        String dirPath = path;
+        if (file.isDirectory()) {
+            dirPath = file.getParent();
+        }
+
+        String downloadPath = dirPath.replaceAll("[/\\\\]", Matcher.quoteReplacement(File.separator));
+        if (!downloadPath.endsWith(File.separator)) {
+            downloadPath += File.separator;
+        }
+
+        String u = this.url().getPath();
+        String fileName = u.substring(u.lastIndexOf("/") + 1);
+
+        return receive(new File(downloadPath + fileName));
     }
 
     /**
@@ -1876,7 +1886,7 @@ public class HttpRequest {
                 || HEADER_COOKIE.equalsIgnoreCase(name))
                 || HEADER_CONTENT_TYPE.equalsIgnoreCase(name)
         ) {
-            log.debug("[{}]-[{}] header:{}={}", requestMethod, url, name, value);
+            log.debug("[{}]-[{}] header:{}={}", requestMethod, conn.hashCode(), name, value);
         }
         conn.setRequestProperty(name, value);
         return this;
@@ -2057,7 +2067,7 @@ public class HttpRequest {
         }
 
         String str = cookiesSb.substring(2);
-        log.debug("[{}] Set-Cookie:{}", requestMethod, str);
+        log.debug("[{}]-[{}] Set-Cookie:{}", requestMethod, getConnection().hashCode(), str);
         return str;
     }
 
@@ -3045,7 +3055,7 @@ public class HttpRequest {
             output.write('=');
             if (value != null)
                 output.write(URLEncoder.encode(value.toString(), charset));
-            log.debug("[{}]-[{}] form: {}={}", requestMethod, url, URLEncoder.encode(name.toString(), charset), (null == value ? null : URLEncoder.encode(value.toString(), charset)));
+            log.debug("[{}]-[{}] form:{}={}", requestMethod, getConnection().hashCode(), URLEncoder.encode(name.toString(), charset), (null == value ? null : URLEncoder.encode(value.toString(), charset)));
         } catch (IOException e) {
             throw new HttpRequestException(e);
         }
@@ -3162,7 +3172,7 @@ public class HttpRequest {
         try {
             openOutput();
             output.write(json);
-            log.debug("[{}]-[{}] json:{}", requestMethod, url, json);
+            log.debug("[{}]-[{}] json:{}", requestMethod, getConnection().hashCode(), json);
         } catch (IOException e) {
             throw new HttpRequestException(e);
         }

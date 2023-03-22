@@ -35,6 +35,7 @@
         <scala.binary.version>2.12</scala.binary.version>
         <scala.version>2.12.10</scala.version>
         <spark.version>3.3.0</spark.version>
+        <aws.version>2.17.257</aws.version>
     </properties>
 
     <dependencies>
@@ -213,6 +214,7 @@
             <artifactId>hudi-spark3-bundle_${scala.binary.version}</artifactId>
             <version>${hudi.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-avro_${scala.binary.version}</artifactId>
@@ -235,6 +237,16 @@
             <groupId>org.apache.iceberg</groupId>
             <artifactId>iceberg-spark-runtime-3.3_${scala.binary.version}</artifactId>
             <version>${iceberg.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>bundle</artifactId>
+            <version>${aws.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>url-connection-client</artifactId>
+            <version>${aws.version}</version>
         </dependency>
 
         <!--s3协议-->

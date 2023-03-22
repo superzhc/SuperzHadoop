@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author superz
@@ -214,7 +213,7 @@ public class RestApi {
     }
 
     public void writeBatch(String db, List<LineProtocol> lineProtocols) {
-        String influxQL = LineProtocol.buildBatch(lineProtocols);
+        String influxQL = LineProtocol.transformBatch(lineProtocols);
         LOG.info("[Line Protocol]: {}", influxQL);
 
         write(db, influxQL);
@@ -237,7 +236,7 @@ public class RestApi {
     }
 
     public void write(String db, String measurement, Map<String, String> tags, Map<String, Object> fields, Long timestamp) {
-        String influxQl = LineProtocol.build(measurement, tags, fields, timestamp);
+        String influxQl = LineProtocol.transform(measurement, tags, fields, timestamp);
         write(db, influxQl);
     }
 
