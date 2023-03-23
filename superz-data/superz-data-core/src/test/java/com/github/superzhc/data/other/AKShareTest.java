@@ -70,4 +70,12 @@ public class AKShareTest {
 
     // endregion 指数
 
+    @Test
+    public void stock_individual_info_em() {
+        Map<String, Object> params = new HashMap<>();
+        params.put("symbol", "000001");
+
+        List<Map<String, Object>> data = api.get("stock_individual_info_em", params);
+        MapUtils.show(data);
+    }
 }

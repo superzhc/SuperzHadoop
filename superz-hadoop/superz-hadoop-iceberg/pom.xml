@@ -104,6 +104,11 @@
             <version>${iceberg.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-aws</artifactId>
+            <version>${hadoop.version}</version>
+        </dependency>
+        <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>bundle</artifactId>
             <version>${aws.version}</version>
@@ -114,6 +119,11 @@
             <version>${aws.version}</version>
         </dependency>
 
+<!--        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>14.0.1</version>
+        </dependency>-->
         <dependency>
             <groupId>org.apache.hadoop</groupId>
             <artifactId>hadoop-common</artifactId>
@@ -121,12 +131,18 @@
         </dependency>
         <dependency>
             <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-client-api</artifactId>
+            <artifactId>hadoop-client<!-- -api--></artifactId>
             <version>${hadoop.version}</version>
         </dependency>
+        <!--<dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-client-runtime</artifactId>
+            <version>${hadoop.version}</version>
+        </dependency>-->
+
         <dependency>
             <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-aws</artifactId>
+            <artifactId>hadoop-hdfs</artifactId>
             <version>${hadoop.version}</version>
         </dependency>
 

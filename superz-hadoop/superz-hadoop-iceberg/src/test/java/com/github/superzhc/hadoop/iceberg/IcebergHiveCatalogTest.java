@@ -1,21 +1,21 @@
 package com.github.superzhc.hadoop.iceberg;
 
-import com.github.superzhc.hadoop.iceberg.catalog.IcebergHiveS3Catalog;
+import com.github.superzhc.common.utils.MapUtils;
+import com.github.superzhc.hadoop.iceberg.catalog.IcebergHiveCatalog;
 import com.github.superzhc.hadoop.iceberg.utils.SchemaUtils;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.iceberg.CatalogProperties;
 import org.apache.iceberg.PartitionSpec;
 import org.apache.iceberg.Schema;
-import org.apache.iceberg.aws.AwsProperties;
+import org.apache.iceberg.TableProperties;
 import org.apache.iceberg.catalog.Catalog;
 import org.apache.iceberg.catalog.Namespace;
 import org.apache.iceberg.catalog.TableIdentifier;
-import org.apache.iceberg.hadoop.HadoopCatalog;
 import org.apache.iceberg.hive.HiveCatalog;
 import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,59 +23,95 @@ import java.util.Map;
  * @create 2023/3/22 17:01
  **/
 public class IcebergHiveCatalogTest {
-    @Test
-    public void catalog0() {
-        Map<String, String> properties = new HashMap<>();
-        properties.put(CatalogProperties.CATALOG_IMPL, HiveCatalog.class.getName());
-        properties.put(CatalogProperties.URI, "thrift://10.90.15.233:9083");
-        properties.put(CatalogProperties.WAREHOUSE_LOCATION, "s3a://superz/java/catalog/hive");
-        properties.put(CatalogProperties.FILE_IO_IMPL, "org.apache.iceberg.aws.s3.S3FileIO");
-        properties.put(AwsProperties.S3FILEIO_ENDPOINT, "http://127.0.0.1:9000");
-        properties.put(AwsProperties.S3FILEIO_ACCESS_KEY_ID, "admin");
-        properties.put(AwsProperties.S3FILEIO_SECRET_ACCESS_KEY, "admin123456");
+    static {
+        // 如果在windows本地跑，需要从widnows访问HDFS，需要指定一个合法的身份
+        System.setProperty("HADOOP_USER_NAME", "root");
+    }
 
-        // Hadoop Configuration
+    private HiveCatalog getHiveCatalog() {
+        /* 创建表的时候，客户端会需要连接hadoop，需要进行如下配置 */
         Configuration conf = new Configuration();
-        // conf.set("fs.defaultFS","s3a://superz/java/catalog/hive");
-        conf.set("fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem");
-        conf.set("fs.s3a.endpoint", "http://127.0.0.1:9000");
-        //fs.s3a.awsAccessKeyId
-        conf.set("fs.s3a.access.key", "admin");
-        //fs.s3a.awsSecretAccessKey
-        conf.set("fs.s3a.secret.key", "admin123456");
-        conf.set("fs.s3a.connection.ssl.enabled", "false");
-        conf.set("fs.s3a.aws.credentials.provider", "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider");
-        conf.set("fs.s3a.region","us-east-1");
-        conf.set("fs.s3a.path.style.access","true");
+        conf.set("fs.hdfs.impl","org.apache.hadoop.hdfs.DistributedFileSystem");
+        conf.set("fs.defaultFS", "hdfs://xgitbigdata");
+        conf.set("hadoop.proxyuser.root.hosts", "*");
+        conf.set("hadoop.proxyuser.root.groups", "*");
+        conf.set("dfs.nameservices", "xgitbigdata");
+        conf.set("dfs.ha.namenodes.xgitbigdata", "nn1,nn2");
+        conf.set("dfs.namenode.rpc-address.xgitbigdata.nn1", "10.90.15.142:8020");
+        conf.set("dfs.namenode.rpc-address.xgitbigdata.nn2", "10.90.15.233:8020");
+        conf.set("dfs.namenode.http-address.xgitbigdata.nn1", "10.90.15.142:50070");
+        conf.set("dfs.namenode.http-address.xgitbigdata.nn2", "10.90.15.233:50070");
+        //访问代理类：client，mycluster，active配置失败自动切换实现方式 采用默认
+        conf.set("dfs.client.failover.proxy.provider.xgitbigdata", "org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider");
+//        conf.set("dfs.ha.automatic-failover.enabled","true");
+//        conf.set("","");
+//        conf.set("","");
+//        conf.set("","");
 
-        HiveCatalog hiveCatalog = new HiveCatalog();
-        hiveCatalog.setConf(conf);
-        hiveCatalog.initialize("hive", properties);
-
-        System.out.println(hiveCatalog.listTables(Namespace.of("xgit")));
+        Catalog catalog = new IcebergHiveCatalog(
+                "thrift://10.90.15.233:9083",
+                "hdfs://xgitbigdata/usr/xgit/hive/warehouse",
+                conf
+        ).catalog();
+        return (HiveCatalog) catalog;
     }
 
     @Test
-    public void testHiveS3Catalog() {
-        Catalog catalog = new IcebergHiveS3Catalog(
-                "thrift://10.90.15.233:9083",
-                "s3a://superz/java/catalog/hive",
-                "http://127.0.0.1:9000",
-                "admin",
-                "admin123456"
-        ).catalog();
+    public void catalog() {
+        HiveCatalog hiveCatalog = getHiveCatalog();
+    }
+
+    @Test
+    public void databases() {
+        HiveCatalog hiveCatalog = getHiveCatalog();
+        // 获取所有的库
+        List<Namespace> databases = hiveCatalog.listNamespaces();
+        databases.stream().forEach(System.out::println);
+    }
+
+    @Test
+    public void database() {
+        HiveCatalog hiveCatalog = getHiveCatalog();
+
+        Map<String, String> databaseMetadata = hiveCatalog.loadNamespaceMetadata(Namespace.of("influxdb_superz"));
+        MapUtils.show(databaseMetadata);
+    }
+
+    @Test
+    public void createDatabase() {
+        HiveCatalog hiveCatalog = getHiveCatalog();
+
+        Map<String, String> databaseProperties = new HashMap<>();
+        databaseProperties.put("comment", "InfluxDB ETL Database");
+
+        hiveCatalog.createNamespace(Namespace.of("influxdb_superz"), databaseProperties);
+    }
+
+    @Test
+    public void tables() {
+        HiveCatalog hiveCatalog = getHiveCatalog();
+
+        List<TableIdentifier> tables = hiveCatalog.listTables(Namespace.of("influxdb_superz"));
+        tables.stream().forEach(System.out::println);
+    }
+
+    @Test
+    public void createTable() {
+        HiveCatalog hiveCatalog = getHiveCatalog();
+
+        Map<String, String> tableProperties = new HashMap<>();
+        tableProperties.put(TableProperties.FORMAT_VERSION, "2");
+        tableProperties.put(TableProperties.UPSERT_ENABLED, "true");
+        tableProperties.put(TableProperties.METADATA_DELETE_AFTER_COMMIT_ENABLED, "true");
+        tableProperties.put(TableProperties.METADATA_PREVIOUS_VERSIONS_MAX, "3");
 
         Map<String, String> fields = new LinkedHashMap<>();
         fields.put("id", "int");
         fields.put("name", "string");
         Schema schema = SchemaUtils.create(fields, "id");
-
         PartitionSpec spec = SchemaUtils.partition(schema);
+        TableIdentifier tableIdentifier = TableIdentifier.of("influxdb_superz", "t202303231638");
 
-        TableIdentifier tableIdentifier = TableIdentifier.of("default","demo");
-        if (catalog.tableExists(tableIdentifier)) {
-            catalog.dropTable(tableIdentifier);
-        }
-        catalog.createTable(tableIdentifier, schema, spec);
+        hiveCatalog.createTable(tableIdentifier, schema, spec, tableProperties);
     }
 }

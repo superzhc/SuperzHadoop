@@ -22,8 +22,8 @@ public class RestApiTest {
 
     @Before
     public void setUp() throws Exception {
-         api = new RestApi("127.0.0.1", 8086);
-//        api = new RestApi("10.90.18.100", 8086);
+//        api = new RestApi("127.0.0.1", 8086);
+        api = new RestApi("10.90.18.100", 8086);
         api.enableDebug();
         akTools = new AKTools("127.0.0.1", 8080);
     }
@@ -114,7 +114,7 @@ public class RestApiTest {
 
             LineProtocol protocol = LineProtocol.builder()
                     .measurement(measurement)
-                    .addTag("type","d1")
+                    .addTag("type", "d1")
                     .fields(item)
                     .timestamp(dateTime)
                     .build();
@@ -147,9 +147,16 @@ public class RestApiTest {
     }
 
     @Test
+    public void testPage() {
+        String influxQL = "select * from index_zh_spot limit 100 offset 100";
+        List<Map<String, Object>> data = api.read("superz", influxQL);
+        MapUtils.show(data);
+    }
+
+    @Test
     public void testCount() {
-        String influxQL = "select count(value) from cpu_load_short";
-        String result = api.query("xgit", influxQL);
+        String influxQL = "select count(*) from index_zh_spot";
+        String result = api.query("superz", influxQL);
         System.out.println(result);
     }
 }

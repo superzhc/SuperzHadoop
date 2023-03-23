@@ -4,6 +4,7 @@ import org.apache.iceberg.CatalogProperties;
 import org.apache.iceberg.PartitionSpec;
 import org.apache.iceberg.Schema;
 import org.apache.iceberg.aws.AwsProperties;
+import org.apache.iceberg.catalog.Catalog;
 import org.apache.iceberg.catalog.Namespace;
 import org.apache.iceberg.catalog.TableIdentifier;
 import org.apache.iceberg.rest.RESTCatalog;
@@ -16,7 +17,17 @@ import java.util.Map;
  * @author superz
  * @create 2023/3/6 10:14
  **/
-public class IcebergRestCatalog {
+public class IcebergRestCatalog implements IcebergCatalog {
+    @Override
+    public Catalog catalog() {
+        return catalog("rest");
+    }
+
+    @Override
+    public Catalog catalog(String name) {
+        return null;
+    }
+
     public static void main(String[] args) {
         Map<String, String> properties = new HashMap<>();
         properties.put(CatalogProperties.CATALOG_IMPL, "org.apache.iceberg.rest.RESTCatalog");

@@ -18,13 +18,14 @@ import java.util.Map;
  * @author superz
  * @create 2023/3/6 18:04
  **/
-public class IcebergHadoopS3Catalog extends S3Catalog {
+public class IcebergHadoopS3Catalog extends IcebergS3Catalog {
 
 
     public IcebergHadoopS3Catalog(String warehouse, String endpoint, String username, String password) {
         super(warehouse, endpoint, username, password);
     }
 
+    @Override
     public Catalog catalog() {
         return catalog("hadoop");
     }

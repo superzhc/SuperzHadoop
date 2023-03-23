@@ -25,7 +25,7 @@ import java.util.Map;
  * @author superz
  * @create 2023/3/6 10:35
  **/
-public class IcebergJdbcS3Catalog extends S3Catalog {
+public class IcebergJdbcS3Catalog extends IcebergS3Catalog {
     private String jdbcUrl;
 
     private String jdbcUsername;
@@ -42,6 +42,11 @@ public class IcebergJdbcS3Catalog extends S3Catalog {
         this.jdbcUrl = jdbcUrl;
         this.jdbcUsername = jdbcUsername;
         this.jdbcPassword = jdbcPassword;
+    }
+
+    @Override
+    public Catalog catalog() {
+        return catalog("jdbc");
     }
 
     @Override

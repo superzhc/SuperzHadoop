@@ -55,12 +55,14 @@ public class RestApi {
         this.password = password;
     }
 
-    public void enableDebug() {
+    public RestApi enableDebug() {
         this.isDebug = true;
+        return this;
     }
 
-    public void disableDebug() {
+    public RestApi disableDebug() {
         this.isDebug = false;
+        return this;
     }
 
     public boolean ping() {
