@@ -256,6 +256,18 @@ public class MapUtils {
         return sb.toString();
     }
 
+    public static <T> void show(Map<String, T>... maps) {
+        System.out.println(print(maps));
+    }
+
+    public static <T> void show(List<Map<String, T>> maps) {
+        System.out.println(print(maps));
+    }
+
+    public static <T> void show(List<Map<String, T>> maps, int num) {
+        System.out.println(print(maps, num));
+    }
+
     public static <T> String print(Map<String, T>... maps) {
         if (null == maps || maps.length == 0) {
             return null;
@@ -273,6 +285,7 @@ public class MapUtils {
      *
      * @param maps
      * @param <T>
+     *
      * @return
      */
     public static <T> String print(List<Map<String, T>> maps) {
@@ -285,6 +298,7 @@ public class MapUtils {
      * @param maps
      * @param num
      * @param <T>
+     *
      * @return
      */
     public static <T> String print(List<Map<String, T>> maps, int num) {
