@@ -84,8 +84,10 @@ RUN wget https://repo1.maven.org/maven2/org/apache/hive/hive-standalone-metastor
   && rm -rf hive-standalone-metastore-3.1.2-bin.tar.gz \
   && mv apache-hive-metastore-3.1.2-bin metastore
 
-RUN wget https://archive.apache.org/dist/hadoop/common/hadoop-3.2.2/hadoop-3.2.2.tar.gz \
-  && tar zxvf hadoop-3.2.2.tar.gz \
+# 若下载速度慢，可先本地下载copy上来，根据需要选择
+# RUN wget https://archive.apache.org/dist/hadoop/common/hadoop-3.2.2/hadoop-3.2.2.tar.gz &&\
+COPY hadoop-3.2.2.tar.gz /opt/
+RUN tar zxvf hadoop-3.2.2.tar.gz \
   && rm -rf hadoop-3.2.2.tar.gz \
   && mv hadoop-3.2.2 hadoop
 
@@ -119,7 +121,7 @@ CMD ["/opt/metastore/bin/start-metastore"]
 > 将上面的文件放到同一个目录文件夹下，执行如下命令进行构建：
 
 ```shell
-docker build . -t minio-hive-standalone-metastore:v1.0
+docker build . -t hive-standalone-metastore:v1.0
 ```
 
 **注意1**：当前的使用方式下，不同环境配置的构建，需要对 `metastore-site.xml` 进行配置即可
@@ -129,5 +131,5 @@ docker build . -t minio-hive-standalone-metastore:v1.0
 ## 启动容器
 
 ```shell
-docker run -d -p 9083:9083 -v /f/docker/volumes/hive_standalone_metastore/warehouse:/user/hive/warehouse --name minio-hive-metastore minio-hive-standalone-metastore:v1.0
+docker run -d -p 9083:9083 -v /f/docker/volumes/hive_standalone_metastore/warehouse:/user/hive/warehouse --name hive-standalone-metastore hive-standalone-metastore:v1.0
 ```

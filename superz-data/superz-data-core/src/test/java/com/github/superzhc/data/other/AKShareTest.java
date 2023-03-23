@@ -51,6 +51,19 @@ public class AKShareTest {
     // region 指数
 
     @Test
+    public void index_stock_info(){
+        List<Map<String,Object>> data=api.get("index_stock_info");
+        MapUtils.show(data);
+    }
+
+    @Test
+    // 国证指数-最近交易日的所有指数的代码和基本信息
+    public void index_all_cni(){
+        List<Map<String,Object>> data=api.get("index_all_cni");
+        MapUtils.show(data);
+    }
+
+    @Test
     // 中国股票指数数据, 注意该股票指数指新浪提供的国内股票指数
     public void stock_zh_index_spot() {
         List<Map<String, Object>> data = api.get("stock_zh_index_spot");
@@ -76,6 +89,18 @@ public class AKShareTest {
         params.put("symbol", "000001");
 
         List<Map<String, Object>> data = api.get("stock_individual_info_em", params);
+        MapUtils.show(data);
+    }
+
+    @Test
+    public void stock_zh_a_alerts_cls(){
+        List<Map<String,Object>> data=api.get("stock_zh_a_alerts_cls");
+        MapUtils.show(data);
+    }
+
+    @Test
+    public void stock_telegraph_cls(){
+        List<Map<String,Object>> data=api.get("stock_telegraph_cls");
         MapUtils.show(data);
     }
 }
