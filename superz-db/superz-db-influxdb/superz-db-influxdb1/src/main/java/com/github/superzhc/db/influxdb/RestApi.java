@@ -215,10 +215,29 @@ public class RestApi {
     }
 
     public void writeBatch(String db, List<LineProtocol> lineProtocols) {
-        String influxQL = LineProtocol.transformBatch(lineProtocols);
-        LOG.info("[Line Protocol]: {}", influxQL);
+        writeBatch(db, lineProtocols, 1000);
+    }
 
-        write(db, influxQL);
+    public void writeBatch(String db, List<LineProtocol> lineProtocols, int batchSize) {
+        // 分批写
+        int total = lineProtocols.size();
+        int times = total / batchSize + (total % batchSize == 0 ? 0 : 1);
+        LOG.info("数据总条数：{}", total);
+
+        for (int i = 1; i <= times; i++) {
+            int start = (i - 1) * batchSize;
+            int end = (i == times) ? total : i * batchSize;
+
+            List<LineProtocol> subLineProtocols = new ArrayList<>();
+            for (int j = start; j < end; j++) {
+                subLineProtocols.add(lineProtocols.get(j));
+            }
+
+            String influxQL = LineProtocol.transformBatch(subLineProtocols);
+            LOG.info("当前批次：{}，所取范围[{} ~ {})", i, start, end);
+
+            write(db, influxQL);
+        }
     }
 
     public void write(String db, LineProtocol lineProtocol) {
@@ -243,7 +262,10 @@ public class RestApi {
     }
 
     public void write(String db, String influxQL) {
-        LOG.info("[Line Protocol]: {}", influxQL);
+        String logInfluxQL = influxQL.replaceAll("\r\n|\r|\n", "\t")
+                .replaceAll("\\s+", " ");
+        logInfluxQL = logInfluxQL.substring(0, logInfluxQL.length() > 512 ? 512 : logInfluxQL.length());
+        LOG.info("[Line Protocol]: {}", logInfluxQL);
 
         String api = String.format("%s/write", url);
 

@@ -1523,20 +1523,23 @@ public class HttpRequest {
             if (log.isDebugEnabled()) {
                 String str = resp
                         // 去掉换行
-                        .replaceAll("\r\n|\r|\n", "")
+                        .replaceAll("\r\n|\r|\n", " ")
                         // 将tab、空格进行折叠
-                        .replaceAll("\t", " ")
-                        .replaceAll("            ", " ")
-                        .replaceAll("           ", " ")
-                        .replaceAll("          ", " ")
-                        .replaceAll("         ", " ")
-                        .replaceAll("        ", " ")
-                        .replaceAll("       "," ")
-                        .replaceAll("      "," ")
-                        .replaceAll("     "," ")
-                        .replaceAll("    ", " ")
-                        .replaceAll("   "," ")
-                        .replaceAll("  ", " ");
+//                        .replaceAll("\t", " ")
+//                        .replaceAll("            ", " ")
+//                        .replaceAll("           ", " ")
+//                        .replaceAll("          ", " ")
+//                        .replaceAll("         ", " ")
+//                        .replaceAll("        ", " ")
+//                        .replaceAll("       "," ")
+//                        .replaceAll("      "," ")
+//                        .replaceAll("     "," ")
+//                        .replaceAll("    ", " ")
+//                        .replaceAll("   "," ")
+//                        .replaceAll("  ", " ")
+                        // replaceAll支持正则表达式，\\s+一个或多个连续的空格都会替换成一个空格
+                        .replaceAll("\\s+"," ")
+                        ;
                 log.debug("[{}]-[{}] response:{}", requestMethod, getConnection().hashCode(), str.length() > 512 ? str.substring(0, 512) + "..." : str);
             }
             return resp;

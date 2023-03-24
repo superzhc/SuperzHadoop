@@ -44,4 +44,12 @@ public class TableTest {
         // 要保留旧的元数据文件数量
         properties.put("write.metadata.previous-versions-max", "3");
     }
+
+    @Test
+    public void deletePartitionField(){
+        TableIdentifier tableIdentifier=TableIdentifier.of("rsshub","shopping");
+        Table table= catalog.loadTable(tableIdentifier);
+        table.updateSpec().removeField("rsshubKey").commit();
+        table.refresh();
+    }
 }

@@ -3,7 +3,7 @@ package com.github.superzhc.hadoop.iceberg.catalog;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.iceberg.CatalogProperties;
 import org.apache.iceberg.catalog.Catalog;
-import org.apache.iceberg.hive.HiveCatalog;
+import org.apache.iceberg.hadoop.HadoopCatalog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,43 +12,41 @@ import java.util.Map;
 
 /**
  * @author superz
- * @create 2023/3/23 15:24
+ * @create 2023/3/24 9:16
  **/
-public class IcebergHiveCatalog implements IcebergCatalog {
-    private static final Logger LOG = LoggerFactory.getLogger(IcebergHiveCatalog.class);
+public class IcebergHadoopCatalog implements IcebergCatalog {
+    private static final Logger LOG = LoggerFactory.getLogger(IcebergHadoopCatalog.class);
 
-    private String uri;
     private String warehouse;
+
     private Configuration conf = null;
 
-    public IcebergHiveCatalog(String uri, String warehouse) {
-        this.uri = uri;
+    public IcebergHadoopCatalog(String warehouse) {
         this.warehouse = warehouse;
     }
 
-    public IcebergHiveCatalog(String uri, String warehouse, Configuration conf) {
-        this.uri = uri;
+    public IcebergHadoopCatalog(String warehouse, Configuration conf) {
         this.warehouse = warehouse;
         this.conf = conf;
     }
 
     @Override
     public Catalog catalog() {
-        return catalog("hive");
+        return catalog("hadoop");
     }
 
     @Override
     public Catalog catalog(String name) {
         Map<String, String> properties = new HashMap<>();
-        properties.put(CatalogProperties.CATALOG_IMPL, HiveCatalog.class.getName());
-        properties.put(CatalogProperties.URI, uri);
+        properties.put(CatalogProperties.CATALOG_IMPL, HadoopCatalog.class.getName());
         properties.put(CatalogProperties.WAREHOUSE_LOCATION, warehouse);
 
-        HiveCatalog hiveCatalog = new HiveCatalog();
+        HadoopCatalog hadoopCatalog = new HadoopCatalog();
         if (null != conf) {
-            hiveCatalog.setConf(conf);
+            hadoopCatalog.setConf(conf);
         }
-        hiveCatalog.initialize(name, properties);
-        return hiveCatalog;
+        hadoopCatalog.initialize(name, properties);
+
+        return hadoopCatalog;
     }
 }

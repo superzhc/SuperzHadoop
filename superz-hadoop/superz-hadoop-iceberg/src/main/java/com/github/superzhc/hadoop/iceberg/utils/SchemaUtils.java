@@ -3,7 +3,10 @@ package com.github.superzhc.hadoop.iceberg.utils;
 import org.apache.iceberg.*;
 import org.apache.iceberg.types.Type;
 import org.apache.iceberg.types.Types;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,9 +16,32 @@ import java.util.regex.Pattern;
  * @create 2023/3/7 22:25
  */
 public class SchemaUtils {
+    private static final Logger LOG = LoggerFactory.getLogger(SchemaUtils.class);
+    private static final Pattern DECIMAL = Pattern.compile("decimal\\((\\d+),\\s*(\\d+)\\)");
     private static final Pattern ICEBERG_PARTITION_TRANSFORM_EXPRESSION_PATTERN = Pattern.compile(
             "(years|months|days|date|hours|date_hour|bucket|truncate)[\\s]*\\(([\\s\\S]+),?([\\s\\S]*)\\)"
     );
+
+    private static Type.PrimitiveType fromPrimitiveStringEnhance(String typeString) {
+        // 自动去除掉前后端的空格，更简便
+        String lowerTypeString = typeString.trim().toLowerCase(Locale.ROOT);
+
+        // iceberg对类型的定义有限，做出部分扩展
+        if("bigint".equals(lowerTypeString)){
+                return Types.fromPrimitiveString("long");
+        }else if(lowerTypeString.startsWith("varchar")
+                ||lowerTypeString.startsWith("char")){
+            return Types.fromPrimitiveString("string");
+        }
+
+        // iceberg对 decimal(18,2)不支持，因18,2中间少了个空格，这明显是不合理的
+        Matcher decimal = DECIMAL.matcher(lowerTypeString);
+        if (decimal.matches()) {
+            return Types.DecimalType.of(Integer.parseInt(decimal.group(1)), Integer.parseInt(decimal.group(2)));
+        }
+
+        return Types.fromPrimitiveString(lowerTypeString);
+    }
 
     /**
      * @param fields 例如：{"col1":"string","col2":"decimal(9,2)"}
@@ -26,7 +52,7 @@ public class SchemaUtils {
         int i = 0;
         for (Map.Entry<String, String> field : fields.entrySet()) {
             String name = field.getKey();
-            Type type = Types.fromPrimitiveString(field.getValue());
+            Type type = fromPrimitiveStringEnhance(field.getValue());
             nestedFields[i] =
                     contain(requiredFields, name)
                             ?
@@ -61,7 +87,7 @@ public class SchemaUtils {
     public static void addColumn(Table table, String field, String type, String comment) {
         UpdateSchema update = table.updateSchema();
 
-        Type typeObj = Types.fromPrimitiveString(type);
+        Type typeObj = fromPrimitiveStringEnhance(type);
         update.addColumn(field, typeObj, comment);
 
         update.commit();
@@ -91,7 +117,7 @@ public class SchemaUtils {
         UpdateSchema update = table.updateSchema();
 
         if (null != type) {
-            Type.PrimitiveType typeObj = Types.fromPrimitiveString(field);
+            Type.PrimitiveType typeObj = fromPrimitiveStringEnhance(field);
             update.updateColumn(field, typeObj);
         }
 

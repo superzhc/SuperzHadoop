@@ -7,10 +7,13 @@ import org.apache.iceberg.UpdateProperties;
 import org.apache.iceberg.catalog.Catalog;
 import org.apache.iceberg.catalog.Namespace;
 import org.apache.iceberg.catalog.TableIdentifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -18,6 +21,8 @@ import java.util.stream.Collectors;
  * @create 2023/3/10 17:11
  **/
 public class TableUtils {
+    private static final Logger LOG= LoggerFactory.getLogger(TableUtils.class);
+
     private TableUtils() {
     }
 
@@ -33,6 +38,10 @@ public class TableUtils {
 
     public static Table create(Catalog catalog, TableIdentifier tableIdentifier, Schema schema, PartitionSpec spec) {
         return catalog.createTable(tableIdentifier, schema, spec);
+    }
+
+    public static Table create(Catalog catalog, TableIdentifier tableIdentifier, Schema schema, PartitionSpec spec, Map<String, String> tableProperties) {
+        return catalog.createTable(tableIdentifier, schema, spec, tableProperties);
     }
 
     public static boolean drop(Catalog catalog, Table table) {
@@ -66,6 +75,7 @@ public class TableUtils {
 
     /**
      * 不一定支持
+     *
      * @param catalog
      * @param from
      * @param to
@@ -74,8 +84,8 @@ public class TableUtils {
         catalog.renameTable(from, to);
     }
 
-    public static Table loadTable(Catalog catalog,String... names){
-        return loadTable(catalog,TableIdentifier.of(names));
+    public static Table loadTable(Catalog catalog, String... names) {
+        return loadTable(catalog, TableIdentifier.of(names));
     }
 
     public static Table loadTable(Catalog catalog, TableIdentifier tableIdentifier) {
