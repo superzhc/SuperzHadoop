@@ -1,9 +1,6 @@
 package com.github.superzhc.common.utils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author superz
@@ -35,7 +32,25 @@ public class ListUtils {
         return copy;
     }
 
-    public static <T> String print(String[] headers, T[][] data) {
+    public static <T> String print(String header, T... data) {
+        return print(header, (null == data || data.length == 0) ? new ArrayList<T>() : Arrays.asList(data));
+    }
+
+    public static <T> String print(String header, List<T> data) {
+        List<List<T>> dataList = new ArrayList<>();
+        for (T item : data) {
+            List<T> itemList = new ArrayList<>();
+            itemList.add(item);
+
+            dataList.add(itemList);
+        }
+        return print(Collections.singletonList(header), dataList);
+    }
+
+    public static <T> String print(String[] headers, T[]... data) {
+        if (null == data) {
+            return print(Arrays.asList(headers), new ArrayList<>());
+        }
         int dataSize = data.length;
         List<List<T>> newData = new ArrayList<>(dataSize);
         for (int i = 0; i < dataSize; i++) {

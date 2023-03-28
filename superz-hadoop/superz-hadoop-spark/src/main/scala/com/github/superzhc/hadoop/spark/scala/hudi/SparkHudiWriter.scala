@@ -1,9 +1,9 @@
 package com.github.superzhc.hadoop.spark.scala.hudi
 
-import org.apache.hudi.DataSourceWriteOptions._
-import org.apache.hudi.config.HoodieWriteConfig.TBL_NAME
-import org.apache.hudi.hive.NonPartitionedExtractor
-import org.apache.hudi.keygen.ComplexKeyGenerator
+//import org.apache.hudi.DataSourceWriteOptions._
+//import org.apache.hudi.config.HoodieWriteConfig.TBL_NAME
+//import org.apache.hudi.hive.NonPartitionedExtractor
+//import org.apache.hudi.keygen.ComplexKeyGenerator
 import org.apache.spark.sql.{SaveMode, SparkSession}
 import org.apache.spark.{SparkConf, SparkContext}
 
@@ -55,14 +55,14 @@ object SparkHudiWriter {
       .mode(SaveMode.Overwrite)
       //      .option("hoodie.insert.shuffle.parallelism", "2")
       //      .option("hoodie.upsert.shuffle.parallelism", "2")
-      .option(KEYGENERATOR_CLASS_NAME.key, classOf[ComplexKeyGenerator].getName)
-      .option(RECORDKEY_FIELD.key, "id") // 主键字段
-      // 更新数据时，如果存在两个具有相同主键的记录，则此列中的值将决定更新哪个记录。选择诸如时间戳记的列将确保选择具有最新时间戳记的记录。
-      .option(PRECOMBINE_FIELD.key, "ts") // 预合并字段
-      .option(PARTITIONPATH_FIELD.key, "") // 分区字段
-      .option(OPERATION.key(), BULK_INSERT_OPERATION_OPT_VAL) // 定义写操作类型。值可以为upsert，insert，bulk_insert和delete，默认值为upsert
-      // 下面的参数和同步hive元数据，查询hive有关
-      .option(META_SYNC_ENABLED.key, true)
+//      .option(KEYGENERATOR_CLASS_NAME.key, classOf[ComplexKeyGenerator].getName)
+//      .option(RECORDKEY_FIELD.key, "id") // 主键字段
+//      // 更新数据时，如果存在两个具有相同主键的记录，则此列中的值将决定更新哪个记录。选择诸如时间戳记的列将确保选择具有最新时间戳记的记录。
+//      .option(PRECOMBINE_FIELD.key, "ts") // 预合并字段
+//      .option(PARTITIONPATH_FIELD.key, "") // 分区字段
+//      .option(OPERATION.key(), BULK_INSERT_OPERATION_OPT_VAL) // 定义写操作类型。值可以为upsert，insert，bulk_insert和delete，默认值为upsert
+//      // 下面的参数和同步hive元数据，查询hive有关
+//      .option(META_SYNC_ENABLED.key, true)
       //      .option(HIVE_USE_JDBC.key, false)
       //      .option(HIVE_DATABASE.key, databaseName)
       //      .option(HIVE_AUTO_CREATE_DATABASE.key, true)
@@ -77,14 +77,14 @@ object SparkHudiWriter {
       //      // 详情查看PR：https://github.com/apache/hudi/pull/3745
       //      .option(DataSourceWriteOptions.HIVE_TABLE_SERDE_PROPERTIES.key, s"primaryKey=$primaryKey")
       // 同步到hive
-      .option(HIVE_SYNC_MODE.key, "hms")
-      .option(HIVE_STYLE_PARTITIONING.key, true)
-      .option(HIVE_AUTO_CREATE_DATABASE.key, true)
-      .option(HIVE_DATABASE.key, "xgitbigdata")
-      .option(HIVE_TABLE.key, tableName)
-      .option(HIVE_PARTITION_FIELDS.key, "")
-      .option(HIVE_PARTITION_EXTRACTOR_CLASS.key, classOf[NonPartitionedExtractor].getName)
-      .option(TBL_NAME.key(), tableName)
+//      .option(HIVE_SYNC_MODE.key, "hms")
+//      .option(HIVE_STYLE_PARTITIONING.key, true)
+//      .option(HIVE_AUTO_CREATE_DATABASE.key, true)
+//      .option(HIVE_DATABASE.key, "xgitbigdata")
+//      .option(HIVE_TABLE.key, tableName)
+//      .option(HIVE_PARTITION_FIELDS.key, "")
+//      .option(HIVE_PARTITION_EXTRACTOR_CLASS.key, classOf[NonPartitionedExtractor].getName)
+//      .option(TBL_NAME.key(), tableName)
       // 将 core-site.xml,hdfs-site.xml 放到目录下
       .save(s"/user/superz/hudi/$tableName")
 

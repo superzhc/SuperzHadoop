@@ -1,6 +1,5 @@
 package com.github.superzhc.hadoop.spark.java.hudi;
 
-import org.apache.hudi.DataSourceReadOptions;
 import org.apache.spark.SparkConf;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;

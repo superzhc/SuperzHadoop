@@ -1,19 +1,17 @@
 package com.github.superzhc.hadoop.spark.java.hudi;
 
 import com.github.superzhc.data.fund.EastMoneyFund;
-import org.apache.hudi.DataSourceWriteOptions;
-import org.apache.hudi.config.HoodieWriteConfig;
-import org.apache.hudi.keygen.ComplexKeyGenerator;
-import org.apache.hudi.keygen.constant.KeyGeneratorOptions;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.Function;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
-import org.apache.spark.sql.types.*;
+import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.Metadata;
+import org.apache.spark.sql.types.StructField;
+import org.apache.spark.sql.types.StructType;
 import scala.collection.JavaConverters;
 import scala.collection.Seq;
 
@@ -21,8 +19,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static org.apache.hudi.config.HoodieWriteConfig.*;
 
 /**
  * @author superz

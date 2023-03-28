@@ -35,7 +35,7 @@ public class InfluxDBClientTest {
 
     @Test
     public void testQuery(){
-        String influxQL="select * from fund_etf_spot_em limit 20";
+        String influxQL="select * from fund_etf_spot_em LIMIT 20";
         System.out.println(client.query("xgit",influxQL));
     }
 }

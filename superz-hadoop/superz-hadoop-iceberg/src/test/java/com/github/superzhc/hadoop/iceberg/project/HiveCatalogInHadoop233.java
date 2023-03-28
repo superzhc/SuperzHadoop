@@ -1,15 +1,19 @@
 package com.github.superzhc.hadoop.iceberg.project;
 
+import com.github.superzhc.common.utils.ListUtils;
 import com.github.superzhc.common.utils.MapUtils;
 import com.github.superzhc.hadoop.iceberg.catalog.IcebergHiveCatalog;
 import com.github.superzhc.hadoop.iceberg.utils.SchemaUtils;
+import com.github.superzhc.hadoop.iceberg.utils.TableReadUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.iceberg.PartitionSpec;
 import org.apache.iceberg.Schema;
+import org.apache.iceberg.Table;
 import org.apache.iceberg.TableProperties;
 import org.apache.iceberg.catalog.Namespace;
 import org.apache.iceberg.catalog.TableIdentifier;
 import org.apache.iceberg.hive.HiveCatalog;
+import org.apache.iceberg.types.Types;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -46,7 +50,7 @@ public class HiveCatalogInHadoop233 {
         conf.set("dfs.client.failover.proxy.provider.xgitbigdata", "org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider");
 
         catalog = (HiveCatalog) new IcebergHiveCatalog(
-                "thrift://10.90.15.233:9083",
+                "thrift://10.90.15.221:9083,thrift://10.90.15.233:9083",
                 "hdfs://xgitbigdata/usr/xgit/hive/warehouse",
                 conf
         ).catalog();
@@ -71,6 +75,16 @@ public class HiveCatalogInHadoop233 {
     }
 
     @Test
+    public void fields(){
+        TableIdentifier tableIdentifier=TableIdentifier.of("xgit_admin","superz_influxdb_device_daily_data");
+        Table table=catalog.loadTable(tableIdentifier);
+        Schema schema= table.schema();
+        for (Types.NestedField field:schema.columns()){
+            System.out.println(field);
+        }
+    }
+
+    @Test
     public void createTableDeviceDailyData() {
         Map<String, String> tableProperties = new HashMap<>();
         tableProperties.put(TableProperties.FORMAT_VERSION, "2");
@@ -90,5 +104,19 @@ public class HiveCatalogInHadoop233 {
             catalog.dropTable(tableIdentifier);
         }
         catalog.createTable(tableIdentifier, schema, spec, tableProperties);
+    }
+
+    @Test
+    public void tableDeviceDailyData() {
+        Table table = catalog.loadTable(TableIdentifier.of("influxdb_superz", "device_daily_data"));
+
+        MapUtils.show(table.properties());
+    }
+
+    @Test
+    public void readDeviceDailyData() {
+        Table table = catalog.loadTable(TableIdentifier.of("influxdb_superz", "device_daily_data"));
+        List<Map<String, Object>> data = TableReadUtils.read(table);
+        MapUtils.show(data, 1000);
     }
 }

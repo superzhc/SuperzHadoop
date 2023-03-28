@@ -28,6 +28,7 @@
         <module>superz-hadoop-hudi</module>
         <module>superz-hadoop-minio</module>
         <module>superz-hadoop-iceberg</module>
+        <module>superz-hadoop-trino</module>
     </modules>
 
     <properties>

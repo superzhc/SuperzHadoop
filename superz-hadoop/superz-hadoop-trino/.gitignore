@@ -106,11 +106,3 @@ fabric.properties
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
-/src/main/resources/**/core-site.xml
-/src/main/resources/**/hdfs-site.xml
-/src/main/resources/**/hive-site.xml
-/src/main/resources/**/yarn-site.xml
-/src/test/resources/**/core-site.xml
-/src/test/resources/**/hdfs-site.xml
-/src/test/resources/**/hive-site.xml
-/src/test/resources/**/yarn-site.xml
