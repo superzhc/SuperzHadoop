@@ -133,3 +133,39 @@ docker build . -t hive-standalone-metastore:v1.0
 ```shell
 docker run -d -p 9083:9083 -v /f/docker/volumes/hive_standalone_metastore/warehouse:/user/hive/warehouse --name hive-standalone-metastore hive-standalone-metastore:v1.0
 ```
+
+## FAQ
+
+### Q1:容器无法启动，修改未启动容器内的配置文件
+
+把docker容器中的配置文件复制到主机中，然后在主机中修改，修改完成后再复制到docker容器中
+
+```shell
+# 复制docker容器的文件到主机中
+docker cp [容器id]:docker容器中配置文件路径  主机路径
+# 修改配置文件
+# 配置文件到docker容器中
+docker cp 主机文件路径 容器id:docker容器中配置文件路径
+```
+
+### Q2:应容器重启后IP会重新分配，上面 `metastore-site.xml` 指定的ip地址基本上没法使用，重新进行网络分配
+
+进行如下命令完成网络创建，并给容器重新分配，**对于已启动的容器，重新分配网络需要重启**
+
+```shell
+# 创建网络
+docker network create -d bridge hms-net
+
+# 修改重启网络
+docker network disconnect bridge mysql5.7
+docker network connect hms-net mysql5.7
+#docker container restart mysql5.7
+
+docker network disconnect bridge minio
+docker network connect hms-net minio
+#docker container restart minio
+
+# 注意在容易中已经修改了metastore-site.xml中的配置参数
+docker network disconnect bridge hive-standalone-metastore
+docker network connect hms-net hive-standalone-metastore
+```

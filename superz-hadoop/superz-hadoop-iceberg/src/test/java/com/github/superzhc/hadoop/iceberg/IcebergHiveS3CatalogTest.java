@@ -3,15 +3,18 @@ package com.github.superzhc.hadoop.iceberg;
 import com.github.superzhc.common.utils.MapUtils;
 import com.github.superzhc.hadoop.iceberg.catalog.IcebergHiveS3Catalog;
 import com.github.superzhc.hadoop.iceberg.utils.SchemaUtils;
+import com.github.superzhc.hadoop.iceberg.utils.TableUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.iceberg.CatalogProperties;
 import org.apache.iceberg.PartitionSpec;
 import org.apache.iceberg.Schema;
+import org.apache.iceberg.Table;
 import org.apache.iceberg.aws.AwsProperties;
 import org.apache.iceberg.catalog.Catalog;
 import org.apache.iceberg.catalog.Namespace;
 import org.apache.iceberg.catalog.TableIdentifier;
 import org.apache.iceberg.hive.HiveCatalog;
+import org.apache.iceberg.types.Types;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -62,7 +65,7 @@ public class IcebergHiveS3CatalogTest {
     public void testHiveS3Catalog() {
         Catalog catalog = new IcebergHiveS3Catalog(
                 "thrift://127.0.0.1:9083",
-                "s3a://superz/java/catalog/hive",
+                "s3a://superz/metastore",
                 "http://127.0.0.1:9000",
                 "admin",
                 "admin123456"
@@ -76,18 +79,34 @@ public class IcebergHiveS3CatalogTest {
         // 创建库
 //        hiveCatalog.createNamespace(Namespace.of("xgit"));
 
-        // 创建表
-        Map<String, String> fields = new LinkedHashMap<>();
-        fields.put("id", "int");
-        fields.put("name", "string");
-        Schema schema = SchemaUtils.create(fields, "id");
+        // // 创建表
+        // Map<String, String> fields = new LinkedHashMap<>();
+        // fields.put("id", "int");
+        // fields.put("name", "string");
+        // Schema schema = SchemaUtils.create(fields, "id");
+        //
+        // PartitionSpec spec = SchemaUtils.partition(schema);
+        //
+        // TableIdentifier tableIdentifier = TableIdentifier.of("xgit", "demo4");
+        // if (catalog.tableExists(tableIdentifier)) {
+        //     catalog.dropTable(tableIdentifier);
+        // }
+        // hiveCatalog.createTable(tableIdentifier, schema, spec);
+    }
 
-        PartitionSpec spec = SchemaUtils.partition(schema);
+    @Test
+    public void addColumn(){
+        Catalog catalog = new IcebergHiveS3Catalog(
+                "thrift://127.0.0.1:9083",
+                "s3a://superz/java/catalog/hive",
+                "http://127.0.0.1:9000",
+                "admin",
+                "admin123456"
+        ).catalog();
 
-        TableIdentifier tableIdentifier = TableIdentifier.of("xgit", "demo4");
-        if (catalog.tableExists(tableIdentifier)) {
-            catalog.dropTable(tableIdentifier);
-        }
-        hiveCatalog.createTable(tableIdentifier, schema, spec);
+        HiveCatalog hiveCatalog = (HiveCatalog) catalog;
+
+        Table table=hiveCatalog.loadTable(TableIdentifier.of("financial", "index_info"));
+        table.updateSchema().addColumn("sample_number", Types.fromPrimitiveString("int"),"样本数").commit();
     }
 }
