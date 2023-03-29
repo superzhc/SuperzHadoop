@@ -18,29 +18,40 @@ import java.util.*;
  * @create 2023/3/10 11:43
  **/
 public class DatasetUtils {
-    public static Dataset<Row> fromMap(SparkSession spark, List<Map<String, Object>> maps, String... keyArr) {
+    public static Dataset<Row> fromMap(SparkSession spark, List<Map<String, Object>> maps, String... notNullableFields) {
         // 获取所有key及value类型
         Map<String, Class> javaTypes = MapUtils.types(maps);
 
         Map<String, Class> javaTypes2;
-        if (null != keyArr && keyArr.length > 0) {
-            javaTypes2 = new LinkedHashMap<>();
-            for (String key : keyArr) {
-                if (!javaTypes.containsKey(key)) {
-                    continue;
-                }
-
-                javaTypes2.put(key, javaTypes.get(key));
-            }
-        } else {
-            javaTypes2 = javaTypes;
-        }
+        // if (null != keyArr && keyArr.length > 0) {
+        //     javaTypes2 = new LinkedHashMap<>();
+        //     for (String key : keyArr) {
+        //         if (!javaTypes.containsKey(key)) {
+        //             continue;
+        //         }
+        //
+        //         javaTypes2.put(key, javaTypes.get(key));
+        //     }
+        // } else {
+        //     javaTypes2 = javaTypes;
+        // }
+        javaTypes2 = javaTypes;
 
         StructField[] fields = new StructField[javaTypes2.size()];
         int cursor = 0;
         for (Map.Entry<String, Class> javaType : javaTypes2.entrySet()) {
+            boolean nullable = true;
+            if (null != notNullableFields && notNullableFields.length > 0) {
+                for (String notNullableField : notNullableFields) {
+                    if (javaType.getKey().equalsIgnoreCase(notNullableField)) {
+                        nullable = false;
+                        break;
+                    }
+                }
+            }
+
             if (null == javaType.getValue()) {
-                fields[cursor++] = DataTypes.createStructField(javaType.getKey(), DataTypes.NullType, true);
+                fields[cursor++] = DataTypes.createStructField(javaType.getKey(), DataTypes.NullType, nullable);
                 continue;
             }
 
@@ -77,18 +88,28 @@ public class DatasetUtils {
                     break;
             }
 
-            fields[cursor++] = DataTypes.createStructField(javaType.getKey(), dataType, true);
+            fields[cursor++] = DataTypes.createStructField(javaType.getKey(), dataType, nullable);
         }
 
         StructType schema = DataTypes.createStructType(fields);
         return fromMap(spark, maps, schema);
     }
 
-    public static Dataset<Row> fromMap(SparkSession spark, List<Map<String, Object>> maps, Map<String, String> types) {
+    public static Dataset<Row> fromMap(SparkSession spark, List<Map<String, Object>> maps, Map<String, String> types, String... notNullableFields) {
         StructField[] fields = new StructField[types.size()];
 
         int cursor = 0;
         for (Map.Entry<String, String> type : types.entrySet()) {
+            boolean nullable = true;
+            if (null != notNullableFields && notNullableFields.length > 0) {
+                for (String notNullableField : notNullableFields) {
+                    if (type.getKey().equalsIgnoreCase(notNullableField)) {
+                        nullable = false;
+                        break;
+                    }
+                }
+            }
+
             DataType dataType;
             switch (type.getValue().trim().toLowerCase()) {
                 case "null":
@@ -132,7 +153,7 @@ public class DatasetUtils {
                     dataType = DataTypes.StringType;
                     break;
             }
-            fields[cursor++] = DataTypes.createStructField(type.getKey(), dataType, true);
+            fields[cursor++] = DataTypes.createStructField(type.getKey(), dataType, nullable);
         }
 
         StructType schema = DataTypes.createStructType(fields);
@@ -154,11 +175,20 @@ public class DatasetUtils {
                 if (!map.containsKey(field.name())) {
                     values[i] = null;
                 } else {
+                    // 对值进行修复
                     Object value = map.get(field.name());
                     if (DataTypes.NullType == field.dataType()) {
                         value = null;
                     } else if (DataTypes.StringType == field.dataType()) {
-                        value = String.valueOf(value);
+                        value = (null == value) ? null : String.valueOf(value);
+                    } else if (DataTypes.IntegerType == field.dataType()) {
+                        value = (null == value) ? null : Integer.valueOf(value.toString());
+                    } else if (DataTypes.LongType == field.dataType()) {
+                        value = (null == value) ? null : Long.valueOf(value.toString());
+                    } else if (DataTypes.FloatType == field.dataType()) {
+                        value = (null == value) ? null : Float.valueOf(value.toString());
+                    } else if (DataTypes.DoubleType == field.dataType()) {
+                        value = (null == value) ? null : Double.valueOf(value.toString());
                     }
                     values[i] = value;
                 }
@@ -186,7 +216,8 @@ public class DatasetUtils {
      * @param url
      * @param username
      * @param password
-     * @param table    示例：t1，或者子句：(select * from t2) as t1
+     * @param table 示例：t1，或者子句：(select * from t2) as t1
+     *
      * @return
      */
     public static Dataset<Row> fromJdbc(SparkSession spark, String url, String username, String password, String table) {
