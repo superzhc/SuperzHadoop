@@ -20,12 +20,16 @@ public class RestApiTest {
     /*数据接口类*/
     private AKTools akTools;
 
+    String measurement;
+
     @Before
     public void setUp() throws Exception {
-//        api = new RestApi("127.0.0.1", 8086);
-        api = new RestApi("10.90.18.100", 8086);
+        api = new RestApi("127.0.0.1", 8086);
+//        api = new RestApi("10.90.18.100", 8086);
         api.enableDebug();
         akTools = new AKTools("127.0.0.1", 8080);
+
+        measurement = "superz";
     }
 
     @Test
@@ -35,17 +39,17 @@ public class RestApiTest {
 
     @Test
     public void createDB() {
-        api.createDB("superz");
+        api.createDB(measurement);
     }
 
     @Test
     public void testDropDB() {
-        api.dropDB("superz");
+        api.dropDB(measurement);
     }
 
     @Test
     public void databases() {
-        System.out.println(api.databases());
+        ListUtils.show("DATABASE", api.databases());
     }
 
 //    @Test
@@ -56,34 +60,34 @@ public class RestApiTest {
 
     @Test
     public void series() {
-        System.out.println(api.series("superz"));
+        ListUtils.show("SERIES", api.series(measurement));
     }
 
     @Test
     public void measurements() {
-        System.out.println(api.measurements("superz"));
+        ListUtils.show("MEASUREMENT",api.measurements(measurement));
     }
 
     @Test
     public void testDropMeasurement() {
-        api.dropMeasurement("superz", "spot_hist_sge");
+        api.dropMeasurement(measurement, "spot_hist_sge");
     }
 
     @Test
     public void tagKeys() {
-        System.out.println(api.tagKeys("superz"));
+        ListUtils.show("TAG_KEY",api.tagKeys(measurement));
     }
 
     @Test
     public void tagKeys2() {
-        List<String> data = api.tagKeys("superz", "spot_hist_sge");
-        System.out.println(data);
+        List<String> data = api.tagKeys(measurement, "spot_hist_sge");
+        ListUtils.show("TAG_KEY",data);
     }
 
     @Test
     public void fieldKeys() {
-        List<String> result = api.fieldKeys("superz", "spot_hist_sge");
-        System.out.println(result);
+        List<String> data = api.fieldKeys(measurement, "spot_hist_sge");
+        ListUtils.show("FIELD_KEY",data);
     }
 
     @Test
@@ -155,8 +159,8 @@ public class RestApiTest {
 
     @Test
     public void testCount() {
-        String influxQL = "select count(*) from index_zh_spot";
-        String result = api.query("superz", influxQL);
+        String influxQL = "select count(*) from device_daily_data";
+        String result = api.query(measurement, influxQL);
         System.out.println(result);
     }
 }

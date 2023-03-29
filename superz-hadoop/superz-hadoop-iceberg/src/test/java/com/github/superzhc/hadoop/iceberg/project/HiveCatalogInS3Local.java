@@ -15,7 +15,7 @@ public class HiveCatalogInS3Local {
     public void setUp() {
         catalog = (HiveCatalog) new IcebergHiveS3Catalog(
                 "thrift://127.0.0.1:9083",
-                "s3a://superz/java/catalog/hive",
+                "s3a://superz/akshare",
                 "http://127.0.0.1:9000",
                 "admin",
                 "admin123456"
