@@ -54,10 +54,10 @@ public class LocalInflxuDB {
 
     @Test
     public void writeIndexDailyData() {
-        String code = "sh000004";
+        String code = "sh000001";
         List<Map<String, Object>> data = dataApi.get("stock_zh_index_daily", Collections.singletonMap("symbol", code));
 
-        String measurement = "index_daily_data";
+        String measurement = "device_daily_data";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
         List<LineProtocol> lineProtocols = new ArrayList<>();
@@ -74,7 +74,7 @@ public class LocalInflxuDB {
             lineProtocols.add(lineProtocol);
         }
 
-        api.writeBatch("test", lineProtocols);
+        api.writeBatch("superz", lineProtocols);
     }
 
     @Test

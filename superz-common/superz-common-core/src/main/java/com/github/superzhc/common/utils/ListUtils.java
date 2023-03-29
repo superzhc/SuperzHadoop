@@ -32,17 +32,27 @@ public class ListUtils {
         return copy;
     }
 
+    public static <T> void show(String header, T... data) {
+        System.out.println(print(header, data));
+    }
+
+    public static <T> void show(String header, List<T> data) {
+        System.out.println(print(header, data));
+    }
+
     public static <T> String print(String header, T... data) {
         return print(header, (null == data || data.length == 0) ? new ArrayList<T>() : Arrays.asList(data));
     }
 
     public static <T> String print(String header, List<T> data) {
         List<List<T>> dataList = new ArrayList<>();
-        for (T item : data) {
-            List<T> itemList = new ArrayList<>();
-            itemList.add(item);
+        if (null != data && data.size() > 0) {
+            for (T item : data) {
+                List<T> itemList = new ArrayList<>();
+                itemList.add(item);
 
-            dataList.add(itemList);
+                dataList.add(itemList);
+            }
         }
         return print(Collections.singletonList(header), dataList);
     }

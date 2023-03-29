@@ -429,12 +429,4 @@ public class RestApi {
         }
         return data;
     }
-
-//    public boolean isDebug() {
-//        return isDebug;
-//    }
-//
-//    public void setDebug(boolean debug) {
-//        isDebug = debug;
-//    }
 }
