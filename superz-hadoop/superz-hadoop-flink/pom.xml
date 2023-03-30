@@ -95,11 +95,16 @@
             <version>${flink.version}</version>
             <!--<scope>provided</scope>-->
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-table-planner-loader</artifactId>
             <version>${flink.version}</version>
-            <!--<scope>provided</scope>-->
+            &lt;!&ndash;<scope>provided</scope>&ndash;&gt;
+        </dependency>-->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-table-planner_${scala.binary.version}</artifactId>
+            <version>${flink.version}</version>
         </dependency>
 
         <!--endregion 通过简单地执行主类来运行作业，需要添加如下的依赖包-->
@@ -131,6 +136,12 @@
             <artifactId>flink-table-test-utils</artifactId>
             <version>${flink.version}</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>flink-table-planner-loader</artifactId>
+                    <groupId>org.apache.flink</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!--endregion 用于测试的依赖-->
@@ -261,6 +272,12 @@
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>url-connection-client</artifactId>
             <version>${aws.version}</version>
+        </dependency>
+        <!--iceberg 使用hivecatalog需要引入如下包-->
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-sql-connector-hive-${hive.version}_${scala.binary.version}</artifactId>
+            <version>${flink.version}</version>
         </dependency>
 
 

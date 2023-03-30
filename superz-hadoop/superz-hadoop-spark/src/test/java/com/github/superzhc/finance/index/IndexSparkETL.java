@@ -31,6 +31,7 @@ public class IndexSparkETL {
         api = new AKTools("127.0.0.1", 8080);
 
         SparkConf sparkConf = new SparkConf()
+                .set("spark.sql.legacy.timeParserPolicy", "LEGACY")
                 .set("spark.sql.sources.partitionOverwriteMode", "dynamic")
                 .set("spark.sql.extensions", "org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions")
                 .set("spark.sql.iceberg.check-nullability", "false")
@@ -109,19 +110,43 @@ public class IndexSparkETL {
         spark.sql("SELECT * FROM bigdata_hive.finance.index_basic").show();
     }
 
+    // @Test
+    // public void todayIndexInfo() {
+    //     List<Map<String, Object>> indexStockInfoData = api.get("index_all_cni");
+    //     Dataset<Row> ds = DatasetUtils.fromMap(spark, indexStockInfoData, "code", "name");
+    //     ds.createOrReplaceTempView("index_all_cni");
+    //     spark.sql("INSERT INTO bigdata_hive.finance.index_info SELECT current_date(),code,name,NULL,NULL,NULL,close,change,PE_TTM,volume,amount,total_market,circulation_market FROM index_all_cni");
+    //     spark.sql("SELECT * FROM bigdata_hive.finance.index_info").show(100);
+    // }
+
     @Test
-    public void todayIndexInfo() {
-        List<Map<String, Object>> indexStockInfoData = api.get("index_all_cni");
-        Dataset<Row> ds = DatasetUtils.fromMap(spark, indexStockInfoData, "code", "name");
-        ds.createOrReplaceTempView("index_all_cni");
-        spark.sql("INSERT INTO bigdata_hive.finance.index_info SELECT current_date(),code,name,NULL,NULL,NULL,close,change,PE_TTM,volume,amount,total_market,circulation_market FROM index_all_cni");
+    public void indexInfo() {
+        String code = "sz399552";
+        String name = "央视成长";
+
+        // 股票指数的历史数据按日频率更新
+        List<Map<String, Object>> data = api.get("stock_zh_index_daily", Collections.singletonMap("symbol", code));
+        Dataset<Row> ds = DatasetUtils.fromMap(spark, data, "date");
+        ds = ds
+                .withColumn("code", lit(code.substring(2)))
+                .withColumn("name", lit(name))
+                .withColumn("date", to_date(col("date"), "yyyy-MM-dd"))
+        ;
+        ds.createOrReplaceTempView("stock_zh_index_daily");
+
+        String sql = "MERGE INTO bigdata_hive.finance.index_info t" +
+                "   USING (SELECT * FROM stock_zh_index_daily) s" +
+                "   ON t.code = s.code AND t.date=s.date" +
+                "   WHEN MATCHED THEN UPDATE SET t.open=s.open,t.high=s.high,t.low=s.low,t.close=s.close,t.volume=s.volume" +
+                "   WHEN NOT MATCHED THEN INSERT (date,code,name,open,high,low,close,change,pe_ttm,volume,amount,total_market,circulation_market) VALUES(s.date,s.code,s.name,s.open,s.high,s.low,s.close,NULL,NULL,s.volume,NULL,NULL,NULL)";
+        spark.sql(sql);
         spark.sql("SELECT * FROM bigdata_hive.finance.index_info").show(100);
     }
 
     @Test
-    public void indexInfo() {
+    public void indexInfo2() {
         Map<String, String> map = new HashMap<>();
-        map.put("399005","中小100");
+        map.put("399005", "中小100");
 
         Dataset<Row> ds2 = null;
         for (Map.Entry<String, String> entry : map.entrySet()) {
