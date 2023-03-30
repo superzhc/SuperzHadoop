@@ -18,7 +18,7 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
 
 /**
  * 实现见：<a>https://blog.csdn.net/u013668852/article/details/83117237</a>
- *
+ * <p>
  * 注意：跟原文作者的实现不同之处在于，ThreadPoolExecutor不可访问的方法，通过反射的方式来调用父类的方法
  *
  * @author superz
@@ -203,8 +203,7 @@ public class CronScheduledThreadPoolExecutor extends ThreadPoolExecutor
                 method.setAccessible(true);
                 method.invoke(this, task);
                 // reject(task);
-            }
-            else {
+            } else {
                 super.getQueue().add(task);
                 if (isShutdown() &&
                         !canRunInCurrentRunState(task.isPeriodic()) &&
@@ -217,7 +216,7 @@ public class CronScheduledThreadPoolExecutor extends ThreadPoolExecutor
                     // ensurePrestart();
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -297,9 +296,8 @@ public class CronScheduledThreadPoolExecutor extends ThreadPoolExecutor
      * The default implementation simply returns the given task.
      *
      * @param runnable the submitted Runnable
-     * @param task the task created to execute the runnable
-     * @param <V> the type of the task's result
-     *
+     * @param task     the task created to execute the runnable
+     * @param <V>      the type of the task's result
      * @return a task that can execute the runnable
      * @since 1.6
      */
@@ -315,9 +313,8 @@ public class CronScheduledThreadPoolExecutor extends ThreadPoolExecutor
      * The default implementation simply returns the given task.
      *
      * @param callable the submitted Callable
-     * @param task the task created to execute the callable
-     * @param <V> the type of the task's result
-     *
+     * @param task     the task created to execute the callable
+     * @param <V>      the type of the task's result
      * @return a task that can execute the callable
      * @since 1.6
      */
@@ -331,8 +328,7 @@ public class CronScheduledThreadPoolExecutor extends ThreadPoolExecutor
      * given core pool size.
      *
      * @param corePoolSize the number of threads to keep in the pool, even
-     * if they are idle, unless {@code allowCoreThreadTimeOut} is set
-     *
+     *                     if they are idle, unless {@code allowCoreThreadTimeOut} is set
      * @throws IllegalArgumentException if {@code corePoolSize < 0}
      */
     public CronScheduledThreadPoolExecutor(int corePoolSize) {
@@ -344,13 +340,12 @@ public class CronScheduledThreadPoolExecutor extends ThreadPoolExecutor
      * Creates a new {@code ScheduledThreadPoolExecutor} with the
      * given initial parameters.
      *
-     * @param corePoolSize the number of threads to keep in the pool, even
-     * if they are idle, unless {@code allowCoreThreadTimeOut} is set
+     * @param corePoolSize  the number of threads to keep in the pool, even
+     *                      if they are idle, unless {@code allowCoreThreadTimeOut} is set
      * @param threadFactory the factory to use when the executor
-     * creates a new thread
-     *
+     *                      creates a new thread
      * @throws IllegalArgumentException if {@code corePoolSize < 0}
-     * @throws NullPointerException if {@code threadFactory} is null
+     * @throws NullPointerException     if {@code threadFactory} is null
      */
     public CronScheduledThreadPoolExecutor(int corePoolSize,
                                            ThreadFactory threadFactory) {
@@ -363,12 +358,11 @@ public class CronScheduledThreadPoolExecutor extends ThreadPoolExecutor
      * initial parameters.
      *
      * @param corePoolSize the number of threads to keep in the pool, even
-     * if they are idle, unless {@code allowCoreThreadTimeOut} is set
-     * @param handler the handler to use when execution is blocked
-     * because the thread bounds and queue capacities are reached
-     *
+     *                     if they are idle, unless {@code allowCoreThreadTimeOut} is set
+     * @param handler      the handler to use when execution is blocked
+     *                     because the thread bounds and queue capacities are reached
      * @throws IllegalArgumentException if {@code corePoolSize < 0}
-     * @throws NullPointerException if {@code handler} is null
+     * @throws NullPointerException     if {@code handler} is null
      */
     public CronScheduledThreadPoolExecutor(int corePoolSize,
                                            RejectedExecutionHandler handler) {
@@ -380,16 +374,15 @@ public class CronScheduledThreadPoolExecutor extends ThreadPoolExecutor
      * Creates a new ScheduledThreadPoolExecutor with the given
      * initial parameters.
      *
-     * @param corePoolSize the number of threads to keep in the pool, even
-     * if they are idle, unless {@code allowCoreThreadTimeOut} is set
+     * @param corePoolSize  the number of threads to keep in the pool, even
+     *                      if they are idle, unless {@code allowCoreThreadTimeOut} is set
      * @param threadFactory the factory to use when the executor
-     * creates a new thread
-     * @param handler the handler to use when execution is blocked
-     * because the thread bounds and queue capacities are reached
-     *
+     *                      creates a new thread
+     * @param handler       the handler to use when execution is blocked
+     *                      because the thread bounds and queue capacities are reached
      * @throws IllegalArgumentException if {@code corePoolSize < 0}
-     * @throws NullPointerException if {@code threadFactory} or
-     * {@code handler} is null
+     * @throws NullPointerException     if {@code threadFactory} or
+     *                                  {@code handler} is null
      */
     public CronScheduledThreadPoolExecutor(int corePoolSize,
                                            ThreadFactory threadFactory,
@@ -431,9 +424,21 @@ public class CronScheduledThreadPoolExecutor extends ThreadPoolExecutor
     }
 
     /**
+     * 默认使用CronType.QUARTZ表达式
+     *
+     * @param command
+     * @param cron
+     * @return
+     */
+    public ScheduledFuture<?> scheduleWithCron(Runnable command,
+                                               String cron) {
+        return scheduleWithCron(command, cron, CronType.QUARTZ);
+    }
+
+    /**
      * @throws RejectedExecutionException {@inheritDoc}
-     * @throws NullPointerException {@inheritDoc}
-     * @throws IllegalArgumentException {@inheritDoc}
+     * @throws NullPointerException       {@inheritDoc}
+     * @throws IllegalArgumentException   {@inheritDoc}
      */
     public ScheduledFuture<?> scheduleWithCron(Runnable command,
                                                String cron,
@@ -460,7 +465,6 @@ public class CronScheduledThreadPoolExecutor extends ThreadPoolExecutor
      * This value is by default {@code false}.
      *
      * @param value if {@code true}, continue after shutdown, else don't
-     *
      * @see #getContinueExistingPeriodicTasksAfterShutdownPolicy
      */
     public void setContinueExistingPeriodicTasksAfterShutdownPolicy(boolean value) {
@@ -493,7 +497,6 @@ public class CronScheduledThreadPoolExecutor extends ThreadPoolExecutor
      * This value is by default {@code true}.
      *
      * @param value if {@code true}, execute after shutdown, else don't
-     *
      * @see #getExecuteExistingDelayedTasksAfterShutdownPolicy
      */
     public void setExecuteExistingDelayedTasksAfterShutdownPolicy(boolean value) {
@@ -523,7 +526,6 @@ public class CronScheduledThreadPoolExecutor extends ThreadPoolExecutor
      * by default {@code false}.
      *
      * @param value if {@code true}, remove on cancellation, else don't
-     *
      * @see #getRemoveOnCancelPolicy
      * @since 1.7
      */
