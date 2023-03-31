@@ -1,6 +1,5 @@
 package com.github.superzhc.hadoop.iceberg.project;
 
-import com.github.superzhc.common.utils.ListUtils;
 import com.github.superzhc.common.utils.MapUtils;
 import com.github.superzhc.hadoop.iceberg.catalog.IcebergHiveCatalog;
 import com.github.superzhc.hadoop.iceberg.utils.SchemaUtils;
@@ -82,6 +81,24 @@ public class HiveCatalogInHadoop233 {
         for (Types.NestedField field:schema.columns()){
             System.out.println(field);
         }
+    }
+
+    @Test
+    public void createTable(){
+        Map<String, String> tableProperties = new HashMap<>();
+        tableProperties.put(TableProperties.FORMAT_VERSION, "2");
+        tableProperties.put(TableProperties.UPSERT_ENABLED, "true");
+        tableProperties.put(TableProperties.METADATA_DELETE_AFTER_COMMIT_ENABLED, "true");
+        tableProperties.put(TableProperties.METADATA_PREVIOUS_VERSIONS_MAX, "3");
+
+        Map<String, String> fields = new LinkedHashMap<>();
+        fields.put("id", "int");
+        fields.put("name", "string");
+        Schema schema = SchemaUtils.create(fields, "id");
+        PartitionSpec spec = SchemaUtils.partition(schema);
+        TableIdentifier tableIdentifier = TableIdentifier.of("flink_iceberg_superz", "t_20230331_002");
+
+        catalog.createTable(tableIdentifier, schema, spec, tableProperties);
     }
 
     @Test

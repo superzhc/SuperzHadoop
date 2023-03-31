@@ -19,7 +19,7 @@ import org.junit.Test;
  */
 public class FlinkIcebergWriteTest {
     static {
-        SystemUtils.setEnv("HADOOP_CONF_DIR", "./target/classes");
+        SystemUtils.setEnv("HADOOP_CONF_DIR", "./target/classes/s3local");
     }
 
     StreamExecutionEnvironment env;

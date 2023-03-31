@@ -6,7 +6,9 @@ import com.github.superzhc.data.other.AKTools;
 import com.github.superzhc.hadoop.kafka.MyStringProducer;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
@@ -39,20 +41,23 @@ public class IndexTask {
         }
     }
 
+    @Test
     public void stock_zh_index_spot() throws Exception {
         final String topic = "finance_stock_zh_index_spot";
         executor.scheduleWithCron(
                 () -> {
                     List<Map<String, Object>> data = akTools.get("stock_zh_index_spot");
                     try {
+                        LocalDateTime dateTime = LocalDateTime.now();
                         for (Map<String, Object> item : data) {
+                            item.put("date", dateTime);
                             producer.send(topic, JsonUtils.asString(item));
                         }
                     } catch (Exception e) {
                         latch.countDown();
                     }
                 },
-                "0/5 30-59|*|0-29|* 9|10|11|13,14 ? * MON-FRI"
+                "0 30-59|*|0-29|* 9|10|11|13,14 ? * MON-FRI"
         );
 
         latch.await();

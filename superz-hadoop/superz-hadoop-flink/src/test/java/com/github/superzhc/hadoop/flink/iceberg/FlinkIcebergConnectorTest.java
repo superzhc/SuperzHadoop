@@ -21,7 +21,7 @@ public class FlinkIcebergConnectorTest {
 
     static {
         // 设置环境变量：HADOOP_CONF_DIR=./target/classes
-        SystemUtils.setEnv("HADOOP_CONF_DIR", "./target/classes");
+        SystemUtils.setEnv("HADOOP_CONF_DIR", "./target/classes/s3local");
     }
 
     @Before

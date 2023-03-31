@@ -114,6 +114,10 @@ public class MyAdminClient extends KafkaBrokers implements Closeable {
      */
     public boolean exist(String topic) {
         Set<String> topics = list();
+        if (null == topics || topics.size() == 0) {
+            return false;
+        }
+
         return topics.contains(topic);
     }
 

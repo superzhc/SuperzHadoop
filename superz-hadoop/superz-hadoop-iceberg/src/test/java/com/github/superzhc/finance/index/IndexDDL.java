@@ -62,9 +62,9 @@ public class IndexDDL {
     }
 
     @Test
-    public void updateIndexBasic(){
+    public void updateIndexBasic() {
         TableIdentifier identifier = TableIdentifier.of("finance", "index_basic");
-        Table table= catalog.loadTable(identifier);
+        Table table = catalog.loadTable(identifier);
 
     }
 
@@ -87,6 +87,33 @@ public class IndexDDL {
         Schema schema = SchemaUtils.create(fields, "code", "name");
         PartitionSpec partition = SchemaUtils.partition(schema, "date");
         TableIdentifier identifier = TableIdentifier.of("finance", "index_info");
+        if (catalog.tableExists(identifier)) {
+            catalog.dropTable(identifier);
+        }
+        catalog.createTable(identifier, schema, partition, commonTBLProperties);
+    }
+
+    @Test
+    public void indexOneMinuteInfo() {
+        Map<String, String> fields = new LinkedHashMap<>();
+        fields.put("date", "date");
+        fields.put("code", "string");
+        fields.put("name", "string");
+        fields.put("last_close", "double");
+        fields.put("open", "double");
+        fields.put("high", "double");
+        fields.put("low", "double");
+        fields.put("new", "double");
+        fields.put("change", "double");
+        fields.put("change_amount", "double");
+        fields.put("volume", "long");
+        fields.put("amount", "long");
+        // flink1.15.1 + iceberg1.1.0 版本不支持隐藏分区，但根据观察，隐藏域的逻辑是对实际时间字段进行函数处理，生成一个新的字段，但用户无需感知
+        // 解决方案：显式生成一个时间分区字段
+        fields.put("date_hour", "string");
+        Schema schema = SchemaUtils.create(fields, "date", "code");
+        PartitionSpec partition = SchemaUtils.partition(schema, "date_hour");
+        TableIdentifier identifier = TableIdentifier.of("finance", "index_one_minute_info");
         if (catalog.tableExists(identifier)) {
             catalog.dropTable(identifier);
         }
