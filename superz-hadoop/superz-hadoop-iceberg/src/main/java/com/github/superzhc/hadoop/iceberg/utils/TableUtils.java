@@ -7,6 +7,8 @@ import org.apache.iceberg.UpdateProperties;
 import org.apache.iceberg.catalog.Catalog;
 import org.apache.iceberg.catalog.Namespace;
 import org.apache.iceberg.catalog.TableIdentifier;
+import org.apache.iceberg.hive.HiveCatalog;
+import org.apache.iceberg.io.FileIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +23,7 @@ import java.util.stream.Collectors;
  * @create 2023/3/10 17:11
  **/
 public class TableUtils {
-    private static final Logger LOG= LoggerFactory.getLogger(TableUtils.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TableUtils.class);
 
     private TableUtils() {
     }
@@ -55,7 +57,13 @@ public class TableUtils {
     }
 
     public static boolean drop(Catalog catalog, TableIdentifier tableIdentifier) {
-        return catalog.dropTable(tableIdentifier);
+        boolean isSuccess = catalog.dropTable(tableIdentifier);
+
+        // 2023年4月1日 对于HiveCatalog来说，删除表只是删除了HMS中的元数据，并未删除实际存储介质中的文件
+        if (catalog instanceof HiveCatalog) {
+
+        }
+        return isSuccess;
     }
 
     public static void rename(Catalog catalog, Table table, String newName) {

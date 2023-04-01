@@ -96,7 +96,7 @@ public class IndexDDL {
     @Test
     public void indexOneMinuteInfo() {
         Map<String, String> fields = new LinkedHashMap<>();
-        fields.put("date", "date");
+        fields.put("date", "timestamp");
         fields.put("code", "string");
         fields.put("name", "string");
         fields.put("last_close", "double");
@@ -118,6 +118,15 @@ public class IndexDDL {
             catalog.dropTable(identifier);
         }
         catalog.createTable(identifier, schema, partition, commonTBLProperties);
+    }
+
+    @Test
+    public void updateIndexOneMinuteInfo() {
+        TableIdentifier identifier = TableIdentifier.of("finance", "index_one_minute_info");
+        Table table = catalog.loadTable(identifier);
+//        catalog.dropTable(identifier,true);
+//        System.out.println(table.schema());
+        table.refresh();
     }
 
 }

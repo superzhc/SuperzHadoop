@@ -22,15 +22,15 @@ public class SchemaUtils {
             "(years|months|days|date|hours|date_hour|bucket|truncate)[\\s]*\\(([\\s\\S]+),?([\\s\\S]*)\\)"
     );
 
-    private static Type.PrimitiveType fromPrimitiveStringEnhance(String typeString) {
+    public static Type.PrimitiveType fromPrimitiveStringEnhance(String typeString) {
         // 自动去除掉前后端的空格，更简便
         String lowerTypeString = typeString.trim().toLowerCase(Locale.ROOT);
 
         // iceberg对类型的定义有限，做出部分扩展
-        if("bigint".equals(lowerTypeString)){
-                return Types.fromPrimitiveString("long");
-        }else if(lowerTypeString.startsWith("varchar")
-                ||lowerTypeString.startsWith("char")){
+        if ("bigint".equals(lowerTypeString)) {
+            return Types.fromPrimitiveString("long");
+        } else if (lowerTypeString.startsWith("varchar")
+                || lowerTypeString.startsWith("char")) {
             return Types.fromPrimitiveString("string");
         }
 
@@ -113,11 +113,19 @@ public class SchemaUtils {
         updateColumn(table, field, type, null);
     }
 
+    /**
+     * 更新类型，注意只允许比较广泛的类型可修改，限制比较多
+     *
+     * @param table
+     * @param field
+     * @param type
+     * @param comment
+     */
     public static void updateColumn(Table table, String field, String type, String comment) {
         UpdateSchema update = table.updateSchema();
 
         if (null != type) {
-            Type.PrimitiveType typeObj = fromPrimitiveStringEnhance(field);
+            Type.PrimitiveType typeObj = fromPrimitiveStringEnhance(type);
             update.updateColumn(field, typeObj);
         }
 
