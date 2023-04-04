@@ -6,7 +6,7 @@
 
     <groupId>com.github.superzhc</groupId>
     <artifactId>SuperzHadoop</artifactId>
-    <version>0.3.0</version>
+    <version>0.4.0</version>
     <packaging>pom</packaging>
     <description>jdk、scala版本控制，打包等相关在此处配置</description>
     <modules>
@@ -41,8 +41,8 @@
                     <artifactId>scala-maven-plugin</artifactId>
                     <version>3.2.1</version>
                     <configuration>
-                        <scalaCompatVersion>2.11</scalaCompatVersion>
-                        <scalaVersion>2.11.8</scalaVersion>
+                        <scalaCompatVersion>${scala.binary.version}</scalaCompatVersion>
+                        <scalaVersion>${scala.binary.version}</scalaVersion>
                         <encoding>UTF-8</encoding>
                     </configuration>
                     <executions>

@@ -16,9 +16,9 @@ import java.util.Map;
 public abstract class AbstractData {
     private static final Logger log = LoggerFactory.getLogger(AbstractData.class);
 
-    public static final String DEFAULT_HUDI_PATH = "hdfs://hanyun-3:8020/hudi/superz/";
-    public static final String DEFAULT_HIVE_METASTORE_URIS="thrift://hanyun-3:9083";
-    public static final String DEFAULT_HIVE_DATABASE="default";
+    public static final String DEFAULT_HUDI_PATH = "hdfs://10.90.18.212:8020/hudi/superz/";
+    public static final String DEFAULT_HIVE_METASTORE_URIS = "thrift://10.90.18.212:9083";//"thrift://hanyun-3:9083";
+    public static final String DEFAULT_HIVE_DATABASE = "default";
 
     private static final String DEFAULT_PREFIX = "superz_java_client";
     private static final String DEFAULT_DATETIME_PATTERN = "yyyyMMddHHmmss";
@@ -60,9 +60,13 @@ public abstract class AbstractData {
         if (null == ts || ts.trim().length() == 0) {
             ts = LocalDateTime.now().format(DateTimeFormatter.ofPattern(DEFAULT_DATETIME_PATTERN));
         }
-        tableName = String.format("%s_%s", DEFAULT_PREFIX, ts);
+        tableName = String.format("%s_%s", getTablePrefixName(), ts);
         log.info("ts : [{}],tableName:[{}]", ts, tableName);
         return tableName;
+    }
+
+    protected String getTablePrefixName() {
+        return DEFAULT_PREFIX;
     }
 
     public String getBasePath() {

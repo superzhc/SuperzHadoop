@@ -9,26 +9,12 @@ import com.github.superzhc.common.jdbc.JdbcHelper;
 public class TrinoMain {
     public static void main(String[] args) {
 
-        /**
-         * Trino 支持以下 JDBC 的 URL 格式：
-         * jdbc:trino://host:port
-         * jdbc:trino://host:port/catalog
-         * jdbc:trino://host:port/catalog/schema
-         */
-        // String url = "jdbc:trino://log-platform01:8099/elasticsearch/default";
-        String url = "jdbc:trino://hanyun-2:7099/hudi/xgit_gctest";
-//        String url = "jdbc:trino://hanyun-2:7099/hudi/default";
+
+        String url;
+        url = "jdbc:trino://xxx:xx";
 
         try (JdbcHelper jdbc = new JdbcHelper(url, "root", null)) {
-//            jdbc.show("select * from superz_java_client_20221230103829");
-//            jdbc.show("show create table superz_java_client_20221213150742");
-            jdbc.show("show tables",100);
 
-//            jdbc.show("show create table zbx");
-            jdbc.show("show create table zbx3");
-
-//            jdbc.show("select * from zbx");
-            jdbc.show("select * from zbx3");
         }
     }
 }
