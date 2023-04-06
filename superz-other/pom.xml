@@ -19,6 +19,7 @@
         <module>superz-java</module>
         <module>superz-xxl-job</module>
         <module>superz-apijson</module>
+        <module>superz-groovy</module>
     </modules>
 
     <properties>
