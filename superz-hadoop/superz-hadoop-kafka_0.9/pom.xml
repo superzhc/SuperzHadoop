@@ -21,6 +21,11 @@
     <dependencies>
         <dependency>
             <groupId>com.github.superzhc</groupId>
+            <artifactId>superz-common-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.superzhc</groupId>
             <artifactId>superz-common-jackson</artifactId>
             <version>${project.version}</version>
         </dependency>

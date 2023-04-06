@@ -22,7 +22,7 @@
         <dependencies>
             <dependency>
                 <groupId>org.locationtech.geomesa</groupId>
-                <artifactId>geomesa_2.11</artifactId>
+                <artifactId>geomesa_${scala.binary.version}</artifactId>
                 <version>${geomesa.version}</version>
                 <type>pom</type>
                 <scope>import</scope>

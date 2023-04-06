@@ -3,7 +3,7 @@ package com.github.superzhc.hadoop.kafka;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.superzhc.common.collection.FixedQueue;
 import com.github.superzhc.common.jackson.JsonUtils;
-import com.github.superzhc.common.utils.LocalDateTimeUtils;
+import com.github.superzhc.common.date.LocalDateTimeUtils;
 import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;

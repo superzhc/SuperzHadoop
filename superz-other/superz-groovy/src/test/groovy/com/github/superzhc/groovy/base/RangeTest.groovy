@@ -21,4 +21,22 @@ class RangeTest {
             println(i)
         }
     }
+
+    @Test
+    void switchSupportRange() {
+        def age = 25;
+        switch (age) {
+            case 0..17:
+                println '未成年'
+                break
+            case 18..30:
+                println '青年'
+                break
+            case 31..50:
+                println '中年'
+                break
+            default:
+                println '老年'
+        }
+    }
 }

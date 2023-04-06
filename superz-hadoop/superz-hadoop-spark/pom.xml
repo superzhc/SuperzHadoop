@@ -32,8 +32,6 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <scala.binary.version>2.12</scala.binary.version>
-        <scala.version>2.12.10</scala.version>
         <spark.version>3.3.0</spark.version>
         <aws.version>2.17.257</aws.version>
     </properties>
@@ -320,19 +318,19 @@
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-compiler</artifactId>
-            <version>${scala.version}</version>
+            <!--<version>${scala.version}</version>-->
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-reflect</artifactId>
-            <version>${scala.version}</version>
+            <!--<version>${scala.version}</version>-->
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
-            <version>${scala.version}</version>
+            <!--<version>${scala.version}</version>-->
             <scope>provided</scope>
         </dependency>
         <!-- 已被废弃
@@ -346,7 +344,7 @@
         <dependency>
             <groupId>org.scala-lang.modules</groupId>
             <artifactId>scala-collection-compat_${scala.binary.version}</artifactId>
-            <version>2.1.2</version>
+            <!--<version>2.1.2</version>-->
         </dependency>
         <!--endregion-->
     </dependencies>
