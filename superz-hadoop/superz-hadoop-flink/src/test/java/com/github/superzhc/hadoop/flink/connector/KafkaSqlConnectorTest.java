@@ -7,9 +7,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
+ * see {com.github.superzhc.hadoop.flink.groovy.connector.KafkaSqlConnectorTest}
  * @author superz
  * @create 2023/3/21 0:45
  */
+@Deprecated
 public class KafkaSqlConnectorTest {
     StreamExecutionEnvironment env;
     TableEnvironment tEnv;

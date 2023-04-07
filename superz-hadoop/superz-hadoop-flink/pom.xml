@@ -182,7 +182,6 @@
         </dependency>-->
 
 
-
         <!--endregion format-->
 
         <!--region connector-->
@@ -318,6 +317,22 @@
             <version>${project.version}</version>
         </dependency>
         <!--endregion-->
+
+        <!--groovy-->
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <type>pom</type>
+        </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.gmavenplus</groupId>
+                <artifactId>gmavenplus-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

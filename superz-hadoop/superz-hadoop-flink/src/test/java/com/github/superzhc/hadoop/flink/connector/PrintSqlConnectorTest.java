@@ -4,6 +4,7 @@ package com.github.superzhc.hadoop.flink.connector;
  * @author superz
  * @create 2023/3/22 1:56
  */
+@Deprecated
 public class PrintSqlConnectorTest {
     public void sql(){
         String sql="CREATE TABLE print_table (\n" +
