@@ -1,6 +1,7 @@
 package com.github.superzhc.hadoop.spark.java.dataframe;
 
 import com.github.superzhc.data.other.AKTools;
+import com.github.superzhc.hadoop.spark.java.listerner.MySparkListerner;
 import org.apache.spark.SparkConf;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -23,7 +24,8 @@ public class DataFrameMainTest {
     public void setUp() throws Exception {
         SparkConf conf = new SparkConf()
                 .setAppName("DataFrame Test")
-                .setMaster("local");
+                .setMaster("local")
+                .set("spark.extraListeners", MySparkListerner.class.getName());
         spark = SparkSession.builder().config(conf).getOrCreate();
         akTools = new AKTools("127.0.0.1", 8080);
     }
@@ -39,6 +41,9 @@ public class DataFrameMainTest {
     public void testMap2rdd() {
         List<Map<String, Object>> data = akTools.get("fund_scale_close_sina");
         Dataset<Row> ds = DataFrameMain.maps2ds(spark, data);
-        ds.show(10000, false);
+//        ds.show(10000, false);
+
+        ds.createOrReplaceTempView("fund_scale_close_sina");
+        spark.sql("SELECT * FROM fund_scale_close_sina").show(100);
     }
 }
