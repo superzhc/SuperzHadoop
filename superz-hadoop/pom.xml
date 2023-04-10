@@ -29,6 +29,7 @@
         <module>superz-hadoop-minio</module>
         <module>superz-hadoop-iceberg</module>
         <module>superz-hadoop-trino</module>
+        <module>superz-hadoop-clickhouse</module>
     </modules>
 
     <properties>

@@ -314,6 +314,14 @@
             <version>2.13.3</version>
         </dependency>
 
+        <!--region groovy-->
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <type>pom</type>
+        </dependency>
+        <!--endregion-->
+
         <!--region scala-->
         <dependency>
             <groupId>org.scala-lang</groupId>
@@ -370,6 +378,11 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.gmavenplus</groupId>
+                <artifactId>gmavenplus-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

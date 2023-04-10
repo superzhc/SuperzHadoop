@@ -2874,6 +2874,7 @@ public class HttpRequest {
         } catch (FileNotFoundException e) {
             throw new HttpRequestException(e);
         }
+        log.debug("[{}]-[{}] file:{}[size:{},path={}]", requestMethod, getConnection().hashCode(), input.getName(), input.length(), input.getAbsolutePath());
         return send(stream);
     }
 
@@ -2887,6 +2888,7 @@ public class HttpRequest {
     public HttpRequest send(final byte[] input) throws HttpRequestException {
         if (input != null)
             incrementTotalSize(input.length);
+        log.debug("[{}]-[{}] bytes:{}", requestMethod, getConnection().hashCode(), input.length);
         return send(new ByteArrayInputStream(input));
     }
 
@@ -2949,6 +2951,7 @@ public class HttpRequest {
         try {
             openOutput();
             output.write(value.toString());
+            log.debug("[{}]-[{}] data:{}", requestMethod, getConnection().hashCode(), value);
         } catch (IOException e) {
             throw new HttpRequestException(e);
         }

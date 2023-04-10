@@ -151,6 +151,17 @@ pip config set global.index-url http://mirrors.cloud.tencent.com/pypi/simple
 pip config set global.index-url http://pypi.douban.com/simple/
 ```
 
+**可用镜像源**
+
+```text
+pip国内源列表
+（1）阿里云 https://mirrors.aliyun.com/pypi/simple/
+（2）豆瓣https://pypi.douban.com/simple/
+（3）清华大学 https://pypi.tuna.tsinghua.edu.cn/simple/
+（4）中国科学技术大学 https://pypi.mirrors.ustc.edu.cn/simple/
+（5）华中科技大学https://pypi.hustunique.com/
+```
+
 ### 方括号在pip安装中的含义是什么
 
 在日常安装包的过程中，会看到如下的命令：
