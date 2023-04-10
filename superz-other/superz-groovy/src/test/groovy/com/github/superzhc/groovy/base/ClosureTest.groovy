@@ -4,6 +4,14 @@ import org.junit.Test
 
 class ClosureTest {
 
+    void simpleDemo(){
+        def c = { printf "Hello World" }
+        c.call()
+    }
+
+    /**
+     * 调用示例
+     */
     @Test
     void calling() {
         def code = { 123 }
@@ -32,6 +40,9 @@ class ClosureTest {
         assert closureWithTwoArgAndDefaultValue(1) == 3
     }
 
+    /**
+     * 闭包有默认参数it，且不用申明
+     */
     @Test
     void implicitParameter() {
         def greeting = { "Hello, $it!" }
