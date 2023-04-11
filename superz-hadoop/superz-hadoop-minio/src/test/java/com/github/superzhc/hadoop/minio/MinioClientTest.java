@@ -1,6 +1,7 @@
 package com.github.superzhc.hadoop.minio;
 
 import io.minio.MinioClient;
+import io.minio.PutObjectArgs;
 import org.junit.After;
 import org.junit.Before;
 
@@ -25,5 +26,9 @@ public class MinioClientTest {
 
     @After
     public void tearDown() throws Exception {
+    }
+
+    public void createFile() throws Exception{
+        client.putObject(PutObjectArgs.builder().build());
     }
 }

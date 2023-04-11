@@ -201,6 +201,10 @@ public class JdbcHelper implements Closeable {
         this(url, null, null);
     }
 
+    public JdbcHelper(String driver, String url) {
+        this(driver, url, null, null);
+    }
+
     public JdbcHelper(String url, String username, String password) {
         this(null == Driver.match(url) ? null : Driver.match(url), url, username, password);
     }
