@@ -7,18 +7,37 @@ import org.junit.Test
  */
 class RangeTest {
     @Test
-    void test() {
+    void testAsc() {
         def range = 1..5
 
         println(range)
         println(range.get(2))
     }
 
+    /**
+     * 降序排列
+     */
     @Test
-    void exclude() {
+    void testDesc() {
+        def range = 5..1
+        for (i in range) {
+            println(i)
+        }
+    }
+
+    @Test
+    void testExclude() {
         def range = 1..<5
         for (i in range) {
             println(i)
+        }
+    }
+
+    @Test
+    void testChar() {
+        def range = 'a'..'z'
+        for (c in range) {
+            println(c)
         }
     }
 
