@@ -31,6 +31,8 @@ public class JdbcHelper implements Closeable {
         public static final String Sysbase = "com.sybase.jdbc.SybDriver";
         public static final String ODBC = "sun.jdbc.odbc.JdbcOdbcDriver";
         public static final String SQLITE = "org.sqlite.JDBC";
+        public static final String TRINO = "io.trino.jdbc.TrinoDriver";
+        public static final String CLICKHOUSE = "com.clickhouse.jdbc.ClickHouseDriver";
 
         public static String match(String url) {
             if (url.startsWith("jdbc:mysql:")) {
@@ -62,6 +64,10 @@ public class JdbcHelper implements Closeable {
                 return ODBC;
             } else if (url.startsWith("jdbc:sqlite:")) {
                 return SQLITE;
+            } else if (url.startsWith("jdbc:trino:")) {
+                return TRINO;
+            } else if (url.startsWith("jdbc:clickhouse:") || url.startsWith("jdbc:ch:")) {
+                return CLICKHOUSE;
             }
             return null;
         }
@@ -103,7 +109,7 @@ public class JdbcHelper implements Closeable {
             } else if (url.startsWith("jdbc:trino:") || url.startsWith("jdbc:presto:")) {
                 return trino();
             } else {
-                // 2022年8月4日 modify 默认使用 MySQL 分页的模式
+                // 2022年8月4日 modify 默认使用 MySQL分页的模式
                 return mysql();
             }
         }

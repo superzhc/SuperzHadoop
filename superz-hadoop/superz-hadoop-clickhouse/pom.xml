@@ -23,6 +23,11 @@
             <artifactId>superz-common-core</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.superzhc</groupId>
+            <artifactId>superz-common-cron</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>com.clickhouse</groupId>

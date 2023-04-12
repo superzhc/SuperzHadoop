@@ -51,7 +51,7 @@ public class ESNewSearch extends ESCommon {
         } else {
             indeics = String.format("/%s", String.join(",", indexes));
         }
-        String url = String.format("%s/_search", indeics);
+        String url = formatJson(String.format("%s/_search", indeics));
         Response response = client.get(url, query);
         return ResponseUtils.getEntity(response);
     }

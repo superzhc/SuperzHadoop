@@ -13,7 +13,7 @@ import org.junit.Test
  * */
 class LogTest {
     String driver = "com.clickhouse.jdbc.ClickHouseDriver"
-    String url = "jdbc:clickhouse://127.0.0.1:8123"
+    String url = "jdbc:clickhouse://10.90.18.76:18123"
     String db = "my_dw"
 
     Sql jdbc = null
@@ -30,7 +30,7 @@ class LogTest {
 
     @Test
     void testStripeLog() {
-        String table = "t_202304111608"
+        String table = "t_202304120951"
         String sql = """
 CREATE TABLE IF NOT EXISTS ${db}.${table}
 (

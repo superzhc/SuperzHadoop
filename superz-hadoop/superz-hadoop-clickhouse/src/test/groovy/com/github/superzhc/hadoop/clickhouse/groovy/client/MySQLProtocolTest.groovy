@@ -1,4 +1,4 @@
-package com.github.superzhc.hadoop.clickhouse.groovy.jdbc
+package com.github.superzhc.hadoop.clickhouse.groovy.client
 
 /**
  * @author superz
