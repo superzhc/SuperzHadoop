@@ -30,6 +30,7 @@
         <module>superz-hadoop-iceberg</module>
         <module>superz-hadoop-trino</module>
         <module>superz-hadoop-clickhouse</module>
+        <module>superz-hadoop-datahub</module>
     </modules>
 
     <properties>

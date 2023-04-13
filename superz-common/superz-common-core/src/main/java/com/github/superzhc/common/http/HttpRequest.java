@@ -657,17 +657,21 @@ public class HttpRequest {
             throw new HttpRequestException(e);
         }
 
+        // 2023年4月13日 bug：用户的auth信息丢失，已修复
         String host = parsed.getHost();
         int port = parsed.getPort();
-        if (port != -1)
-            host = host + ':' + Integer.toString(port);
+//        if (port != -1)
+//            host = host + ':' + Integer.toString(port);
 
         try {
-            String encoded = new URI(parsed.getProtocol(), host, parsed.getPath(),
+//            String encoded = new URI(parsed.getProtocol(), host, parsed.getPath(),
+//                    parsed.getQuery(), null).toASCIIString();
+            String encoded = new URI(parsed.getProtocol(), parsed.getUserInfo(), host, port, parsed.getPath(),
                     parsed.getQuery(), null).toASCIIString();
             int paramsStart = encoded.indexOf('?');
             if (paramsStart > 0 && paramsStart + 1 < encoded.length())
                 encoded = encoded.substring(0, paramsStart + 1)
+                        // 参数部分自定义转义部分
                         + encoded.substring(paramsStart + 1).replace("+", "%2B");
             return encoded;
         } catch (URISyntaxException e) {
@@ -3081,6 +3085,27 @@ public class HttpRequest {
         if (!values.isEmpty())
             for (Entry<?, ?> entry : values.entrySet())
                 form(entry, charset);
+        return this;
+    }
+
+    // TODO:完善
+    public HttpRequest graphql(String query, String variables, String operationName) {
+        Map<String, String> params = new HashMap<>();
+        params.put("query", query);
+        if (null != variables && variables.trim().length() > 0) {
+            params.put("variables", variables);
+        }
+        if (null != operationName && operationName.trim().length() > 0) {
+            params.put("operationName", operationName);
+        }
+
+        if (METHOD_GET.equals(this.requestMethod)) {
+            append(this.url.getPath(), params);
+        } else if (METHOD_POST.equals(this.requestMethod)) {
+            json(params);
+        } else {
+            throw new RuntimeException("Not Support [" + this.requestMethod + "] Use GraphQL");
+        }
         return this;
     }
 

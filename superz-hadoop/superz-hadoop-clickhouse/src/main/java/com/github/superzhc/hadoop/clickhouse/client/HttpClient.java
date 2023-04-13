@@ -20,6 +20,7 @@ public class HttpClient {
     private static final Integer DEFAULT_HTTP_PORT = 8123;
     private static final Integer DEFAULT_HTTPS_PORT = 8443;
     private static final String DEFAULT_DATABASE = "default";
+    private static final String DEFAULT_FORMAT = "TabSeparated";
 
     private String protocol;
     private String host;
@@ -29,7 +30,7 @@ public class HttpClient {
 
     private String database = null;
     // 默认格式化
-    private String format = "TabSeparated";
+    private String format = DEFAULT_FORMAT;
 
     public HttpClient(String host) {
         this(DEFAULT_PROTOCOL, host, DEFAULT_HTTP_PORT, DEFAULT_USER, DEFAULT_PASSWORD);
@@ -75,7 +76,8 @@ public class HttpClient {
         String password = null == this.password ? DEFAULT_PASSWORD : this.password;
         path = null == path ? "" : (path.startsWith("/") ? path.substring(1) : path);
 
-        return String.format("%s://%s:%s@%s:%d/%s", protocol.toLowerCase(), username, password, host, port, path);
+        String s = String.format("%s://%s:%s@%s:%d/%s", protocol.toLowerCase(), username, password, host, port, path);
+        return s;
     }
 
     public void useDatabase(String db) {
@@ -84,6 +86,10 @@ public class HttpClient {
 
     public void setFormat(String format) {
         this.format = format;
+    }
+
+    public void resetFormat() {
+        this.format = DEFAULT_FORMAT;
     }
 
     public boolean health() {
@@ -103,6 +109,7 @@ public class HttpClient {
     }
 
     public String query(String db, String sql) {
+        LOG.info("SQL:[{}]", (null == db || db.trim().length() == 0 ? "" : String.format("Database:[%s],", db)), sql);
         Map<String, Object> params = new HashMap<>();
         params.put("query", sql);
         params.put("default_format", format);
@@ -118,6 +125,8 @@ public class HttpClient {
     /**
      * 形如如下方式使用：
      * echo '(4),(5),(6)' | curl 'http://localhost:8123/?query=INSERT%20INTO%20t%20VALUES' --data-binary @-
+     * <p>
+     * 比较奇怪的用法
      *
      * @param query
      * @param data
@@ -131,13 +140,22 @@ public class HttpClient {
         return result;
     }
 
+    public String execute(String sql) {
+        return execute(this.database, sql);
+    }
+
     /**
      * 创建表、插入等操作数据使用
      *
      * @param sql
      * @return
      */
-    public String execute(String sql) {
+    public String execute(String db, String sql) {
+        LOG.info("SQL:[{}]", (null == db || db.trim().length() == 0 ? "" : String.format("Database:[%s],", db)), sql);
+        Map<String, Object> params = new HashMap<>();
+        if (null != db && db.trim().length() > 0) {
+            params.put("database", db);
+        }
         String result = HttpRequest.post(url()).send(sql).body();
         return result;
     }

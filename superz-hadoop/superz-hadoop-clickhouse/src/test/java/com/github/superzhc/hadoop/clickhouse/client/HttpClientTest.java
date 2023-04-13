@@ -16,12 +16,19 @@ public class HttpClientTest {
 
     @Before
     public void setUp() throws Exception {
-        client=new HttpClient("10.90.18.76",18123);
+        client = new HttpClient("10.90.18.76", 18123);
     }
 
     @Test
     public void testPing() {
         System.out.println(client.ping());
+    }
+
+    @Test
+    public void testQuery() {
+        // client.setFormat("JSONEachRow");
+        String result = client.query("SELECT 1");
+        System.out.println(result);
     }
 
     // note：用法很奇葩，不推荐使用
