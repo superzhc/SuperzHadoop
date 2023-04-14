@@ -345,10 +345,18 @@ public class HttpRequest {
             value = arrayToList(value);
 
         if (value instanceof Iterable<?>) {
+            /**
+             * 传递数组的几种方式：
+             * 1. http://localhost:8080/users?roleIds=1&roleIds=2
+             * 2. http://localhost:8080/users?roleIds=1,2【待验证】
+             * 3. http://localhost:8080/users?roleIds[0]=1&roleIds[1]=2
+             * 4. http://localhost:8080/users?roleIds[]=1&roleIds[]=2
+             */
             Iterator<?> iterator = ((Iterable<?>) value).iterator();
             while (iterator.hasNext()) {
                 result.append(key);
-                result.append("[]=");
+                // result.append("[]=");
+                result.append("=");
                 Object element = iterator.next();
                 if (element != null)
                     result.append(element);
@@ -672,7 +680,13 @@ public class HttpRequest {
             if (paramsStart > 0 && paramsStart + 1 < encoded.length())
                 encoded = encoded.substring(0, paramsStart + 1)
                         // 参数部分自定义转义部分
-                        + encoded.substring(paramsStart + 1).replace("+", "%2B");
+                        + encoded.substring(paramsStart + 1)
+                        .replace("+", "%2B")
+                        .replace(":", "%3A")
+                        .replace(",", "%2C")
+                        .replace("(", "%28")
+                        .replace(")", "%29")
+                        ;
             return encoded;
         } catch (URISyntaxException e) {
             IOException io = new IOException("Parsing URI failed");
@@ -3088,7 +3102,10 @@ public class HttpRequest {
         return this;
     }
 
-    // TODO:完善
+    public HttpRequest graphql(String query) {
+        return graphql(query, null, null);
+    }
+
     public HttpRequest graphql(String query, String variables, String operationName) {
         Map<String, String> params = new HashMap<>();
         params.put("query", query);

@@ -25,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
@@ -133,7 +134,7 @@ public class JsonUtils {
     }
 
     public static Map<String, Object> map(String json, Object... paths) {
-        JsonNode node = json(json, paths);
+        JsonNode node = loads(json, paths);
         return map(node);
     }
 
@@ -142,9 +143,30 @@ public class JsonUtils {
         return mapper.convertValue(childNode, LinkedHashMap.class);
     }
 
+    /**
+     * 推荐使用{@method loads}
+     *
+     * @param path
+     * @param paths
+     * @return
+     */
+    @Deprecated
     public static JsonNode file(String path, Object... paths) {
+        return loads(new File(path), paths);
+    }
+
+    public static JsonNode loads(InputStream in, Object... paths) {
         try {
-            JsonNode node = mapper.readTree(new File(path));
+            JsonNode node = mapper.readTree(in);
+            return object(node, paths);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static JsonNode loads(File file, Object... paths) {
+        try {
+            JsonNode node = mapper.readTree(file);
             return object(node, paths);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -152,10 +174,6 @@ public class JsonUtils {
     }
 
     public static JsonNode loads(String json, Object... paths) {
-        return json(json, paths);
-    }
-
-    public static JsonNode json(String json, Object... paths) {
         try {
             JsonNode node = mapper.readTree(json);
             return object(node, paths);
@@ -164,8 +182,20 @@ public class JsonUtils {
         }
     }
 
+    /**
+     * 推荐使用{@method loads}
+     *
+     * @param json
+     * @param paths
+     * @return
+     */
+    @Deprecated
+    public static JsonNode json(String json, Object... paths) {
+        return loads(json, paths);
+    }
+
     public static String simpleString(String json, Object... paths) {
-        JsonNode childNode = json(json, paths);
+        JsonNode childNode = loads(json, paths);
         return text(childNode);
     }
 

@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://superzhc.github.com/schemas/ddl_json_schema.json",
+  "type": "object",
+  "properties": {
+    "type": {
+      "enum": [
+        "catalog",
+        "schema",
+        "database",
+        "table"
+      ]
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "fields": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "type": {
+            "type": "string"
+          },
+          "constraint": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "default": {
+            "type": [
+              "number",
+              "string",
+              "boolean"
+            ]
+          },
+          "comment": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "engine": {
+      "type": "string"
+    },
+    "comment": {
+      "type": "string"
+    }
+  }
+}

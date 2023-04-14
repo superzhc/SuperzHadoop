@@ -68,8 +68,8 @@ public class GuangDiuTest {
                                 documentClient.upsert(NAME, id, JsonUtils.asString(item));
                             }
                         } catch (Exception e) {
+                            e.printStackTrace();
                             latch.countDown();
-                            throw e;
                         }
                     }
                 }, "0/30 * * * * ? *"

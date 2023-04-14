@@ -1,0 +1,9 @@
+{
+  "name": "index_basic",
+  "fields": [
+    {
+      "name": "code"
+    }
+  ],
+  "comment": ""
+}

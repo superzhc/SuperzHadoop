@@ -13,7 +13,6 @@
     <packaging>pom</packaging>
     <modules>
         <module>superz-data-core</module>
-        <module>superz-data-parse</module>
     </modules>
 
     <properties>
