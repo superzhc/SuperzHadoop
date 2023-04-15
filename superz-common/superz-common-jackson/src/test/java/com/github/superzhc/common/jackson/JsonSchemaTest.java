@@ -8,6 +8,7 @@ import com.networknt.schema.SpecVersion;
 import com.networknt.schema.ValidationMessage;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.Set;
 
@@ -21,12 +22,13 @@ public class JsonSchemaTest {
         // ObjectMapper mapper=JsonUtils.mapper();
 
         String basePath = "E:\\SuperzHadoop\\superz-data-warehouse\\superz-data-warehouse-metadata\\src\\main\\resources";
-        JsonSchemaFactory factory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
-        InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(basePath + "\\ddl_json_schema.json");
-        JsonSchema jsonSchema = factory.getSchema(in);
+        JsonSchemaFactory factory = JsonSchemaFactory.builder(JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7)).objectMapper(JsonUtils.mapper()).build();
 
-        InputStream dataIn = Thread.currentThread().getContextClassLoader().getResourceAsStream(basePath + "\\finance\\ddl_table_index.json");
-        JsonNode json = JsonUtils.loads(dataIn);
+        File file = new File(basePath + "\\ddl_json_schema.json");
+        JsonSchema jsonSchema = factory.getSchema(file.toURI());
+
+        File dataFile = new File(basePath + "\\finance\\ddl_table_index.json");
+        JsonNode json = JsonUtils.loads(dataFile);
 
         Set<ValidationMessage> errors = jsonSchema.validate(json);
         System.out.println(errors);

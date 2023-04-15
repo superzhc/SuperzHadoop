@@ -101,21 +101,21 @@ public class News36kr {
     public static List<Map<String, Object>> information(String category) {
         String path = String.format("/information/%s", category);
         JsonNode json = execute(path);
-        JsonNode dataNode = JsonUtils.jsonpath(json, "$..templateMaterial");
+        JsonNode dataNode = JsonUtils.jsonPath(json, "$..templateMaterial");
         return Arrays.asList(JsonUtils.newObjectArray(dataNode));
     }
 
     public static List<Map<String, Object>> topic(String id) {
         String path = String.format("/motif/%s", id);
         JsonNode json = execute(path);
-        JsonNode dataNode = JsonUtils.jsonpath(json, "$..templateMaterial");
+        JsonNode dataNode = JsonUtils.jsonPath(json, "$..templateMaterial");
         return Arrays.asList(JsonUtils.newObjectArray(dataNode));
     }
 
     public static List<Map<String, Object>> user(String id) {
         String path = String.format("/user/%s", id);
         JsonNode json = execute(path);
-        JsonNode dataNode = JsonUtils.jsonpath(json, "$..templateMaterial");
+        JsonNode dataNode = JsonUtils.jsonPath(json, "$..templateMaterial");
         return Arrays.asList(JsonUtils.newObjectArray(dataNode));
     }
 

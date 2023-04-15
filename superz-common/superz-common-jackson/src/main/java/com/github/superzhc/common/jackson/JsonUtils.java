@@ -14,13 +14,9 @@ import com.fasterxml.jackson.datatype.jsr310.deser.LocalTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
-import com.jayway.jsonpath.Configuration;
-import com.jayway.jsonpath.JsonPath;
-import com.jayway.jsonpath.Option;
-import com.jayway.jsonpath.spi.json.JacksonJsonNodeJsonProvider;
-import com.jayway.jsonpath.spi.json.JsonProvider;
-import com.jayway.jsonpath.spi.mapper.JacksonMappingProvider;
-import com.jayway.jsonpath.spi.mapper.MappingProvider;
+import com.networknt.schema.JsonSchema;
+import com.networknt.schema.JsonSchemaFactory;
+import com.networknt.schema.SpecVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -237,7 +233,12 @@ public class JsonUtils {
         return (ArrayNode) childNode;
     }
 
+    @Deprecated
     public static Object object2(JsonNode json, Object... paths) {
+        return objectValue(json, paths);
+    }
+
+    public static Object objectValue(JsonNode json, Object... paths) {
         JsonNode childNode = object(json, paths);
         if (null == childNode) {
             return null;
@@ -332,11 +333,11 @@ public class JsonUtils {
     }
 
     public static <T> List<T> list(JsonNode node, Object... paths) {
-        ArrayNode arrayNode = (ArrayNode) node;
+        ArrayNode arrayNode = array(node, paths);
         List<T> lst = new ArrayList<>(arrayNode.size());
         for (int i = 0, len = arrayNode.size(); i < len; i++) {
             JsonNode arrayChildNode = node.get(i);
-            T value = (T) object2(arrayChildNode);
+            T value = (T) objectValue(arrayChildNode);
             lst.add(value);
         }
         return lst;
@@ -346,8 +347,9 @@ public class JsonUtils {
         return Arrays.asList(stringArray(node, paths));
     }
 
+    @Deprecated
     public static String[] stringArray(String json, Object... paths) {
-        return stringArray(json(json), paths);
+        return stringArray(loads(json), paths);
     }
 
     public static String[] stringArray(JsonNode node, Object... paths) {
@@ -435,7 +437,7 @@ public class JsonUtils {
             }
 
             for (String key : keys) {
-                map.put(key, object2(item, key));
+                map.put(key, objectValue(item, key));
             }
 
             arr[i] = map;
@@ -521,7 +523,7 @@ public class JsonUtils {
             ArrayNode arrayNode = array(item);
             Object[] objArr = new Object[arrayNode.size()];
             for (int j = 0, arrLen = arrayNode.size(); j < arrLen; j++) {
-                objArr[j] = object2(arrayNode.get(j));
+                objArr[j] = objectValue(arrayNode.get(j));
             }
 
             arr[i] = objArr;
@@ -761,31 +763,38 @@ public class JsonUtils {
         return objectArrayWithKeys(datas, columnNames.toArray(new String[columnNames.size()]), childPaths);
     }
 
-    //=============================【实验性】JsonPath支持，若未引入jsonpath依赖包，无法使用如下方法===========================
-    static {
-        Configuration.setDefaults(new Configuration.Defaults() {
-            private final JsonProvider jsonProvider = new JacksonJsonNodeJsonProvider(mapper);
-            private final MappingProvider mappingProvider = new JacksonMappingProvider(mapper);
-
-            @Override
-            public JsonProvider jsonProvider() {
-                return jsonProvider;
-            }
-
-            @Override
-            public MappingProvider mappingProvider() {
-                return mappingProvider;
-            }
-
-            @Override
-            public Set<Option> options() {
-                return EnumSet.noneOf(Option.class);
-            }
-        });
+    //==============================JsonSchema支持==========================================================================
+    public static JsonSchema jsonSchema(String schemaString) {
+        return JsonSchemaUtils.loads(JsonSchemaUtils.getFactory(), schemaString);
     }
 
-    public static JsonNode jsonpath(JsonNode node, String path) {
-        return JsonPath.read(node, path);
+    public static JsonSchema jsonSchema(InputStream in) {
+        return JsonSchemaUtils.loads(JsonSchemaUtils.getFactory(), in);
+    }
+
+    public static JsonSchema jsonSchema(File file) {
+        return JsonSchemaUtils.loads(JsonSchemaUtils.getFactory(), file);
+    }
+
+    public static JsonSchema jsonSchema(SpecVersion.VersionFlag version, String schemaString) {
+        JsonSchemaFactory factory = JsonSchemaUtils.getFactory(version);
+        return JsonSchemaUtils.loads(factory, schemaString);
+    }
+
+    public static JsonSchema jsonSchema(SpecVersion.VersionFlag version, InputStream in) {
+        JsonSchemaFactory factory = JsonSchemaUtils.getFactory(version);
+        return JsonSchemaUtils.loads(factory, in);
+    }
+
+    public static JsonSchema jsonSchema(SpecVersion.VersionFlag version, File file) {
+        JsonSchemaFactory factory = JsonSchemaUtils.getFactory(version);
+        return JsonSchemaUtils.loads(factory, file);
+    }
+    //==============================JsonSchema支持==========================================================================
+
+    //=============================【实验性】JsonPath支持，若未引入jsonpath依赖包，无法使用如下方法===========================
+    public static JsonNode jsonPath(JsonNode node, String path) {
+        return JsonPathUtils.read(node, path);
     }
     //=============================【实验性】JsonPath支持===================================================================
 
@@ -798,7 +807,7 @@ public class JsonUtils {
 
         String str = "{\"cmdID\":0,\"productID\":\"2181457504\",\"offset\":42399409,\"payload\":\"{\\\"realLoadingWeight\\\":0.77,\\\"GPSCell\\\":\\\"0\\\",\\\"ShenBiSuoFaSignal\\\":0,\\\"FuJuanYangXiaLuoDianCiFa\\\":0,\\\"callType\\\":\\\"00\\\",\\\"currentWaterTemp\\\":79,\\\"ShenBiQieHuanFa\\\":0,\\\"password\\\":\\\"Qh\\\",\\\"pedalPosition\\\":0.0,\\\"enterAreaAlarmFunc\\\":\\\"0\\\",\\\"leaveAreaAlarmFunc\\\":\\\"0\\\",\\\"Distance\\\":380222,\\\"lng\\\":46.756175,\\\"BianFuYouGangDaQiangYaLi\\\":0,\\\"GaoDuXianWeiKaiGuanStatus\\\":\\\"0000\\\",\\\"encryptLat\\\":24.86716,\\\"gpsInfoNumber\\\":1,\\\"XianDaoFa\\\":0,\\\"interAreaAlarm\\\":\\\"0\\\",\\\"locationStatusOriginal\\\":\\\"A1\\\",\\\"mainLossOfElectric\\\":\\\"0\\\",\\\"standbyLossOfElectricFunc\\\":\\\"0\\\",\\\"ZhuJuanYangXiaLuoDianCiFa\\\":0,\\\"onOrOffStatusResponseFunc\\\":\\\"1\\\",\\\"forceSwitch\\\":0,\\\"mainBreakElectric\\\":\\\"0\\\",\\\"lockReason4\\\":\\\"0\\\",\\\"lockReason3\\\":\\\"0\\\",\\\"cmdReceiveTime\\\":\\\"2022-11-22 20:34:34\\\",\\\"terminalId\\\":\\\"2181457504\\\",\\\"currentOilConsumption\\\":0,\\\"deadZoneCompensation\\\":\\\"1\\\",\\\"lockReason2\\\":\\\"0\\\",\\\"gprsManufacturerCode\\\":\\\"68\\\",\\\"lockReason1\\\":\\\"0\\\",\\\"ErJieBiChang\\\":0,\\\"amplitude\\\":16.19,\\\"encryptLng\\\":46.756175,\\\"ZiYouHuaZhuanFa\\\":0,\\\"mainBreakElectricFunc\\\":\\\"1\\\",\\\"angle\\\":55.88,\\\"commandSequenceID\\\":\\\"E140\\\",\\\"originalGpsTime\\\":\\\"2022-11-22 12:34:33\\\",\\\"returnInfoId\\\":\\\"XXX8\\\",\\\"forceLimitFaultCode\\\":\\\"0000\\\",\\\"longitudeMarkOriginal\\\":\\\"A6\\\",\\\"torquePercentage\\\":25,\\\"overSpeedAlarm\\\":\\\"0\\\",\\\"protocolType\\\":\\\"gprsMediumSmallGps\\\",\\\"PositioningState\\\":1,\\\"vehicle_acc\\\":\\\"0\\\",\\\"leaveAreaAlarm\\\":\\\"0\\\",\\\"overSpeedAlarmFunc\\\":\\\"0\\\",\\\"bindingStatus\\\":\\\"0\\\",\\\"HuiZhuanZhiDongFa\\\":0,\\\"ratio\\\":4,\\\"FuJuanYangQiShengDianCiFa\\\":0,\\\"latitudeMarkOriginal\\\":\\\"A5\\\",\\\"ZhuSanQuanBaoHuQi\\\":0,\\\"onStatusResponse\\\":\\\"1\\\",\\\"totalMileage\\\":380222,\\\"emergencyAlarm\\\":\\\"0\\\",\\\"BianFuLuoDianCiFa\\\":0,\\\"parseTime\\\":\\\"2022-11-22 22:46:26\\\",\\\"lat\\\":24.86716,\\\"controllerFaultCode\\\":\\\"00\\\",\\\"offset\\\":42399409,\\\"dataType\\\":0,\\\"responseCommandID\\\":\\\"05\\\",\\\"workingCondition\\\":\\\"0001\\\",\\\"gpsTime\\\":\\\"2022-11-22 20:34:33\\\",\\\"terminalType\\\":\\\"\\\",\\\"YunXingShiJian\\\":2105,\\\"shortMessageManufacturerCode\\\":\\\"28\\\",\\\"FuSanQuanBaoHuQi\\\":0,\\\"gpsTerminalSn\\\":2181457504,\\\"lockVehicleStatus\\\":\\\"0\\\",\\\"oilPressure\\\":292,\\\"ZhuJuanYangQiShengDianCiFa\\\":0,\\\"speed\\\":0.5,\\\"ShenSuoFuJuanTaBanSignal\\\":0,\\\"locationStatus\\\":1,\\\"bindingSuccessStatus\\\":\\\"0\\\",\\\"latitudeMark\\\":\\\"N\\\",\\\"longitudeMark\\\":\\\"E\\\",\\\"ShenSuoFuJuanQieHuanKaiGuanSignal\\\":0,\\\"mainLossOfElectricFunc\\\":\\\"1\\\",\\\"rotateSpeed\\\":873,\\\"vehicleId\\\":\\\"1495240153358848002\\\",\\\"direction\\\":198,\\\"ShenBiShenFaSignal\\\":0,\\\"forceCall\\\":\\\"0\\\",\\\"dataFormat\\\":\\\"B\\\",\\\"length\\\":32.19,\\\"deviceCode\\\":\\\"501X\\\",\\\"maxLoadingWeight\\\":14.75,\\\"inputSignalAlarmFunc\\\":\\\"0\\\",\\\"engineWorkStatus\\\":\\\"1\\\"}\",\"vehiclePrefix\":22188,\"datePartition\":\"20221122\",\"time\":9223372035185655334,\"vehicle_id\":\"1495240153358848002\",\"productPrefix\":10971}";
         JsonNode json = json(str);
-        long offset = aLong(jsonpath(json, "$.offset"));
+        long offset = aLong(jsonPath(json, "$.offset"));
         System.out.println(offset);
     }
 }

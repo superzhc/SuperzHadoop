@@ -3,14 +3,6 @@
   "$id": "http://superzhc.github.com/schemas/ddl_json_schema.json",
   "type": "object",
   "properties": {
-    "type": {
-      "enum": [
-        "catalog",
-        "schema",
-        "database",
-        "table"
-      ]
-    },
     "name": {
       "type": "string",
       "minLength": 1
@@ -25,7 +17,13 @@
             "minLength": 1
           },
           "type": {
-            "type": "string"
+            "enum": [
+              "int",
+              "long",
+              "float",
+              "double",
+              "string"
+            ]
           },
           "constraint": {
             "type": "array",
@@ -46,8 +44,16 @@
         }
       }
     },
+    "with": {
+      "type": "object"
+    },
     "engine": {
-      "type": "string"
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
     },
     "comment": {
       "type": "string"

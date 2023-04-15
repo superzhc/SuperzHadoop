@@ -72,6 +72,13 @@ public final class Preconditions {
         return reference;
     }
 
+    public static <T> T[] checkNotNull(T[] reference) {
+        if (reference == null || reference.length == 0) {
+            throw new NullPointerException();
+        }
+        return reference;
+    }
+
     /**
      * Ensures that an object reference passed as a parameter to the calling method is not null.
      *
