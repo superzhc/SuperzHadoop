@@ -1,9 +1,17 @@
 {
-  "name": "index_basic",
+  "table_name": "index_basic",
   "fields": [
     {
-      "name": "code"
+      "field_name": "code",
+      "field_type": "string",
+      "is_not_null": true,
+      "field_comment": "编号"
+    },
+    {
+      "field_name": "name",
+      "field_type": "string",
+      "field_comment": "名称"
     }
   ],
-  "comment": ""
+  "table_comment": "Index Basic Information"
 }

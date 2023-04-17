@@ -18,6 +18,8 @@
           },
           "field_type": {
             "enum": [
+              "bool",
+              "short",
               "int",
               "long",
               "float",
@@ -25,11 +27,8 @@
               "string"
             ]
           },
-          "constraint": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
+          "is_not_null": {
+            "type": "boolean"
           },
           "default": {
             "type": [
@@ -38,24 +37,19 @@
               "boolean"
             ]
           },
-          "comment": {
+          "field_comment": {
             "type": "string"
           }
         }
       }
     },
-    "with": {
-      "type": "object"
-    },
-    "engine": {
-      "type": "object",
-      "properties": {
-        "engine_name": {
-          "type": "string"
-        }
+    "primary_key": {
+      "type": "array",
+      "items": {
+        "type": "string"
       }
     },
-    "comment": {
+    "table_comment": {
       "type": "string"
     }
   }
