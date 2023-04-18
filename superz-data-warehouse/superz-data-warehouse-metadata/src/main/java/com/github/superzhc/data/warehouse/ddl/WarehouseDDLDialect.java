@@ -6,6 +6,12 @@ import com.github.superzhc.common.jackson.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -19,6 +25,7 @@ import java.util.stream.Collectors;
 public abstract class WarehouseDDLDialect {
     private static final Logger LOG = LoggerFactory.getLogger(WarehouseDDLDialect.class);
 
+    protected static final String TABLE_TYPE_JAVA_BYTE = Byte.class.getName();
     protected static final String TABLE_TYPE_JAVA_BOOL = Boolean.class.getName();
     protected static final String TABLE_TYPE_JAVA_SHORT = Short.class.getName();
     protected static final String TABLE_TYPE_JAVA_INT = Integer.class.getName();
@@ -26,25 +33,42 @@ public abstract class WarehouseDDLDialect {
     protected static final String TABLE_TYPE_JAVA_FLOAT = Float.class.getName();
     protected static final String TABLE_TYPE_JAVA_DOUBLE = Double.class.getName();
     protected static final String TABLE_TYPE_JAVA_STRING = String.class.getName();
+    protected static final String TABLE_TYPE_JAVA_DECIMAL = BigDecimal.class.getName();
+    protected static final String TABLE_TYPE_JAVA_DATE = Date.class.getName();
+    protected static final String TABLE_TYPE_JAVA_TIMESTAMP = Timestamp.class.getName();
+    protected static final String TABLE_TYPE_JAVA_LOCAL_DATE = LocalDate.class.getName();
+    protected static final String TABLE_TYPE_JAVA_LOCAL_TIME = LocalTime.class.getName();
+    protected static final String TABLE_TYPE_JAVA_LOCAL_DATE_TIME = LocalDateTime.class.getName();
 
 
-    protected static final String DDL_TABLE_SCHEMA_NAME = "table_name";
-    protected static final String DDL_TABLE_SCHEMA_FIELDS = "fields";
-    protected static final String DDL_TABLE_SCHEMA_FIELD_NAME = "field_name";
-    protected static final String DDL_TABLE_SCHEMA_FIELD_TYPE = "field_type";
-    protected static final String DDL_TABLE_SCHEMA_FIELD_IS_NOT_NULL = "is_not_null";
-    protected static final String DDL_TABLE_SCHEMA_FIELD_COMMENT = "field_comment";
-    /*方言特定的，使用通用json配置么？？？*/
-    // protected static final String DDL_TABLE_SCHEMA_WITH = "with";
-    // protected static final String DDL_TABLE_SCHEMA_ENGINE = "engine";
-    // protected static final String DDL_TABLE_SCHEMA_ENGINE_NAME = "engine_name";
-    protected static final String DDL_TABLE_SCHEMA_PARTITION = "partition";
-    protected static final String DDL_TABLE_SCHEMA_PRIMARY_KEY = "primary_key";
-    protected static final String DDL_TABLE_SCHEMA_COMMENT = "table_comment";
+    protected static final String TABLE_SCHEMA_TABLE_NAME = "table_name";
 
-    protected static Pattern patternFieldOption = Pattern.compile(String.format("%s\\[\\d+\\]\\.([\\s\\S]+)", DDL_TABLE_SCHEMA_FIELDS));
-    // protected static Pattern patternWithOption = Pattern.compile(String.format("%s\\.([\\s\\S]+)", DDL_TABLE_SCHEMA_WITH));
-    // protected static Pattern patternEngineOption = Pattern.compile(String.format("%s\\.([\\s\\S]+)", DDL_TABLE_SCHEMA_ENGINE));
+    /*Field & Field Options*/
+    protected static final String TABLE_SCHEMA_FIELDS = "fields";
+    protected static final String TABLE_SCHEMA_FIELD_NAME = "field_name";
+    protected static final String TABLE_SCHEMA_FIELD_TYPE = "field_type";
+    protected static final String TABLE_SCHEMA_FIELD_IS_NOT_NULL = "field_is_not_null";
+    protected static final String TABLE_SCHEMA_FIELD_DEFAULT_VALUE = "field_default_value";
+    protected static final String TABLE_SCHEMA_FIELD_COMMENT = "field_comment";
+
+    /*Table Options*/
+    protected static final String TABLE_SCHEMA_PARTITION = "partition";
+    protected static final String TABLE_SCHEMA_PRIMARY_KEY = "primary_key";
+    protected static final String TABLE_SCHEMA_TABLE_COMMENT = "table_comment";
+
+    //    protected static final Pattern patternTableOption = Pattern.compile(
+//            String.format(
+//                    "(%s)",
+//                    String.join("|",
+//                            // DDL_TABLE_SCHEMA_NAME,
+//                            TABLE_SCHEMA_TABLE_COMMENT,
+//                            TABLE_SCHEMA_PARTITION,
+//                            TABLE_SCHEMA_PRIMARY_KEY
+//                    )
+//            )
+//    );
+    protected static Pattern patternFieldOption = Pattern.compile(String.format("%s\\[\\d+\\]\\.([\\s\\S]+)", TABLE_SCHEMA_FIELDS));
+    private static Pattern patternFieldType = Pattern.compile("(\\S+?)\\((\\d+?)(,(\\d+?)){0,1}\\)");
 
     protected String dialectName;
     protected ObjectNode dialectJson;
@@ -55,6 +79,7 @@ public abstract class WarehouseDDLDialect {
     }
 
     public final WarehouseDDLDialect set(String key, Object value, String... children) {
+        LOG.debug("[{}]-[CONFIG] <{}>={}", dialectName, (null == children || children.length == 0) ? key : (String.join(".", children) + "." + key), value);
         JsonUtils.put(dialectJson, key, value, children);
         return this;
     }
@@ -68,11 +93,11 @@ public abstract class WarehouseDDLDialect {
         value = null == dialectJsonValue ? value : dialectJsonValue;
 
         String dialectValue = null;
-        if (DDL_TABLE_SCHEMA_NAME.equalsIgnoreCase(param)) {
+        if (TABLE_SCHEMA_TABLE_NAME.equalsIgnoreCase(param)) {
             dialectValue = convertTableName(value);
-        } else if (DDL_TABLE_SCHEMA_FIELDS.equalsIgnoreCase(param)) {
+        } else if (TABLE_SCHEMA_FIELDS.equalsIgnoreCase(param)) {
             dialectValue = convertFields(value);
-        } else if (param.startsWith(DDL_TABLE_SCHEMA_FIELDS)) {
+        } else if (param.startsWith(TABLE_SCHEMA_FIELDS)) {
             Matcher m = patternFieldOption.matcher(param);
             if (m.find()) {
                 String option = m.group(1);
@@ -80,24 +105,14 @@ public abstract class WarehouseDDLDialect {
             } else {
                 dialectValue = convertField(value);
             }
-        } else if (DDL_TABLE_SCHEMA_PARTITION.equalsIgnoreCase(param)) {
-            dialectValue = convertPartition(value);
-        }
-//        else if (DDL_TABLE_SCHEMA_WITH.equalsIgnoreCase(param)) {
-//            dialectValue = convertWith(value);
-//        } else if (param.startsWith(DDL_TABLE_SCHEMA_WITH)) {
-//            Matcher m = patternWithOption.matcher(param);
-//            String s = m.group(1);
-//            dialectValue = convertWithOption0(s, value);
-//        } else if (DDL_TABLE_SCHEMA_ENGINE.equalsIgnoreCase(param)) {
-//            dialectValue = convertEngine(value);
-//        } else if (param.startsWith(DDL_TABLE_SCHEMA_ENGINE)) {
-//            Matcher m = patternEngineOption.matcher(param);
-//            String s = m.group(1);
-//            dialectValue = convertEngineOption0(s, value);
-//        }
-        else {
+        } else {
+//            // 意义不是很大的匹配
+//            Matcher m = patternTableOption.matcher(param);
+//            if (m.find()) {
             dialectValue = convertTableOption0(param, value);
+//            } else {
+//                dialectValue = convertTableOption(param, value);
+//            }
         }
 
         LOG.debug("[{}] <{}>={}", dialectName, param, dialectValue);
@@ -112,10 +127,12 @@ public abstract class WarehouseDDLDialect {
 
     private String convertTableOption0(String option, Object value0) {
         String value;
-        if (DDL_TABLE_SCHEMA_COMMENT.equalsIgnoreCase(option)) {
+        if (TABLE_SCHEMA_TABLE_COMMENT.equalsIgnoreCase(option)) {
             value = convertTableComment(value0);
-        } else if (DDL_TABLE_SCHEMA_PRIMARY_KEY.equals(option)) {
+        } else if (TABLE_SCHEMA_PRIMARY_KEY.equals(option)) {
             value = convertPrimaryKey(value0);
+        } else if (TABLE_SCHEMA_PARTITION.equalsIgnoreCase(option)) {
+            value = convertPartition(value0);
         } else {
             value = convertTableOption(option, value0);
         }
@@ -131,12 +148,39 @@ public abstract class WarehouseDDLDialect {
             return "";
         }
 
-        List<String> keys = convertValue(value);
-        if (null == keys || keys.size() == 0) {
+        String s;
+        if (value instanceof String) {
+            s = (String) value;
+        } else if (value.getClass().isArray()) {
+            s = String.join(",", (String[]) value);
+        } else if (value instanceof List) {
+            List<String> keys = convertValue(value);
+            s = keys.stream().collect(Collectors.joining(","));
+        } else {
+            throw new UnsupportedOperationException("不支持主键类型为：" + value.getClass());
+        }
+
+        return format("PRIMARY KEY(%s)", s);
+    }
+
+    protected String convertPartition(Object value) {
+        if (null == value) {
             return "";
         }
 
-        return format("PRIMARY KEY(%s)", keys.stream().collect(Collectors.joining(",")));
+        String s;
+        if (value instanceof String) {
+            s = (String) value;
+        } else if (value.getClass().isArray()) {
+            s = String.join(",", (String[]) value);
+        } else if (value instanceof List) {
+            List<String> keys = convertValue(value);
+            s = keys.stream().collect(Collectors.joining(","));
+        } else {
+            throw new UnsupportedOperationException("不支持分区类型为：" + value.getClass());
+        }
+
+        return format("PARTITION BY (%s)", value);
     }
 
     protected String convertTableOption(String option, Object value) {
@@ -179,52 +223,87 @@ public abstract class WarehouseDDLDialect {
     }
 
     private String convertFieldOption0(String option, Object value) {
-        String fieldOption;
-        if (DDL_TABLE_SCHEMA_FIELD_NAME.equalsIgnoreCase(option)) {
-            fieldOption = convertFieldName(value);
-        } else if (DDL_TABLE_SCHEMA_FIELD_TYPE.equalsIgnoreCase(option)) {
-            fieldOption = convertFieldSimpleJavaType(value);
-        } else if (DDL_TABLE_SCHEMA_FIELD_IS_NOT_NULL.equalsIgnoreCase(option)) {
-            fieldOption = convertFieldIsNotNull(value);
-        } else if (DDL_TABLE_SCHEMA_FIELD_COMMENT.equalsIgnoreCase(option)) {
-            fieldOption = convertFieldComment(value);
-        } else {
-            fieldOption = convertFieldOption(option, value);
+        try {
+            String fieldOption;
+            if (TABLE_SCHEMA_FIELD_NAME.equalsIgnoreCase(option)) {
+                fieldOption = convertFieldName(value);
+            } else if (TABLE_SCHEMA_FIELD_TYPE.equalsIgnoreCase(option)) {
+                fieldOption = convertFieldType0(value);
+            } else if (TABLE_SCHEMA_FIELD_IS_NOT_NULL.equalsIgnoreCase(option)) {
+                fieldOption = convertFieldIsNotNull(value);
+            } else if (TABLE_SCHEMA_FIELD_COMMENT.equalsIgnoreCase(option)) {
+                fieldOption = convertFieldComment(value);
+            } else if (TABLE_SCHEMA_FIELD_DEFAULT_VALUE.equalsIgnoreCase(option)) {
+                fieldOption = convertFieldDefaultValue(value);
+            } else {
+                fieldOption = convertFieldOption(option, value);
+            }
+            return fieldOption;
+        } catch (UnsupportedOperationException e) {
+            LOG.debug("[{}]-[FIELD] 不支持参数 <{}>", dialectName, option);
+            return "";
         }
-        return fieldOption;
     }
 
     protected String convertFieldName(Object value) {
         return convertValue(value);
     }
 
-    private String convertFieldSimpleJavaType(Object value) {
+    private String convertFieldType0(Object value) {
+        Preconditions.checkNotNull(value);
         String customType = convertValue(value);
-        String clazz;
-        switch (customType) {
+
+        String type;
+        Integer length = null;
+        Integer precision = null;
+
+        Matcher typeMatcher = patternFieldType.matcher(customType);
+        if (typeMatcher.find()) {
+            type = typeMatcher.group(1);
+            length = Integer.valueOf(typeMatcher.group(2));
+            if (typeMatcher.groupCount() == 4)
+                precision = Integer.valueOf(typeMatcher.group(4));
+        } else {
+            type = customType;
+        }
+
+        String javaType;
+        switch (type.toLowerCase()) {
+            case "byte":
+                javaType = TABLE_TYPE_JAVA_BYTE;
+                break;
             case "bool":
-                clazz = TABLE_TYPE_JAVA_BOOL;
+            case "boolean":
+                javaType = TABLE_TYPE_JAVA_BOOL;
                 break;
             case "short":
-                clazz = TABLE_TYPE_JAVA_SHORT;
+                javaType = TABLE_TYPE_JAVA_SHORT;
                 break;
             case "int":
-                clazz = TABLE_TYPE_JAVA_INT;
+            case "integer":
+                javaType = TABLE_TYPE_JAVA_INT;
                 break;
+            case "bigint":
             case "long":
-                clazz = TABLE_TYPE_JAVA_LONG;
+                javaType = TABLE_TYPE_JAVA_LONG;
                 break;
             case "float":
-                clazz = TABLE_TYPE_JAVA_FLOAT;
+                javaType = TABLE_TYPE_JAVA_FLOAT;
                 break;
             case "double":
-                clazz = TABLE_TYPE_JAVA_DOUBLE;
+                javaType = TABLE_TYPE_JAVA_DOUBLE;
                 break;
             case "string":
+                javaType = TABLE_TYPE_JAVA_STRING;
+                break;
+            case "date":
+                javaType = TABLE_TYPE_JAVA_DATE;
+                break;
             default:
-                clazz = TABLE_TYPE_JAVA_STRING;
+                javaType = customType;
+                break;
         }
-        return convertFieldType(clazz);
+        return convertFieldType(javaType);
     }
 
     protected String convertFieldType(String javaClazz) {
@@ -250,62 +329,16 @@ public abstract class WarehouseDDLDialect {
         return null == value ? "" : value.toString();
     }
 
+    protected String convertFieldDefaultValue(Object value) {
+        // bug：函数会被识别为字符串，待修复
+        return format("DEFAULT %s", /*convertSQLValue(value)*/value);
+    }
+
     protected String convertFieldComment(Object value) {
         return format("COMMENT '%s'", value);
     }
 
     // endregion==================================字段==================================================================
-
-    // region=====================================分区==================================================================
-
-    protected String convertPartition(Object value) {
-        throw new UnsupportedOperationException();
-    }
-
-    // endregion==================================分区==================================================================
-
-    // region=====================================With子句[废弃]========================================================
-
-//    protected String convertWith(Object value) {
-//        // Map<String, Object> with = (Map<String, Object>) value;
-//        //
-//        // StringBuilder sb = new StringBuilder();
-//        // for (Map.Entry<String, Object> param : with.entrySet()) {
-//        //     sb.append(",").append(convertWithOption(param.getKey(), param.getValue()));
-//        // }
-//        // return sb.substring(1);
-//        throw new UnsupportedOperationException();
-//    }
-//
-//    private String convertWithOption0(String option, Object value0) {
-//        String value;
-//        value = convertWithOption(option, value0);
-//        return value;
-//    }
-//
-//    protected String convertWithOption(String param, Object value) {
-//        throw new UnsupportedOperationException();
-//    }
-
-    // endregion==================================With子句[废弃]========================================================
-
-    // region=====================================Engine[废弃]==========================================================
-
-//    protected String convertEngine(Object value) {
-//        throw new UnsupportedOperationException();
-//    }
-//
-//    private String convertEngineOption0(String option, Object value0) {
-//        String value;
-//        value = convertEngineOption(option, value0);
-//        return value;
-//    }
-//
-//    protected String convertEngineOption(String param, Object value) {
-//        throw new UnsupportedOperationException();
-//    }
-
-    // endregion==================================Engine[废弃]==========================================================
 
     protected String format(String template, Object value) {
         if (null == value) {
@@ -313,6 +346,23 @@ public abstract class WarehouseDDLDialect {
         }
 
         return String.format(template, value);
+    }
+
+    protected String convertSQLValue(Object value) {
+        if (null == value) {
+            return "null";
+        }
+
+        if (value instanceof Integer
+                || value instanceof Long
+                || value instanceof Float
+                || value instanceof Double
+                || value instanceof BigDecimal) {
+            return value.toString();
+        } else {
+            return String.format("'%s'", value);
+        }
+
     }
 
     protected <T> T convertValue(Object value) {

@@ -13,9 +13,8 @@ import java.util.Map;
 public class MySQLDDLDialect extends WarehouseDDLDialect {
     private static final Logger LOG = LoggerFactory.getLogger(MySQLDDLDialect.class);
 
-    private static final String DDL_TABLE_SCHEMA_FIELD_AUTO_INCREMENT = "auto_increment";
-    private static final String DDL_TABLE_SCHEMA_FIELD_DEFAULT_VALUE = "default";
-    private static final String DDL_tABLE_SCHEMA_CHARACTER = "character";
+    private static final String TABLE_SCHEMA_FIELD_AUTO_INCREMENT = "auto_increment";
+    private static final String TABLE_SCHEMA_CHARACTER = "character";
 
     private static Map<String, String> typeMapping = new HashMap<>();
 
@@ -53,7 +52,7 @@ public class MySQLDDLDialect extends WarehouseDDLDialect {
 
     @Override
     protected String convertTableOption(String option, Object value) {
-        if (DDL_tABLE_SCHEMA_CHARACTER.equalsIgnoreCase(option)) {
+        if (TABLE_SCHEMA_CHARACTER.equalsIgnoreCase(option)) {
             return format("DEFAULT CHARACTER SET=%s", value);
         }
         return super.convertTableOption(option, value);
@@ -67,17 +66,11 @@ public class MySQLDDLDialect extends WarehouseDDLDialect {
     @Override
     protected String convertFieldOption(String option, Object value0) {
         String value = super.convertFieldOption(option, value0);
-        if (DDL_TABLE_SCHEMA_FIELD_AUTO_INCREMENT.equalsIgnoreCase(option)) {
+        if (TABLE_SCHEMA_FIELD_AUTO_INCREMENT.equalsIgnoreCase(option)) {
             if (null == value0 || value0 instanceof Boolean && !((Boolean) value0)) {
                 value = "";
             } else {
                 value = "AUTO_INCREMENT";
-            }
-        } else if (DDL_TABLE_SCHEMA_FIELD_DEFAULT_VALUE.equalsIgnoreCase(option)) {
-            if (value0 instanceof Number || value0 instanceof Boolean) {
-                value = format("DEFAULT %s", value0);
-            } else {
-                value = format("DEFAULT '%s'", value0);
             }
         }
         return value;

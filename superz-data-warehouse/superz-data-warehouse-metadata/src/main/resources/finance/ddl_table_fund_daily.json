@@ -1,0 +1,33 @@
+{
+  "table_name": "fund_daily",
+  "fields": [
+    {
+      "field_name": "code",
+      "field_type": "string"
+    },
+    {
+      "field_name": "name",
+      "field_type": "string"
+    },
+    {
+      "field_name": "date",
+      "field_type": "string",
+      "field_comment": "日期"
+    },
+    {
+      "field_name": "net_worth",
+      "field_type": "float"
+    },
+    {
+      "field_name": "change",
+      "field_type": "float"
+    },
+    {
+      "field_name": "accumulated_net_worth",
+      "field_type": "float"
+    }
+  ],
+  "primary_key": [
+    "code"
+  ]
+}

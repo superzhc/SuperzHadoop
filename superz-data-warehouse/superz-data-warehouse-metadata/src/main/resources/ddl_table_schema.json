@@ -5,6 +5,7 @@
   "properties": {
     "table_name": {
       "type": "string",
+      "pattern": "^[_a-zA-Z][_a-zA-Z0-9]*?",
       "minLength": 1
     },
     "fields": {
@@ -17,20 +18,12 @@
             "minLength": 1
           },
           "field_type": {
-            "enum": [
-              "bool",
-              "short",
-              "int",
-              "long",
-              "float",
-              "double",
-              "string"
-            ]
+            "type": "string"
           },
-          "is_not_null": {
+          "field_is_not_null": {
             "type": "boolean"
           },
-          "default": {
+          "field_default_value": {
             "type": [
               "number",
               "string",
@@ -40,7 +33,11 @@
           "field_comment": {
             "type": "string"
           }
-        }
+        },
+        "required": [
+          "field_name",
+          "field_type"
+        ]
       }
     },
     "primary_key": {
@@ -49,8 +46,18 @@
         "type": "string"
       }
     },
+    "partition": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
     "table_comment": {
       "type": "string"
     }
-  }
+  },
+  "required": [
+    "table_name",
+    "fields"
+  ]
 }

@@ -1,5 +1,6 @@
 package com.github.superzhc.common.jackson;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion;
@@ -40,5 +41,9 @@ public class JsonSchemaUtils {
 
     public static JsonSchema loads(JsonSchemaFactory factory, File file) {
         return factory.getSchema(file.toURI());
+    }
+
+    public static JsonSchema loads(JsonSchemaFactory factory, JsonNode jsonSchema) {
+        return factory.getSchema(jsonSchema);
     }
 }

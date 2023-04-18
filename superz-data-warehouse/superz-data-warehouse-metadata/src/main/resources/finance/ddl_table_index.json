@@ -4,13 +4,11 @@
     {
       "field_name": "code",
       "field_type": "string",
-      "is_not_null": true,
-      "field_comment": "编号"
+      "is_not_null": true
     },
     {
       "field_name": "name",
-      "field_type": "string",
-      "field_comment": "名称"
+      "field_type": "string"
     }
   ],
   "table_comment": "Index Basic Information"

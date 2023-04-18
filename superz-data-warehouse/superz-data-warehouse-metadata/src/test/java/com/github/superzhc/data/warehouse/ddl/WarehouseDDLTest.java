@@ -12,22 +12,23 @@ import org.junit.Test;
 public class WarehouseDDLTest {
 
     JsonNode json;
-    MySQLDDLDialect mysql;
+    //    MySQLDDLDialect mysql;
     ClickHouseDDLDialect clickhouse;
 
     @Before
     public void setUp() throws Exception {
-        json = JsonUtils.loads(this.getClass().getResourceAsStream("/finance/ddl_table_index.json"));
+        json = JsonUtils.loads(this.getClass().getResourceAsStream("/finance/ddl_table_fund_basic.json"));
 
-        mysql = new MySQLDDLDialect();
+//        mysql = new MySQLDDLDialect();
         clickhouse = new ClickHouseDDLDialect();
         clickhouse.engine("MergeTree");
     }
 
     @Test
     public void convert() {
-        String sql = WarehouseDDL.convert(json, mysql);
-        System.out.println(sql);
+        String sql;
+//        sql = WarehouseDDL.convert(json, mysql);
+//        System.out.println(sql);
         sql = WarehouseDDL.convert(json, clickhouse);
         System.out.println(sql);
     }
