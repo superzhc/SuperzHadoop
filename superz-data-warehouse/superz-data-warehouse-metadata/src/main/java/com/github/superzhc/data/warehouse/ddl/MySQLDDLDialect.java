@@ -53,7 +53,7 @@ public class MySQLDDLDialect extends WarehouseDDLDialect {
     @Override
     protected String convertTableOption(String option, Object value) {
         if (TABLE_SCHEMA_CHARACTER.equalsIgnoreCase(option)) {
-            return format("DEFAULT CHARACTER SET=%s", value);
+            return formatValueWithNullToBlank("DEFAULT CHARACTER SET=%s", value);
         }
         return super.convertTableOption(option, value);
     }

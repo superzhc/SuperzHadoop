@@ -817,6 +817,48 @@ public class JsonUtils {
     }
 
     //region===================================写节点===================================================================
+    public static JsonNode putArray(ObjectNode node0, String arrayName, Object value, String... children) {
+        ObjectNode node = node0;
+        if (null != children && children.length > 0) {
+            for (String child : children) {
+                if (node.hasNonNull(child)) {
+                    node = (ObjectNode) node.get(child);
+                } else {
+                    node = node.putObject(child);
+                }
+            }
+        }
+
+        ArrayNode arrayNode;
+        if (node.has(arrayName)) {
+            arrayNode = (ArrayNode) node.get(arrayName);
+        } else {
+            arrayNode = node.putArray(arrayName);
+        }
+
+        putArray(arrayNode, value);
+
+        return node0;
+    }
+
+    public static JsonNode putArray(ArrayNode node0, Object value) {
+        if (null == value) {
+            node0.addNull();
+        } else {
+            node0.add(loads(asString(value)));
+        }
+        return node0;
+    }
+
+    /**
+     * 支持多层嵌套对象节点的键值创建
+     *
+     * @param node0
+     * @param key
+     * @param value
+     * @param children
+     * @return
+     */
     public static JsonNode put(ObjectNode node0, String key, Object value, String... children) {
         ObjectNode node = node0;
         if (null != children && children.length > 0) {

@@ -1,5 +1,11 @@
 package com.github.superzhc.common.base;
 
+import com.github.superzhc.common.exception.EmptyValueException;
+
+import javax.activation.UnsupportedDataTypeException;
+import java.util.Collection;
+import java.util.Map;
+
 /**
  * 参考 guava 中的 {@class com.google.common.base.Preconditions}，并添加一些自定义工具
  *
@@ -58,6 +64,70 @@ public final class Preconditions {
         }
     }
 
+    public static <T> T checkNotEmpty(Object reference) {
+        if (reference == null) {
+            throw new NullPointerException();
+        }
+
+        if (reference instanceof String) {
+            String s = (String) reference;
+            if (s.trim().isEmpty()) {
+                throw new EmptyValueException();
+            }
+        } else if (reference.getClass().isArray()) {
+            Object[] array = (Object[]) reference;
+            if (array.length == 0) {
+                throw new EmptyValueException();
+            }
+        } else if (reference instanceof Collection) {
+            Collection<?> c = (Collection<?>) reference;
+            if (c.isEmpty()) {
+                throw new EmptyValueException();
+            }
+        } else if (reference instanceof Map) {
+            Map<?, ?> m = (Map<?, ?>) reference;
+            if (m.isEmpty()) {
+                throw new EmptyValueException();
+            }
+        } else {
+            throw new UnsupportedOperationException("当前类型[" + reference.getClass().getName() + "]不支持检查是否为Empty");
+        }
+
+        return (T) reference;
+    }
+
+    public static <T> T checkNotEmpty(Object reference, Object errorMessage) {
+        if (reference == null) {
+            throw new NullPointerException(String.valueOf(errorMessage));
+        }
+
+        if (reference instanceof String) {
+            String s = (String) reference;
+            if (s.trim().isEmpty()) {
+                throw new EmptyValueException(String.valueOf(errorMessage));
+            }
+        } else if (reference.getClass().isArray()) {
+            Object[] array = (Object[]) reference;
+            if (array.length == 0) {
+                throw new EmptyValueException(String.valueOf(errorMessage));
+            }
+        } else if (reference instanceof Collection) {
+            Collection<?> c = (Collection<?>) reference;
+            if (c.isEmpty()) {
+                throw new EmptyValueException(String.valueOf(errorMessage));
+            }
+        } else if (reference instanceof Map) {
+            Map<?, ?> m = (Map<?, ?>) reference;
+            if (m.isEmpty()) {
+                throw new EmptyValueException(String.valueOf(errorMessage));
+            }
+        } else {
+            throw new UnsupportedOperationException("当前类型[" + reference.getClass().getName() + "]不支持检查是否为Empty");
+        }
+
+        return (T) reference;
+    }
+
     /**
      * Ensures that an object reference passed as a parameter to the calling method is not null.
      *
@@ -67,13 +137,6 @@ public final class Preconditions {
      */
     public static <T> T checkNotNull(T reference) {
         if (reference == null) {
-            throw new NullPointerException();
-        }
-        return reference;
-    }
-
-    public static <T> T[] checkNotNull(T[] reference) {
-        if (reference == null || reference.length == 0) {
             throw new NullPointerException();
         }
         return reference;

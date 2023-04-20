@@ -41,12 +41,15 @@ public abstract class WarehouseDDLDialect {
     protected static final String TABLE_TYPE_JAVA_LOCAL_DATE_TIME = LocalDateTime.class.getName();
 
 
+    protected static final String TABLE_SCHEMA_CATALOG_NAME = "catalog_name";
+    protected static final String TABLE_SCHEMA_DATABASE_NAME = "database_name";
     protected static final String TABLE_SCHEMA_TABLE_NAME = "table_name";
 
     /*Field & Field Options*/
     protected static final String TABLE_SCHEMA_FIELDS = "fields";
     protected static final String TABLE_SCHEMA_FIELD_NAME = "field_name";
     protected static final String TABLE_SCHEMA_FIELD_TYPE = "field_type";
+    protected static final String TABLE_SCHEMA_FIELD_PRIMARY_KEY = "field_primary_key";
     protected static final String TABLE_SCHEMA_FIELD_IS_NOT_NULL = "field_is_not_null";
     protected static final String TABLE_SCHEMA_FIELD_DEFAULT_VALUE = "field_default_value";
     protected static final String TABLE_SCHEMA_FIELD_COMMENT = "field_comment";
@@ -84,6 +87,12 @@ public abstract class WarehouseDDLDialect {
         return this;
     }
 
+    public final WarehouseDDLDialect setArray(String arrayName, Object value, String... children) {
+        LOG.debug("[{}]-[CONFIG] <{}[]>={}", dialectName, (null == children || children.length == 0) ? arrayName : (String.join(".", children) + "." + arrayName), value);
+        JsonUtils.putArray(dialectJson, arrayName, value, children);
+        return this;
+    }
+
     public abstract String ddlTemplate();
 
     public final String convertParam(String param, Object value) {
@@ -93,7 +102,9 @@ public abstract class WarehouseDDLDialect {
         value = null == dialectJsonValue ? value : dialectJsonValue;
 
         String dialectValue = null;
-        if (TABLE_SCHEMA_TABLE_NAME.equalsIgnoreCase(param)) {
+        if (TABLE_SCHEMA_DATABASE_NAME.equalsIgnoreCase(param)) {
+            dialectValue = convertDatabaseName(value);
+        } else if (TABLE_SCHEMA_TABLE_NAME.equalsIgnoreCase(param)) {
             dialectValue = convertTableName(value);
         } else if (TABLE_SCHEMA_FIELDS.equalsIgnoreCase(param)) {
             dialectValue = convertFields(value);
@@ -120,8 +131,14 @@ public abstract class WarehouseDDLDialect {
     }
 
     // region======================================表名、表选项==========================================================
+    protected String convertDatabaseName(Object value) {
+        // Preconditions.checkNotEmpty(value);
+        // return convertValue(value);
+        return convertValueWithNullToDefault(value, "default");
+    }
+
     protected String convertTableName(Object value) {
-        Preconditions.checkNotNull(value);
+        Preconditions.checkNotEmpty(value);
         return convertValue(value);
     }
 
@@ -140,7 +157,7 @@ public abstract class WarehouseDDLDialect {
     }
 
     protected String convertTableComment(Object value) {
-        return format("COMMENT '%s'", value);
+        return formatValueWithNullToBlank("COMMENT '%s'", value);
     }
 
     protected String convertPrimaryKey(Object value) {
@@ -160,7 +177,7 @@ public abstract class WarehouseDDLDialect {
             throw new UnsupportedOperationException("不支持主键类型为：" + value.getClass());
         }
 
-        return format("PRIMARY KEY(%s)", s);
+        return formatValueWithNullToBlank("PRIMARY KEY(%s)", s);
     }
 
     protected String convertPartition(Object value) {
@@ -180,20 +197,19 @@ public abstract class WarehouseDDLDialect {
             throw new UnsupportedOperationException("不支持分区类型为：" + value.getClass());
         }
 
-        return format("PARTITION BY (%s)", value);
+        return formatValueWithNullToBlank("PARTITION BY (%s)", s);
     }
 
     protected String convertTableOption(String option, Object value) {
-        return null == value ? "" : value.toString();
+        return convertValue(value);
     }
 
     // endregion===================================表名、表选项==========================================================
 
     // region=====================================字段==================================================================
     protected String convertFields(Object value) {
+        Preconditions.checkNotEmpty(value, "Field At Least One");
         List<Map<String, Object>> fields = convertValue(value);
-
-        Preconditions.checkArgument(null != fields && fields.size() > 0, "Field at least one!");
 
         StringBuilder sb = new StringBuilder();
         for (Map<String, Object> field : fields) {
@@ -203,7 +219,7 @@ public abstract class WarehouseDDLDialect {
     }
 
     protected String convertField(Object value) {
-        Preconditions.checkNotNull(value);
+        Preconditions.checkNotEmpty(value);
         Map<String, Object> field = convertValue(value);
 
         StringBuilder sb = new StringBuilder();
@@ -212,10 +228,6 @@ public abstract class WarehouseDDLDialect {
             String optionValue = convertFieldOption0(option, item.getValue());
 
             LOG.debug("[{}]-[FIELD] <{}>={}", dialectName, option, optionValue);
-
-            if (null == optionValue || optionValue.trim().length() == 0) {
-                continue;
-            }
 
             sb.append(" ").append(optionValue);
         }
@@ -229,6 +241,8 @@ public abstract class WarehouseDDLDialect {
                 fieldOption = convertFieldName(value);
             } else if (TABLE_SCHEMA_FIELD_TYPE.equalsIgnoreCase(option)) {
                 fieldOption = convertFieldType0(value);
+            } else if (TABLE_SCHEMA_FIELD_PRIMARY_KEY.equalsIgnoreCase(option)) {
+                fieldOption = convertFieldPrimaryKey(value);
             } else if (TABLE_SCHEMA_FIELD_IS_NOT_NULL.equalsIgnoreCase(option)) {
                 fieldOption = convertFieldIsNotNull(value);
             } else if (TABLE_SCHEMA_FIELD_COMMENT.equalsIgnoreCase(option)) {
@@ -246,11 +260,12 @@ public abstract class WarehouseDDLDialect {
     }
 
     protected String convertFieldName(Object value) {
+        Preconditions.checkNotEmpty(value);
         return convertValue(value);
     }
 
     private String convertFieldType0(Object value) {
-        Preconditions.checkNotNull(value);
+        Preconditions.checkNotEmpty(value);
         String customType = convertValue(value);
 
         String type;
@@ -316,6 +331,14 @@ public abstract class WarehouseDDLDialect {
 
     protected abstract Map<String, String> getFieldTypeMapping();
 
+    protected String convertFieldPrimaryKey(Object value) {
+        Boolean b = convertValue(value);
+        if (null != b && b) {
+            return "PRIMARY KEY";
+        }
+        return "";
+    }
+
     protected String convertFieldIsNotNull(Object value) {
         Boolean b = convertValue(value);
         if (null == b || !b) {
@@ -326,29 +349,35 @@ public abstract class WarehouseDDLDialect {
     }
 
     protected String convertFieldOption(String option, Object value) {
-        return null == value ? "" : value.toString();
+        return convertValueWithNullToBlank(value);
     }
 
     protected String convertFieldDefaultValue(Object value) {
         // bug：函数会被识别为字符串，待修复
-        return format("DEFAULT %s", /*convertSQLValue(value)*/value);
+        return formatValueWithNullToBlank("DEFAULT %s", /*convertSQLValue(value)*/value);
     }
 
     protected String convertFieldComment(Object value) {
-        return format("COMMENT '%s'", value);
+        return formatValueWithNullToBlank("COMMENT '%s'", value);
     }
 
     // endregion==================================字段==================================================================
 
-    protected String format(String template, Object value) {
+    // region=====================================工具==================================================================
+
+    protected final String formatValueWithNullToBlank(String template, Object value) {
         if (null == value) {
             return "";
         }
 
+        return formatValue(template, value);
+    }
+
+    protected final String formatValue(String template, Object value) {
         return String.format(template, value);
     }
 
-    protected String convertSQLValue(Object value) {
+    protected final String convertSQLValue(Object value) {
         if (null == value) {
             return "null";
         }
@@ -365,7 +394,18 @@ public abstract class WarehouseDDLDialect {
 
     }
 
-    protected <T> T convertValue(Object value) {
+    protected final String convertValueWithNullToBlank(Object value) {
+        return convertValueWithNullToDefault(value, "");
+    }
+
+    protected final String convertValueWithNullToDefault(Object value, String defaultValue) {
+        return null == value ? defaultValue : convertValue(value);
+    }
+
+    protected final <T> T convertValue(Object value) {
         return (T) value;
     }
+
+    // endregion==================================工具==================================================================
+
 }

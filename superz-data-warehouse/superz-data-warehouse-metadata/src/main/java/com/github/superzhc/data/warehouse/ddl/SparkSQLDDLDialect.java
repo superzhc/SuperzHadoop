@@ -107,7 +107,7 @@ public class SparkSQLDDLDialect extends WarehouseDDLDialect {
                 convertTBLProperty(m.group(1), value);
             }
         } else if (TABLE_SCHEMA_LOCATION.equalsIgnoreCase(option)) {
-            return format("LOCATION %s", value);
+            return formatValueWithNullToBlank("LOCATION %s", value);
         }
         return super.convertTableOption(option, value);
     }
