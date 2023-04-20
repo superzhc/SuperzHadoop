@@ -16,7 +16,7 @@ docker pull mysql:5.7
 # -e MYSQL_ROOT_PASSWORD=123456: 设置环境变量，密码设置为 123456
 # mysql:5.7：使用镜像mysql:5.7
 
-docker run -d --name mysql5.7 -p 3306:3306 -v /d/docker/volumes/mysql/conf:/etc/mysql -v /d/docker/volumes/mysql/data:/var/lib/mysql -v /d/docker/volumes/mysql/logs:/var/log/mysql -e MYSQL_ROOT_PASSWORD=123456 mysql:5.7
+docker run -d --name mysql5.7 -p 3306:3306 -v /d/docker/volumes/mysql/data:/var/lib/mysql -v /d/docker/volumes/mysql/logs:/var/log/mysql -e MYSQL_ROOT_PASSWORD=123456 mysql:5.7
 ``` 
 
 ### 开启 binlog

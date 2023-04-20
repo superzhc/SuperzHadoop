@@ -5,3 +5,70 @@
 > WSL 2 是适用于 Linux 的 Windows 子系统体系结构的一个新版本，它支持适用于 Linux 的 Windows 子系统在 Windows 上运行 ELF64 Linux 二进制文件。 它的主要目标是提高文件系统性能，以及添加完全的系统调用兼容性。
 
 ![](images/README-20230411135706.png)
+
+## 安装
+
+> 前提：下列的操作都是在管理员权限下的命令行界面运行的
+
+```shell
+wsl --install
+```
+
+执行上述命令后需 **重启** 系统。
+
+### 安装指定发行版
+
+**查看可用发行版列表**
+
+```shell
+wsl --list --online
+# 简写如下：
+wsl -l -o
+```
+
+**安装发行版**
+
+```shell
+wsl --install -d <DistroName>
+```
+
+## 命令
+
+**列出已安装的 Linux 发行版**
+
+```shell
+wsl --list --verbose
+# 简写如下：
+wsl -l -v
+```
+
+**运行特定的 WSL 发行版本**
+
+```shell
+# <DistributionName>：发行版的名称
+# wsl -d <DistributionName>
+wsl -d Ubuntu
+```
+
+**设置新安装 Linux 发行版的 WSL 默认版本**
+
+```shell
+# <Version#> 可选值为 1 或 2
+# wsl --set-default-version <Version#>
+wsl --set-default-version 2
+```
+
+**修改指定 Linux 发行版的 WSL 版本**
+
+```shell
+# wsl --set-version <distribution name> <versionNumber>
+# 示例：将 Ubuntu 20.04 发行版设置为使用 WSL 2
+wsl --set-version Ubuntu-20.04 2
+```
+
+## Linux 发行版所在 Windows 中的文件位置
+
+```bash
+# \\wsl$\<DistroName>\home\<UserName>\Project
+\\wsl$\Ubuntu
+```
