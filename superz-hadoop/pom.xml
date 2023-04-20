@@ -31,6 +31,7 @@
         <module>superz-hadoop-trino</module>
         <module>superz-hadoop-clickhouse</module>
         <module>superz-hadoop-datahub</module>
+        <module>superz-hadoop-nifi</module>
     </modules>
 
     <properties>

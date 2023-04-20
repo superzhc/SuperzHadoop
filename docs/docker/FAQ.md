@@ -13,3 +13,13 @@ net start winnat
 ```
 
 > **注**：上述命令需要使用管理员权限
+
+## [Windows] `ext4.vhxd` 占用的空间太大
+
+执行如下命令进行优化：
+
+```shell
+optimize-vhd -Path "F:\\docker\\wsl\\docker-desktop-data\\ext4.vhdx" -Mode Full
+```
+
+**注意**：管理员权限下执行
