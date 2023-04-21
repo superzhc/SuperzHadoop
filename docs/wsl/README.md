@@ -42,12 +42,18 @@ wsl --list --verbose
 wsl -l -v
 ```
 
-**运行特定的 WSL 发行版本**
+**运行特定的 Linux 发行版**
 
 ```shell
 # <DistributionName>：发行版的名称
 # wsl -d <DistributionName>
 wsl -d Ubuntu
+```
+
+**停止特定的 Linux 发行版**
+
+```shell
+wsl --terminate Ubuntu
 ```
 
 **设置新安装 Linux 发行版的 WSL 默认版本**
@@ -70,5 +76,39 @@ wsl --set-version Ubuntu-20.04 2
 
 ```bash
 # \\wsl$\<DistroName>\home\<UserName>\Project
-\\wsl$\Ubuntu
+\\wsl$
+```
+
+## 迁移 Linux 发行版数据盘
+
+**停止实例**
+
+```shell
+wsl --terminate Ubuntu
+```
+
+**实例备份导出**
+
+```shell
+wsl --export Ubuntu E:\wsl\Ubuntu_export.tar
+```
+
+**注销现有实例**
+
+```shell
+wsl --unregister Ubuntu
+```
+
+**导入实例并指定存放虚拟磁盘镜像文件的路径**
+
+```shell
+wsl --import Ubuntu E:\wsl\Ubuntu E:\wsl\Ubuntu_export.tar --version 2
+```
+
+**设置默认使用用户【可选】**
+
+> 若未设置默认 WSL 使用用户，默认是使用 root 来登录
+
+```shell
+ubuntu.exe config --default-user superz
 ```

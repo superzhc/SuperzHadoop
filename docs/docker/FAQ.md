@@ -1,5 +1,44 @@
 # FAQ
 
+## 修改/新增绑定端口
+
+每个 Docker 容器都有一个配置文件，修改容器配置文件 `hostconfig.json` 和 `config.v2.json`。
+
+在 `hostconfig.json` 中修改 `PortBindings` 来新增/修改端口，示例:
+
+```json
+"PortBindings":{"3000/tcp":[{"HostIp":"","HostPort":"3000"}]}
+```
+
+在 `config.v2.json` 中需要修改两处：`ExposedPorts` 和 `Ports`，示例：
+
+```json
+//Inside config block
+"ExposedPorts":{"3000/tcp":{}}
+
+//Inside NetworkSettings block
+"Ports":{"3000/tcp":[{"HostIp":"0.0.0.0","HostPort":"3000"}]}
+```
+
+**注意**：上述的修改需要在停止docker的情况下进行的
+
+### **Docker配置文件所在位置**
+
+> `<container-id>`：具体容器的ID
+
+**Windows**
+
+```
+\\wsl$\docker-desktop-data\version-pack-data\community\docker\containers\<container-id>
+```
+
+**`Windows[WSL2]`**
+
+```shell
+# 注意：不同版本的 WSL，这个地址会不同
+/mnt/wsl/docker-desktop-data/version-pack-data/community/docker/containers/<container-id>
+```
+
 ## [Windows] `Ports are not available: listen tcp 0.0.0.0:7474: bind: An attempt was made to access a socket in a way forbidden by its access permissions.`
 
 **端口占用问题，但经排查端口实际未被占用**
