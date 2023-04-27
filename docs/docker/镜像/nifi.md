@@ -51,6 +51,4 @@ docker pull apache/nifi-minifi-cpp:0.14.0
 
 ```shell
 # docker run -v ~/Development/apache/nifi-minifi-cpp/conf/config.yml:/opt/minifi/minifi-current/conf/config.yml -v ~/Development/apache/nifi-minifi-cpp/conf/minifi.properties:/opt/minifi/minifi-current/conf/minifi.properties apache/nifi-minifi-cpp
-
-
 ```

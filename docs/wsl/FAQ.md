@@ -9,3 +9,11 @@
 ```
 
 结果将显示类似于的路径 `%LOCALAPPDATA%\Packages\<PackageFamilyName>\LocalState\<disk>.vhdx`。
+
+## WSL 连不上主机
+
+如果 wsl 连接不到主机，直接放开 `vEthernet (WSL)` 这张网卡的防火墙，执行：
+
+```shell
+New-NetFirewallRule -DisplayName "WSL" -Direction Inbound -InterfaceAlias "vEthernet (WSL)" -Action Allow
+```
