@@ -1,4 +1,7 @@
 - [首页](/)
+- 系统
+  - [Linux 系统运维](linux/系统监控.md)
+  - [Linux 文件目录树](linux/文件目录结构.md)
 - 应用安装\[Docker\]
   - [MySQL 5.7](docker/镜像/mysql_5.7.md)
 - [提问](https://github.com/superzhc/SuperzHadoop/issues/new)
