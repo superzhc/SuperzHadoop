@@ -9,9 +9,9 @@ import org.junit.Test;
  * @create 2023/4/12 11:07
  **/
 public class ESClientTest {
-    static final String HOST = "1.117.173.217";
+    static final String HOST = "127.0.0.1";
 
-    static final Integer PORT = 19200;
+    static final Integer PORT = 9200;
 
     protected ESClient client = null;
 

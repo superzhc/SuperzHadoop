@@ -8,6 +8,8 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.junit.Test;
 
+import java.time.LocalDateTime;
+
 /**
  * @author superz
  * @create 2023/4/12 11:28
@@ -63,9 +65,22 @@ public class ESSearchTest extends ESClientTest {
         System.out.println(result);
     }
 
+    public void testRange() {
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+
+        QueryBuilder queryBuilder = QueryBuilders.rangeQuery("t").gt(100);
+
+        builder.query(queryBuilder);
+
+        String query = builder.toString();
+        String result = searchClient.queryDSL(query);
+        System.out.println(result);
+    }
+
     @Test
     public void testSQL() {
-        String sql = "SELECT * FROM \"prometheusbeat-7.3.1-*\" WHERE \"labels.job\"='minifi' AND name='minifi_config_yml_file_checksum' ORDER BY \"@timestamp\" DESC";
+        //String sql = "SELECT * FROM \"prometheusbeat-7.3.1-*\" WHERE \"labels.job\"='minifi' AND name='minifi_config_yml_file_checksum' ORDER BY \"@timestamp\" DESC";
+        String sql="SELECT * FROM \"my_test\"";
         String result = sqlClient.show(sql);
         System.out.println(result);
     }
