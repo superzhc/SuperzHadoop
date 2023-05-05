@@ -1,7 +1,7 @@
 package com.github.superzhc.hadoop.es.sys;
 
 import com.github.superzhc.hadoop.es.ESClient;
-import com.github.superzhc.hadoop.es.util.ResponseUtils;
+import com.github.superzhc.hadoop.es.utils.ResponseUtils;
 import org.elasticsearch.client.Response;
 
 /**

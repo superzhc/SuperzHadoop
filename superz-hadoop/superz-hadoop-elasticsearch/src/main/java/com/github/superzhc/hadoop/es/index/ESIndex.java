@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.superzhc.common.jackson.JsonUtils;
 import com.github.superzhc.hadoop.es.ESClient;
 import com.github.superzhc.hadoop.es.ESCommon;
-import com.github.superzhc.hadoop.es.util.ResponseUtils;
+import com.github.superzhc.hadoop.es.utils.ResponseUtils;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -132,7 +132,7 @@ public class ESIndex extends ESCommon {
     }
 
     /**
-     * 获取索引映射
+     * 获取索引映射，支持匹配模式，返回的结果会将所有匹配索引的映射展示出来
      *
      * @param index
      * @return

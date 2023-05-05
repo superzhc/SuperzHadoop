@@ -2,10 +2,9 @@ package com.github.superzhc.hadoop.es.sys;
 
 import com.github.superzhc.hadoop.es.ESClient;
 import com.github.superzhc.hadoop.es.ESCommon;
-import org.apache.http.HttpHost;
 import org.elasticsearch.client.Response;
 
-import com.github.superzhc.hadoop.es.util.ResponseUtils;
+import com.github.superzhc.hadoop.es.utils.ResponseUtils;
 
 /**
  * 2020年04月21日 superz add

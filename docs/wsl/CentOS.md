@@ -21,7 +21,7 @@ docker export fc13b9ca8885 > E://wsl/centos7.tar
 ```shell
 # wsl --import <Distro> <InstallLocation> <FileName>
 wsl --import CentOS7 E:\wsl\CentOS7 E:\wsl\centos7.tar
-# 未成功，不知道是公司的加密软件的问题还是不能从Windows导出，待验证
+# 未成功，从Windows导出再通过wsl导入会失败
 ```
 
 ## 安装[通过github开源包直接导入]

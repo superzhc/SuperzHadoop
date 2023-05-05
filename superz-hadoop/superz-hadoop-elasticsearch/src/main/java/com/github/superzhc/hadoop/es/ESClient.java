@@ -1,6 +1,6 @@
 package com.github.superzhc.hadoop.es;
 
-import com.github.superzhc.hadoop.es.util.ResponseUtils;
+import com.github.superzhc.hadoop.es.utils.ResponseUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -187,7 +187,7 @@ public class ESClient implements Closeable {
                 logger.debug(request.toString() + (null == json ? "" : ",请求体内容：" + json));
             }
 
-            Response response = client.performRequest(request);
+            Response response = getRestClient().performRequest(request);
 
             if (logger.isDebugEnabled()) {
                 logger.debug(response.toString());

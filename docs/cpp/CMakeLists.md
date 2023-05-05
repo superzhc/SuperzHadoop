@@ -2,19 +2,21 @@
 
 ## 基本命令
 
+### `cmake_minimum_required`
+
+指定 CMake 的版本：
+
+```shell
+cmake_minimum_required(VERSION 3.10)
+```
+
 ### `project`
 
 设定工程名和版本号
 
-### `include_directories`
-
-指定头文件的搜索位置。头文件不但对编译是必须的，也可以被 CLion 索引，以提供代码自动完成、代码导航。
-
-依据操作系统的不同，编译器会自动搜索一些预定义的位置，用户可以手工添加：
-
 ```shell
-# 可选的BEFORE/AFTER关键字用于控制搜索顺序
-include_directories(BEFORE ${MY_SOURCE_DIR}/src )
+# 设定工程名和版本号
+project(SUPERZ VERSION 1.0)
 ```
 
 ### `set`
@@ -32,26 +34,45 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
 ```
 
+> 在 CMake 中，`${}` 的语法含义是获取变量的值
+
 ### `add_executable`
 
 添加可执行的构建目标
 
-### `add_library`
+### `include_directories`
 
-添加库：
+指定头文件的搜索位置。头文件不但对编译是必须的，也可以被 CLion 索引，以提供代码自动完成、代码导航。
+
+依据操作系统的不同，编译器会自动搜索一些预定义的位置，用户可以手工添加：
 
 ```shell
-add_library (my_library STATIC|SHARED|MODULE ${SOURCE_FILES})
+# 可选的BEFORE/AFTER关键字用于控制搜索顺序
+include_directories(BEFORE ${MY_SOURCE_DIR}/src )
 ```
+
+### `target_include_directories`
+
+```shell
+# 指定项目编译的时候需要include的文件路径，PROJECT_BINARY_DIR变量为编译发生的目录，也就是make执行的目录，PROJECT_SOURCE_DIR为工程所在的目录 
+# target_include_directories官方文档：https://cmake.org/cmake/help/v3.3/command/target_include_directories.html 
+target_include_directories(CalculateSqrt PUBLIC 
+                           "${PROJECT_BINARY_DIR}" 
+                           ) 
+```
+
+### `link_directories`
+
+`link_directories` 用来指定编译器搜索库文件的路径。
 
 ### `target_link_libraries`
 
-包含链接所需的库：
+target_link_libraries 函数是将预先编译好的库（通常是 `.a` 或 `.so` 文件）链接到项目的 `.o` 文件，使得项目可以使用这些库中的函数和类：
 
 ```shell
 # 使用BOOST库
 find_package(Boost)
-IF (Boost_FOUND)
+if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIR})
 endif()
 set (Boost_USE_STATIC_LIBS OFF) # enable dynamic linking
@@ -59,6 +80,18 @@ set (Boost_USE_MULTITHREAD ON)  # enable multithreading
 find_package (Boost COMPONENTS REQUIRED chrono filesystem)
 # 声明链接到BOOST库
 target_link_libraries (my_target ${Boost_LIBRARIES})
+```
+
+### `find_package`
+
+`find_package(Threads)` 是 CMake 中的一个指令，用于在系统中查找并加载线程库。它会查找线程库（通常是 pthreads 或 Windows Threads）并设置一些 CMake 变量，以便在编译和链接时使用该库。
+
+### `add_library`
+
+添加库：
+
+```shell
+add_library (my_library STATIC|SHARED|MODULE ${SOURCE_FILES})
 ```
 
 ### `add_subdirectory`

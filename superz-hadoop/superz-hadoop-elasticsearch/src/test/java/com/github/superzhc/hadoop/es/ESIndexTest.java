@@ -29,4 +29,11 @@ public class ESIndexTest extends ESClientTest {
         String result = indexClient.create("my_test");
         System.out.println(result);
     }
+
+    @Test
+    public void testMapping(){
+        String indexPattern="prometheusbeat-7.3.1-*";
+        String result=indexClient.mapping(indexPattern);
+        System.out.println(result);
+    }
 }

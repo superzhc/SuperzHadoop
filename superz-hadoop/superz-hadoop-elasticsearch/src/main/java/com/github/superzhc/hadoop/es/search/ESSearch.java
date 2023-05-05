@@ -8,7 +8,7 @@ import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.superzhc.hadoop.es.util.ResponseUtils;
+import com.github.superzhc.hadoop.es.utils.ResponseUtils;
 
 /**
  * 2020年06月17日 superz add

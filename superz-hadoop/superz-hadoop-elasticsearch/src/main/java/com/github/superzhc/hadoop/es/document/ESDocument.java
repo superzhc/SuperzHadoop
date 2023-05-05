@@ -2,7 +2,7 @@ package com.github.superzhc.hadoop.es.document;
 
 import com.github.superzhc.hadoop.es.ESClient;
 import com.github.superzhc.hadoop.es.ESCommon;
-import com.github.superzhc.hadoop.es.util.ResponseUtils;
+import com.github.superzhc.hadoop.es.utils.ResponseUtils;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;

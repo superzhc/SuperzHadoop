@@ -2,7 +2,7 @@ package com.github.superzhc.hadoop.es.search;
 
 import com.github.superzhc.hadoop.es.ESClient;
 import com.github.superzhc.hadoop.es.ESCommon;
-import com.github.superzhc.hadoop.es.util.ResponseUtils;
+import com.github.superzhc.hadoop.es.utils.ResponseUtils;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -40,6 +40,7 @@ public class ESNewSearch extends ESCommon {
      * /index1/_search：指定一个index，搜索其下所有type的数据
      * /index1,index2/_search：同时搜索两个index下的数据
      * /*1,*2/_search：按照通配符去匹配多个索引
+     *
      * @param query
      * @param indexes
      * @return
@@ -56,11 +57,17 @@ public class ESNewSearch extends ESCommon {
         return ResponseUtils.getEntity(response);
     }
 
+    public String query(SearchSourceBuilder searchSourceBuilder, String... indexes) {
+        String query = searchSourceBuilder.toString();
+        return queryDSL(query, indexes);
+    }
+
     public String queryAll(String... indexes) {
         // String query = "{\"query\": { \"match_all\": {} }}";
         // 使用Elasticsearch的high level构建查询
         SearchSourceBuilder builder = new SearchSourceBuilder().query(QueryBuilders.matchAllQuery());
-        String query = builder.toString();
-        return queryDSL(query, indexes);
+//        String query = builder.toString();
+//        return queryDSL(query, indexes);
+        return query(builder);
     }
 }

@@ -2,7 +2,7 @@ package com.github.superzhc.hadoop.es.sql;
 
 import com.github.superzhc.hadoop.es.ESClient;
 import com.github.superzhc.hadoop.es.ESCommon;
-import com.github.superzhc.hadoop.es.util.ResponseUtils;
+import com.github.superzhc.hadoop.es.utils.ResponseUtils;
 import org.elasticsearch.client.Response;
 
 /**
@@ -15,7 +15,7 @@ public class ESSql extends ESCommon {
     }
 
     public String show(String sql) {
-        Response response = client.post("/_sql?format=txt", "{\"query\":\"" + sql + "\"}");
+        Response response = client.post("/_sql?format=txt", "{\"query\":\"\"\"" + sql + "\"\"\"}");
         return ResponseUtils.getEntity(response);
     }
 

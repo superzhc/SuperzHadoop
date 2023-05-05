@@ -1,4 +1,4 @@
-package com.github.superzhc.hadoop.es.util;
+package com.github.superzhc.hadoop.es.utils;
 
 import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.Response;
