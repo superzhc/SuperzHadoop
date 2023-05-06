@@ -21,6 +21,8 @@
         <module>superz-data</module>
         <module>superz-spring</module>
         <module>superz-db</module>
+        <module>superz-data-processing</module>
+        <module>superz-data-integration</module>
     </modules>
 
     <properties>
