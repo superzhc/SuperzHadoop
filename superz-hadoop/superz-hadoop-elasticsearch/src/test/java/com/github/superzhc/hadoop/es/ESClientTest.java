@@ -13,11 +13,15 @@ public class ESClientTest {
 
     static final Integer PORT = 9200;
 
+    static final String USERNAME = null;
+
+    static final String PASSWORD = null;
+
     protected ESClient client = null;
 
     @Before
     public void setUp() throws Exception {
-        client = ESClient.create(HOST, PORT);
+        client = ESClient.create(HOST, PORT, USERNAME, PASSWORD);
     }
 
     @After
