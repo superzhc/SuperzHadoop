@@ -11,6 +11,8 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 /**
  * @author superz
  * @create 2022/2/10 11:39
@@ -24,6 +26,7 @@ public class ESDocument extends ESCommon {
 
     /**
      * 查看索引的文档数量
+     *
      * @param index
      * @return
      */
@@ -95,6 +98,19 @@ public class ESDocument extends ESCommon {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public String addBatch(String index, List<String> data) {
+        String url = String.format("/%s/_bulk?refresh", index);
+
+        StringBuilder sb = new StringBuilder();
+        for (String item : data) {
+            sb.append("{ \"create\": { } }").append('\n');
+            sb.append(item).append('\n');
+        }
+
+        Response response = client.post(url, sb.toString());
+        return ResponseUtils.getEntity(response);
     }
 
     /**

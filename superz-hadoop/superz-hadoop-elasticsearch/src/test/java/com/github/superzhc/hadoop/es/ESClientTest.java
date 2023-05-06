@@ -9,13 +9,17 @@ import org.junit.Test;
  * @create 2023/4/12 11:07
  **/
 public class ESClientTest {
-    static final String HOST = "127.0.0.1";
+    static final String HOST1 = "10.90.9.38";
+    static final String HOST2 = "10.90.9.39";
+    static final String HOST3 = "10.90.9.40";
+    static final String HOST = HOST3/*"127.0.0.1"*/;
+
 
     static final Integer PORT = 9200;
 
-    static final String USERNAME = null;
+    static final String USERNAME = "elastic";
 
-    static final String PASSWORD = null;
+    static final String PASSWORD = "xgxx@elastic";
 
     protected ESClient client = null;
 

@@ -1,5 +1,6 @@
 package com.github.superzhc.hadoop.es;
 
+import com.github.superzhc.hadoop.es.utils.ESUtils;
 import com.github.superzhc.hadoop.es.utils.ResponseUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -19,13 +20,15 @@ import java.io.IOException;
  * 2022年04月26日 superz modify 基于 7.13.3 版本的 Elasticsearch 新增 user/password 验证方式
  */
 public class ESClient implements Closeable {
-    private static final Logger logger = LoggerFactory.getLogger(ESClient.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ESClient.class);
     private static final String DEFAULT_PROTOCOL = "http";
 
     private HttpHost[] httpHosts;
     private RestClient client;
     /* Elasticsearch高级别客户端 */
     private RestHighLevelClient highLevelClient;
+    /* Elasticsearch工具类*/
+    private ESUtils esUtils;
 
     public static ESClient create(String protocol, String host, Integer port) {
         return create(protocol, host, port, null, null);
@@ -63,8 +66,15 @@ public class ESClient implements Closeable {
         }
         this.highLevelClient = new RestHighLevelClient(builder);
         this.client = builder.build()/*highLevelClient.getLowLevelClient()*/;
+        this.esUtils = new ESUtils(client);
     }
 
+    /**
+     * beta
+     *
+     * @param httpHosts
+     * @param pemPath
+     */
     public ESClient(HttpHost[] httpHosts, String pemPath) {
         this.httpHosts = httpHosts;
         RestClientBuilder builder = RestClient.builder(httpHosts);
@@ -139,34 +149,34 @@ public class ESClient implements Closeable {
     }
 
     public Response get(String url) {
-        return execute("GET", url, null);
+        return esUtils.get(url);
     }
 
     public Response get(String url, String json) {
-        return execute("GET", url, json);
+        return esUtils.get(url,json);
     }
 
     public Response post(String url, String json) {
-        return execute("POST", url, json);
+        return esUtils.post(url,json);
     }
 
     public Response put(String url, String json) {
-        return execute("PUT", url, json);
+        return esUtils.put(url,json);
     }
 
     public Response head(String url) {
-        return execute("HEAD", url, null);
+        return esUtils.head(url);
     }
 
     public Response delete(String url) {
-        return delete(url, null);
+        return esUtils.delete(url);
     }
 
     public Response delete(String url, String json) {
-        return execute("DELETE", url, json);
+        return esUtils.delete(url,json);
     }
 
-    public Response execute(String method, String url, String json) {
+/*    public Response execute(String method, String url, String json) {
         try {
             // 请求参数不允许为空
             // 6.3.2 版本
@@ -183,22 +193,22 @@ public class ESClient implements Closeable {
                 request.setJsonEntity(json);
             }
 
-            if (logger.isDebugEnabled()) {
-                logger.debug(request.toString() + (null == json ? "" : ",请求体内容：" + json));
+            if (LOG.isDebugEnabled()) {
+                LOG.debug(request.toString() + (null == json ? "" : ",请求体内容：" + json));
             }
 
             Response response = getRestClient().performRequest(request);
 
-            if (logger.isDebugEnabled()) {
-                logger.debug(response.toString());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug(response.toString());
             }
 
             return response;
         } catch (Exception e) {
-            logger.error("执行Elasticsearch的请求异常！", e);
+            LOG.error("执行Elasticsearch的请求异常！", e);
             throw new RuntimeException(e);
         }
-    }
+    }*/
 
     public RestClient getRestClient() {
         return client;
