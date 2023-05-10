@@ -385,6 +385,31 @@ public class JsonUtils {
         return null == childNode ? Boolean.FALSE : childNode.asBoolean();
     }
 
+    public static Date date(JsonNode node, String format, Object... paths) {
+        JsonNode childNode = object(node, paths);
+        if (null == childNode) {
+            return null;
+        }
+
+        String text = childNode.asText();
+        try {
+            return new SimpleDateFormat(format).parse(text);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public static LocalDateTime localDateTime(JsonNode node, String format, Object... paths) {
+        JsonNode childNode = object(node, paths);
+        if (null == childNode) {
+            return null;
+        }
+
+        String text = childNode.asText();
+
+        return LocalDateTime.parse(text, DateTimeFormatter.ofPattern(format));
+    }
+
     public static <T> List<T> list(JsonNode node, Object... paths) {
         ArrayNode arrayNode = array(node, paths);
         List<T> lst = new ArrayList<>(arrayNode.size());
@@ -447,6 +472,24 @@ public class JsonUtils {
         double[] arr = new double[childNode.size()];
         for (int i = 0, len = childNode.size(); i < len; i++) {
             arr[i] = null == childNode.get(i) ? null : childNode.get(i).asDouble();
+        }
+        return arr;
+    }
+
+    public static Date[] dateArray(JsonNode node, String format, Object... paths) {
+        ArrayNode childNode = array(node, paths);
+        Date[] arr = new Date[childNode.size()];
+        for (int i = 0, len = childNode.size(); i < len; i++) {
+            arr[i] = date(childNode.get(i), format);
+        }
+        return arr;
+    }
+
+    public static LocalDateTime[] localDateTimeArray(JsonNode node, String format, Object... paths) {
+        ArrayNode childNode = array(node, paths);
+        LocalDateTime[] arr = new LocalDateTime[childNode.size()];
+        for (int i = 0, len = childNode.size(); i < len; i++) {
+            arr[i] = localDateTime(childNode.get(i), format);
         }
         return arr;
     }

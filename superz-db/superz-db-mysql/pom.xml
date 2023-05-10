@@ -25,6 +25,12 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.github.superzhc</groupId>
+            <artifactId>superz-common-jackson</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysql.version}</version>
