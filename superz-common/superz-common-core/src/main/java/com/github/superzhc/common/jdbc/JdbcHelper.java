@@ -328,6 +328,7 @@ public class JdbcHelper implements Closeable {
      * 判断表是否存在
      *
      * @param table
+     *
      * @return
      */
     public boolean exist(String table) {
@@ -699,6 +700,7 @@ public class JdbcHelper implements Closeable {
      *
      * @param sql
      * @param params
+     *
      * @return
      * @throws SQLException
      */
@@ -757,6 +759,7 @@ public class JdbcHelper implements Closeable {
      *
      * @param sql
      * @param params
+     *
      * @return
      * @throws SQLException
      */
@@ -884,6 +887,7 @@ public class JdbcHelper implements Closeable {
      * @param sql
      * @param params
      * @param <T>
+     *
      * @return
      */
     public <T> T aggregate(String sql, Object... params) {
@@ -894,7 +898,9 @@ public class JdbcHelper implements Closeable {
                     while (true) {
                         if (!rs.next()) break;
 
-                        return (T) rs.getObject(1);
+                        Object obj = rs.getObject(1);
+                        // FIXME：这种类型转换是不安全的，需要进行安全类型转换
+                        return (T) obj;
                     }
                 } catch (SQLException e) {
                     log.error("解析ResultSet异常", e);
@@ -902,6 +908,8 @@ public class JdbcHelper implements Closeable {
                 return null;
             }
         });
+
+        log.debug("查询结果：{}", result);
         return result;
     }
 
@@ -944,6 +952,7 @@ public class JdbcHelper implements Closeable {
      *
      * @param sql
      * @param paramters
+     *
      * @return
      * @throws SQLException
      */
@@ -1029,8 +1038,9 @@ public class JdbcHelper implements Closeable {
     /**
      * 调用存储过程，执行增删改
      *
-     * @param sql        存储过程
+     * @param sql 存储过程
      * @param parameters
+     *
      * @return 影响行数
      * @throws SQLException
      */
@@ -1060,6 +1070,7 @@ public class JdbcHelper implements Closeable {
      * 批量更新数据
      *
      * @param sqlList 一组sql
+     *
      * @return
      */
     public void batchUpdate(List<String> sqlList) {
@@ -1170,7 +1181,7 @@ public class JdbcHelper implements Closeable {
      * 批量更新
      *
      * @param table
-     * @param columns   使用英文逗号（,）进行分割
+     * @param columns 使用英文逗号（,）进行分割
      * @param params
      * @param batchSize
      */
@@ -1214,8 +1225,8 @@ public class JdbcHelper implements Closeable {
     /**
      * 批量进行更新
      *
-     * @param sql       PreparedStatement 的 SQL 语句
-     * @param params    数据
+     * @param sql PreparedStatement 的 SQL 语句
+     * @param params 数据
      * @param batchSize 单次批处理的数据量
      */
     public void batchUpdate(String sql, Object[][] params, Integer batchSize) {

@@ -38,6 +38,13 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.superzhc</groupId>
+            <artifactId>superz-common-cron</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!--分词-->
         <!--<dependency>
             <groupId>org.ansj</groupId>

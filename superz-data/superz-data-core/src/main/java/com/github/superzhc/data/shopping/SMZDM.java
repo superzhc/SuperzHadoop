@@ -1,6 +1,7 @@
 package com.github.superzhc.data.shopping;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.github.superzhc.common.dom4j.XmlUtils;
 import com.github.superzhc.common.html.HtmlRequest;
 import com.github.superzhc.common.http.HttpRequest;
 import com.github.superzhc.common.jackson.JsonUtils;
@@ -83,7 +84,9 @@ public class SMZDM {
 
     /**
      * 推荐使用 haowen2
+     *
      * @param period 以天为时间跨度，默认为 all，其余可以选择 1，7，30，365
+     *
      * @return
      */
     @Deprecated
@@ -121,6 +124,7 @@ public class SMZDM {
 
     /**
      * @param period 以天为时间跨度，默认为 all，其余可以选择 1(今日热门)，7(周热门)，30(月热门)，365(年热门)，all(总热门)
+     *
      * @return
      */
     public static List<Map<String, Object>> haowen2(String period) {
@@ -337,6 +341,18 @@ public class SMZDM {
     //     }
     // }
 
+    public static List<Map<String, Object>> faxian() {
+        String rssUrl = "https://faxian.smzdm.com/feed";
+
+        String result = HttpRequest.get(rssUrl).body();
+
+        org.dom4j.Element root = XmlUtils.load(result);
+
+        List<Map<String, Object>> data = Arrays.asList(XmlUtils.maps(root, "channel", "item"));
+
+        return data;
+    }
+
     public static void main(String[] args) {
         String out = "";
         List<Map<String, Object>> data = null;
@@ -365,7 +381,7 @@ public class SMZDM {
 //        out = MapUtils.print(ranking(RankType.好价品类榜_运动户外));
 //         out = MapUtils.print(ranking(RankType.好价品类榜_食品生鲜));
 
-        data=search("n95");
+        data = search("n95");
         out = MapUtils.print(data);
         System.out.println(out);
     }

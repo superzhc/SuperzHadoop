@@ -139,7 +139,8 @@ public class XmlUtils {
 
         Map<String, List<Object>> map = new LinkedHashMap<>();
         for (Element subChildElement : subChildElements) {
-            String name = subChildElement.getName();
+            String name = subChildElement.getQualifiedName();
+            name = name.replace(':', '_');
 
             List<Object> data;
             if (!map.containsKey(name)) {
@@ -165,6 +166,10 @@ public class XmlUtils {
             }
         }
         return finalMap;
+    }
+
+    public static String string(Element element, Object... tags) {
+        return text(element, tags);
     }
 
     public static String text(Element element, Object... tags) {
