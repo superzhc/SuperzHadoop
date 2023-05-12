@@ -45,6 +45,12 @@ public class SMZDMTest {
     }
 
     @Test
+    public void testSmzdm() {
+        List<Map<String, Object>> data = SMZDM.smzdm();
+        MapUtils.show(data);
+    }
+
+    @Test
     public void testFaxian() throws Exception {
         CronScheduledThreadPoolExecutor cronScheduledCronThreadPoolExecutor = new CronScheduledThreadPoolExecutor(1);
         cronScheduledCronThreadPoolExecutor.scheduleWithCron(() -> {
@@ -78,5 +84,17 @@ public class SMZDMTest {
         }, "0 0/1 * * * ? *", CronType.QUARTZ);
 
         latch.await();
+    }
+
+    @Test
+    public void testPost() throws Exception {
+        List<Map<String, Object>> data = SMZDM.post();
+        MapUtils.show(data);
+    }
+
+    @Test
+    public void testNews() throws Exception {
+        List<Map<String, Object>> data = SMZDM.news();
+        MapUtils.show(data);
     }
 }

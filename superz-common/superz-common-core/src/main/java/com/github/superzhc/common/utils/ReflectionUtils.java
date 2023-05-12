@@ -10,9 +10,14 @@ import java.util.List;
 /**
  * 反射工具类
  *
+ * 2023年5月12日 10点15分，推荐使用：
+ * - com.github.superzhc.common.reflect.ConstructorUtils
+ * - com.github.superzhc.common.reflect.MethodUtils
+ * - com.github.superzhc.common.reflect.FieldUtils
  * @author superz
  * @create 2021/4/8 17:13
  */
+@Deprecated
 public class ReflectionUtils {
     public static <T> T instance(String className,final Object... params) {
         try {

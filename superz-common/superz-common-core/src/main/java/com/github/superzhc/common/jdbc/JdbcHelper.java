@@ -1,6 +1,7 @@
 package com.github.superzhc.common.jdbc;
 
 
+import com.github.superzhc.common.utils.MapUtils;
 import com.github.superzhc.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,7 @@ import java.sql.*;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * 2020年11月04日 superz add
@@ -328,7 +330,6 @@ public class JdbcHelper implements Closeable {
      * 判断表是否存在
      *
      * @param table
-     *
      * @return
      */
     public boolean exist(String table) {
@@ -451,6 +452,41 @@ public class JdbcHelper implements Closeable {
         }
     }
 
+    public String[] primaryKeys(String table) {
+        try {
+            return primaryKeys(getConnection().getCatalog(), getConnection().getSchema(), table);
+        } catch (SQLException throwables) {
+            log.error("获取表元数据异常", throwables);
+            return null;
+        }
+    }
+
+    public String[] primaryKeys(String catalog, String schema, String table) {
+        ResultSet rs = null;
+        try {
+            List<String> columns = new ArrayList<>();
+
+            DatabaseMetaData meta = getConnection().getMetaData();
+            rs = meta.getPrimaryKeys(catalog, schema, table);
+            while (rs.next()) {
+                columns.add(rs.getString("COLUMN_NAME"));
+            }
+
+            if (columns.size() == 0) {
+                return null;
+            }
+
+            String[] columnArray = new String[columns.size()];
+            columns.toArray(columnArray);
+            return columnArray;
+        } catch (SQLException throwables) {
+            log.error("获取表元数据异常", throwables);
+            return null;
+        } finally {
+            free(null, null, rs);
+        }
+    }
+
     public String[] columnNames(String table) {
         try {
             return columnNames(getConnection().getCatalog(), getConnection().getSchema(), table);
@@ -561,6 +597,8 @@ public class JdbcHelper implements Closeable {
         }
     }
 
+
+    //region======================================DDL======================================
     public int ddlExecute(String sql) {
         if (StringUtils.isBlank(sql)) {
             throw new RuntimeException("SQL不能为空");
@@ -582,20 +620,33 @@ public class JdbcHelper implements Closeable {
         }
     }
 
-    public int insert(String table, Map<String, Object> params) {
-        int columnCount = params.size();
-        String[] columns = new String[columnCount];
-        Object[] values = new Object[columnCount];
+    //endregion===================================DDL======================================
 
-        int i = 0;
-        for (Map.Entry<String, Object> param : params.entrySet()) {
-            columns[i] = param.getKey();
-            values[i] = param.getValue();
-            i++;
+    //region======================================DML======================================
+    public int insert(String table, Map<String, Object> params) {
+        String[] allColumns = columnNames(table);
+        Map<String, Object> newParams = MapUtils.caseInsensitiveMap(params);
+
+
+        List<String> columns = new ArrayList<>();
+        List<Object> values = new ArrayList<>();
+        for (String column : allColumns) {
+            if (newParams.containsKey(column)) {
+                Object value = newParams.get(column);
+                if (null != value) {
+                    columns.add(column);
+                    values.add(value);
+                }
+            }
         }
-        return insert(table, columns, values);
+
+        String[] availableColumns = new String[columns.size()];
+        columns.toArray(availableColumns);
+
+        return insert(table, availableColumns, values.toArray());
     }
 
+    @Deprecated
     public int insert(String table, String[] columns, List<Object> params) {
         return insert(table, columns, params.toArray());
     }
@@ -612,72 +663,69 @@ public class JdbcHelper implements Closeable {
         return dmlExecute(sql, params);
     }
 
-    public int update(String table, Map<String, Object> params, Map<String, Object> conditions) {
-        if (null == conditions || conditions.size() == 0) {
-            log.debug("更新表[" + table + "]数据，条件不允许为空");
+    public int update(String table, Map<String, Object> params, String... conditionKeys) {
+        if (null == conditionKeys || conditionKeys.length == 0) {
+            log.error("更新表[" + table + "]数据，条件不允许为空");
             return -1;
         }
 
-        StringBuilder columnsSb = new StringBuilder();
-        Object[] values = new Object[params.size() + conditions.size()];
-        int i = 0;
-        for (Map.Entry<String, Object> param : params.entrySet()) {
-            columnsSb.append(",").append(param.getKey()).append("=").append("?");
-            values[i] = param.getValue();
-            i++;
+        String[] allColumns = columnNames(table);
+        Map<String, Object> newParams = MapUtils.caseInsensitiveMap(params);
+
+        StringBuilder columnsSql = new StringBuilder();
+        List<Object> values = new ArrayList<>();
+        for (String column : allColumns) {
+            if (newParams.containsKey(column)) {
+                Object value = newParams.get(column);
+                if (null != value) {
+                    columnsSql.append(',').append(column).append('=').append('?');
+                    values.add(value);
+                }
+            }
         }
 
-        StringBuilder conditionColumnsSb = new StringBuilder();
-        int j = 0;
-        for (Map.Entry<String, Object> condition : conditions.entrySet()) {
-            conditionColumnsSb.append(" AND ").append(condition.getKey()).append("=").append("?");
-            values[i + j] = condition.getValue();
-            j++;
+        StringBuilder conditionSql = new StringBuilder();
+        for (String conditionKey : conditionKeys) {
+            if (newParams.containsKey(conditionKey)) {
+                Object value = newParams.get(conditionKey);
+                if (null != value) {
+                    conditionSql.append(" AND ").append(conditionKey).append('=').append('?');
+                    values.add(value);
+                }
+            }
         }
 
-        String sql = String.format("UPDATE %s SET %s WHERE 1=1 %s", table, columnsSb.substring(1), conditionColumnsSb);
-        return dmlExecute(sql, values);
+        if (conditionSql.length() == 0) {
+            log.error("更新表[{}]数据，条件字段[{}]无效", table, Stream.of(conditionKeys).collect(Collectors.joining(",")));
+            return -1;
+        }
+
+        String sql = String.format("UPDATE %s SET %s WHERE 1=1 %s", table, conditionSql.substring(1), conditionSql);
+        return dmlExecute(sql, values.toArray());
     }
 
-    public int update(String table, String condition, Map<String, Object> params) {
-        if (null == condition || condition.trim().length() == 0) {
-            log.debug("更新表[" + table + "]数据，条件不允许为空");
+    public int delete(String table, Map<String, Object> params, String... conditionKeys) {
+        if (null == conditionKeys || conditionKeys.length == 0) {
+            log.debug("删除表[{}]数据，条件不允许为空", table);
             return -1;
         }
 
-        if (!condition.trim().toLowerCase().startsWith("and")) {
-            condition = "AND " + condition;
+        Map<String, Object> newParams = MapUtils.caseInsensitiveMap(params);
+
+        StringBuilder conditionSql = new StringBuilder();
+        List<Object> values = new ArrayList<>();
+        for (String conditionKey : conditionKeys) {
+            if (newParams.containsKey(conditionKey)) {
+                Object value = newParams.get(conditionKey);
+                if (null != value) {
+                    conditionSql.append(" AND ").append(conditionKey).append("=").append("?");
+                    values.add(value);
+                }
+            }
         }
 
-        StringBuilder columnsSb = new StringBuilder();
-        Object[] values = new Object[params.size()];
-        int i = 0;
-        for (Map.Entry<String, Object> param : params.entrySet()) {
-            columnsSb.append(",").append(param.getKey()).append("=").append("?");
-            values[i] = param.getValue();
-        }
-
-        String sql = String.format("UPDATE %s SET %s WHERE 1=1 %s", table, columnsSb.substring(1), condition);
-        return dmlExecute(sql, values);
-    }
-
-    public int delete(String table, Map<String, Object> conditions) {
-        if (null == conditions || conditions.size() == 0) {
-            log.debug("删除表[" + table + "]数据，条件不允许为空");
-            return -1;
-        }
-
-        StringBuilder columnsSb = new StringBuilder();
-        Object[] values = new Object[conditions.size()];
-        int i = 0;
-        for (Map.Entry<String, Object> condition : conditions.entrySet()) {
-            columnsSb.append(" AND ").append(condition.getKey()).append("=").append("?");
-            values[i] = condition.getValue();
-            i++;
-        }
-
-        String sql = String.format("DELETE FROM %s WHERE 1=1 %s", table, columnsSb);
-        return dmlExecute(sql, values);
+        String sql = String.format("DELETE FROM %s WHERE 1=1 %s", table, conditionSql);
+        return dmlExecute(sql, values.toArray());
     }
 
     public int delete(String table, String condition) {
@@ -700,7 +748,6 @@ public class JdbcHelper implements Closeable {
      *
      * @param sql
      * @param params
-     *
      * @return
      * @throws SQLException
      */
@@ -735,6 +782,9 @@ public class JdbcHelper implements Closeable {
         }
     }
 
+    //endregion===================================DML======================================
+
+    @Deprecated
     public List<Map<String, Object>> select(String table, String... columns) {
         return select(table, columns, null);
     }
@@ -759,7 +809,6 @@ public class JdbcHelper implements Closeable {
      *
      * @param sql
      * @param params
-     *
      * @return
      * @throws SQLException
      */
@@ -878,7 +927,6 @@ public class JdbcHelper implements Closeable {
         } else {
             return aggregate(String.format(sql_template, table, conditions));
         }
-
     }
 
     /**
@@ -887,7 +935,6 @@ public class JdbcHelper implements Closeable {
      * @param sql
      * @param params
      * @param <T>
-     *
      * @return
      */
     public <T> T aggregate(String sql, Object... params) {
@@ -952,7 +999,6 @@ public class JdbcHelper implements Closeable {
      *
      * @param sql
      * @param paramters
-     *
      * @return
      * @throws SQLException
      */
@@ -1038,9 +1084,8 @@ public class JdbcHelper implements Closeable {
     /**
      * 调用存储过程，执行增删改
      *
-     * @param sql 存储过程
+     * @param sql        存储过程
      * @param parameters
-     *
      * @return 影响行数
      * @throws SQLException
      */
@@ -1070,7 +1115,6 @@ public class JdbcHelper implements Closeable {
      * 批量更新数据
      *
      * @param sqlList 一组sql
-     *
      * @return
      */
     public void batchUpdate(List<String> sqlList) {
@@ -1078,6 +1122,14 @@ public class JdbcHelper implements Closeable {
     }
 
     public void batchUpdate(List<String> sqlList, Integer batchSize) {
+        if (null == sqlList || sqlList.size() == 0) {
+            log.debug("no data");
+        }
+
+        int totalSize = sqlList.size();
+        int remainSize = totalSize;
+        log.debug("数据总条数：{}", totalSize);
+
         Statement statement = null;
         try {
             getConnection().setAutoCommit(false);
@@ -1093,13 +1145,16 @@ public class JdbcHelper implements Closeable {
                     statement.executeBatch();
                     getConnection().commit();
                     currentBatchSize = 0;
-                    log.debug("插入" + batchSize + "条数据");
+
+                    remainSize = remainSize - batchSize;
+                    log.debug("[总数：{}，剩余：{}]插入{}条数据", totalSize, remainSize, batchSize);
                 }
             }
 
             if (currentBatchSize > 0) {
                 statement.executeBatch();
                 getConnection().commit();
+                log.debug("[总数：{}，剩余：{}]插入{}条数据", totalSize, remainSize, currentBatchSize);
             }
         } catch (SQLException e) {
             try {
@@ -1111,46 +1166,6 @@ public class JdbcHelper implements Closeable {
         } finally {
             free(null, statement, null);
         }
-    }
-
-    public void batchUpdate(String table, String columns, List<List<Object>> params) {
-        batchUpdate(table, columns, params, params.size());
-    }
-
-    public void batchUpdate(String table, String columns, List<List<Object>> params, Integer batchSize) {
-        if (null == params || params.size() == 0) {
-            log.debug("no data");
-            return;
-        }
-
-        Object[][] arrParams = new Object[params.size()][];
-        for (int i = 0, len = params.size(); i < len; i++) {
-            List<Object> param = params.get(i);
-            Object[] arrParam = new Object[param.size()];
-            param.toArray(arrParam);
-            arrParams[i] = arrParam;
-        }
-        batchUpdate(table, columns, arrParams, batchSize);
-    }
-
-    public void batchUpdate(String table, String[] columns, List<List<Object>> params) {
-        batchUpdate(table, columns, params, params.size());
-    }
-
-    public void batchUpdate(String table, String[] columns, List<List<Object>> params, Integer batchSize) {
-        if (null == params || params.size() == 0) {
-            log.debug("no data");
-            return;
-        }
-
-        Object[][] arrParams = new Object[params.size()][];
-        for (int i = 0, len = params.size(); i < len; i++) {
-            List<Object> param = params.get(i);
-            Object[] arrParam = new Object[param.size()];
-            param.toArray(arrParam);
-            arrParams[i] = arrParam;
-        }
-        batchUpdate(table, columns, arrParams, batchSize);
     }
 
     public void batchUpdate(String sql, List<List<Object>> params) {
@@ -1173,35 +1188,12 @@ public class JdbcHelper implements Closeable {
         batchUpdate(sql, arrParams, batchSize);
     }
 
-    public void batchUpdate(String table, String columns, Object[][] params) {
-        batchUpdate(table, columns, params, params.length);
-    }
-
-    /**
-     * 批量更新
-     *
-     * @param table
-     * @param columns 使用英文逗号（,）进行分割
-     * @param params
-     * @param batchSize
-     */
-    public void batchUpdate(String table, String columns, Object[][] params, Integer batchSize) {
-        String[] arrColumns = columns.split(",");
-        batchUpdate(table, arrColumns, params, batchSize);
-    }
-
-    public void batchUpdate(String table, String[] columns, Object[][] params) {
-        batchUpdate(table, columns, params, params.length);
-    }
-
+    @Deprecated
     public void batchUpdate(String table, String[] columns, Object[][] params, Integer batchSize) {
         batchUpdate(table, Arrays.asList(columns), params, batchSize);
     }
 
-    public void batchUpdate(String table, List<String> columns, Object[][] params) {
-        batchUpdate(table, columns, params, params.length);
-    }
-
+    @Deprecated
     public void batchUpdate(String table, List<String> columns, Object[][] params, Integer batchSize) {
         StringBuilder columnsSb = new StringBuilder();
         StringBuilder placeholdSb = new StringBuilder();
@@ -1225,8 +1217,8 @@ public class JdbcHelper implements Closeable {
     /**
      * 批量进行更新
      *
-     * @param sql PreparedStatement 的 SQL 语句
-     * @param params 数据
+     * @param sql       PreparedStatement 的 SQL 语句
+     * @param params    数据
      * @param batchSize 单次批处理的数据量
      */
     public void batchUpdate(String sql, Object[][] params, Integer batchSize) {
@@ -1289,4 +1281,8 @@ public class JdbcHelper implements Closeable {
             free(null, preparedStatement, null);
         }
     }
+
+    //region===================================工具==========================================
+
+    //endregion================================工具==========================================
 }

@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
  * @author superz
  * @create 2023/2/23 11:00
  **/
+@Deprecated
 public class TypeUtils {
     private static final Logger LOG = LoggerFactory.getLogger(TypeUtils.class);
 

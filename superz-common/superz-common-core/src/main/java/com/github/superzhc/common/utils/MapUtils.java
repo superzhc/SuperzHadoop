@@ -71,6 +71,24 @@ public class MapUtils {
         return map;
     }
 
+    public static Map<String, Object> caseInsensitiveMap(Map<String, Object> map) {
+        if (null == map || map.size() == 0) {
+            return null;
+        }
+
+        // 忽略大小写
+//        Map<String, Object> newMap = new HashMap<>(map.size());
+//        for (Map.Entry<String, Object> entry : map.entrySet()) {
+//            String key = entry.getKey();
+//            Object value = entry.getValue();
+//            newMap.put(key.toLowerCase(), value);
+//        }
+
+        Map<String, Object> newMap = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+        newMap.putAll(map);
+        return newMap;
+    }
+
     public static <T> String[] keys(Map<String, T>... maps) {
         if (null == maps || maps.length == 0) {
             return null;
@@ -285,7 +303,6 @@ public class MapUtils {
      *
      * @param maps
      * @param <T>
-     *
      * @return
      */
     public static <T> String print(List<Map<String, T>> maps) {
@@ -298,7 +315,6 @@ public class MapUtils {
      * @param maps
      * @param num
      * @param <T>
-     *
      * @return
      */
     public static <T> String print(List<Map<String, T>> maps, int num) {
