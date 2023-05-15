@@ -173,6 +173,21 @@ GitHub 是提供 Git 仓库托管服务的，所以只要注册一个 GitHub 账
 
 将修改文件添加到暂存区
 
+**示例**
+
+```bash
+# 提交被修改的和新建的文件，但不包括被删除的文件，注意：有个.符号
+git add .
+
+# update tracked files    更新所有改变的文件，即提交所有变化的文件
+git add -u
+git add --update
+
+# add changes from all tracked and untracked files   提交已被修改和已被删除文件，但是不包括新的文件
+git add -A
+git add --all
+```
+
 注：支持 Ant 风格添加修改
 
 ### `git commit`

@@ -5,36 +5,21 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.github.superzhc</groupId>
-        <artifactId>superz-hadoop</artifactId>
+        <artifactId>superz-hadoop-nifi</artifactId>
         <version>0.3.0</version>
     </parent>
 
-    <artifactId>superz-hadoop-nifi</artifactId>
+    <artifactId>superz-hadoop-nifi-custom-bundle</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>superz-hadoop-nifi-custom-bundle</module>
+        <module>superz-hadoop-nifi-custom-nar</module>
+        <module>superz-hadoop-nifi-custom-processors</module>
     </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <nifi.version>1.21.0</nifi.version>
     </properties>
-
-    <build>
-        <plugins>
-            <!--Nifi nar包需要该插件-->
-            <plugin>
-                <groupId>org.apache.nifi</groupId>
-                <artifactId>nifi-nar-maven-plugin</artifactId>
-                <version>1.5.0</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <enforceDocGeneration>true</enforceDocGeneration>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>
