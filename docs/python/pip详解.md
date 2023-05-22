@@ -1,16 +1,18 @@
-pip为包管理器，跟Linux上众多的包管理器的功能大致相同，就是对包进行管理，使得包的安装，更新和卸载更容易。
+# pip
 
-pip包管理器下载的python库来自：[PyPI](https://pypi.org/)
+pip 为包管理器，跟 Linux 上众多的包管理器的功能大致相同，就是对包进行管理，使得包的安装，更新和卸载更容易。
 
-pip在python2.7.9以上和3.4以上自带，通过venv,virtualenv和pyvenv创建的虚拟环境默认也会安装，不过最好通过以下命令更新到最新版
+pip 包管理器下载的 python 库来自：[PyPI](https://pypi.org/)
 
-Windows:
+pip 在 python2.7.9 以上和 3.4 以上自带，通过 venv、virtualenv 和 pyvenv 创建的虚拟环境默认也会安装，不过最好通过以下命令更新到最新版
+
+**Windows**
 
 ```sh
 python -m pip install -U pip
 ```
 
-Linux或Mac
+**Linux 或 Mac**
 
 ```sh
 pip install -U pip
@@ -34,7 +36,7 @@ pip install PackageName>=1.0.4         # 指定最小版本
 
 通过使用`==`, `>=`, `<=`, `>`, `<`来指定一个版本号
 
-### 通过requirements.txt进行安装
+### 通过 `requirements.txt` 进行安装
 
 ```sh
 pip install -r requirements.txt
@@ -170,7 +172,7 @@ pip国内源列表
 pip install "splinter[django]"
 ```
 
-上述pip安装命令使用的语法是：
+上述 pip 安装命令使用的语法是：
 
 ```sh
 pip install "project[extra]"
@@ -182,7 +184,7 @@ pip install "project[extra]"
 
 ### 从Github的分支进行安装
 
-从Github的分支安装，格式为：`pip install git+github的https地址@分支`
+从 Github 的分支安装，格式为：`pip install git+github的https地址@分支`
 
 ```sh
 pip install git+https://github.com/shadowsocks/shadowsocks.git@master
