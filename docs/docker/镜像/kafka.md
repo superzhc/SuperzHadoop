@@ -1,27 +1,31 @@
-# 镜像：`Kafka`
+# Kafka
 
-## 拉取镜像
+## 镜像：`Kafka`
+
+### 拉取镜像
 
 ```bash
 docker pull bitnami/kafka:2.2.1
 ```
 
-## 启动镜像
+### 启动镜像
 
 ```bash
 docker run -d --name kafka -v /d/docker/volumes/kafka/data:/bitnami/kafka/data ^
--v /d/docker/volumes/kafka/conf:/opt/bitnami/kafka/conf ^
 -p 9092:9092 ^
--e KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181/kafka --link zookeeper ^
+--network all ^
+-e KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181/kafka ^
 -e KAFKA_CFG_LISTENERS=PLAINTEXT://:9092 ^
--e KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://[实际ip地址]:9092 ^
+-e KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092 ^
 -e ALLOW_PLAINTEXT_LISTENER=yes ^
 bitnami/kafka:2.2.1
 ```
 
 > **注意**：上述方式配置的 Kafka 必须配置 `advertised.listeners` 宿主机的 ip，不然会直接使用 docker 容器的 ip。
+> 
+> 若未配置成宿主机 ip，需要修改 host，采用此种模式，即上面启动方式的 host 配置为 `127.0.0.1 kafka`
 
-### 可配置环境变量
+#### 可配置环境变量
 
 ```shell
 [2021-04-19 23:49:11,660] INFO KafkaConfig values:
@@ -166,4 +170,20 @@ bitnami/kafka:2.2.1
 	zookeeper.session.timeout.ms = 6000
 	zookeeper.set.acl = false
 	zookeeper.sync.time.ms = 2000
+```
+
+## 镜像：`schema-registry`
+
+### 拉取镜像
+
+```shell
+docker pull bitnami/schema-registry:7.2.5
+```
+
+### 启动镜像
+
+> 详细参数配置见：<https://hub.docker.com/r/bitnami/schema-registry>
+
+```shell
+docker run -d --name schema-registry -e SCHEMA_REGISTRY_ADVERTISED_HOSTNAME=zookeeper -e SCHEMA_REGISTRY_KAFKA_BROKERS=PLAINTEXT://kafka:9092 -e SCHEMA_REGISTRY_DEBUG=true -p 8081:8081 --network all --volume /d/docker/volumes/schema-registry/schema-registry-persistence:/bitnami bitnami/schema-registry:7.2.5
 ```
