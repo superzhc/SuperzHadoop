@@ -4,6 +4,7 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,11 +21,16 @@ public class MyProducerNewTest {
         Map<String, String> properties = new HashMap<>();
         properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        producer = new MyProducerNew<>("127.0.0.1:19092", properties);
+        producer = new MyProducerNew<>("127.0.0.1:9092", properties);
     }
 
     @After
     public void tearDown() throws Exception {
         producer.close();
+    }
+
+    @Test
+    public void send() throws Exception{
+        producer.send("test_20230525","{}");
     }
 }

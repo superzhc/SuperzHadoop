@@ -187,3 +187,88 @@ docker pull bitnami/schema-registry:7.2.5
 ```shell
 docker run -d --name schema-registry -e SCHEMA_REGISTRY_ADVERTISED_HOSTNAME=zookeeper -e SCHEMA_REGISTRY_KAFKA_BROKERS=PLAINTEXT://kafka:9092 -e SCHEMA_REGISTRY_DEBUG=true -p 8081:8081 --network all --volume /d/docker/volumes/schema-registry/schema-registry-persistence:/bitnami bitnami/schema-registry:7.2.5
 ```
+
+## 镜像：`kafka-ui`
+
+### 拉取镜像
+
+```shell
+docker pull provectuslabs/kafka-ui
+```
+
+### 启动镜像
+
+```shell
+docker run -d --name kafka-ui --network all -p 6010:6010 -e SERVER_PORT=6010 -v /d/docker/volumes/kafka-ui/config.yml:/etc/kafkaui/dynamic_config.yaml -e DYNAMIC_CONFIG_ENABLED=true  provectuslabs/kafka-ui
+```
+
+**初始化连接信息**
+
+1. 挂载数据卷
+
+```shell
+-v /d/docker/volumes/kafka-ui/config.yml:/etc/kafkaui/dynamic_config.yaml
+```
+
+2. 配置文件内容
+
+```shell
+
+```
+
+**配置 `Basic Authentication` 认证**
+
+```shell
+-e AUTH_TYPE="LOGIN_FORM" -e SPRING_SECURITY_USER_NAME=admin -e SPRING_SECURITY_USER_PASSWORD=admin
+```
+
+**配置权限**
+
+> 注意：`Basic Authentication` 不支持 RBAC
+
+1. 启动镜像添加环境变量：
+
+```shell
+-e SPRING_CONFIG_ADDITIONAL-LOCATION=/roles.yml -v /d/docker/volumes/kafka-ui/roles.yml:/roles.yml
+```
+
+2. 配置文件内容：
+
+```yml
+rbac:
+  roles:
+    - name: "admins"
+      clusters:
+        # FILL THIS
+      subjects:
+        # FILL THIS
+      permissions:
+        - resource: applicationconfig
+          actions: all
+      
+        - resource: clusterconfig
+          actions: all
+
+        - resource: topic
+          value: ".*"
+          actions: all
+
+        - resource: consumer
+          value: ".*"
+          actions: all
+
+        - resource: schema
+          value: ".*"
+          actions: all
+
+        - resource: connect
+          value: ".*"
+          actions: all
+
+        - resource: ksql
+          actions: all
+          
+        - resource: acl
+		  value: ".*"
+          actions: [ view, edit ]
+```

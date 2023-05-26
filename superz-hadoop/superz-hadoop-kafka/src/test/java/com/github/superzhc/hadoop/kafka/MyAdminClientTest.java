@@ -15,7 +15,7 @@ public class MyAdminClientTest {
 
     @Before
     public void setUp() {
-        adminClient = new MyAdminClient("127.0.0.1:19092");
+        adminClient = new MyAdminClient("127.0.0.1:9092");
     }
 
     @After
@@ -23,8 +23,9 @@ public class MyAdminClientTest {
         adminClient.close();
     }
 
+    @Test
     public void createTopic() {
-        String topic = "";
+        String topic = "test_20230525";
         adminClient.create(topic);
     }
 
