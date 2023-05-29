@@ -2,38 +2,27 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
     <parent>
+        <artifactId>superz-tool</artifactId>
         <groupId>com.github.superzhc</groupId>
-        <artifactId>SuperzHadoop</artifactId>
         <version>0.3.0</version>
     </parent>
+    <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>superz-db</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>superz-db-influxdb</module>
-        <module>superz-db-neo4j</module>
-        <module>superz-db-mysql</module>
-        <module>superz-db-postgresql</module>
-        <module>superz-db-redis</module>
-        <module>superz-db-mongodb</module>
-    </modules>
+    <artifactId>superz-sql-parser</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-            <type>pom</type>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid</artifactId>
+            <version>1.2.11</version>
         </dependency>
 
-        <!--日志模块-->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -50,14 +39,5 @@
             <version>1.2.17</version>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.gmavenplus</groupId>
-                <artifactId>gmavenplus-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>

@@ -49,6 +49,7 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!--加解密-->
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>

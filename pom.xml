@@ -17,12 +17,10 @@
         <module>superz-other</module>
         <module>superz-data-mining</module>
         <module>superz-data-warehouse</module>
-        <module>superz-sql</module>
         <module>superz-data</module>
         <module>superz-spring</module>
         <module>superz-db</module>
-        <module>superz-data-processing</module>
-        <module>superz-data-integration</module>
+        <module>superz-nlp</module>
     </modules>
 
     <properties>

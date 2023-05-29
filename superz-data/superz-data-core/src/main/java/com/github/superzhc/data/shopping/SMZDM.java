@@ -339,11 +339,10 @@ public class SMZDM {
     //     }
     // }
 
-    // 不可用
     public static List<Map<String, Object>> smzdm() {
         String rssUrl = "http://feed.smzdm.com/";
 
-        String result = HttpRequest.get(rssUrl).followRedirects(true).body();
+        String result = HttpRequest.get(rssUrl).userAgent(UA_CHROME).followRedirects(true).body();
 
         org.dom4j.Element root = XmlUtils.load(result);
 
