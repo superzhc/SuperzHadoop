@@ -17,6 +17,7 @@
         <module>superz-data-warehouse-metadata</module>
         <module>superz-data-warehouse-integration</module>
         <module>superz-data-warehouse-processing</module>
+        <module>superz-data-warehouse-openmetadata</module>
     </modules>
 
     <properties>

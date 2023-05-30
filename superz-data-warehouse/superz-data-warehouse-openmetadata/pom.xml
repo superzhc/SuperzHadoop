@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.github.superzhc</groupId>
+        <artifactId>superz-data-warehouse</artifactId>
+        <version>0.3.0</version>
+    </parent>
+
+    <artifactId>superz-data-warehouse-openmetadata</artifactId>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <openmetadata.version>1.0.1</openmetadata.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.github.superzhc</groupId>
+            <artifactId>superz-common-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <!--OpenMetadata对Rest API进行封装，更高一级别的客户端，也可以使用原生的HTTP请求-->
+        <dependency>
+            <groupId>org.open-metadata</groupId>
+            <artifactId>openmetadata-java-client</artifactId>
+            <version>${openmetadata.version}</version>
+        </dependency>
+    </dependencies>
+
+</project>

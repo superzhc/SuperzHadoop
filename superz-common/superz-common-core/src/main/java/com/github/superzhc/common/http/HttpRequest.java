@@ -1270,6 +1270,13 @@ public class HttpRequest {
                 connection = CONNECTION_FACTORY.create(url, createProxy());
             else
                 connection = CONNECTION_FACTORY.create(url);
+
+//            //2023年5月30日 判断是否是https，跳过证书认证，但安全性下降，用户自行决定调用trustAllCerts()、trustAllHosts()
+//            if("https".equalsIgnoreCase(url.getProtocol())){
+//                ((HttpsURLConnection) connection).setSSLSocketFactory(getTrustedFactory());
+//                ((HttpsURLConnection) connection).setHostnameVerifier(getTrustedVerifier());
+//            }
+
             connection.setRequestMethod(requestMethod);
             log.debug("[{}]-[{}] connection:{}", requestMethod, connection.hashCode(), url.toString());
             return connection;
@@ -1906,6 +1913,7 @@ public class HttpRequest {
                 && (HEADER_USER_AGENT.equals(name)
                 || HEADER_COOKIE.equalsIgnoreCase(name))
                 || HEADER_CONTENT_TYPE.equalsIgnoreCase(name)
+                || HEADER_AUTHORIZATION.equalsIgnoreCase(name)
         ) {
             log.debug("[{}]-[{}] header:{}={}", requestMethod, conn.hashCode(), name, value);
         }
@@ -2418,6 +2426,18 @@ public class HttpRequest {
      */
     public HttpRequest proxyBasic(final String name, final String password) {
         return proxyAuthorization("Basic " + Base64.encode(name + ':' + password));
+    }
+
+    /**
+     * Bearer 授权机制是一种基于令牌的授权方式，它使用一个令牌来代替用户名和密码。
+     * 这个令牌是由授权服务器颁发的，通常是通过OAuth 2.0协议来实现。
+     * Bearer令牌具有一定的时效性，一旦失效，就需要重新获取。
+     *
+     * @param token
+     * @return
+     */
+    public HttpRequest bearer(final String token) {
+        return authorization(String.format("Bearer %s", token));
     }
 
     /**
@@ -3096,7 +3116,7 @@ public class HttpRequest {
      */
     public HttpRequest form(final Map<?, ?> values, final String charset)
             throws HttpRequestException {
-        if (!values.isEmpty())
+        if (null != values && !values.isEmpty())
             for (Entry<?, ?> entry : values.entrySet())
                 form(entry, charset);
         return this;
