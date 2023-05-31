@@ -32,23 +32,106 @@ python -m venv test_venv
 
 退出虚拟环境很简单，只需要执行 deactivate 命令就行，这个命令也在虚拟环境的脚本目录下，因为激活时，将脚本目录设置到 PATH 中了，所以可以直接使用
 
-## virtualenv
+## 虚拟环境[virtualenv]
 
 virtualenv 用来创建和管理虚拟环境，virtualenvwrapper 是 virtualenv 的扩展包，可以更⽅便的新增、删除、复制、切换虚拟环境。
 
+### virtualenv
+
+**安装**
+
 ```shell
 pip install virtualenv
-pip install virtualenvwrapper-win（Linux系统去掉-win）
 ```
 
-**操作**
+**创建虚拟环境**
 
+```shell
+# virtualenv [虚拟环境名称] 
+virtualenv venv
+
+#如果不想使用系统的包,加上–no-site-packeages参数
+virtualenv  --no-site-packages 创建路径名
 ```
-mkvirtualenv env_name                            # 创建python3虚拟环境（默认python3，具体看你python解释器2、3的主次）
-mkvirtualenv env_name -p python2                 # 创建python2虚拟环境
 
-workon                                           # 进入虚拟环境、查看所有虚拟环境
-deactivate                                       # 退出虚拟环境
+**激活环境**
 
-rmvirtualenv                                     # 删除虚拟环境（先退出再删除）
+```shell
+# Windows
+cd venv
+.\Scripts\activate.bat
+
+# Linux
+cd venv
+source ./bin/activate
+```
+
+**退出环境**
+
+```shell
+# Windows
+.\Scripts\deactivate.bat
+
+# Linux
+deactivate
+```
+
+**删除环境**
+
+没有使用virtualenvwrapper前，可以直接删除venv文件夹来删除环境
+
+### virtualenvwrapper
+
+**安装**
+
+```shell
+# Windows
+pip install virtualenvwrapper-win
+
+# Linux
+pip install --user virtualenvwrapper
+echo "source virtualenvwrapper.sh" >> ~/.bashrc
+source ~/.bashrc
+```
+
+**创建环境**
+
+```shell
+# on macOS/Linux:
+mkvirtualenv --python=python3.6 venv
+# on Windows
+mkvirtualenv --python=python3 venv
+```
+
+**激活环境**
+
+```shell
+#workon #列出虚拟环境列表
+workon [venv] #切换环境
+```
+
+**退出环境**
+
+```shell
+deactivate
+```
+
+**删除环境**
+
+```shell
+rmvirtualenv venv
+```
+
+**其他**
+
+```shell
+pip freeze #查看当前安装库版本
+#创建 requirements.txt 文件，其中包含了当前环境中所有包及 各自的版本的简单列表
+#保持部署相同，一键安装所有包
+pip install -r requirements.txt
+pip freeze > requirements.txt 
+lsvirtualenv    #列举所有的环境
+cdvirtualenv    #导航到当前激活的虚拟环境的目录中，相当于pushd 目录
+cdsitepackages   # 和上面的类似，直接进入到 site-packages 目录
+lssitepackages     #显示 site-packages 目录中的内容                                   # 删除虚拟环境（先退出再删除）
 ```
