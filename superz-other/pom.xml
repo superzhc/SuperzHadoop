@@ -18,7 +18,6 @@
         <module>superz-windows-bat</module>
         <module>superz-java</module>
         <module>superz-groovy</module>
-        <module>superz-python</module>
     </modules>
 
     <properties>

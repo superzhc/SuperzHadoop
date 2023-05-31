@@ -21,6 +21,7 @@
         <module>superz-spring</module>
         <module>superz-db</module>
         <module>superz-nlp</module>
+        <module>superz-python</module>
     </modules>
 
     <properties>

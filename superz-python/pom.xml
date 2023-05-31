@@ -5,16 +5,15 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.github.superzhc</groupId>
-        <artifactId>superz-other</artifactId>
+        <artifactId>SuperzHadoop</artifactId>
         <version>0.3.0</version>
     </parent>
 
     <artifactId>superz-python</artifactId>
     <packaging>pom</packaging>
+    <description>Python项目根目录</description>
 
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
