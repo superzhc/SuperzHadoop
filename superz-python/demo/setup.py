@@ -5,4 +5,5 @@ setup(
     version="0.3.0",
     description="示例工程",
     author="superz",
+    url="https://superzhc.github.io/SuperzHadoop",
 )
