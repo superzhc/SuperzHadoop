@@ -12,6 +12,12 @@ docker pull postgres:10.15
 docker run --name postgres -d -p 5432:5432 -v /d/docker/volumes/postgres/data:/var/lib/postgresql/data -e POSTGRES_PASSWORD=123456 postgres:10.15
 ```
 
+当前容器的用户名/密码：
+
+```
+postgres/123456
+```
+
 ## 进入容器
 
 ```bash
