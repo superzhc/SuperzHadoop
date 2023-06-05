@@ -12,12 +12,6 @@ class MyClass:
     自定义类
     """
 
-    # 定义属性
-    f1: str = None
-
-    # 定义私有属性
-    __f2 = False
-
     def __init__(self, f1):
         """
         构造函数
@@ -36,6 +30,26 @@ class MyClass:
         私有方法
         :return:
         """
+        pass
+
+
+class ClassObj:
+    """
+    类对象的属性和类对象的方法
+    """
+
+    @classmethod
+    def fun(cls):
+        pass
+
+
+class ClassStatic:
+    """
+    类的静态属性和静态方法
+    """
+
+    @staticmethod
+    def fun():
         pass
 
 
