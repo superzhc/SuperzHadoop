@@ -182,7 +182,7 @@ pip install "project[extra]"
 
 > 命令`pip install splinter django`将安装两个名为`splinter`和`django`的包。另一方面，`splinter[django]`会安装`splinter`包的变体，其中包含`django`的支持。请注意，它与`django`包本身无关，而只是由`splinter`包定义的字符串，用于启用的特定功能集。
 
-### 从Github的分支进行安装
+### 从 Github 的分支进行安装
 
 从 Github 的分支安装，格式为：`pip install git+github的https地址@分支`
 

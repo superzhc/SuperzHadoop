@@ -39,3 +39,10 @@ build/
 
 ### Python ###
 venv
+__pycache__
+env
+logs
+*.log
+*.egg-info
+.eggs
+*.db

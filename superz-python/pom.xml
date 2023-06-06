@@ -11,7 +11,7 @@
 
     <artifactId>superz-python</artifactId>
     <packaging>pom</packaging>
-    <description>Python项目根目录</description>
+    <description>python工程</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

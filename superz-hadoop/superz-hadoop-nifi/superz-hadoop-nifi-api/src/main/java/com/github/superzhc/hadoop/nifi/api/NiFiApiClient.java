@@ -10,7 +10,7 @@ import java.util.Map;
 public class NiFiApiClient {
     private static final Logger LOG = LoggerFactory.getLogger(NiFiApiClient.class);
 
-    private static final String NO_AUTH = "no auth";
+    private static final String NO_ACCESS_TOKEN = "no_token";
 
     /**
      * 要包含协议
@@ -50,7 +50,7 @@ public class NiFiApiClient {
 
                         token = HttpRequest.post(url).trustAllCerts().trustAllHosts().form(formData).body();
                     } else {
-                        token = NO_AUTH;
+                        token = NO_ACCESS_TOKEN;
                     }
                 }
             }
@@ -70,7 +70,7 @@ public class NiFiApiClient {
             request.trustAllCerts().trustAllHosts();
         }
 
-        if (!NO_AUTH.equalsIgnoreCase(getToken())) {
+        if (!NO_ACCESS_TOKEN.equalsIgnoreCase(getToken())) {
             request.bearer(token);
         }
 
@@ -90,7 +90,7 @@ public class NiFiApiClient {
             request.trustAllCerts().trustAllHosts();
         }
 
-        if (!NO_AUTH.equalsIgnoreCase(getToken())) {
+        if (!NO_ACCESS_TOKEN.equalsIgnoreCase(getToken())) {
             request.bearer(token);
         }
         request.form(params);

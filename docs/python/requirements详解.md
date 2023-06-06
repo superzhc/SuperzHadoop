@@ -20,3 +20,9 @@ pip freeze > requirements.txt
 ```bash
 pip install -r requirements.txt
 ```
+
+## 删除所有包
+
+```sh
+pip uninstall -r requirements.txt -y
+```
