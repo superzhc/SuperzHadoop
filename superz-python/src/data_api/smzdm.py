@@ -6,6 +6,8 @@
 SMZDM 订阅中心
 """
 import requests
+import feedparser
+
 
 def feed():
     url = "http://feed.smzdm.com"
@@ -31,5 +33,11 @@ def faxian():
     :return:
     """
     url = "http://faxian.smzdm.com/feed"
+    d=feedparser.parse(url)
+    print(d)
     response = requests.get(url)
     return response.text
+
+
+if __name__ == "__main__":
+    print(faxian())

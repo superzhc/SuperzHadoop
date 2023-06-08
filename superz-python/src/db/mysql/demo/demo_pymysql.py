@@ -5,7 +5,7 @@
 import pymysql
 
 
-def createDatabase(conn: Connection):
+def createDatabase(conn: pymysql.Connection):
     """
     创建数据库
     :param conn:
