@@ -13,7 +13,6 @@ public class BaseApi {
 
     public void getToken(){
         String url=String.format("http://%s:%d/api/v1/system/config/jwks",host,port);
-
     }
 
     public void bots() {
