@@ -9,26 +9,16 @@
         <version>0.3.0</version>
     </parent>
 
-    <artifactId>superz-db-postgresql</artifactId>
+    <artifactId>superz-db-client</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>superz-db-client-jdbi3</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>com.github.superzhc</groupId>
-            <artifactId>superz-common-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>${postgresql.version}</version>
-        </dependency>
-    </dependencies>
 
 </project>

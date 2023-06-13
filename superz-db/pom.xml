@@ -18,12 +18,18 @@
         <module>superz-db-postgresql</module>
         <module>superz-db-redis</module>
         <module>superz-db-mongodb</module>
+        <module>superz-db-client</module>
+        <module>superz-db-clickhouse</module>
+        <module>superz-db-sql</module>
     </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <mysql.version>5.1.47</mysql.version>
+        <postgresql.version>42.2.5</postgresql.version>
+        <clickhouse.version>0.4.0</clickhouse.version>
     </properties>
 
     <dependencies>

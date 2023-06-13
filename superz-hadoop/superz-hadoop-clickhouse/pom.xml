@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>superz-hadoop-clickhouse</artifactId>
+    <description>废弃模块，使用 superz-db-clickhouse</description>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

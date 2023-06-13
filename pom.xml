@@ -22,6 +22,7 @@
         <module>superz-db</module>
         <module>superz-nlp</module>
         <module>superz-python</module>
+        <module>superz-web</module>
     </modules>
 
     <properties>

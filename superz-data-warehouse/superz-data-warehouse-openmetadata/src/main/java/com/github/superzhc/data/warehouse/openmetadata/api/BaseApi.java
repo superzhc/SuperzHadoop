@@ -23,7 +23,7 @@ public class BaseApi {
     }
 
     public static void main(String[] args) {
-        BaseApi api = new BaseApi("10.90.18.142", 8585);
+        BaseApi api = new BaseApi("127.0.0.1", 8585);
         api.bots();
     }
 }
