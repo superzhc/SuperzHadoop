@@ -5,20 +5,25 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>com.github.superzhc</groupId>
-        <artifactId>SuperzHadoop</artifactId>
+        <artifactId>superz-web</artifactId>
         <version>0.3.0</version>
     </parent>
 
-    <artifactId>superz-web</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>superz-web-dropwizard</module>
-    </modules>
+    <artifactId>superz-web-dropwizard</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <dropwizard.version>2.1.6</dropwizard.version>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.dropwizard</groupId>
+            <artifactId>dropwizard-core</artifactId>
+            <version>${dropwizard.version}</version>
+        </dependency>
+    </dependencies>
 
 </project>
