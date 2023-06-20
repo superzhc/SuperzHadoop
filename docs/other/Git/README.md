@@ -314,31 +314,7 @@ git checkout src/main/resources
 
 ### `git remote`
 
-- **查看远程库信息**
-
-格式：`git remote`
-
-参数:
-- `-v`:显示更详细的信息，会显示抓取和推送的 `origin` 的地址，如果没有推送权限是看不到push地址的。
-
-- **添加远程仓库信息**
-
-格式：`git remote add origin git@github.com:zhangsan/ylez.git`
-
-添加一个远程仓库
-
-参数解析：
-- `add origin`:添加一个远程仓库
-- `git@github.com:zhangsan/ylez.git`:远程仓库的地址
-- `git@github.com`:主机地址
-- `zhangsan`:用户名称
-- `/ylez.git`:仓库名
-
-- **解除远程仓库的关联**
-
-```bash
-git remote remove origin
-```
+[远程仓库](./远程仓库.md)
 
 ### `git pull`
 
