@@ -91,6 +91,14 @@ docker compose up [OPTIONS] [SERVICE...]
 docker compose down [OPTIONS]
 ```
 
+### 对正在运行的容器执行命令：`exec`
+
+**语法格式**
+
+```sh
+docker compose exec [OPTIONS] SERVICE COMMAND [ARGS...]
+```
+
 ### 查看容器的输出日志：`logs`
 
 **语法格式**
