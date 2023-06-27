@@ -71,6 +71,12 @@ docker compose cp [OPTIONS] SRC_PATH|- SERVICE:DEST_PATH
 ```
 -->
 
+### 拉取镜像：`pull`
+
+```sh
+docker compose pull [options] [SERVICE...]
+```
+
 ### 创建并启动容器：`up`
 
 **语法格式**
