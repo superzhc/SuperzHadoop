@@ -3,8 +3,8 @@
 **全局设置代理**
 
 ```bash
-git config --global http.proxy http://127.0.0.1:10808
-git config --global https.proxy http://127.0.0.1:10808
+git config --global http.proxy http://127.0.0.1:10809
+git config --global https.proxy http://127.0.0.1:10809
 
 git config --global --unset http.proxy
 git config --global --unset https.proxy
@@ -21,8 +21,8 @@ git config --global https.proxy socks5://127.0.0.1:10808
 
 ```sh
 # 设置代理
-git config --local http.proxy http://127.0.0.1:10808
-git config --local https.proxy http://127.0.0.1:10808
+git config --local http.proxy http://127.0.0.1:10809
+git config --local https.proxy http://127.0.0.1:10809
 
 # 设置socks5代理
 git config --local http.proxy socks5://127.0.0.1:10808

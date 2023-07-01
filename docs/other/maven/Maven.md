@@ -282,18 +282,18 @@ Maven的属性分为6类，分别为：
 - Java系统属性：所有Java系统属性都可以使用Maven属性引用，如`${user.home}`指向了用户目录
 - 环境变量属性：所有环境变量都可以使用以`env.`开头的Maven属性引用，如`${env.JAVA_HOME}`指代了JAVA_HOME环境变量的值
 
-### Maven profile【代码组-构建组织项目，TODO】
+### Maven profile
 
-为了能让构建在各个环境下方便地配置，Maven引入了profile的概念，profile能够在构建的时候修改POM的一个子集，或者添加额外的配置元素。用户可以使用很多方式激活profile，以实现构建在不同环境下的移植。
+为了能让构建在各个环境下方便地配置，Maven 引入了 profile 的概念，profile 能够在构建的时候修改 POM 的一个子集，或者添加额外的配置元素。用户可以使用很多方式激活 profile，以实现构建在不同环境下的移植。
 
 #### profile 简介
 
-profile可以定义一系列的配置信息，然后指定其激活条件。这样就可以定义多个profile，然后每个profile对应不同的激活条件和配置信息，从而达到不同环境使用不同配置信息的效果。比如说，可以通过profile定义在jdk1.5以上使用一套配置信息，在jdk1.5以下使用另外一套配置信息；或者有时候可以通过操作系统的不同来使用不同的配置信息，比如windows下是一套信息，linux下又是另外一套信息，等等。
+profile 可以定义一系列的配置信息，然后指定其激活条件。这样就可以定义多个 profile，然后每个 profile 对应不同的激活条件和配置信息，从而达到不同环境使用不同配置信息的效果。比如说，可以通过 profile 定义在 jdk1.5 以上使用一套配置信息，在 jdk1.5 以下使用另外一套配置信息；或者有时候可以通过操作系统的不同来使用不同的配置信息，比如 windows 下是一套信息，linux 下又是另外一套信息，等等。
 
 #### profile 的定义位置
 
-对于使用Maven3，有多个地方定义profile。定义的地方不同，它的作用范围也不同：
+对于使用 Maven3，有多个地方定义 profile。定义的地方不同，它的作用范围也不同：
 
-- 针对于特定项目的profile配置，可以定义在该项目的pom.xml中。
-- 针对于特定用户的profile配置，可以在用户的settings.xml文件中定义profile。该文件在用户仓库目录下的“.m2”目录下。
-- 全局的profile配置。全局的profile是定义在Maven安装目录下的“conf/settings.xml”文件中的。
+- 针对于特定项目的 profile 配置，可以定义在该项目的 `pom.xml` 中。
+- 针对于特定用户的 profile 配置，可以在用户的 `settings.xml` 文件中定义 profile。该文件在用户仓库目录下的 `.m2` 目录下。
+- 全局的 profile 配置。全局的 profile 是定义在 Maven 安装目录下的 `conf/settings.xml` 文件中的。

@@ -24,6 +24,7 @@
             <version>${project.version}</version>
         </dependency>
 
+        <!--SpringBoot依赖项-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>

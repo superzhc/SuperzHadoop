@@ -35,3 +35,12 @@ New-NetFirewallRule -DisplayName "WSL" -Direction Inbound -InterfaceAlias "vEthe
 ```shell
 netsh interface portproxy add v4tov4 listenport=4000 listenaddress=0.0.0.0 connectport=4000 connectaddress=192.168.101.100
 ```
+
+## CentOS7 发行版设置中文
+
+修改 `~/.bashrc` 文件，添加如下内容：
+
+```shell
+localedef -c -f UTF-8 -i zh_CN zh_CN.utf8
+export LC_ALL=zh_CN.utf8
+```
