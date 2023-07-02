@@ -49,7 +49,7 @@ docker pull mysql:8.0.33
 ### 启动镜像
 
 ```sh
-docker run -d --name mysql8 -p 3306:3306 -v /d/docker/volumes/mysql8.0/data:/var/lib/mysql -v /d/docker/volumes/mysql8.0/logs:/var/log/mysql -e MYSQL_ROOT_PASSWORD=123456 mysql:8.0.33
+docker run -d --name mysql8 -p 13306:3306 -v /d/docker/volumes/mysql8/data:/var/lib/mysql -v /d/docker/volumes/mysql8/logs:/var/log/mysql -e MYSQL_ROOT_PASSWORD=123456 mysql:8.0.33
 ```
 
 **JDBC连接地址**
