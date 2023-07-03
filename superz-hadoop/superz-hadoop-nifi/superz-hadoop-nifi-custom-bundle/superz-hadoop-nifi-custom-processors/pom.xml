@@ -53,10 +53,26 @@
             <version>${jackson.version}</version>
         </dependency>
 
+        <!--RSS解析-->
         <dependency>
             <groupId>com.rometools</groupId>
             <artifactId>rome</artifactId>
             <version>2.1.0</version>
+        </dependency>
+
+        <!--NLP-->
+        <dependency>
+            <groupId>com.hankcs</groupId>
+            <artifactId>hanlp</artifactId>
+            <version>portable-1.8.4</version>
+        </dependency>
+
+        <!--ML-->
+        <dependency>
+            <groupId>org.tribuo</groupId>
+            <artifactId>tribuo-all</artifactId>
+            <version>4.3.1</version>
+            <type>pom</type>
         </dependency>
 
         <dependency>
