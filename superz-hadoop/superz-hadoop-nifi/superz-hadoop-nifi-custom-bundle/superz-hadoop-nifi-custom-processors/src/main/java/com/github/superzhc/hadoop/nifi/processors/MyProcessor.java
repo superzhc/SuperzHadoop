@@ -98,6 +98,24 @@ public class MyProcessor extends AbstractProcessor {
     }
 
     /**
+     * 动态属性
+     *
+     * @param propertyDescriptorName used to lookup if any property descriptors exist for that name
+     * @return
+     */
+    @Override
+    protected PropertyDescriptor getSupportedDynamicPropertyDescriptor(String propertyDescriptorName) {
+        return new PropertyDescriptor.Builder()
+                .name(propertyDescriptorName)
+                .expressionLanguageSupported(ExpressionLanguageScope.NONE)
+                // 属性验证
+//                .addValidator(new XPathValidator())
+                .required(false)
+                .dynamic(true)
+                .build();
+    }
+
+    /**
      * 主要是用于Processor的一些一次性工作，比如初始化连接等。所以，用户应该将资源的初始化工作放在@onScheduled注解修饰的方法中
      */
     @OnScheduled
