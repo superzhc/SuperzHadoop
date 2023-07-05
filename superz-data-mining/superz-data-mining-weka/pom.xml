@@ -15,6 +15,15 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <weka.version>3.7.13</weka.version>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>nz.ac.waikato.cms.weka</groupId>
+            <artifactId>weka-dev</artifactId>
+            <version>${weka.version}</version>
+        </dependency>
+    </dependencies>
 
 </project>
