@@ -44,6 +44,10 @@ public class RssProcessor extends AbstractProcessor {
             .required(false)
             .build();
 
+    public static final Relationship ORIGINAL = new Relationship.Builder()
+            .name("original")
+            .build();
+
     public static final Relationship SUCCESS = new Relationship.Builder()
             .name("success")
             .build();
@@ -60,6 +64,7 @@ public class RssProcessor extends AbstractProcessor {
     @Override
     protected void init(ProcessorInitializationContext context) {
         final Set<Relationship> relationships = new HashSet<>();
+        relationships.add(ORIGINAL);
         relationships.add(SUCCESS);
         relationships.add(FAILED);
         this.relationships = Collections.unmodifiableSet(relationships);
@@ -129,7 +134,7 @@ public class RssProcessor extends AbstractProcessor {
 
                     final byte[] data = mapper.writeValueAsBytes(node);
 
-                    FlowFile splitFlowFile = processSession.create(/*flowFile*/);
+                    FlowFile splitFlowFile = processSession.create(flowFile);
                     splitFlowFile = processSession.write(splitFlowFile, rawOut -> {
                         try (final OutputStream out = new BufferedOutputStream(rawOut)) {
                             out.write(data);
@@ -141,8 +146,9 @@ public class RssProcessor extends AbstractProcessor {
                     processSession.transfer(splitFlowFile, SUCCESS);
                 }
 
-                // 分割完成删除原始文件不做保留
-                processSession.remove(flowFile);
+//                // 分割完成删除原始文件不做保留
+//                processSession.remove(flowFile);
+                processSession.transfer(flowFile, ORIGINAL);
             } catch (Exception e) {
                 logger.error("RSS Content Parse Failed", e);
                 processSession.transfer(flowFile, FAILED);

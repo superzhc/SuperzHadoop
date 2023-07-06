@@ -2,24 +2,28 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>SuperzHadoop</artifactId>
         <groupId>com.github.superzhc</groupId>
+        <artifactId>superz-data-mining</artifactId>
         <version>0.3.0</version>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>superz-data-mining</artifactId>
-    <packaging>pom</packaging>
-    <description>数据挖掘模块</description>
-    <modules>
-        <module>superz-data-mining-weka</module>
-        <module>superz-data-mining-smile</module>
-    </modules>
+    <artifactId>superz-data-mining-smile</artifactId>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <smile.version>3.0.1</smile.version>
     </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.github.haifengl</groupId>
+            <artifactId>smile-core</artifactId>
+            <version>${smile.version}</version>
+        </dependency>
+    </dependencies>
 
 </project>

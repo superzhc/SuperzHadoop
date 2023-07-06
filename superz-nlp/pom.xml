@@ -12,6 +12,9 @@
     <artifactId>superz-nlp</artifactId>
     <packaging>pom</packaging>
     <description>自然语言处理</description>
+    <modules>
+        <module>superz-nlp-hanlp</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

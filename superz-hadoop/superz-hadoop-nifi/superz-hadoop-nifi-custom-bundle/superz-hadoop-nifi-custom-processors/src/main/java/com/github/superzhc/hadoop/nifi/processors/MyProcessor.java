@@ -5,6 +5,8 @@ import org.apache.nifi.annotation.behavior.SideEffectFree;
 import org.apache.nifi.annotation.behavior.SupportsBatching;
 import org.apache.nifi.annotation.documentation.CapabilityDescription;
 import org.apache.nifi.annotation.documentation.Tags;
+import org.apache.nifi.annotation.lifecycle.OnAdded;
+import org.apache.nifi.annotation.lifecycle.OnRemoved;
 import org.apache.nifi.annotation.lifecycle.OnScheduled;
 import org.apache.nifi.annotation.lifecycle.OnUnscheduled;
 import org.apache.nifi.components.AllowableValue;
@@ -113,6 +115,14 @@ public class MyProcessor extends AbstractProcessor {
                 .required(false)
                 .dynamic(true)
                 .build();
+    }
+
+    @OnAdded
+    public void addProcessor() {
+    }
+
+    @OnRemoved
+    public void removeProcessor() {
     }
 
     /**
