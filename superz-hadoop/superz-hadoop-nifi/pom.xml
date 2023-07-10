@@ -14,6 +14,7 @@
     <modules>
         <module>superz-hadoop-nifi-custom-bundle</module>
         <module>superz-hadoop-nifi-api</module>
+        <module>superz-hadoop-nifi-script</module>
     </modules>
 
     <properties>
