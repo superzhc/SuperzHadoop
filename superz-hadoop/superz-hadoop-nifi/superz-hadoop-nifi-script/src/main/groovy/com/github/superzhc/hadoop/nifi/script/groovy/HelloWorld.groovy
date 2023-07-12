@@ -13,4 +13,8 @@ class HelloWorld extends GroovyEnvironmentTemplate {
             return
         }
     }
+
+    def execute(){
+        print "ls -al".execute().text
+    }
 }
