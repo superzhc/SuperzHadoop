@@ -16,6 +16,10 @@ import org.apache.nifi.record.sink.*;
 import org.apache.nifi.lookup.*;
 
 //==================================================================
+
+/**
+ * 继承该类只是将ExecuteScript提供的绑定对象封装过来了，子类直接使用，不需要重新在子类中进行定义
+ */
 public class GroovyEnvironmentTemplate {
 
     //=================================================================

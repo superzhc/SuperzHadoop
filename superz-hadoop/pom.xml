@@ -32,6 +32,7 @@
         <module>superz-hadoop-clickhouse</module>
         <module>superz-hadoop-datahub</module>
         <module>superz-hadoop-nifi</module>
+        <module>superz-hadoop-doris</module>
     </modules>
 
     <properties>
