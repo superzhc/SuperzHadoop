@@ -153,3 +153,39 @@ ${filename:equalsIgnoreCase('hello.txt')}
 ```
 ${myJson:jsonPath('$.firstName')}
 ```
+
+#### 时间函数
+
+**`now()`**
+
+> 获取当前时间
+
+| Expression                                        | Value                |
+| ------------------------------------------------- | -------------------- |
+| `${now()}`                                        | 获取当前时间         |
+| `${now():toNumber()}`                             | 获取当前时间的时间戳 |
+| `${now():toNumber():minus(86400000)`              | 当前时间的前一天     |
+| `${now():format('yyyy')}`                         | 获取今年             |
+| `${now():toNumber():minus(86400000):format('E')}` |                      |
+
+**`format(formatStr[,timeZone])`**
+
+> 格式化时间，使用该函数的类型为 Number
+
+- formatStr:使用 Java SimpleDateFormat 的语法进行格式化
+- timeZone:【可选】使用 Java TimeZone 语法进行时区设置
+
+| Expression                                                            | Value                      |
+| --------------------------------------------------------------------- | -------------------------- |
+| `${time:format("yyyy/MM/dd HH:mm:ss.SSS'Z'", "GMT")}`                 | `2014/12/31 20:36:03.264Z` |
+| `${time:format("yyyy/MM/dd HH:mm:ss.SSS'Z'", "America/Los_Angeles")}` | `2014/12/31 12:36:03.264Z` |
+| `${time:format("yyyy/MM/dd HH:mm:ss.SSS'Z'", "Asia/Tokyo")}`          | `2015/01/01 05:36:03.264Z` |
+| `${time:format("yyyy/MM/dd", "GMT")}`                                 | `2014/12/31`               |
+| `${time:format("HH:mm:ss.SSS'Z'", "GMT")}`                            | `20:36:03.264Z`            |
+| `${time:format("yyyy", "GMT")}`                                       | `2014`                     |
+
+#### 类型转换
+
+**`toNumber()`**
+
+> 将类型转换成 Number 类型，支持进行该函数转换的类型为：String, Decimal, or Date
