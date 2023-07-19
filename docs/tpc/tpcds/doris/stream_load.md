@@ -23,7 +23,7 @@ curl  --location-trusted -u root: -T /opt/tpcds-data/1g/web_site.dat -H "column_
 # 对定义表结构做了调整，通过设置参数 -H "columns: "
 curl  --location-trusted -u root: -T /opt/tpcds-data/1g/store_returns.dat -H "columns: sr_returned_date_sk,sr_return_time_sk,sr_item_sk,sr_customer_sk,sr_cdemo_sk,sr_hdemo_sk,sr_addr_sk,sr_store_sk,sr_reason_sk,sr_ticket_number,sr_return_quantity,sr_return_amt,sr_return_tax,sr_return_amt_inc_tax,sr_fee,sr_return_ship_cost,sr_refunded_cash,sr_reversed_charge,sr_store_credit,sr_net_loss" -H "column_separator:|" http://127.0.0.1:8030/api/tpcds_1g/store_returns/_stream_load
 
-curl  --location-trusted -u root: -T /opt/tpcds-data/1g/household_demographics.dat -H "column_separator:|" http://127.0.0.1:8030/api/tpcds_1g/household_demographics/_zstream_load
+curl  --location-trusted -u root: -T /opt/tpcds-data/1g/household_demographics.dat -H "column_separator:|" http://127.0.0.1:8030/api/tpcds_1g/household_demographics/_stream_load
 curl  --location-trusted -u root: -T /opt/tpcds-data/1g/web_page.dat -H "column_separator:|" http://127.0.0.1:8030/api/tpcds_1g/web_page/_stream_load
 curl  --location-trusted -u root: -T /opt/tpcds-data/1g/promotion.dat -H "column_separator:|" http://127.0.0.1:8030/api/tpcds_1g/promotion/_stream_load
 curl  --location-trusted -u root: -T /opt/tpcds-data/1g/catalog_page.dat -H "column_separator:|" http://127.0.0.1:8030/api/tpcds_1g/catalog_page/_stream_load
