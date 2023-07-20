@@ -1,6 +1,6 @@
 # MinGW
 
-MinGW 的全称是：Minimalist GNU on Windows 。是将经典的开源 C语言 编译器 GCC 移植到了 Windows 平台下，并且包含了 Win32API ，因此可以将源代码编译为可在 Windows 中运行的可执行程序。
+MinGW 的全称是：Minimalist GNU on Windows 。是将经典的开源 *C语言* 编译器 GCC 移植到了 Windows 平台下，并且包含了 Win32API ，因此可以将源代码编译为可在 Windows 中运行的可执行程序。
 
 **MinGW-w64 与 MinGW 的区别**
 
@@ -42,3 +42,7 @@ MinGW-w64 与 MinGW 的区别在于 MinGW 只能编译生成32位可执行程序
 ```shell
 gcc -v
 ```
+
+## CLion 配置本地 MinGW
+
+![](images/MinGW20230720154843.png)
