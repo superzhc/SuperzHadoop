@@ -1,10 +1,22 @@
 # `CMakeLists.txt`
 
+## 内置变量
+
+| 变量                       | 描述                                          |
+| -------------------------- | --------------------------------------------- |
+| `CMAKE_SOURCE_DIR`         | 根源目录                                      |
+| `CMAKE_CURRENT_SOURCE_DIR` | 如果使用子项目和目录，则为当前子项目源目录    |
+| `PROJECT_SOURCE_DIR`       | 当前 cmake 项目的源目录                       |
+| `CMAKE_BINARY_DIR`         | 根二进制文件生成目录。这是运行cmake命令的目录 |
+| `CMAKE_CURRENT_BINARY_DIR` | 当前所处的生成目录                            |
+| `PROJECT_BINARY_DIR`       | 当前项目的生成目录                            |
+| `EXECUTABLE_OUTPUT_PATH`   | 目标二进制可执行文件的存放位置                |
+
 ## 基本命令
 
 ### `cmake_minimum_required`
 
-指定 CMake 的版本：
+> 指定 CMake 的版本
 
 ```shell
 cmake_minimum_required(VERSION 3.10)
@@ -12,37 +24,72 @@ cmake_minimum_required(VERSION 3.10)
 
 ### `project`
 
-设定工程名和版本号
+> 设定工程名和版本号
 
 ```shell
 # 设定工程名和版本号
 project(SUPERZ VERSION 1.0)
+
+## project函数将创建一个变量 ${PROJECT_NAME}，在其他函数中可以直接使用该变量
 ```
 
 ### `set`
 
-设置一系列变量的值：
+> 设置一系列变量的值
 
 ```shell
-# 设置C编译器的位置
-set (CMAKE_CXX_COMPILER, "C:\\MinGW\\bin\\g++")
+# 启动对C11标准的支持
+set(CMAKE_C_STANDARD 11)
+# 显式要求指明支持C标准
+set(CMAKE_C_STANDARD_REQUIRED True)
 # 启用C99标准
-set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
+
+# 设置C++标准为 C++ 11
+set(CMAKE_CXX_STANDARD 11)
+# 设置C++编译器的位置
+set(CMAKE_CXX_COMPILER, "C:\\MinGW\\bin\\g++")
 # 启用C++ 11标准
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 # 启用警告
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
+
+# 自定义变量
+set(CUSTOM_SOURCES my_structure.c my_pointer.c)
 ```
 
 > 在 CMake 中，`${}` 的语法含义是获取变量的值
 
+### `aux_source_directory`
+
+> 将指定目录下的所有源文件存储到一个变量
+
+```sh
+aux_source_directory(. SOURCES_LIST)
+```
+
+> 该操作也有一个弊端，它会将指定目录下的所有源文件都获取到文件列表中，对于不需要的源文件无法排除
+
 ### `add_executable`
 
-添加可执行的构建目标
+> 从指定的源文件构建可执行文件
+
+```sh
+# add_executable 的第一个参数是要生成的可执行文件的名称，第二个参数是要编译的源文件的列表
+add_executable(superz-learning-c
+                # 对于多个源文件，只需要在该处添加所有源文件即可
+                my_structure.c
+                my_pointer.c)
+
+# 使用 aux_source_directory 设置的源文件列表
+add_executable(superz-learning-c ${SOURCES_LIST})
+```
 
 ### `include_directories`
 
-指定头文件的搜索位置。头文件不但对编译是必须的，也可以被 CLion 索引，以提供代码自动完成、代码导航。
+> 指定头文件的搜索位置，多个搜索路径之间使用空格进行分隔。
+> 
+> 头文件不但对编译是必须的，也可以被 CLion 索引，以提供代码自动完成、代码导航。
 
 依据操作系统的不同，编译器会自动搜索一些预定义的位置，用户可以手工添加：
 
@@ -51,13 +98,16 @@ set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
 include_directories(BEFORE ${MY_SOURCE_DIR}/src )
 ```
 
+如果未设置 include_directories 命令且源文件 include 头文件，则需要将源文件 include 的头文件的相对路径补全。
+
 ### `target_include_directories`
 
 ```shell
 # 指定项目编译的时候需要include的文件路径，PROJECT_BINARY_DIR变量为编译发生的目录，也就是make执行的目录，PROJECT_SOURCE_DIR为工程所在的目录 
 # target_include_directories官方文档：https://cmake.org/cmake/help/v3.3/command/target_include_directories.html 
-target_include_directories(CalculateSqrt PUBLIC 
-                           "${PROJECT_BINARY_DIR}" 
+target_include_directories(${PROJECT_LIBRARY_NAME}
+                            PUBLIC 
+                            ${PROJECT_BINARY_DIR} 
                            ) 
 ```
 
@@ -88,15 +138,18 @@ target_link_libraries (my_target ${Boost_LIBRARIES})
 
 ### `add_library`
 
-添加库：
+> 指定从某些源文件创建库
 
 ```shell
+# 第一个参数：指定库的名称
+# 第二个参数：指定库的类型，静态库、动态库，默认是静态库
+# 第三个参数：指定生成库的源文件
 add_library (my_library STATIC|SHARED|MODULE ${SOURCE_FILES})
 ```
 
 ### `add_subdirectory`
 
-用于包含子工程。
+> 用于包含子工程。
 
 一个工程可以依赖于其它工程，CMake 没有类似于 VS 的解决方案（Solution）的概念，但是它允许用户手工定义工程之间的依赖关系。
 
