@@ -2,30 +2,137 @@
 
 > bpftrace 通过高度抽象的封装来使用 eBPF，大多数功能只需要寥寥几笔就可以运行起来。
 
-## **语法**
+## 语法
 
 bpftrance 本质上是一种脚本语言，风格与 AWK 非常相似，脚本的结构：
 
 ```c
-/* 采用与 C 语言类似的注释 */
+// 注释用法：
+// single-line comment
+
+/*
+ * multi-line comment
+ */
 ​
 BEGIN{
   // 开始时执行一次的代码
 }
-probe /filter/ {
-  // 事件与 prob 和 filter 匹配时执行
+/* /filter/ 是可选的 */
+probe[,probe,...] /filter/ {
+  action
 }
 END{
   // 结束时执行
 }
 ```
 
-## **执行方式**
+**常量**
 
-执行方式有两种：
+> bpftrace 支持 *整数型*、*字符型* 以及 *字符串* 常量。
+>
+> 字符型常量使用单引号包裹起来，例如：`'a'`、`'@'`；字符串使用双引号包裹起来，例如：`"a string"`。
+>
+> 注意：bpftrace 不支持浮点型
 
-- `bpftrace -e 'cmds'`: 执行单行指令
-- `bpftrace filename`: 执行脚本文件
+```sh
+# bpftrace -e 'BEGIN { printf("%lu %lu %lu", 1000000, 1e6, 1_000_000)}'
+Attaching 1 probe...
+1000000 1000000 1000000
+```
+
+**结构体**
+
+> 在 bpftrace 中，用户可以自定义结构体。
+
+*示例*
+
+```c
+// from fs/namei.c:
+struct nameidata {
+        struct path     path;
+        struct qstr     last;
+        // [...]
+};
+```
+
+## 使用
+
+```sh
+# 执行脚本文件
+bpftrace [options] filename
+
+bpftrace [options] - <stdin input>
+
+# 执行单行指令
+bpftrace [options] -e 'program'
+```
+
+**选项**
+
+| 选项             | 描述                                                                           |
+| ---------------- | ------------------------------------------------------------------------------ |
+| `-B MODE`        | 输出缓冲的模式 ('line', 'full', or 'none')                                     |
+| `-d`             | 输出运行状态的 Debug 信息                                                      |
+| `-dd`            | 输出运行状态的 Debug 详细信息                                                  |
+| `-e 'program'`   | 执行 `program` 代码                                                            |
+| `-h`             | 展示帮助信息                                                                   |
+| `-I DIR`         | add the specified DIR to the search path for include files                     |
+| `--include FILE` | adds an implicit #include which is read before the source file is preprocessed |
+| `-l [search]`    | 列出探针                                                                       |
+| `-p PID`         | 开启指定 PID 的 USDT 探针                                                      |
+| `-c 'CMD'`       | run CMD and enable USDT probes on resulting process                            |
+| `-q`             | 不打印运行过程的信息                                                           |
+| `-v`             | 运行的详细信息                                                                 |
+| `-k`             | bpf helper 返回一个错误信息的时候发出一个报警信息                              |
+| `-kk`            | 检查所有 bpf helper 的函数                                                     |
+| `--version`      | 输出 bpftrace 版本                                                             |
+
+> bpftrace 脚本文件通常使用 `.bt` 作为文件的扩展名 
+
+### `bpftrance -l`: 列出探针
+
+```sh
+bpftrance -l
+
+# 探针总数
+bpftrace -l  | wc -l
+
+# 各类探针数量
+bpftrace -l  | awk -F ":" '{print $1}' | sort | uniq -c
+
+# 使用通配符查询所有的系统调用跟踪点
+bpftrace -l 'tracepoint:syscalls:*'
+# 使用通配符查询所有名字包含"open"的跟踪点
+bpftrace -l '*open*'
+
+# 查询uprobe
+bpftrace -l 'uprobe:/usr/lib/x86_64-linux-gnu/libc.so.6:*'
+
+# 查询USDT
+bpftrace -l 'usdt:/usr/lib/x86_64-linux-gnu/libc.so.6:*'
+
+# 参数 -v 将会展示探针使用哪些参数，以供内置 args 变量使用
+bpftrace -lv 'tracepoint:syscalls:sys_enter_open'
+```
+
+<!--
+**探针分类**
+
+- `kprobe` 内核调用事件
+- `uprobe` 用户调用事件
+- `tracepoint` 跟踪点
+- `usdt` 用户态静态定义的跟踪器
+- `kfunc` 内核函数跟踪器
+- `profile/interval` 跟采样时间相关的设定
+- `software` 软件执行层面的事件
+- `hardware` 硬件事件
+- `watchpoint` 内存监控点
+
+-->
+
+## 环境变量
+
+
 
 ## 内置变量
 
@@ -75,37 +182,15 @@ END{
 | `%y`       | 年份，`00-99`             |
 | `%Y`       | 完整的年份                |
 
-## bpftrance 支持探针
+## 探针
 
-```sh
-bpftrance -l
-
-# 探针总数
-bpftrace -l  | wc -l
-
-# 各类探针数量
-bpftrace -l  | awk -F ":" '{print $1}' | sort | uniq -c
-
-# 使用通配符查询所有的系统调用跟踪点
-bpftrace -l 'tracepoint:syscalls:*'
-# 使用通配符查询所有名字包含"open"的跟踪点
-bpftrace -l '*open*'
-
-# 查询uprobe
-bpftrace -l 'uprobe:/usr/lib/x86_64-linux-gnu/libc.so.6:*'
-
-# 查询USDT
-bpftrace -l 'usdt:/usr/lib/x86_64-linux-gnu/libc.so.6:*'
-```
-
-**探针分类**
-
-- `kprobe` 内核调用事件
-- `uprobe` 用户调用事件
-- `tracepoint` 跟踪点
-- `usdt` 用户态静态定义的跟踪器
-- `kfunc` 内核函数跟踪器
-- `profile/interval` 跟采样时间相关的设定
-- `software` 软件执行层面的事件
-- `hardware` 硬件事件
-- `watchpoint` 内存监控点
+- `kprobe` - 内核函数调用事件
+- `kretprobe` - 内核函数返回事件
+- `uprobe` - 用户态函数调用事件
+- `uretprobe` - 用户态函数返回事件
+- `tracepoint` - kernel static tracepoints
+- `usdt` - user-level static tracepoints
+- `profile` - timed sampling
+- `interval` - timed output
+- `software` - 软件层面事件
+- `hardware` - 硬件层面事件

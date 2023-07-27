@@ -113,7 +113,48 @@ target_include_directories(${PROJECT_LIBRARY_NAME}
 
 ### `link_directories`
 
-`link_directories` 用来指定编译器搜索库文件的路径。
+> 用来指定编译器搜索库文件的路径。
+
+### `find_package`
+
+**语法**
+
+```sh
+find_package(<PackageName>
+            # 指定包的版本，若指定版本则检查包的版本是否和 version 兼容，EXACT表示必须完全匹配的版本而不是兼容版本就可以
+            [version] [EXACT] 
+			[QUIET]
+            # 模块是否是必需的
+            [REQUIRED] 
+            # 要查找的库的列表
+            [[COMPONENTS] [components...]] 
+            [OPTIONAL_COMPONENTS components...]
+            [MODULE|CONFIG|NO_MODULE]
+            [NO_POLICY_SCOPE]
+            [NAMES name1 [name2 ...]]
+            [CONFIGS config1 [config2 ...]]
+            [HINTS path1 [path2 ... ]]
+            [PATHS path1 [path2 ... ]]
+            [PATH_SUFFIXES suffix1 [suffix2 ...]]
+            [NO_DEFAULT_PATH]
+            [NO_PACKAGE_ROOT_PATH]
+            [NO_CMAKE_PATH]
+            [NO_CMAKE_ENVIRONMENT_PATH]
+            [NO_SYSTEM_ENVIRONMENT_PATH]
+            [NO_CMAKE_PACKAGE_REGISTRY]
+            [NO_CMAKE_BUILDS_PATH] # Deprecated; does nothing.
+            [NO_CMAKE_SYSTEM_PATH]
+            [NO_CMAKE_SYSTEM_PACKAGE_REGISTRY]
+            [CMAKE_FIND_ROOT_PATH_BOTH | ONLY_CMAKE_FIND_ROOT_PATH | NO_CMAKE_FIND_ROOT_PATH]
+            )
+```
+
+*示例*
+
+```sh
+# 在系统中查找并加载线程库
+find_package(Threads)
+```
 
 ### `target_link_libraries`
 
@@ -125,16 +166,12 @@ find_package(Boost)
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIR})
 endif()
-set (Boost_USE_STATIC_LIBS OFF) # enable dynamic linking
-set (Boost_USE_MULTITHREAD ON)  # enable multithreading
-find_package (Boost COMPONENTS REQUIRED chrono filesystem)
+set(Boost_USE_STATIC_LIBS OFF) # enable dynamic linking
+set(Boost_USE_MULTITHREAD ON)  # enable multithreading
+find_package(Boost COMPONENTS REQUIRED chrono filesystem)
 # 声明链接到BOOST库
-target_link_libraries (my_target ${Boost_LIBRARIES})
+target_link_libraries(my_target ${Boost_LIBRARIES})
 ```
-
-### `find_package`
-
-`find_package(Threads)` 是 CMake 中的一个指令，用于在系统中查找并加载线程库。它会查找线程库（通常是 pthreads 或 Windows Threads）并设置一些 CMake 变量，以便在编译和链接时使用该库。
 
 ### `add_library`
 
@@ -162,6 +199,19 @@ add_library (my_library STATIC|SHARED|MODULE ${SOURCE_FILES})
 上面的三点需求可以通过合适的 `CMakeList.txt` 完成，用户需要把上述所有工程组织到 `CMakeList.txt` 所在目录之下，形成树形结构，每个子目录对应一个子工程，并且子目录有自己的 `CMakeLists.txt`。最后，在根目录的 `CMakeLists.txt` 中添加：
 
 ```shell
-add_subdirectory (project1) # 把project1包含到主工程
-add_subdirectory (project2) # 把project2包含到主工程
+add_subdirectory(project1) # 把project1包含到主工程
+add_subdirectory(project2) # 把project2包含到主工程
+```
+
+### `install`
+
+> 指定要在安装时运行的规则
+
+```
+install(TARGETS <target>... [...])
+install({FILES | PROGRAMS} <file>... [...])
+install(DIRECTORY <dir>... [...])
+install(SCRIPT <file> [...])
+install(CODE <code> [...])
+install(EXPORT <export-name> [...])
 ```

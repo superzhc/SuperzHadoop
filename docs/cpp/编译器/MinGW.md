@@ -43,6 +43,61 @@ MinGW-w64 与 MinGW 的区别在于 MinGW 只能编译生成32位可执行程序
 gcc -v
 ```
 
+## 编译
+
+### 引用头文件搜索路径
+
+**双引号（`""`）引用**
+
+1. 源码的当前目录
+2. `-l` 参数指定目录
+3. GCC 设置的环境变量：
+   - `CPATH`：gcc 和 g++ 都适用
+   - `C_INCLUDE_PATH` ：gcc 使用的环境变量
+   - `CPLUS_INCLUDE_PATH` ：g++使用的环境变量
+4. MinGW 内置目录（大部分都是标准库头文件）
+
+**`<>` 引用**
+
+除了不搜索源码的当前目录，其他搜索路径都一致。
+
+### 编译链接动态库搜索路径
+
+1. `-L` 参数指定的路径
+2. gcc 环境变量指定的路径
+    - LIBRARY_PATH
+3. MinGW 内置目录（如 c/c++ 标准库的动态库）
+
+### 运行时动态库搜索路径
+
+1. `.exe` 所在目录
+2. 环境变量 PATH
+3. MinGW 内置目录（链接标准库时 gcc 直接链接）
+
+### 编译静态库
+
+1. 生成 `.o`：`gcc *.c -c`
+2. 将生成的 `.o` 文件打包：`ar rcs static.lib *.o`
+3. 更新符号表：randlib 静态库
+
+### 编译动态库
+
+<!--
+
+1. 生成 `.o`：`gcc *.c -c -fPIC` (`-fPIC` 编译位置独立的代码）
+2. 生成 `.dll` 和 `.lib`，`-shared` 表明生成动态库，`-wl` 后面的内容是 ld 参数，需要传给 ld，`–out-implib` 生成动态库的导出库，`-out-def` 生成 `.def` 文件（也可以不用生成）
+gcc -shared -o shared.dll *.o -Wl,–out-implib,shared.lib,–out-def,shared.def
+
+注意：`-static` 选项用于在链接时优先选择静态库，比如链接的目录中同时有静态库和动态库，就会直接链接静态库。
+
+-->
+
+### 编译可执行文件
+
+```sh
+gcc *.c -o app -I 头文件路径 -L 库路径 -lshared -lstatic -DDEBUG
+```
+
 ## CLion 配置本地 MinGW
 
 ![](images/MinGW20230720154843.png)
