@@ -12,7 +12,26 @@
 | `PROJECT_BINARY_DIR`       | 当前项目的生成目录                            |
 | `EXECUTABLE_OUTPUT_PATH`   | 目标二进制可执行文件的存放位置                |
 
+**LANGUAGES**
+
+`project(项目名 LANGUAGES 使用的语言列表...)` 指定了该项目使用了哪些编程语言，目前支持的语言包括：
+
+- C：C语言
+- CXX：C++语言
+- ASM：汇编语言
+- Fortran：老年人的编程语言
+- CUDA：英伟达的 CUDA（3.8 版本新增）
+- OBJC：苹果的 Objective-C（3.16 版本新增）
+- OBJCXX：苹果的 Objective-C++（3.16 版本新增）
+- ISPC：一种因特尔的自动 SIMD 编程语言（3.18 版本新增）
+
+> 如果不指定 LANGUAGES，默认为 C 和 CXX。
+
 ## 基本命令
+
+### `message`
+
+> 打印字符串
 
 ### `cmake_minimum_required`
 
@@ -152,9 +171,23 @@ find_package(<PackageName>
 *示例*
 
 ```sh
-# 在系统中查找并加载线程库
-find_package(Threads)
+# 查找名为 OpenCV 的包，找不到不报错，事后可以通过 ${OpenCV_FOUND} 查询是否找到
+find_package(OpenCV)
+
+# 查找名为 OpenCV 的包，找不到不报错，也不打印任何信息
+find_package(OpenCV QUIET)
+
+# 查找名为 OpenCV 的包，找不到就报错（并终止 cmake 进程，不再继续往下执行）
+find_package(OpenCV REQUIRED)
+
+# 查找名为 OpenCV 的包，找不到就报错，且必须具有 OpenCV::core 和 OpenCV::videoio 这两个组件，如果没有这两个组件也会报错
+find_package(OpenCV REQUIRED COMPONENTS core videoio)
+
+# 查找名为 OpenCV 的包，找不到就报错，可具有 OpenCV::core 和 OpenCV::videoio 这两个组件，没有这两组件不会报错，通过 ${OpenCV_core_FOUND} 查询是否找到 core 组件
+find_package(OpenCV REQUIRED OPTIONAL_COMPONENTS core videoio)
 ```
+
+### `link_libraries`
 
 ### `target_link_libraries`
 
@@ -172,6 +205,10 @@ find_package(Boost COMPONENTS REQUIRED chrono filesystem)
 # 声明链接到BOOST库
 target_link_libraries(my_target ${Boost_LIBRARIES})
 ```
+
+### `target_source`
+
+
 
 ### `add_library`
 
