@@ -21,6 +21,9 @@ bootstrap-vcpkg.bat
 **搜索可用库**
 
 ```sh
+# 语法
+# vcpkg search [search term]
+
 # 这条命令会列举 vcpkg/ports 子文件夹中的控制文件。
 vcpkg search
 
