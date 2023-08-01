@@ -21,6 +21,7 @@
         <module>superz-db-client</module>
         <module>superz-db-clickhouse</module>
         <module>superz-db-sql</module>
+        <module>superz-db-sqlite3</module>
     </modules>
 
     <properties>

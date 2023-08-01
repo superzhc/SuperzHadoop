@@ -39,17 +39,6 @@
         </dependency>
         <dependency>
             <groupId>com.github.superzhc</groupId>
-            <artifactId>superz-sql-driver</artifactId>
-            <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>httpcore</artifactId>
-                    <groupId>org.apache.httpcomponents</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.github.superzhc</groupId>
             <artifactId>superz-hadoop-hdfs</artifactId>
             <version>${project.version}</version>
         </dependency>

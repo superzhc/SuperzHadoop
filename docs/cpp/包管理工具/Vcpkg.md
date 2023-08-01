@@ -55,3 +55,8 @@ vcpkg remove sqlite3
 ## CLion 配置上述安装的 vcpkg
 
 ![](images/Vcpkg20230731174558.png)
+
+### Q1：Windows 系统下未下载 Visual Studio 的情况下，直接安装包及依赖包失败
+
+1. 设置环境变量：`VCPKG_DEFAULT_HOST_TRIPLET=D:\soft\vcpkg`
+2. 设置 CMake options：`-DCMAKE_TOOLCHAIN_FILE=D:/soft/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-mingw-dynamic`
