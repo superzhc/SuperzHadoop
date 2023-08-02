@@ -63,6 +63,24 @@ CREATE TABLE demo(
 DROP TABLE database_name.table_name;
 ```
 
+## 修改表
+
+### 重命名表名
+
+**语法**
+
+```sql
+ALTER TABLE 旧表名 RENAME TO 新表名 
+```
+
+### 添加字段
+
+**语法**
+
+```sql
+ALTER TABLE 表名 ADD COLUMN 列名 数据类型 
+```
+
 ## 创建视图
 
 **语法**
