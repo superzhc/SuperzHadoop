@@ -6,6 +6,20 @@
 >
 > eBPF <!-- 是一种在 Linux 内核上运行的强大网络和性能分析工具，它--> 为开发者提供了在内核运行时动态加载、更新和运行用户定义代码的能力。这使得开发者可以实现高效、安全的内核级别的网络监控、性能分析和故障排查等功能。
 
+## 探针（probe）
+
+### dynamic tracing
+
+- `kprobe`
+- `kretprobe`
+- `uprobe`
+- `uretprobe`
+
+### static tracing
+
+- `tracepoint`
+- `usdt[Userland Statically Defined Tracing]`
+
 ## 使用
 
 ![](images/READMe20230725151113.png)
@@ -24,3 +38,6 @@ eBPF 程序主要由两部分构成：内核态部分和用户态部分。内核
 
 > eBPF 社区将 `bpf()` 等原始的系统调用进行了初步地封装，给出了 `libbpf` 库。这些库会包含将字节码加载到内核中的函数以及一些其他的关键函数。在 Linux 的源码包的 `samples/bpf/` 目录下，有大量 Linux 提供的基于 libbpf 的 eBPF 样例代码。
 
+## 注意事项
+
+1. eBPF VM 出于安全和效率考虑，不允许用户执行任意函数，仅允许执行限定的函数。

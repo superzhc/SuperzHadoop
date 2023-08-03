@@ -18,6 +18,24 @@ INSERT INTO first_table_name [(column1, column2, ... columnN)]
    [WHERE condition];
 ```
 
+**`INSERT OR REPLACE`**
+
+> 如果不存在就插入，存在就更新，注：*只对主键、UNIQUE约束的字段起作用*
+
+```sql
+INSERT OR REPLACE INTO TABLE_NAME [(column1, column2, column3,...columnN)]  
+VALUES (value1, value2, value3,...valueN);
+```
+
+**`INSERT OR IGNORE`**
+
+> 如果不存在就插入，存在就忽略，注：*只对主键、UNIQUE约束的字段起作用*
+
+```sql
+INSERT OR IGNORE INTO TABLE_NAME [(column1, column2, column3,...columnN)]  
+VALUES (value1, value2, value3,...valueN);
+```
+
 ## 更新数据
 
 **语法**

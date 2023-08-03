@@ -51,3 +51,10 @@ gcc -c demo.s
 ```
 
 ### 链接（Linking）
+
+*示例*
+
+```sh
+# 执行链接操作生成可执行文件
+gcc demo.o -o demo
+```
