@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.ScrollPane?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.github.superzhc.box.controller.FrameController"
+            fx:id="frame">
+    <top>
+        <HBox fx:id="customMenuBar" BorderPane.alignment="TOP_LEFT" spacing="10" prefHeight="25">
+            <MenuBar fx:id="menu"/>
+        </HBox>
+    </top>
+    <center>
+        <TabPane fx:id="main" tabClosingPolicy="ALL_TABS"></TabPane>
+    </center>
+    <bottom>
+        <HBox fx:id="statusBar" BorderPane.alignment="BOTTOM_LEFT" spacing="10" prefHeight="25"></HBox>
+    </bottom>
+</BorderPane>

@@ -17,6 +17,7 @@
         <module>superz-translate</module>
         <module>superz-ocr</module>
         <module>superz-sql-parser</module>
+        <module>superz-treasure-box</module>
     </modules>
 
     <properties>
