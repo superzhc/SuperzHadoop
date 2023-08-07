@@ -1,5 +1,7 @@
 # tracepoint
 
+> tracepoint 是 Linux 内核预先定义的静态探测点，它分布于内核的各个子系统中。
+
 ## tracepoint 列表
 
 ```sh

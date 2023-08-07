@@ -6,6 +6,10 @@
 yum install httpd -y
 ```
 
+## **配置文件**
+
+配置文件地址：`/etc/httpd/conf/httpd.conf`
+
 ## 启动 httpd
 
 ```bash

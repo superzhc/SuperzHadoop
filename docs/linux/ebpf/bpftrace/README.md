@@ -196,6 +196,20 @@ bpftrace -lv 'tracepoint:syscalls:sys_enter_open'
 
 一些指针类型允许通过模糊匹配获取多个指针，例如，`kprobe:vfs_*`。也可以指定多个具体名称的探针，使用逗号进行分隔。
 
+| 探针                        | 描述                    |
+| --------------------------- | ----------------------- |
+| 网络                        |                         |
+| `kretprobe:inet_csk_accept` |                         |
+| `kprobe:tcp_connect`        | 追踪所有的TCP连接操作   |
+| `kprobe:tcp_drop`           | 追踪TCP丢包详情         |
+| `kprobe:tcp_set_state`      | 追踪TCP连接生命周期详情 |
+| `kprobe:tcp_retransmit_skb` | 追踪TCP重传             |
+| 安全                        |                         |
+| `kprobe:oom_kill_process`   | 追踪OOM killer          |
+
+
+<!--
+
 ### `kprobe`/`kretprobe`
 
 **语法**
@@ -227,6 +241,8 @@ usdt:binary_path:[probe_namespace]:probe_name
 usdt:library_path:probe_name
 usdt:library_path:[probe_namespace]:probe_name
 ```
+
+-->
 
 ## 内置变量
 
