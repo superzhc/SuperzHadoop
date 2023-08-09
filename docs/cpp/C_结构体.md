@@ -7,12 +7,12 @@
 结构体定义了一个包含多个成员的新的数据类型，结构体语句的格式如下：
 
 ```c
-struct tag {
+struct [tag] {
     member-list
     member-list
     member-list
     ...
-} variable-list ;
+} [variable-list];
 ```
 
 - tag 是结构体标签
