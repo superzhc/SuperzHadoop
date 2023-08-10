@@ -2,6 +2,10 @@
 - 系统
   - [Linux 系统运维](linux/系统监控.md)
   - [Linux 文件目录树](linux/文件目录结构.md)
+- 环境配置
+  - [WSL2](wsl/README.md)
 - 应用安装\[Docker\]
-  - [MySQL 5.7](docker/镜像/mysql_5.7.md)
+  - [MySQL](docker/镜像/mysql.md)
+  - [PostgreSQL](docker/镜像/postgres.md)
+  - [Clickhouse](docker/镜像/clickhouse.md)
 - [提问](https://github.com/superzhc/SuperzHadoop/issues/new)
