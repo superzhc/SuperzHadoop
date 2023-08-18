@@ -29,23 +29,57 @@
 
 ## 基本命令
 
+> 命令由命令名称、小括号以及参数组成，参数之间使用空格进行间隔。
+> 
+> **注意**：`CMakeLists.txt` 中的命令是不区分大小写的
+
+对于参数中包含空格的，使用双引号（`""`）括起来。
+
+### 注释
+
+> 使用单个井号（`#`）进行注释
+
 ### `message`
 
-> 打印字符串
+> 输出调试信息
+
+**语法**
+
+```
+message([<mode>] "message text" ...)
+```
+
+输出常常可以用来对 `CMakeLists.txt` 进行调试。其中 `[<mode>]` 是一个可选项，如果不填就是普通的输出，如果填入以下选项，将有特定功能:
+
+- `FATAL_ERROR`：会输出消息，然后停止处理 `CMakeLists.txt`，当然也不会生成 Makefile
+- `SEND_ERROR`：会输出消息，但不会停止处理 `CMakeLists.txt`，然而不会生成 Makefile，也就是说如果后面还有其他的 ERROR，也可以被输出
+- `WARNING`：会输出一个警告消息，推荐使用这个
+- `STATUS`：会输出一个状态消息
 
 ### `cmake_minimum_required`
 
 > 指定 CMake 的版本
 
-```shell
+```txt
 cmake_minimum_required(VERSION 3.10)
 ```
 
 ### `project`
 
-> 设定工程名和版本号
+> 设定工程名和版本号等信息
 
-```shell
+**语法**
+
+```
+project(<PROJECT-NAME> [<language-name>...])
+```
+
+**示例**
+
+```txt
+# 设置工程名称
+project("SUPERZ-CODE")
+
 # 设定工程名和版本号
 project(SUPERZ VERSION 1.0)
 
@@ -55,6 +89,14 @@ project(SUPERZ VERSION 1.0)
 ### `set`
 
 > 设置一系列变量的值
+
+**语法**
+
+```
+set(<variable> <value>... [PARENT_SCOPE])
+```
+
+**示例**
 
 ```shell
 # 启动对C11标准的支持
@@ -66,6 +108,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99")
 
 # 设置C++标准为 C++ 11
 set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
 # 设置C++编译器的位置
 set(CMAKE_CXX_COMPILER, "C:\\MinGW\\bin\\g++")
 # 启用C++ 11标准
@@ -77,7 +120,58 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
 set(CUSTOM_SOURCES my_structure.c my_pointer.c)
 ```
 
+**使用**
+
 > 在 CMake 中，`${}` 的语法含义是获取变量的值
+
+**环境变量**
+
+*语法*
+
+```
+set(ENV{<variable>} [<value>])
+```
+
+- ENV：环境变量标志性前缀
+- variable：变量名称
+- value：变量值
+
+*示例*
+
+```
+# 定义环境变量
+set(ENV{CMAKE_PATH} "F:/cmake")
+
+# 判断JAVA_HOME变量是否定义
+if(DEFINED ENV{JAVA_HOME})
+    message("JAVA_HOME: $ENV{JAVA_HOME}")
+else()
+    message("NOT DEFINED JAVA_HOME VARIABLES")
+endif()
+```
+
+### `configure_file`
+
+### `option`
+
+> 设置可选项
+
+**示例**
+
+```txt
+# 设置一个可选项，默认值为 ON；这个可选项在 cmake-gui 中会被展示，用户可通过传递参数修改该可选项
+option(USE_MYMATH "Use tutorial provided math implementation" ON)
+```
+
+### `include`
+
+> 用来载入并运行来自于文件或 *模块* 的 CMake 代码
+
+**语法**
+
+```
+include(<file|module> [OPTIONAL] [RESULT_VARIABLE <VAR>] [NO_POLICY_SCOPE])
+```
 
 ### `aux_source_directory`
 
@@ -225,6 +319,14 @@ add_library (my_library STATIC|SHARED|MODULE ${SOURCE_FILES})
 
 > 用于包含子工程。
 
+**语法**
+
+```
+add_subdirectory(source_dir [binary_dir] [EXCLUDE_FROM_ALL])
+```
+
+**说明**
+
 一个工程可以依赖于其它工程，CMake 没有类似于 VS 的解决方案（Solution）的概念，但是它允许用户手工定义工程之间的依赖关系。
 
 典型的，用户希望在工作区中这样管理多工程（Multi-project）结构：
@@ -252,3 +354,21 @@ install(SCRIPT <file> [...])
 install(CODE <code> [...])
 install(EXPORT <export-name> [...])
 ```
+
+### `if`
+
+**语法**
+
+```txt
+if(<condition>)
+  <commands>
+elseif(<condition>) # optional block, can be repeated
+  <commands>
+else()              # optional block
+  <commands>
+endif()
+```
+
+条件规则：
+
+1. `1`、`ON`、`YES`、`TRUE`、`Y` 或者非零数字都为真；`0`、`OFF`、`NO`、`FALSE`、`N`、`IGNORE`、`NOTFOUND` 、空字符串或者以 `-NOTFOUND` 结尾的值都为假

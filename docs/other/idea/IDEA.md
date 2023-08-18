@@ -32,7 +32,8 @@
     - [GsonFormat](#gsonformat)
     - [Maven Helper](#maven-helper)
   - [快捷键](#快捷键)
-  - [F&Q](#fq)
+  - [卸载](#卸载)
+  - [F\&Q](#fq)
     - [IDEA 中文光标不跟随](#idea-中文光标不跟随)
     - [Intellij IDEA 运行报 `Command line is too long` 解决办法](#intellij-idea-运行报-command-line-is-too-long-解决办法)
 
@@ -333,6 +334,10 @@ IntelliJ IDEA 编译方式除了手工点击编译按钮进行编译之外，还
 | `ctrl+shift+u`  | 单词大小写转化                                 |
 | `ctrl+shift+f9` | 编译单个文件(Jrebel的热备配合这个快捷键很好用) |
 | `alt+insert`    | 快捷get/set                                    |
+
+## 卸载
+
+[干净卸载参考](https://www.quanxiaoha.com/idea/uninstall-idea.html)
 
 ## F&Q
 
