@@ -42,6 +42,7 @@ cmake --build .
 | `-G`      | 指定生成器                                            |
 | `-D`      | 设置选项                                              |
 | `-L`      | 列出所有选项，或者使用 `-LH` 列出人类更易读的选项列表 |
+|`--target`|生成的目标|
 
 
 **查看 cmake 版本**
@@ -69,6 +70,17 @@ cmake -B build -DCMAKE_BUILD_TYPE=Release
 ```sh
 cmake --build build -G "Visual Studio 16 2019"
 ```
+
+**`--target` 选项**
+
+## 编译器
+
+CMake 提供了额外的变量来与编译器交互：
+
+- `CMAKE_<LANG>_COMPILER_LOADED`:如果为项目启用了语言 `<LANG>`，则将设置为 `TRUE`。
+- `CMAKE_<LANG>_COMPILER_ID`:编译器标识字符串，编译器供应商所特有。例如，GCC 用于 GNU 编译器集合，AppleClang 用于 macOS 上的 Clang, MSVC 用于 Microsoft Visual Studio 编译器。注意，不能保证为所有编译器或语言定义此变量。
+- `CMAKE_COMPILER_IS_GNU<LANG>`:如果语言 `<LANG>` 是GNU编译器集合的一部分，则将此逻辑变量设置为 `TRUE`。注意变量名的 `<LANG>` 部分遵循 GNU 约定：C 语言为 CC, C++ 语言为 CXX, Fortran 语言为 G77。
+- `CMAKE_<LANG>_COMPILER_VERSION`:此变量包含一个字符串，该字符串给定语言的编译器版本。版本信息在 `major[.minor[.patch[.tweak]]]` 中给出。但是，对于 `CMAKE_<LANG>_COMPILER_ID`，不能保证所有编译器或语言都定义了此变量。
 
 ## 构建类型
 

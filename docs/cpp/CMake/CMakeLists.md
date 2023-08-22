@@ -37,15 +37,17 @@
 
 ### 注释
 
-> 使用单个井号（`#`）进行注释
+> 使用单个井号（`#`）进行单行注释
+>
+> 使用 `#[[ ]]` 形式进行块注释
 
-### `message`
+### [`message`](命令/message.md)
 
 > 输出调试信息
 
 **语法**
 
-```
+```cmake
 message([<mode>] "message text" ...)
 ```
 
@@ -60,7 +62,7 @@ message([<mode>] "message text" ...)
 
 > 指定 CMake 的版本
 
-```txt
+```cmake
 cmake_minimum_required(VERSION 3.10)
 ```
 
@@ -152,7 +154,7 @@ endif()
 
 ### `configure_file`
 
-### `option`
+### [`option`](命令/option.md)
 
 > 设置可选项
 

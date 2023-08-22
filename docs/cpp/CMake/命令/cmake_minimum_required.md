@@ -1,6 +1,6 @@
 # `cmake_minimum_required`
 
-> 设置 CMake 的使用版本
+> 指定使用的 cmake 的最低版本
 
 **示例**
 

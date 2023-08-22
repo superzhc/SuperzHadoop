@@ -312,6 +312,12 @@ git checkout src/main/resources
 
 将一个远程的仓库克隆到本地
 
+**指定保存目录**
+
+```sh
+git clone <仓库地址> <目录地址名称，如：./aaa>
+```
+
 ### `git remote`
 
 [远程仓库](./远程仓库.md)
