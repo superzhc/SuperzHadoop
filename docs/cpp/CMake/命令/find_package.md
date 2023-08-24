@@ -10,7 +10,7 @@
 - `<LibaryName>_INCLUDE_DIR` or `<LibaryName>_INCLUDES`
 - `<LibaryName>_LIBRARY` or `<LibaryName>_LIBRARIES`
 
-CMake 官方预定义的依赖包的 Module 存储在 `<CMake_Path>/share/cmake-<version>/Modules` 目录下。
+CMake 官方预定义的依赖包的 Module 存储在 `<CMake_Path>/share/cmake-<version>/Modules` 目录下。预定义的 Module 是找寻本机标准安装的库的目录。
 
 用户指定的 CMake 路径通过变量 `CMAKE_MODULE_PATH` 进行设置。
 

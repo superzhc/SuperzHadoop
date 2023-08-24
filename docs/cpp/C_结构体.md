@@ -51,9 +51,15 @@ struct structName *pointVarName;
 
 ## typedef
 
-> typedef工具是一个高级数据特性，利用typedef可以为某一类型自定义名称。
+> typedef 工具是一个高级数据特性，利用 typedef 可以为某一类型自定义名称。
 
 typedef 用于给复杂类型命名。typedef 并没有创建任何新类型，它只是为某个已存在的类型增加了一个方便使用的标签。
+
+**语法**
+
+```c
+typedef type newname;
+```
 
 ## 联合
 
