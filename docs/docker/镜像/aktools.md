@@ -46,3 +46,11 @@ docker run -d -p 8080:8080 --name aktools registry.cn-shanghai.aliyuncs.com/akfa
 2. 容器内更新包：`pip install akshare --upgrade -i https://pypi.org/simple`
 3. 更新完成，退出容器：`exit`
 4. 重启容器
+
+## 非 Docker 安装部署
+
+**一键安装**
+
+```sh
+pip install aktools  # 安装的版本需大于 0.0.81
+```
