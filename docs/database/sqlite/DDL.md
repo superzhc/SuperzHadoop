@@ -33,6 +33,13 @@ CREATE TABLE database_name.table_name(
 
 当某列没有指定值时，为该列提供默认值。
 
+```sql
+-- 时间默认值，默认的时间是以格林尼治标准时间为基准的，因此在中国使用的话会正好早8个小时
+logtime TIMESTAMP default CURRENT_TIMESTAMP
+-- 本地当前时间，使用如下
+logtime TIMESTAMP default (datetime('now', 'localtime'))
+```
+
 **UNIQUE 约束**
 
 确保某列中的所有值是不同的。

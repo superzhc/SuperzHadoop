@@ -54,3 +54,9 @@
 | `//book/title \| //book/price`        | 选取 book 元素的所有 title 和 price 元素                                                |
 | `//title \| //price`                  | 选取文档中的所有 title 和 price 元素                                                    |
 | `/bookstore/book/title \| //price`    | 选取属于 bookstore 元素的 book 元素的所有 title 元素，以及文档中所有的 price 元素       |
+
+## FAQ
+
+### `:` 转义问题
+
+> 将 `:` 替换成 `_`
