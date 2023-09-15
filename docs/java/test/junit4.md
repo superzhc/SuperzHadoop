@@ -1,4 +1,4 @@
-### JUnit
+### JUnit4
 
 [此处默认JUnit4的情况下]
 
