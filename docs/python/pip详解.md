@@ -157,11 +157,11 @@ pip config set global.index-url http://pypi.douban.com/simple/
 
 ```text
 pip国内源列表
-（1）阿里云 https://mirrors.aliyun.com/pypi/simple/
-（2）豆瓣https://pypi.douban.com/simple/
-（3）清华大学 https://pypi.tuna.tsinghua.edu.cn/simple/
-（4）中国科学技术大学 https://pypi.mirrors.ustc.edu.cn/simple/
-（5）华中科技大学https://pypi.hustunique.com/
+（1）阿里云:<https://mirrors.aliyun.com/pypi/simple/>
+（2）豆瓣:<https://pypi.douban.com/simple/>
+（3）清华大学:<https://pypi.tuna.tsinghua.edu.cn/simple/>
+（4）中国科学技术大学:<https://pypi.mirrors.ustc.edu.cn/simple/>
+（5）华中科技大学:<https://pypi.hustunique.com/>
 ```
 
 ### 方括号在pip安装中的含义是什么
