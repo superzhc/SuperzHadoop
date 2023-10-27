@@ -17,7 +17,8 @@ docker compose version
 ### Linux 下载安装
 
 ```shell
-curl -L https://github.com/docker/compose/releases/download/2.17.2/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+# uname -s | awk '{print tolower($0)}' 确保查询到的系统名称是小写的
+curl -L https://github.com/docker/compose/releases/download/2.17.2/docker-compose-`uname -s | awk '{print tolower($0)}'`-`uname -m` -o /usr/local/bin/docker-compose
 
 # 设置可执行程序的权限
 chmod +x /usr/local/bin/docker-compose

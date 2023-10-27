@@ -34,7 +34,7 @@ pip install PackageName==1.0.4         # 安装指定具体的某个版本
 pip install PackageName>=1.0.4         # 指定最小版本
 ```
 
-通过使用`==`, `>=`, `<=`, `>`, `<`来指定一个版本号
+通过使用 `==`, `>=`, `<=`, `>`, `<` 来指定一个版本号
 
 ### 通过 `requirements.txt` 进行安装
 
@@ -175,12 +175,13 @@ pip install "splinter[django]"
 上述 pip 安装命令使用的语法是：
 
 ```sh
-pip install "project[extra]"
+# 支持多个额外模块依赖的安装
+pip install "project[extra,...]"
 ```
 
 来自`@chetner`的解释：
 
-> 命令`pip install splinter django`将安装两个名为`splinter`和`django`的包。另一方面，`splinter[django]`会安装`splinter`包的变体，其中包含`django`的支持。请注意，它与`django`包本身无关，而只是由`splinter`包定义的字符串，用于启用的特定功能集。
+> 命令`pip install splinter django`将安装两个名为`splinter`和`django`的包。另一方面，`splinter[django]`会安装`splinter`包的变体，其中包含 `django` 的支持。请注意，它与 `django` 包本身无关，而只是由 `splinter` 包定义的字符串，用于启用的特定功能集。
 
 ### 从 Github 的分支进行安装
 

@@ -5,5 +5,4 @@
  * @LastEditTime : 2020-12-25 17:18:15
  * @Copyright 2020 SUPERZHC
 -->
-- [Python](Python/README.md)
-- [函数](Python/函数.md)
+- [Python](Python/latest/README.md)
