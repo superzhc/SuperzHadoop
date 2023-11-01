@@ -4,9 +4,71 @@
 
 初始化一个Git仓库
 
+## `git config`
+
+**查看当前项目配置**
+
+```bash
+git config --list
+```
+
+**设置全局的用户名和密码**
+
+```bash
+git config --global user.name "superzhc"
+git config --global user.email "zhengchao0555@163.com"
+```
+
+**设置当前项目的用户名和密码**
+
+```bash
+git config user.name "superzhc"
+git config user.email "zhengchao0555@163.com"
+```
+
+**若每次登陆都需要输入用户名和密码，可进行如下配置**
+
+```sh
+# 若需要全局都这样操作，使用命令：`git config --global credential.helper store`
+git config credential.helper store
+```
+
+**全局设置代理**
+
+```bash
+git config --global http.proxy http://127.0.0.1:10809
+git config --global https.proxy http://127.0.0.1:10809
+
+git config --global --unset http.proxy
+git config --global --unset https.proxy
+```
+
+也可以走 sock5 模式，如下：
+
+```bash
+git config --global http.proxy socks5://127.0.0.1:10808
+git config --global https.proxy socks5://127.0.0.1:10808
+```
+
+**当前项目设置代理**
+
+```sh
+# 设置代理
+git config --local http.proxy http://127.0.0.1:10809
+git config --local https.proxy http://127.0.0.1:10809
+
+# 设置socks5代理
+git config --local http.proxy socks5://127.0.0.1:10808
+git config --local https.proxy socks5://127.0.0.1:10808
+
+# 取消代理
+git config --local --unset http.proxy
+git config --local --unset https.proxy
+```
+
 ## `git add`
 
-将修改文件添加到暂存区
+将新增/修改文件添加到暂存区
 
 **示例**
 
@@ -155,7 +217,38 @@ git clone <仓库地址> <目录地址名称，如：./aaa>
 
 ### `git remote`
 
-[远程仓库](./远程仓库.md)
+**查看远程项目**
+
+```sh
+git remote -v
+```
+
+- `-v`:显示更详细的信息，会显示抓取和推送的 `origin` 的地址，如果没有推送权限是看不到push地址的。
+
+**关联远程项目**
+
+```sh
+# HTTPS
+git remote add origin https://xxxxxxxxx.git
+# SSH
+git remote add origin git@github.com:open-metadata/OpenMetadata.git
+```
+
+**设置远程项目地址**
+
+对已关联远程项目地址的项目，修改远程项目地址：
+
+```sh
+git remote set-url origin https://<your_token>@github.com/<USERNAME>/<REPO>.git
+
+git remote set-url origin https://<token>@github.com/superzhc/SuperzHadoop.git
+```
+
+**解除关联远程项目**
+
+```sh
+git remote remove origin
+```
 
 ### `git pull`
 
