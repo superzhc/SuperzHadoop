@@ -117,7 +117,7 @@ git add --all
 
 `git reset` 命令既可以回退版本，也可以把暂存区的修改回退到工作区。
 
-- **回退版本**
+- **回退版本但不保留修改**
 
 要进行版本回退，首先 Git 必须知道当前版本是哪个版本，*在 Git 中，用 HEAD 表示当前版本，也就是最新的提交 `commit ID`，上一个版本就是 `HEAD^`，上上一个版本就是`HEAD^^`，当然往上 100 个版本写 100 个 `^` 比较容易数不过来，所以写成 `HEAD~100`*。
 
@@ -148,6 +148,20 @@ Git 在内部有个指向当前版本的 HEAD 指针，当回退版本的时候�
 
 ```bash
 git reset --hard HEAD^ test.txt
+```
+
+- **回退版本并保存修改到暂存区**
+
+```sh
+git reset --soft HEAD^
+git reset --soft <commit id>
+```
+
+- **回退版本并保存修改到工作区**
+
+```sh
+git reset --mixed HEAD^
+git reset --mixed <commit id>
 ```
 
 - **暂存区的修改回退到工作区**
