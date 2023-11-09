@@ -29,7 +29,7 @@ pandas.Series(data, index, dtype, name, copy)
 
 - data：一组数据(ndarray 类型)
 - index：数据索引标签，如果不指定，默认从 0 开始
-- dtype：数据类型，默认会自己判断
+- dtype：存储类型
 - name：设置名称
 - copy：拷贝数据，默认为 False
 
