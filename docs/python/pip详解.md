@@ -36,6 +36,12 @@ pip install PackageName>=1.0.4         # 指定最小版本
 
 通过使用 `==`, `>=`, `<=`, `>`, `<` 来指定一个版本号
 
+### 本地安装包
+
+```sh
+pip install --no-index --find-links=<本地包所在的目录> pkg
+```
+
 ### 通过 `requirements.txt` 进行安装
 
 ```sh
@@ -45,6 +51,7 @@ pip install -r requirements.txt
 ### 显示包文件
 
 ```sh
+pip show PackageName
 pip show --files PackageName
 ```
 
@@ -56,6 +63,12 @@ pip show --files PackageName
 
 ```sh
 pip list
+```
+
+### 搜索包
+
+```sh
+pip search PackageName
 ```
 
 ### 显示过期的包
