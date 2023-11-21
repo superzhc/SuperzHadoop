@@ -188,6 +188,32 @@ docker pull bitnami/schema-registry:7.2.5
 docker run -d --name schema-registry -e SCHEMA_REGISTRY_ADVERTISED_HOSTNAME=zookeeper -e SCHEMA_REGISTRY_KAFKA_BROKERS=PLAINTEXT://kafka:9092 -e SCHEMA_REGISTRY_DEBUG=true -p 8081:8081 --network all --volume /d/docker/volumes/schema-registry/schema-registry-persistence:/bitnami bitnami/schema-registry:7.2.5
 ```
 
+## 镜像：`akhq`
+
+### 拉取镜像
+
+```sh
+docker pull tchiotludo/akhq
+```
+
+### 启动镜像
+
+```sh
+docker run -d --name akhq --network all -p 8082:8080 -v /d/docker/volumes/akhq/application.yml:/app/application.yml tchiotludo/akhq
+```
+
+**`application.yml`配置文件**
+
+```yml
+akhq:
+  connections:
+    local:
+      properties:
+        bootstrap.servers: "kafka:9092"
+      schema-registry:
+        url: "http://schema-registry:8081"
+```
+
 ## 镜像：`kafka-ui`
 
 ### 拉取镜像
