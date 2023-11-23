@@ -46,6 +46,8 @@ wsl -l -v
 
 ```shell
 # <DistributionName>：发行版的名称
+wsl --distribution Ubuntu
+
 # wsl -d <DistributionName>
 wsl -d Ubuntu
 ```
@@ -54,6 +56,8 @@ wsl -d Ubuntu
 
 ```shell
 wsl --terminate Ubuntu
+
+wsl -t Ubuntu
 ```
 
 **设置新安装 Linux 发行版的 WSL 默认版本**
