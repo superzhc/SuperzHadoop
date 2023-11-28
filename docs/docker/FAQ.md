@@ -82,3 +82,23 @@ detach vdisk
 ## 退出diskpart命令窗口
 exit
 ```
+
+## [Linux] 非 root 用户的其他管理员用户，执行 `docker ps` 报错：`Got permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get http://%2Fvar%2Frun%2Fdocker.sock/v1.39/containers/json: dial unix /var/run/docker.sock: connect: permission denied`
+
+> 该问题是当前用户缺少权限使用 unix socket 与 docker engine 通信
+
+**方式1（临时解决方案）**
+
+```sh
+# 直接使用sudo，以管理员的身份来执行命令
+sudo docker ps
+```
+
+**方式2**
+
+> 通过将当前用户添加到 docker group，后续可直接使用 docker 命令
+
+```sh
+# 将当前用户添加到docker组中
+sudo usermod -a -G docker $USER
+```
