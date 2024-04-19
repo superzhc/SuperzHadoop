@@ -281,17 +281,19 @@ LABEL org.opencontainers.image.authors="runoob"
 在 Dockerfile 文件的当前目录中，执行如下命令：
 
 ```bash
-docker build -t <镜像名称>:<镜像版本> .
+docker build -f <指定Dockerfile文件，若未设置则为上下文./Dockerfile> -t <镜像名称>:<镜像版本> .
 # 示例
 docker build -t nginx:v2 .
+docker build -f ../Dockerfile.test -t nginx:v2 .
+docker build -f ../Dockerfile.test --build-arg param=param_value -t nginx:v2 .
 # 注意最后的点代表本次执行的上下文路径
 ```
 
 **上下文路径**
 
-指 docker 构建镜像，在需要使用到本机的文件，docker build 命令通过这个上下文路径将该路径瞎的所有内容打包。
+指 docker 构建镜像，在需要使用到本机的文件，docker build 命令通过这个上下文路径将该路径下的所有内容打包。
 
-解析：由于 docker 的运行模式是 C/S。我们本机是 C，docker 引擎是 S。实际的构建过程是在 docker 引擎下完成的，所以这个时候无法用到本机的文件。这就需要把本机的指定目录下的文件一起打包提供给 docker 引擎使用。
+解析：由于 docker 的运行模式是 C/S。用户本机是 C，docker 引擎是 S。实际的构建过程是在 docker 引擎下完成的，所以这个时候无法用到本机的文件。这就需要把本机的指定目录下的文件一起打包提供给 docker 引擎使用。
 
 如果未说明最后一个参数，那么默认上下文路径就是 Dockerfile 所在的位置。
 

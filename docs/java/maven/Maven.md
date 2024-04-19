@@ -57,7 +57,7 @@ Maven 定义的规则：
 
 #### 依赖配置
 
-![依赖配置模版](../images/Maven_dependency.jpg)
+![依赖配置模版](../../other/images/Maven_dependency.jpg)
 
 根元素 project 下的 dependencies 可以包含一个或者多个 dependency 元素，以声明一个或者多个项目依赖。每个依赖可以包含的元素有：
 
@@ -164,31 +164,32 @@ clean 生命周期的目的是清理项目，它包含三个阶段：
 
 default 生命周期定义了真正构建时所需要执行的所有步骤，它是所有生命周期中最核心的部分，其包含的阶段如下：
 
-1. validate
-   1. initialize
-   2. generate-sources
-   3. process-sources：处理项目主资源文件。一般来说，是对 `src/main/resource` 目录的内容进行变量替换等工作后，复制到项目输出的主 classpath 目录中
-   4. generate-resources
-   5. process-resources
-2. compile：编译项目的主源代码。一般来说，是编译 `src/main/java` 目录下的Java文件至项目输出的主 classpath 目录中
-   1. process-classes
-   2. generate-test-sources
-   3. process-test-soures：处理项目测试资源文件。一般来说，是对 `src/test/resources` 目录的内容进行变量替换等工作后，复制到项目输出的测试 classpath 目录中
-   4. generate-test-resources
-   5. process-test-resources
-3. test
-   1. test-compile：编译项目的测试代码。一般来说，是编译 `src/test/java` 目录下的 Java 文件至项目输出的测试 classpath 目录中
-   2. process-test-classes
-   3. test：使用单元测试框架运行测试，测试代码不会被打包或部署
-4. package
-   1. prepare-package
-   2. package：接受编译好的代码，打包成可发布的格式，如 JAR
-5. pre-integration-test
-6. integration-test
-7. post-integration-test
-8. verify
-9. install：将包安装到 Maven 本地仓库，供本地其他 Maven 项目时候用
-10. deploy：将最终的包复制到远程仓库，供其他开发人员和 Maven 项目使用
+1. `validate`：验证项目是否正确，所有必需信息是否可用
+   1. `initialize`：初始化构建状态，例如设置属性或创建目录
+   2. `generate-sources`：生成项目的源代码
+   3. `process-sources`：处理项目主资源文件。一般来说，是对 `src/main/resource` 目录的内容进行变量替换等工作后，复制到项目输出的主 classpath 目录中
+   4. `generate-resources`：生成项目的资源文件
+   5. `process-resources`：复制并处理资源文件，为打包做准备
+2. `compile`：编译项目的主源代码。一般来说，是编译 `src/main/java` 目录下的Java文件至项目输出的主 classpath 目录中
+   1. `process-classes`：对编译后的字节码进行处理
+   2. `generate-test-sources`：生成项目的测试源代码
+   3. `process-test-soures`：处理项目测试资源文件。一般来说，是对 `src/test/resources` 目录的内容进行变量替换等工作后，复制到项目输出的测试 classpath 目录中
+   4. `generate-test-resources`
+   5. `process-test-resources`
+3. `test`
+   1. `test-compile`：编译项目的测试代码。一般来说，是编译 `src/test/java` 目录下的 Java 文件至项目输出的测试 classpath 目录中
+   2. `process-test-classes`
+   3. `test`：使用单元测试框架运行测试，测试代码不会被打包或部署
+4. `package`
+   1. `prepare-package`
+   2. `package`：接受编译好的代码，打包成可发布的格式，如 JAR
+5. `integration-test`
+   1. `pre-integration-test`：在集成测试之前进行的操作
+   2. `integration-test`
+   3. `post-integration-test`
+6. `verify`
+7. `install`：将包安装到 Maven 本地仓库，供本地其他 Maven 项目时候用
+8. `deploy`：将最终的包复制到远程仓库，供其他开发人员和 Maven 项目使用
 
 #### site 生命周期
 
@@ -202,6 +203,17 @@ site 生命周期的目的是建立和发布项目站点，Maven 能够基于 PO
 ### goal:执行目标
 
 Mojo 就是 Maven plain Old Java Object。每一个 Mojo 就是 Maven 中的一个执行目标（executable goal），而插件则是对单个或多个相关的 Mojo 做统一分发。一个 Mojo 包含一个简单的 Java 类。插件中多个类似 Mojo 的通用之处可以使用抽象父类来封装。
+
+| 生命周期阶段          | 插件目标                            |
+| --------------------- | ----------------------------------- |
+| `process-resource`      | `maven-resource-plugin`:`resources`     |
+| `compile`               | `maven-compiler-plugin`:`compile`       |
+| `process-test-resource` | `maven-resource-plugin`:`testResources` |
+| `test-compile`          | `maven-compiler-plugin`:`testCompile`   |
+| `test`                  | `maven-surefire-plugin`:`test`          |
+| `package`               | `maven-jar-plugin`:`jar`                |
+| `install`               | `maven-install-plugin`:`install`        |
+| `deploy`                | `maven-deploy-plugin`:`deploy`          |
 
 ### 插件
 

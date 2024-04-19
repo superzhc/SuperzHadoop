@@ -96,7 +96,7 @@ awk -F: '/root/' /etc/passwd
 搜索指定关键字的所有行，并显示对应的 shell
 
 ```sh
-awk -F: '/root/ {print $7}' /etc/passwd
+awk -F ':' '/root/ {print $7}' /etc/passwd
 ```
 
 **使用 awk 环境变量，打印相关信息**
