@@ -223,9 +223,10 @@ git checkout src/main/resources
 
 将一个远程的仓库克隆到本地
 
-**指定保存目录**
-
 ```sh
+git clone <repo>
+
+# 拉取项目指定目录
 git clone <仓库地址> <目录地址名称，如：./aaa>
 ```
 
@@ -294,6 +295,23 @@ git pull origin master
 
 把本地库的内容推送到远程
 
+**语法**
+
+```sh
+git push <远程主机名> <本地分支名>:<远程分支名>
+
+# 如果本地分支名与远程分支名相同，则可以省略冒号
+git push <远程主机名> <本地分支名>
+
+# 如果本地版本与远程版本有差异，但又要强制推送可以使用 --force 参数
+git push --force <远程主机名> <本地分支名>:<远程分支名>
+
+# 删除远程主机的分支
+git push <远程主机名> --delete <远程分支名>
+```
+
+**示例**
+
 ```bash
 git push -u origin master #将本地的master分支推送到远程的master分支中
 git push -u origin dev #本地切换到dev分支然后将本地的dev分支推送到远程
@@ -326,5 +344,9 @@ git push -u origin dev #本地切换到dev分支然后将本地的dev分支推�
 格式：`git merge <name>`
 
 合并某分支到当前分支
+
+1. 切换到需要合并的分支 `git checkout <main_branch>`
+2. 合并其他分支到当前分支 `git merge <feature_branch>`
+3. 推送分支到远程 `git push origin <mian_branch>`
 
 ### `git stash`
