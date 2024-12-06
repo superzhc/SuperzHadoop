@@ -226,7 +226,7 @@ git checkout src/main/resources
 ```sh
 git clone <repo>
 
-# 拉取项目指定目录
+# 拉取项目并指定目录
 git clone <仓库地址> <目录地址名称，如：./aaa>
 ```
 
