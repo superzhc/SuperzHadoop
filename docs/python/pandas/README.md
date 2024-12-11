@@ -1,5 +1,7 @@
 # pandas
 
+Pandas 是一种基于 Python 的快速、强大、灵活且易于使用的开源数据分析和操作工具。
+
 ## 安装
 
 ```sh
@@ -19,6 +21,8 @@ print(pd.__version__)
 
 > Pandas Series 类似表格中的一个列（column），类似于一维数组，可以保存任何数据类型。
 
+![](images/README20241211160600.png)
+
 Series 由索引（index）和列组成，函数如下：
 
 ```py
@@ -36,6 +40,8 @@ pandas.Series(data, index, dtype, name, copy)
 ### DataFrame
 
 > DataFrame 是一个表格型的数据结构，它含有一组有序的列，每列可以是不同的值类型（数值、字符串、布尔型值）。DataFrame 既有行索引也有列索引，它可以被看做由 Series 组成的字典（共同用一个索引）。
+
+![](images/README20241211160449.png)
 
 DataFrame 构造方法如下：
 
