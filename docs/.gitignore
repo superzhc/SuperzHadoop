@@ -1,3 +1,5 @@
 hadoop/**/*.pdf
 tpc/**/*.pdf
 .VSCodeCounter
+.idea/
+.DS_Store

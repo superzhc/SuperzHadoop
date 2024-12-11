@@ -99,3 +99,10 @@ hs_err_pid*
 target/
 /*/target/
 *.iml
+.idea/.gitignore
+.idea/compiler.xml
+.idea/encodings.xml
+.idea/jarRepositories.xml
+.idea/misc.xml
+.idea/vcs.xml
+.DS_Store
