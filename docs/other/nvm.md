@@ -148,3 +148,24 @@ nvm uninstall 14.5.0 // 卸载14.5.0版本node
 6. `nvm npm_mirror [url]` ：设置npm镜像。`https://github.com/npm/cli/archive/`。如果不写url，则使用默认url。设置后可至安装目录 `settings.txt` 文件查看，也可直接在该文件操作
 7. `nvm root [path]` ：设置存储不同版本node的目录。如果未设置，默认使用当前目录
 8. `nvm version` ：显示 nvm 版本。version 可简化为 v
+
+## npm
+
+**设置国内镜像**
+
+```bash
+# 淘宝
+npm config set registry https://registry.npmmirror.com
+# 阿里云
+npm config set registry https://npm.aliyun.com
+# 腾讯云
+npm config set registry http://mirrors.cloud.tencent.com/npm/
+# 华为云
+npm config set registry https://mirrors.huaweicloud.com/repository/npm/
+```
+
+**查看当前镜像源**
+
+```bash
+npm config get registry
+```
