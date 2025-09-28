@@ -1,1 +1,0 @@
-需要配置环境 `AIRFLOW_HOME`
