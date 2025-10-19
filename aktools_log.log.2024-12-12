@@ -1,0 +1,23 @@
+2024-12-12 20:59:20,401 - AKToolsLog - INFO - 这是一个信息级别的日志消息
+2024-12-12 21:05:47,562 - AKToolsLog - INFO - 获取到 stock_zh_index_spot_em 的数据
+2024-12-12 21:09:08,284 - AKToolsLog - INFO - 获取到 stock_zh_index_spot_sina 的数据
+2024-12-12 21:13:04,720 - AKToolsLog - INFO - 获取到 stock_zh_index_daily 的数据
+2024-12-12 21:15:23,068 - AKToolsLog - INFO - 获取到 stock_zh_index_daily_tx 的数据
+2024-12-12 21:18:00,872 - AKToolsLog - INFO - 获取到 stock_zh_index_daily_em 的数据
+2024-12-12 21:21:00,634 - AKToolsLog - INFO - 获取到 index_zh_a_hist 的数据
+2024-12-12 21:27:10,975 - AKToolsLog - INFO - 获取到 stock_hk_index_spot_sina 的数据
+2024-12-12 21:28:33,247 - AKToolsLog - INFO - 获取到 stock_hk_index_daily_sina 的数据
+2024-12-12 21:32:46,252 - AKToolsLog - INFO - 获取到 index_stock_cons 的数据
+2024-12-12 21:34:10,500 - AKToolsLog - INFO - 获取到 index_stock_cons 的数据
+2024-12-12 21:36:00,263 - AKToolsLog - INFO - 获取到 index_stock_cons_csindex 的数据
+2024-12-12 21:38:20,347 - AKToolsLog - INFO - 获取到 index_stock_cons_weight_csindex 的数据
+2024-12-12 21:41:48,932 - AKToolsLog - INFO - 获取到 index_all_cni 的数据
+2024-12-12 21:45:08,062 - AKToolsLog - INFO - 获取到 index_stock_cons 的数据
+2024-12-12 22:08:02,275 - AKToolsLog - INFO - 获取到 index_all_cni 的数据
+2024-12-12 23:20:25,747 - AKToolsLog - INFO - 获取到 index_detail_cni 的数据
+2024-12-12 23:20:33,925 - AKToolsLog - INFO - 获取到 index_detail_cni 的数据
+2024-12-12 23:30:42,490 - AKToolsLog - INFO - 获取到 stock_zh_index_hist_csindex 的数据
+2024-12-12 23:32:19,468 - AKToolsLog - INFO - 获取到 stock_zh_index_hist_csindex 的数据
+2024-12-12 23:43:13,502 - AKToolsLog - INFO - 获取到 stock_zh_index_value_csindex 的数据
+2024-12-12 23:52:28,162 - AKToolsLog - INFO - 获取到 index_value_name_funddb 的数据
+2024-12-12 23:54:52,094 - AKToolsLog - INFO - 获取到 index_value_hist_funddb 的数据
