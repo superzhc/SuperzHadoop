@@ -84,3 +84,28 @@ cd ${FLINK_YHOME}
 ./examples/streaming/SocketWindowWordCount.jar \
 --hostname log-platform02 --port 9000
 ```
+
+## 客户端提交流程解析【1.16.2】
+
+1. 客户端提交命令
+2. 加载配置文件
+3. 加载命令行客户端
+4. 解析 Action
+5. 获取最终执行的命令行客户端
+6. 从命令行中提取程序参数
+7. 利用程序参数构建程序包
+8. 获取有效的配置文件
+9. 执行程序包
+10. 执行用户代码中 main 方法
+
+## 提交流程源码
+
+**命令执行类**
+
+```sh
+exec $JAVA_RUN $JVM_ARGS $FLINK_ENV_JAVA_OPTS "${log_setting[@]}" -classpath "`manglePathList "$CC_CLASSPATH:$INTERNAL_HADOOP_CLASSPATHS"`" org.apache.flink.client.cli.CliFrontend "$@"
+```
+
+> `$@` 表示 flink 命令后的所有参数
+
+由上面的命令可知，最终的执行的 Java 入口为：`org.apache.flink.client.cli.CliFrontend`，根据用户传入的参数构建实例化出 `PackagedProgram` 对象。

@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"name": "docs",
+			"path": "."
+		},
+		{
+			"name": "hwm-nextorch",
+			"path": "../../hwm-nextorch"
+		},
+		{
+			"path": "../../superz-llm"
+		},
+		{
+			"path": "../../superz-outdoors"
+		}
+	],
+	"settings": {}
+}

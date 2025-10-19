@@ -9,6 +9,8 @@ Flink 的 CheckPoint 机制可以与 Stream 和 State 持久化存储交互的�
 
 默认情况下，CheckPoint 功能是 Disabled（禁用）的，使用时需要先开启它。
 
+## 方式一：通过代码开启
+
 通过如下代码即可开启：
 
 ```java
@@ -35,4 +37,12 @@ env.getCheckpointConfig().setMaxConcurrentCheckpoints(1);
 //ExternalizedCheckpointCleanup.DELETE_ON_CANCELLATION：表示一旦Flink处理程序被cancel后，会删除CheckPoint数据，只有Job执行失败的时候才会保存CheckPoint。
 //
 env.getCheckpointConfig().enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
+```
+
+## 方式二：通过参数开启
+
+```yaml
+execution:
+    checkpointing:
+        interval: 3000
 ```

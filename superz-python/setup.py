@@ -13,9 +13,9 @@ setup(
     url="https://superzhc.github.io/SuperzHadoop",
     package_dir={"": "src"},
     packages=find_packages(exclude=["tests*"]),
-    install_requires=["requests"],
+    install_requires=[
+        "requests"
+    ],
     extras_require={
-        "airflow": ["apache-airflow==2.3.3"],
-        "db": ["PyMySQL"],
     },
 )
