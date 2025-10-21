@@ -3,3 +3,4 @@ tpc/**/*.pdf
 .VSCodeCounter
 .idea/
 .DS_Store
+docs.code-workspace
