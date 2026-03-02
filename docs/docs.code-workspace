@@ -5,16 +5,8 @@
 			"path": "."
 		},
 		{
-			"name": "superz-outdoors",
-			"path": "../../superz-outdoors"
-		},
-		{
 			"name": "superz-business",
 			"path": "../../superz-business"
-		},
-		{
-			"name": "superz_financial",
-			"path": "../../superz_financial"
 		},
 		{
 			"path": "../../superz-medicine"

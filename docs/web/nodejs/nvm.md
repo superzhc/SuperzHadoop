@@ -9,15 +9,15 @@
 **该安装方式为可视化安装**
 
 1. 执行 `nvm-setup.exe`
-   ![](images/nvm20230927114948.png)
+   ![](../../other/images/nvm20230927114948.png)
 2. 选择 nvm 安装路径
-   ![](images/nvm20230927114959.png)
+   ![](../../other/images/nvm20230927114959.png)
 3. 选择 nodejs 安装路径
-   ![](images/nvm20230927115009.png)
+   ![](../../other/images/nvm20230927115009.png)
 4. 确认安装
-   ![](images/nvm20230927115020.png)
+   ![](../../other/images/nvm20230927115020.png)
 5. 检查是否安装成功，直接输入 `nvm`，输出如下信息：
-   ![](images/nvm20230927115045.png)
+   ![](../../other/images/nvm20230927115045.png)
 
 ## Linux
 
