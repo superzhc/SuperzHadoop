@@ -5,14 +5,25 @@
 			"path": "."
 		},
 		{
-			"name": "hwm-nextorch",
-			"path": "../../hwm-nextorch"
-		},
-		{
-			"path": "../../superz-llm"
-		},
-		{
+			"name": "superz-outdoors",
 			"path": "../../superz-outdoors"
+		},
+		{
+			"name": "superz-business",
+			"path": "../../superz-business"
+		},
+		{
+			"name": "superz_financial",
+			"path": "../../superz_financial"
+		},
+		{
+			"path": "../../superz-medicine"
+		},
+		{
+			"path": "../../superz-home"
+		},
+		{
+			"path": "../../superz-siyuan"
 		}
 	],
 	"settings": {}
