@@ -5,17 +5,7 @@
 			"path": "."
 		},
 		{
-			"name": "superz-business",
-			"path": "../../superz-business"
-		},
-		{
-			"path": "../../superz-medicine"
-		},
-		{
 			"path": "../../superz-home"
-		},
-		{
-			"path": "../../superz-siyuan"
 		}
 	],
 	"settings": {}
